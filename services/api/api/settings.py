@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "forms",
     "submissions",
     "integrations",
+    "importers",
 ]
 
 MIDDLEWARE = [

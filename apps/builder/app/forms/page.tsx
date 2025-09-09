@@ -43,6 +43,7 @@ import { format } from 'date-fns';
 import { toast } from 'react-hot-toast';
 import { formsApi } from '@/lib/api/forms';
 import type { Form } from '@forms/contracts';
+import { ImportDialog } from '@/components/import/import-dialog';
 
 export default function FormsPage() {
   const router = useRouter();
@@ -100,21 +101,6 @@ export default function FormsPage() {
     });
   };
 
-  const handleImportForm = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    try {
-      const result = await formsApi.import({
-        type: formData.get('type') as 'typeform' | 'google_forms',
-        source: formData.get('source') as string,
-      });
-      setImportDialogOpen(false);
-      router.push(`/forms/${result.id}/edit`);
-      toast.success('Form imported successfully');
-    } catch (error) {
-      toast.error('Failed to import form');
-    }
-  };
 
   return (
     <div className="container mx-auto py-8">
@@ -125,50 +111,14 @@ export default function FormsPage() {
           <p className="text-muted-foreground mt-1">Create and manage your forms</p>
         </div>
         <div className="flex items-center gap-2">
-          <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <Upload className="h-4 w-4 mr-2" />
-                Import
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <form onSubmit={handleImportForm}>
-                <DialogHeader>
-                  <DialogTitle>Import Form</DialogTitle>
-                  <DialogDescription>
-                    Import a form from Typeform or Google Forms
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="import-type">Import Type</Label>
-                    <select
-                      id="import-type"
-                      name="type"
-                      className="w-full rounded-md border border-input bg-background px-3 py-2"
-                      required
-                    >
-                      <option value="typeform">Typeform</option>
-                      <option value="google_forms">Google Forms</option>
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="import-source">Form URL or ID</Label>
-                    <Input
-                      id="import-source"
-                      name="source"
-                      placeholder="https://form.typeform.com/to/abcdef"
-                      required
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button type="submit">Import Form</Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <Button variant="outline" onClick={() => setImportDialogOpen(true)}>
+            <Upload className="h-4 w-4 mr-2" />
+            Import
+          </Button>
+          <ImportDialog 
+            open={importDialogOpen} 
+            onOpenChange={setImportDialogOpen} 
+          />
 
           <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
             <DialogTrigger asChild>

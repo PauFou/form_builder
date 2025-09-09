@@ -61,9 +61,35 @@ export const formsApi = {
     return response.data;
   },
 
+  // Validate import source
+  validateImport: async (data: { type: 'typeform' | 'google_forms'; source: string }) => {
+    const response = await apiClient.post('/forms/import/validate', data);
+    return response.data;
+  },
+
+  // Preview import
+  previewImport: async (data: { 
+    type: 'typeform' | 'google_forms'; 
+    source: string; 
+    credentials?: any;
+  }) => {
+    const response = await apiClient.post('/forms/import/preview', data);
+    return response.data;
+  },
+
   // Import form
-  import: async (data: { type: 'typeform' | 'google_forms'; source: string }) => {
+  importForm: async (data: { 
+    type: 'typeform' | 'google_forms'; 
+    source: string;
+    credentials?: any;
+  }) => {
     const response = await apiClient.post('/forms/import', data);
+    return response.data;
+  },
+
+  // Get import requirements
+  getImportRequirements: async (sourceType: 'typeform' | 'google_forms') => {
+    const response = await apiClient.get(`/forms/import/requirements/${sourceType}`);
     return response.data;
   },
 };

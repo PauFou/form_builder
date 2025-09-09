@@ -1,5 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from .views import FormViewSet
 
-# Placeholder - to be implemented
-urlpatterns = []
+router = DefaultRouter()
+router.register('forms', FormViewSet, basename='form')
+
+urlpatterns = router.urls
