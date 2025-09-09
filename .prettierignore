@@ -1,0 +1,10 @@
+.next
+.turbo
+build
+dist
+coverage
+node_modules
+pnpm-lock.yaml
+__pycache__
+.venv
+*.pyc
