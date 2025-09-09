@@ -1,15 +1,11 @@
-import { apiClient } from './client';
-import type { Form, FormVersion, CreateFormDto, UpdateFormDto } from '@forms/contracts';
+import { apiClient } from "./client";
+
+import type { Form, FormVersion, CreateFormDto, UpdateFormDto } from "@forms/contracts";
 
 export const formsApi = {
   // List forms
-  list: async (params?: { 
-    page?: number; 
-    limit?: number; 
-    search?: string;
-    status?: string;
-  }) => {
-    const response = await apiClient.get('/forms', { params });
+  list: async (params?: { page?: number; limit?: number; search?: string; status?: string }) => {
+    const response = await apiClient.get("/forms", { params });
     return response.data;
   },
 
@@ -21,7 +17,7 @@ export const formsApi = {
 
   // Create form
   create: async (data: CreateFormDto) => {
-    const response = await apiClient.post('/forms', data);
+    const response = await apiClient.post("/forms", data);
     return response.data;
   },
 
@@ -62,33 +58,33 @@ export const formsApi = {
   },
 
   // Validate import source
-  validateImport: async (data: { type: 'typeform' | 'google_forms'; source: string }) => {
-    const response = await apiClient.post('/forms/import/validate', data);
+  validateImport: async (data: { type: "typeform" | "google_forms"; source: string }) => {
+    const response = await apiClient.post("/forms/import/validate", data);
     return response.data;
   },
 
   // Preview import
-  previewImport: async (data: { 
-    type: 'typeform' | 'google_forms'; 
-    source: string; 
+  previewImport: async (data: {
+    type: "typeform" | "google_forms";
+    source: string;
     credentials?: any;
   }) => {
-    const response = await apiClient.post('/forms/import/preview', data);
+    const response = await apiClient.post("/forms/import/preview", data);
     return response.data;
   },
 
   // Import form
-  importForm: async (data: { 
-    type: 'typeform' | 'google_forms'; 
+  importForm: async (data: {
+    type: "typeform" | "google_forms";
     source: string;
     credentials?: any;
   }) => {
-    const response = await apiClient.post('/forms/import', data);
+    const response = await apiClient.post("/forms/import", data);
     return response.data;
   },
 
   // Get import requirements
-  getImportRequirements: async (sourceType: 'typeform' | 'google_forms') => {
+  getImportRequirements: async (sourceType: "typeform" | "google_forms") => {
     const response = await apiClient.get(`/forms/import/requirements/${sourceType}`);
     return response.data;
   },

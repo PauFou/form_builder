@@ -1,16 +1,27 @@
-'use client';
+"use client";
 
-import { Card } from '@forms/ui';
-import { Button } from '@forms/ui';
-import { Input } from '@forms/ui';
-import { Label } from '@forms/ui';
-import { Switch } from '@forms/ui';
-import { Textarea } from '@forms/ui';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@forms/ui';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@forms/ui';
-import { X, Plus, Trash2 } from 'lucide-react';
-import { useFormBuilderStore } from '../../lib/stores/form-builder-store';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from "framer-motion";
+
+import {
+  Button,
+  Card,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Switch,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Textarea,
+} from "@forms/ui";
+import { X, Plus, Trash2 } from "lucide-react";
+
+import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 
 export function BlockSettings() {
   const { form, selectedBlockId, selectBlock, updateBlock } = useFormBuilderStore();
@@ -25,7 +36,7 @@ export function BlockSettings() {
     );
   }
 
-  const block = form.pages.flatMap(p => p.blocks).find(b => b.id === selectedBlockId);
+  const block = form.pages.flatMap((p) => p.blocks).find((b) => b.id === selectedBlockId);
   if (!block) return null;
 
   return (
@@ -40,11 +51,7 @@ export function BlockSettings() {
         <Card className="h-full overflow-hidden">
           <div className="flex items-center justify-between p-4 border-b">
             <h3 className="text-lg font-semibold">Block Settings</h3>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => selectBlock(null)}
-            >
+            <Button size="sm" variant="ghost" onClick={() => selectBlock(null)}>
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -52,9 +59,15 @@ export function BlockSettings() {
           <div className="overflow-y-auto h-[calc(100%-60px)]">
             <Tabs defaultValue="general" className="h-full">
               <TabsList className="w-full rounded-none">
-                <TabsTrigger value="general" className="flex-1">General</TabsTrigger>
-                <TabsTrigger value="validation" className="flex-1">Validation</TabsTrigger>
-                <TabsTrigger value="logic" className="flex-1">Logic</TabsTrigger>
+                <TabsTrigger value="general" className="flex-1">
+                  General
+                </TabsTrigger>
+                <TabsTrigger value="validation" className="flex-1">
+                  Validation
+                </TabsTrigger>
+                <TabsTrigger value="logic" className="flex-1">
+                  Logic
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="general" className="p-4 space-y-4">
@@ -72,7 +85,7 @@ export function BlockSettings() {
                   <Label htmlFor="description">Description (optional)</Label>
                   <Textarea
                     id="description"
-                    value={block.description || ''}
+                    value={block.description || ""}
                     onChange={(e) => updateBlock(block.id, { description: e.target.value })}
                     placeholder="Add helpful text or instructions"
                     rows={2}
@@ -89,7 +102,7 @@ export function BlockSettings() {
                 </div>
 
                 {/* Options for choice-based blocks */}
-                {['single_select', 'multi_select', 'dropdown', 'ranking'].includes(block.type) && (
+                {["single_select", "multi_select", "dropdown", "ranking"].includes(block.type) && (
                   <div className="space-y-2">
                     <Label>Options</Label>
                     <div className="space-y-2">
@@ -108,7 +121,9 @@ export function BlockSettings() {
                             size="sm"
                             variant="ghost"
                             onClick={() => {
-                              const newOptions = (block.options || []).filter((_, i) => i !== index);
+                              const newOptions = (block.options || []).filter(
+                                (_, i) => i !== index
+                              );
                               updateBlock(block.id, { options: newOptions });
                             }}
                           >
@@ -121,7 +136,7 @@ export function BlockSettings() {
                         variant="outline"
                         className="w-full"
                         onClick={() => {
-                          const newOptions = [...(block.options || []), ''];
+                          const newOptions = [...(block.options || []), ""];
                           updateBlock(block.id, { options: newOptions });
                         }}
                       >
@@ -133,7 +148,7 @@ export function BlockSettings() {
                 )}
 
                 {/* Scale/Rating specific settings */}
-                {['scale', 'rating', 'nps'].includes(block.type) && (
+                {["scale", "rating", "nps"].includes(block.type) && (
                   <>
                     <div className="space-y-2">
                       <Label htmlFor="min">Minimum Value</Label>
@@ -149,7 +164,7 @@ export function BlockSettings() {
                       <Input
                         id="max"
                         type="number"
-                        value={block.max || (block.type === 'nps' ? 10 : 5)}
+                        value={block.max || (block.type === "nps" ? 10 : 5)}
                         onChange={(e) => updateBlock(block.id, { max: parseInt(e.target.value) })}
                       />
                     </div>
@@ -158,20 +173,20 @@ export function BlockSettings() {
               </TabsContent>
 
               <TabsContent value="validation" className="p-4 space-y-4">
-                {['text', 'long_text'].includes(block.type) && (
+                {["text", "long_text"].includes(block.type) && (
                   <>
                     <div className="space-y-2">
                       <Label htmlFor="minLength">Minimum Length</Label>
                       <Input
                         id="minLength"
                         type="number"
-                        value={block.validation?.find(v => v.type === 'min')?.value || ''}
+                        value={block.validation?.find((v) => v.type === "min")?.value || ""}
                         onChange={(e) => {
                           const validations = block.validation || [];
-                          const minIndex = validations.findIndex(v => v.type === 'min');
+                          const minIndex = validations.findIndex((v) => v.type === "min");
                           if (e.target.value) {
                             const minValidation = {
-                              type: 'min' as const,
+                              type: "min" as const,
                               value: parseInt(e.target.value),
                               message: `Minimum ${e.target.value} characters required`,
                             };
@@ -193,13 +208,13 @@ export function BlockSettings() {
                       <Input
                         id="maxLength"
                         type="number"
-                        value={block.validation?.find(v => v.type === 'max')?.value || ''}
+                        value={block.validation?.find((v) => v.type === "max")?.value || ""}
                         onChange={(e) => {
                           const validations = block.validation || [];
-                          const maxIndex = validations.findIndex(v => v.type === 'max');
+                          const maxIndex = validations.findIndex((v) => v.type === "max");
                           if (e.target.value) {
                             const maxValidation = {
-                              type: 'max' as const,
+                              type: "max" as const,
                               value: parseInt(e.target.value),
                               message: `Maximum ${e.target.value} characters allowed`,
                             };
@@ -219,20 +234,20 @@ export function BlockSettings() {
                   </>
                 )}
 
-                {block.type === 'number' && (
+                {block.type === "number" && (
                   <>
                     <div className="space-y-2">
                       <Label htmlFor="minValue">Minimum Value</Label>
                       <Input
                         id="minValue"
                         type="number"
-                        value={block.validation?.find(v => v.type === 'min')?.value || ''}
+                        value={block.validation?.find((v) => v.type === "min")?.value || ""}
                         onChange={(e) => {
                           const validations = block.validation || [];
-                          const minIndex = validations.findIndex(v => v.type === 'min');
+                          const minIndex = validations.findIndex((v) => v.type === "min");
                           if (e.target.value) {
                             const minValidation = {
-                              type: 'min' as const,
+                              type: "min" as const,
                               value: parseFloat(e.target.value),
                               message: `Value must be at least ${e.target.value}`,
                             };
@@ -254,13 +269,13 @@ export function BlockSettings() {
                       <Input
                         id="maxValue"
                         type="number"
-                        value={block.validation?.find(v => v.type === 'max')?.value || ''}
+                        value={block.validation?.find((v) => v.type === "max")?.value || ""}
                         onChange={(e) => {
                           const validations = block.validation || [];
-                          const maxIndex = validations.findIndex(v => v.type === 'max');
+                          const maxIndex = validations.findIndex((v) => v.type === "max");
                           if (e.target.value) {
                             const maxValidation = {
-                              type: 'max' as const,
+                              type: "max" as const,
                               value: parseFloat(e.target.value),
                               message: `Value must be at most ${e.target.value}`,
                             };
@@ -284,7 +299,7 @@ export function BlockSettings() {
                   <Label htmlFor="errorMessage">Custom Error Message</Label>
                   <Input
                     id="errorMessage"
-                    value={block.validation?.[0]?.message || ''}
+                    value={block.validation?.[0]?.message || ""}
                     onChange={(e) => {
                       const validations = block.validation || [];
                       if (validations.length > 0) {

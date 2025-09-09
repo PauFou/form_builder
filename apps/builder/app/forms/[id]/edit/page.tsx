@@ -1,53 +1,47 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
-import { Button } from '@forms/ui';
-import { Separator } from '@forms/ui';
+import { useEffect } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
+
 import {
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@forms/ui';
+  Separator,
+} from "@forms/ui";
 import {
-  Save,
-  Play,
-  MoreVertical,
-  Undo,
-  Redo,
-  Eye,
-  Download,
-  Settings,
   ArrowLeft,
-} from 'lucide-react';
-import Link from 'next/link';
-import { toast } from 'react-hot-toast';
-import { BlockLibrary } from '../../../../components/builder/block-library';
-import { FormCanvas } from '../../../../components/builder/form-canvas';
-import { BlockSettings } from '../../../../components/builder/block-settings';
-import { useFormBuilderStore } from '../../../../lib/stores/form-builder-store';
-import { formsApi } from '../../../../lib/api/forms';
+  Download,
+  Eye,
+  MoreVertical,
+  Play,
+  Redo,
+  Save,
+  Settings,
+  Undo,
+} from "lucide-react";
+
+import { BlockLibrary } from "../../../../components/builder/block-library";
+import { FormCanvas } from "../../../../components/builder/form-canvas";
+import { BlockSettings } from "../../../../components/builder/block-settings";
+import { formsApi } from "../../../../lib/api/forms";
+import { useFormBuilderStore } from "../../../../lib/stores/form-builder-store";
 
 export default function EditFormPage() {
   const params = useParams();
   const formId = params.id as string;
 
-  const {
-    form,
-    setForm,
-    isDirty,
-    undo,
-    redo,
-    history,
-    historyIndex,
-    markClean,
-  } = useFormBuilderStore();
+  const { form, setForm, isDirty, undo, redo, history, historyIndex, markClean } =
+    useFormBuilderStore();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['form', formId],
+    queryKey: ["form", formId],
     queryFn: () => formsApi.get(formId),
   });
 
@@ -70,18 +64,18 @@ export default function EditFormPage() {
         settings: form.settings,
       });
       markClean();
-      toast.success('Form saved successfully');
+      toast.success("Form saved successfully");
     } catch (error) {
-      toast.error('Failed to save form');
+      toast.error("Failed to save form");
     }
   };
 
   const handlePublish = async () => {
     try {
       await formsApi.publish(formId);
-      toast.success('Form published successfully');
+      toast.success("Form published successfully");
     } catch (error) {
-      toast.error('Failed to publish form');
+      toast.error("Failed to publish form");
     }
   };
 
@@ -119,17 +113,12 @@ export default function EditFormPage() {
             </Button>
           </Link>
           <Separator orientation="vertical" className="h-6" />
-          <h1 className="text-lg font-semibold">{form?.title || 'Untitled Form'}</h1>
+          <h1 className="text-lg font-semibold">{form?.title || "Untitled Form"}</h1>
           {isDirty && <span className="text-sm text-muted-foreground">(Unsaved changes)</span>}
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={undo}
-            disabled={historyIndex <= 0}
-          >
+          <Button variant="ghost" size="sm" onClick={undo} disabled={historyIndex <= 0}>
             <Undo className="h-4 w-4" />
           </Button>
           <Button
@@ -143,31 +132,19 @@ export default function EditFormPage() {
 
           <Separator orientation="vertical" className="h-6" />
 
-          <Button
-            variant="outline"
-            size="sm"
-            asChild
-          >
+          <Button variant="outline" size="sm" asChild>
             <Link href={`/forms/${formId}/preview`} target="_blank">
               <Eye className="h-4 w-4 mr-2" />
               Preview
             </Link>
           </Button>
 
-          <Button
-            size="sm"
-            onClick={handleSave}
-            disabled={!isDirty}
-          >
+          <Button size="sm" onClick={handleSave} disabled={!isDirty}>
             <Save className="h-4 w-4 mr-2" />
             Save
           </Button>
 
-          <Button
-            size="sm"
-            variant="default"
-            onClick={handlePublish}
-          >
+          <Button size="sm" variant="default" onClick={handlePublish}>
             <Play className="h-4 w-4 mr-2" />
             Publish
           </Button>
@@ -188,9 +165,7 @@ export default function EditFormPage() {
                 Form Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
-                Delete Form
-              </DropdownMenuItem>
+              <DropdownMenuItem className="text-destructive">Delete Form</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

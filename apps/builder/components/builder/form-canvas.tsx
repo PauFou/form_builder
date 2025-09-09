@@ -1,22 +1,28 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { 
-  DndContext, 
-  closestCenter, 
-  KeyboardSensor, 
-  PointerSensor, 
-  useSensor, 
+import { useEffect, useState } from "react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
   useSensors,
   DragOverlay,
-  useDroppable
-} from '@dnd-kit/core';
-import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Card, Button, Tabs, TabsContent, TabsList, TabsTrigger, cn } from '@forms/ui';
-import { Plus, FileText } from 'lucide-react';
-import { useFormBuilderStore } from '../../lib/stores/form-builder-store';
-import { BlockItem } from './block-item';
-import { motion, AnimatePresence } from 'framer-motion';
+  useDroppable,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { motion, AnimatePresence } from "framer-motion";
+
+import { Button, Card, cn, Tabs, TabsContent, TabsList, TabsTrigger } from "@forms/ui";
+import { Plus, FileText } from "lucide-react";
+
+import { BlockItem } from "./block-item";
+import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 
 export function FormCanvas() {
   const { form, addPage, addBlock, moveBlock, selectedPageId } = useFormBuilderStore();
@@ -64,30 +70,22 @@ export function FormCanvas() {
     const overData = over.data.current;
 
     // Handle adding new blocks from library
-    if (activeData?.source === 'library' && overData?.type === 'dropzone') {
+    if (activeData?.source === "library" && overData?.type === "dropzone") {
       const newBlock = {
         id: crypto.randomUUID(),
         type: activeData.blockType,
-        question: '',
+        question: "",
         required: false,
       };
       addBlock(newBlock, overData.pageId, overData.index);
     }
     // Handle reordering existing blocks
-    else if (activeData?.type === 'block' && overData?.type === 'block') {
-      moveBlock(
-        activeData.blockId,
-        overData.pageId,
-        overData.index
-      );
+    else if (activeData?.type === "block" && overData?.type === "block") {
+      moveBlock(activeData.blockId, overData.pageId, overData.index);
     }
     // Handle moving block to empty dropzone
-    else if (activeData?.type === 'block' && overData?.type === 'dropzone') {
-      moveBlock(
-        activeData.blockId,
-        overData.pageId,
-        overData.index
-      );
+    else if (activeData?.type === "block" && overData?.type === "dropzone") {
+      moveBlock(activeData.blockId, overData.pageId, overData.index);
     }
   };
 
@@ -97,21 +95,23 @@ export function FormCanvas() {
         <div className="p-4 border-b">
           <input
             type="text"
-            value={form.title || ''}
+            value={form.title || ""}
             onChange={(e) => useFormBuilderStore.getState().updateForm({ title: e.target.value })}
             className="text-xl font-semibold bg-transparent border-none outline-none focus:ring-2 focus:ring-primary rounded px-2 -ml-2 w-full"
             placeholder="Untitled Form"
           />
           <input
             type="text"
-            value={form.description || ''}
-            onChange={(e) => useFormBuilderStore.getState().updateForm({ description: e.target.value })}
+            value={form.description || ""}
+            onChange={(e) =>
+              useFormBuilderStore.getState().updateForm({ description: e.target.value })
+            }
             className="text-sm text-muted-foreground bg-transparent border-none outline-none focus:ring-2 focus:ring-primary rounded px-2 -ml-2 mt-1 w-full"
             placeholder="Add a description..."
           />
         </div>
 
-        <Tabs 
+        <Tabs
           value={selectedPageId || form.pages[0]?.id}
           onValueChange={(value) => useFormBuilderStore.getState().selectPage?.(value)}
           className="flex-1 flex flex-col"
@@ -132,7 +132,7 @@ export function FormCanvas() {
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={() => addPage('New Page')}
+                onClick={() => addPage("New Page")}
                 className="ml-2"
               >
                 <Plus className="h-4 w-4" />
@@ -162,7 +162,7 @@ export function FormCanvas() {
                         />
                       ) : (
                         <SortableContext
-                          items={page.blocks.map(b => b.id)}
+                          items={page.blocks.map((b) => b.id)}
                           strategy={verticalListSortingStrategy}
                         >
                           <div className="space-y-4">
@@ -172,15 +172,11 @@ export function FormCanvas() {
                               index={0}
                               isActive={overId === `${page.id}-dropzone-0`}
                             />
-                            
+
                             {page.blocks.map((block, index) => (
                               <div key={block.id} className="space-y-4">
-                                <BlockItem
-                                  block={block}
-                                  pageId={page.id}
-                                  index={index}
-                                />
-                                
+                                <BlockItem block={block} pageId={page.id} index={index} />
+
                                 {/* Dropzone after each block */}
                                 <Dropzone
                                   pageId={page.id}
@@ -196,7 +192,7 @@ export function FormCanvas() {
                   </div>
                 </TabsContent>
               ))}
-              
+
               {/* Drag overlay for visual feedback */}
               <DragOverlay>
                 {activeId && (
@@ -214,28 +210,28 @@ export function FormCanvas() {
 }
 
 // Dropzone component for drag and drop
-function Dropzone({ 
-  pageId, 
-  index, 
+function Dropzone({
+  pageId,
+  index,
   isActive,
-  isEmpty = false 
-}: { 
-  pageId: string; 
-  index: number; 
+  isEmpty = false,
+}: {
+  pageId: string;
+  index: number;
   isActive: boolean;
   isEmpty?: boolean;
 }) {
   const dropzoneId = `${pageId}-dropzone-${index}`;
-  
+
   const { setNodeRef } = useDroppable({
     id: dropzoneId,
     data: {
-      type: 'dropzone',
+      type: "dropzone",
       pageId,
       index,
     },
   });
-  
+
   return (
     <div
       ref={setNodeRef}
@@ -251,8 +247,8 @@ function Dropzone({
           isEmpty
             ? "border-dashed border-muted-foreground/30 bg-muted/20"
             : isActive
-            ? "border-dashed border-primary bg-primary/5"
-            : "border-transparent"
+              ? "border-dashed border-primary bg-primary/5"
+              : "border-transparent"
         )}
       >
         {isEmpty && (

@@ -1,35 +1,41 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
+
 import {
+  Alert,
+  AlertDescription,
+  Badge,
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@forms/ui';
-import { Button } from '@forms/ui';
-import { Input } from '@forms/ui';
-import { Label } from '@forms/ui';
-import { Alert, AlertDescription } from '@forms/ui';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@forms/ui';
-import { Badge } from '@forms/ui';
-import { Skeleton } from '@forms/ui';
+  Input,
+  Label,
+  Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@forms/ui";
 import {
-  FileType,
-  FileCode2,
   AlertCircle,
-  CheckCircle,
   ArrowRight,
-  Loader2,
+  CheckCircle,
   Eye,
+  FileCode2,
+  FileType,
   Import,
-} from 'lucide-react';
-import { toast } from 'react-hot-toast';
-import { formsApi } from '../../lib/api/forms';
+  Loader2,
+} from "lucide-react";
+
+import { formsApi } from "../../lib/api/forms";
 
 interface ImportDialogProps {
   open: boolean;
@@ -38,16 +44,15 @@ interface ImportDialogProps {
 
 export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
   const router = useRouter();
-  const [importType, setImportType] = useState<'typeform' | 'google_forms'>('typeform');
-  const [source, setSource] = useState('');
-  const [credentials, setCredentials] = useState({ access_token: '' });
+  const [importType, setImportType] = useState<"typeform" | "google_forms">("typeform");
+  const [source, setSource] = useState("");
+  const [credentials, setCredentials] = useState({ access_token: "" });
   const [preview, setPreview] = useState<any>(null);
   const [validationResult, setValidationResult] = useState<any>(null);
 
   // Validate source
   const validateMutation = useMutation({
-    mutationFn: (data: { type: string; source: string }) =>
-      formsApi.validateImport(data),
+    mutationFn: (data: { type: string; source: string }) => formsApi.validateImport(data),
     onSuccess: (data) => {
       setValidationResult(data);
     },
@@ -68,15 +73,15 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
       formsApi.importForm(data),
     onSuccess: (data) => {
       if (data.success) {
-        toast.success('Form imported successfully!');
+        toast.success("Form imported successfully!");
         router.push(`/forms/${data.form_id}/edit`);
         onOpenChange(false);
       } else {
-        toast.error('Import completed with warnings');
+        toast.error("Import completed with warnings");
       }
     },
     onError: () => {
-      toast.error('Failed to import form');
+      toast.error("Failed to import form");
     },
   });
 
@@ -86,7 +91,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
     setPreview(null);
 
     // Auto-validate when URL is pasted
-    if (value.startsWith('http')) {
+    if (value.startsWith("http")) {
       validateMutation.mutate({ type: importType, source: value });
     }
   };
@@ -95,7 +100,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
     const data = {
       type: importType,
       source,
-      credentials: importType === 'typeform' ? credentials : undefined,
+      credentials: importType === "typeform" ? credentials : undefined,
     };
     previewMutation.mutate(data);
   };
@@ -104,7 +109,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
     const data = {
       type: importType,
       source,
-      credentials: importType === 'typeform' ? credentials : undefined,
+      credentials: importType === "typeform" ? credentials : undefined,
     };
     importMutation.mutate(data);
   };
@@ -114,14 +119,14 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="source">
-            {importType === 'typeform' ? 'Typeform URL or ID' : 'Google Forms URL or ID'}
+            {importType === "typeform" ? "Typeform URL or ID" : "Google Forms URL or ID"}
           </Label>
           <Input
             id="source"
             placeholder={
-              importType === 'typeform'
-                ? 'https://form.typeform.com/to/abcdef or abcdef'
-                : 'https://docs.google.com/forms/d/abc123/edit'
+              importType === "typeform"
+                ? "https://form.typeform.com/to/abcdef or abcdef"
+                : "https://docs.google.com/forms/d/abc123/edit"
             }
             value={source}
             onChange={(e) => handleSourceChange(e.target.value)}
@@ -143,7 +148,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
           )}
         </div>
 
-        {importType === 'typeform' && (
+        {importType === "typeform" && (
           <div className="space-y-2">
             <Label htmlFor="access_token">Personal Access Token</Label>
             <Input
@@ -151,9 +156,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
               type="password"
               placeholder="Your Typeform access token"
               value={credentials.access_token}
-              onChange={(e) =>
-                setCredentials({ ...credentials, access_token: e.target.value })
-              }
+              onChange={(e) => setCredentials({ ...credentials, access_token: e.target.value })}
             />
             <p className="text-xs text-muted-foreground">
               Get your token from Typeform account settings → Personal tokens
@@ -161,7 +164,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
           </div>
         )}
 
-        {importType === 'google_forms' && (
+        {importType === "google_forms" && (
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
@@ -176,23 +179,27 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
               <h4 className="font-semibold">Preview</h4>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-muted-foreground">Title:</span>{' '}
+                  <span className="text-muted-foreground">Title:</span>{" "}
                   <span className="font-medium">{preview.title}</span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Pages:</span>{' '}
+                  <span className="text-muted-foreground">Pages:</span>{" "}
                   <span className="font-medium">{preview.page_count}</span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Questions:</span>{' '}
+                  <span className="text-muted-foreground">Questions:</span>{" "}
                   <span className="font-medium">{preview.field_count}</span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Logic:</span>{' '}
+                  <span className="text-muted-foreground">Logic:</span>{" "}
                   {preview.has_logic ? (
-                    <Badge variant="default" className="text-xs">Yes</Badge>
+                    <Badge variant="default" className="text-xs">
+                      Yes
+                    </Badge>
                   ) : (
-                    <Badge variant="secondary" className="text-xs">No</Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      No
+                    </Badge>
                   )}
                 </div>
               </div>
@@ -274,7 +281,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
               disabled={
                 !source ||
                 !validationResult?.valid ||
-                (importType === 'typeform' && !credentials.access_token) ||
+                (importType === "typeform" && !credentials.access_token) ||
                 previewMutation.isPending
               }
             >
@@ -291,10 +298,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
               )}
             </Button>
           ) : (
-            <Button
-              onClick={handleImport}
-              disabled={importMutation.isPending}
-            >
+            <Button onClick={handleImport} disabled={importMutation.isPending}>
               {importMutation.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />

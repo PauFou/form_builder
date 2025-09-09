@@ -1,4 +1,4 @@
 module.exports = {
   root: true,
-  extends: ["@forms/config/eslint-preset"],
+  extends: ["../config/eslint-preset.js"],
 };

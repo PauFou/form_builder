@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
-import { useFormBuilderStore } from '../stores/form-builder-store';
-import { toast } from 'react-hot-toast';
+import { useEffect, useRef } from "react";
+import { toast } from "react-hot-toast";
+
+import { useFormBuilderStore } from "../stores/form-builder-store";
 
 export function useAutosave(formId: string | null, delay = 1000) {
   const { form, isDirty, markClean } = useFormBuilderStore();
@@ -18,16 +19,16 @@ export function useAutosave(formId: string | null, delay = 1000) {
     saveTimeoutRef.current = setTimeout(async () => {
       try {
         // Simulate API call - replace with actual API call
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
         // In production, this would be:
         // await api.forms.update(formId, form);
-        
+
         markClean();
-        console.log('Form autosaved');
+        console.log("Form autosaved");
       } catch (error) {
-        console.error('Autosave failed:', error);
-        toast.error('Failed to save changes');
+        console.error("Autosave failed:", error);
+        toast.error("Failed to save changes");
       }
     }, delay);
 

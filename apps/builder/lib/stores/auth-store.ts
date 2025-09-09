@@ -1,14 +1,16 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import type { User, Organization } from '@forms/contracts';
-import { authApi } from '../api/auth';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+
+import { authApi } from "../api/auth";
+
+import type { User, Organization } from "@forms/contracts";
 
 interface AuthState {
   user: User | null;
   organization: Organization | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  
+
   // Actions
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -29,10 +31,10 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true });
           const response = await authApi.login({ email, password });
-          
-          localStorage.setItem('access_token', response.access);
-          localStorage.setItem('refresh_token', response.refresh);
-          
+
+          localStorage.setItem("access_token", response.access);
+          localStorage.setItem("refresh_token", response.refresh);
+
           set({
             user: response.user,
             organization: response.organization,
@@ -65,10 +67,10 @@ export const useAuthStore = create<AuthState>()(
             password,
             organization_name: organizationName,
           });
-          
-          localStorage.setItem('access_token', response.access);
-          localStorage.setItem('refresh_token', response.refresh);
-          
+
+          localStorage.setItem("access_token", response.access);
+          localStorage.setItem("refresh_token", response.refresh);
+
           set({
             user: response.user,
             organization: response.organization,
@@ -83,7 +85,7 @@ export const useAuthStore = create<AuthState>()(
 
       checkAuth: async () => {
         try {
-          const token = localStorage.getItem('access_token');
+          const token = localStorage.getItem("access_token");
           if (!token) {
             set({ isAuthenticated: false, isLoading: false });
             return;
@@ -113,7 +115,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         user: state.user,

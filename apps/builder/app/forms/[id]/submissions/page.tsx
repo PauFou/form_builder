@@ -1,15 +1,26 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@forms/ui';
-import { Search, Filter, Download, MoreHorizontal, ChevronLeft, Calendar, Tag, CheckCircle2, Clock, ExternalLink } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { useState } from "react";
+import { Button } from "@forms/ui";
+import {
+  Search,
+  Filter,
+  Download,
+  MoreHorizontal,
+  ChevronLeft,
+  Calendar,
+  Tag,
+  CheckCircle2,
+  Clock,
+  ExternalLink,
+} from "lucide-react";
+import { motion } from "framer-motion";
 
 type Submission = {
   id: string;
   respondentId: string;
   completedAt: string | null;
-  status: 'completed' | 'partial';
+  status: "completed" | "partial";
   score?: number;
   tags: string[];
   answers: Record<string, any>;
@@ -17,47 +28,47 @@ type Submission = {
 
 const mockSubmissions: Submission[] = [
   {
-    id: 'sub_1',
-    respondentId: 'resp_abc123',
-    completedAt: '2025-09-09T10:30:00Z',
-    status: 'completed',
+    id: "sub_1",
+    respondentId: "resp_abc123",
+    completedAt: "2025-09-09T10:30:00Z",
+    status: "completed",
     score: 85,
-    tags: ['satisfied', 'premium'],
+    tags: ["satisfied", "premium"],
     answers: {
-      q1: 'Very satisfied',
-      q2: ['Dashboard', 'Analytics', 'API'],
-      q3: 'The analytics features are incredibly powerful...'
-    }
+      q1: "Very satisfied",
+      q2: ["Dashboard", "Analytics", "API"],
+      q3: "The analytics features are incredibly powerful...",
+    },
   },
   {
-    id: 'sub_2',
-    respondentId: 'resp_def456',
-    completedAt: '2025-09-09T09:15:00Z',
-    status: 'completed',
+    id: "sub_2",
+    respondentId: "resp_def456",
+    completedAt: "2025-09-09T09:15:00Z",
+    status: "completed",
     score: 92,
-    tags: ['promoter'],
+    tags: ["promoter"],
     answers: {
-      q1: 'Satisfied',
-      q2: ['Forms', 'Logic'],
-      q3: 'Love the conditional logic capabilities...'
-    }
+      q1: "Satisfied",
+      q2: ["Forms", "Logic"],
+      q3: "Love the conditional logic capabilities...",
+    },
   },
   {
-    id: 'sub_3',
-    respondentId: 'resp_ghi789',
+    id: "sub_3",
+    respondentId: "resp_ghi789",
     completedAt: null,
-    status: 'partial',
+    status: "partial",
     tags: [],
     answers: {
-      q1: 'Neutral',
-      q2: ['Dashboard']
-    }
-  }
+      q1: "Neutral",
+      q2: ["Dashboard"],
+    },
+  },
 ];
 
 export default function SubmissionsPage({ params }: { params: { formId: string } }) {
   const [selectedSubmissions, setSelectedSubmissions] = useState<Set<string>>(new Set());
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
 
   return (
@@ -100,12 +111,16 @@ export default function SubmissionsPage({ params }: { params: { formId: string }
             <Button variant="outline" size="sm" onClick={() => setFilterOpen(!filterOpen)}>
               <Filter className="h-4 w-4 mr-2" />
               Filter
-              <span className="ml-2 px-1.5 py-0.5 bg-primary text-primary-foreground text-xs rounded-full">2</span>
+              <span className="ml-2 px-1.5 py-0.5 bg-primary text-primary-foreground text-xs rounded-full">
+                2
+              </span>
             </Button>
           </div>
           {selectedSubmissions.size > 0 && (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{selectedSubmissions.size} selected</span>
+              <span className="text-sm text-muted-foreground">
+                {selectedSubmissions.size} selected
+              </span>
               <Button variant="outline" size="sm">
                 <Tag className="h-4 w-4 mr-2" />
                 Add tag
@@ -122,7 +137,7 @@ export default function SubmissionsPage({ params }: { params: { formId: string }
         {filterOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             className="border-b bg-muted/30"
           >
@@ -154,8 +169,16 @@ export default function SubmissionsPage({ params }: { params: { formId: string }
                 <div className="flex-1">
                   <label className="text-sm font-medium mb-1.5 block">Score range</label>
                   <div className="flex gap-2">
-                    <input type="number" placeholder="Min" className="flex-1 px-3 py-2 border rounded-lg text-sm" />
-                    <input type="number" placeholder="Max" className="flex-1 px-3 py-2 border rounded-lg text-sm" />
+                    <input
+                      type="number"
+                      placeholder="Min"
+                      className="flex-1 px-3 py-2 border rounded-lg text-sm"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Max"
+                      className="flex-1 px-3 py-2 border rounded-lg text-sm"
+                    />
                   </div>
                 </div>
               </div>
@@ -163,9 +186,7 @@ export default function SubmissionsPage({ params }: { params: { formId: string }
                 <Button variant="ghost" size="sm">
                   Clear filters
                 </Button>
-                <Button size="sm">
-                  Apply filters
-                </Button>
+                <Button size="sm">Apply filters</Button>
               </div>
             </div>
           </motion.div>
@@ -183,7 +204,7 @@ export default function SubmissionsPage({ params }: { params: { formId: string }
                     checked={selectedSubmissions.size === mockSubmissions.length}
                     onChange={(e) => {
                       if (e.target.checked) {
-                        setSelectedSubmissions(new Set(mockSubmissions.map(s => s.id)));
+                        setSelectedSubmissions(new Set(mockSubmissions.map((s) => s.id)));
                       } else {
                         setSelectedSubmissions(new Set());
                       }
@@ -226,7 +247,7 @@ export default function SubmissionsPage({ params }: { params: { formId: string }
                     </div>
                   </td>
                   <td className="p-4">
-                    {submission.status === 'completed' ? (
+                    {submission.status === "completed" ? (
                       <span className="inline-flex items-center gap-1 px-2 py-1 bg-success/10 text-success rounded-full text-xs">
                         <CheckCircle2 className="h-3 w-3" />
                         Completed
@@ -270,8 +291,11 @@ export default function SubmissionsPage({ params }: { params: { formId: string }
                   <td className="p-4">
                     <div className="flex gap-1 flex-wrap">
                       {submission.tags.length > 0 ? (
-                        submission.tags.map(tag => (
-                          <span key={tag} className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs">
+                        submission.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs"
+                          >
                             {tag}
                           </span>
                         ))
@@ -281,11 +305,15 @@ export default function SubmissionsPage({ params }: { params: { formId: string }
                     </div>
                   </td>
                   <td className="p-4">
-                    <span className="text-sm">{submission.answers.q1 || '—'}</span>
+                    <span className="text-sm">{submission.answers.q1 || "—"}</span>
                   </td>
                   <td className="p-4">
                     {submission.answers.q2 ? (
-                      <span className="text-sm">{Array.isArray(submission.answers.q2) ? submission.answers.q2.join(', ') : submission.answers.q2}</span>
+                      <span className="text-sm">
+                        {Array.isArray(submission.answers.q2)
+                          ? submission.answers.q2.join(", ")
+                          : submission.answers.q2}
+                      </span>
                     ) : (
                       <span className="text-sm text-muted-foreground">—</span>
                     )}
@@ -340,7 +368,9 @@ export default function SubmissionsPage({ params }: { params: { formId: string }
                     <p className="text-sm">Very satisfied</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground mb-1">Q2: What features do you use?</p>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Q2: What features do you use?
+                    </p>
                     <p className="text-sm">Dashboard, Analytics, API</p>
                   </div>
                   <div>
@@ -372,4 +402,4 @@ export default function SubmissionsPage({ params }: { params: { formId: string }
       </div>
     </div>
   );
-}'
+}

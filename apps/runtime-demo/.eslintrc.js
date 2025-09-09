@@ -1,4 +1,4 @@
 module.exports = {
   root: true,
-  extends: ["@forms/config/eslint-preset"],
+  extends: ["../../packages/config/eslint-preset.js", "next/core-web-vitals"],
 };

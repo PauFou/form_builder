@@ -1,25 +1,22 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import mitt from 'mitt';
-import type { FormSchema, FormState, RuntimeConfig, FormData } from './types';
-import { OfflineStore } from './store';
-import { validateField, evaluateLogic, shouldShowBlock } from './utils';
+import { useState, useEffect, useCallback, useRef } from "react";
+import mitt from "mitt";
+import type { FormSchema, FormState, RuntimeConfig, FormData } from "./types";
+import { OfflineStore } from "./store";
+import { validateField, shouldShowBlock } from "./utils";
 
 type Events = {
-  'field:change': { field: string; value: any };
-  'field:blur': { field: string };
-  'step:next': { from: number; to: number };
-  'step:prev': { from: number; to: number };
-  'form:submit': { data: FormData };
-  'form:save': { data: Partial<FormData> };
-  'form:error': { error: Error };
+  "field:change": { field: string; value: any };
+  "field:blur": { field: string };
+  "step:next": { from: number; to: number };
+  "step:prev": { from: number; to: number };
+  "form:submit": { data: FormData };
+  "form:save": { data: Partial<FormData> };
+  "form:error": { error: Error };
 };
 
 const emitter = mitt<Events>();
 
-export function useFormRuntime(
-  schema: FormSchema,
-  config: RuntimeConfig
-) {
+export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
   const [state, setState] = useState<FormState>(() => ({
     currentStep: 0,
     values: {},
@@ -30,18 +27,16 @@ export function useFormRuntime(
   }));
 
   const storeRef = useRef<OfflineStore | null>(null);
-  const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const respondentKeyRef = useRef(
-    config.respondentKey || `anon-${Date.now()}-${Math.random()}`
-  );
+  const saveTimerRef = useRef<number | null>(null);
+  const respondentKeyRef = useRef(config.respondentKey || `anon-${Date.now()}-${Math.random()}`);
 
   // Initialize offline store
   useEffect(() => {
-    if (config.enableOffline && typeof window !== 'undefined') {
+    if (config.enableOffline && typeof window !== "undefined") {
       storeRef.current = new OfflineStore();
-      
+
       // Load saved state
-      storeRef.current.getState(config.formId).then(saved => {
+      storeRef.current.getState(config.formId).then((saved) => {
         if (saved) {
           setState(saved.state);
         }
@@ -77,18 +72,13 @@ export function useFormRuntime(
         },
       };
 
-      storeRef.current?.saveState(
-        config.formId,
-        respondentKeyRef.current,
-        state,
-        data
-      );
+      storeRef.current?.saveState(config.formId, respondentKeyRef.current, state, data);
 
       if (config.onPartialSave) {
         config.onPartialSave(data);
       }
 
-      emitter.emit('form:save', { data });
+      emitter.emit("form:save", { data });
     }, config.autoSaveInterval || 5000);
   }, [config, state]);
 
@@ -99,29 +89,29 @@ export function useFormRuntime(
 
   // Field handlers
   const setValue = useCallback((field: string, value: any) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       values: { ...prev.values, [field]: value },
-      errors: { ...prev.errors, [field]: '' },
+      errors: { ...prev.errors, [field]: "" },
     }));
 
-    emitter.emit('field:change', { field, value });
+    emitter.emit("field:change", { field, value });
   }, []);
 
   const setError = useCallback((field: string, error: string) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       errors: { ...prev.errors, [field]: error },
     }));
   }, []);
 
   const setTouched = useCallback((field: string) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       touched: { ...prev.touched, [field]: true },
     }));
 
-    emitter.emit('field:blur', { field });
+    emitter.emit("field:blur", { field });
   }, []);
 
   // Navigation
@@ -133,84 +123,131 @@ export function useFormRuntime(
       return false;
     }
 
-    const error = validateField(
-      currentBlock,
-      state.values[currentBlock.id]
-    );
+    const error = validateField(currentBlock, state.values[currentBlock.id]);
 
     return !error;
   }, [schema, state]);
-
-  const goNext = useCallback(() => {
-    if (!canGoNext()) return;
-
-    const nextStep = state.currentStep + 1;
-    
-    if (nextStep < schema.blocks.length) {
-      setState(prev => ({
-        ...prev,
-        currentStep: nextStep,
-      }));
-
-      emitter.emit('step:next', {
-        from: state.currentStep,
-        to: nextStep,
-      });
-    } else {
-      // Form complete
-      submit();
-    }
-  }, [state, schema, canGoNext]);
-
-  const goPrev = useCallback(() => {
-    if (state.currentStep > 0) {
-      const prevStep = state.currentStep - 1;
-      
-      setState(prev => ({
-        ...prev,
-        currentStep: prevStep,
-      }));
-
-      emitter.emit('step:prev', {
-        from: state.currentStep,
-        to: prevStep,
-      });
-    }
-  }, [state]);
-
-  const goToStep = useCallback((step: number) => {
-    if (step >= 0 && step < schema.blocks.length) {
-      setState(prev => ({
-        ...prev,
-        currentStep: step,
-      }));
-    }
-  }, [schema]);
 
   // Validation
   const validate = useCallback((): boolean => {
     const errors: Record<string, string> = {};
     let isValid = true;
 
-    schema.blocks.forEach(block => {
+    schema.blocks.forEach((block) => {
       const value = state.values[block.id];
       const error = validateField(block, value);
-      
+
       if (error) {
         errors[block.id] = error;
         isValid = false;
       }
     });
 
-    setState(prev => ({ ...prev, errors }));
+    setState((prev) => ({ ...prev, errors }));
     return isValid;
   }, [schema, state]);
 
-  // Submit
+  const goNext = useCallback(() => {
+    if (!canGoNext()) return;
+
+    const nextStep = state.currentStep + 1;
+
+    if (nextStep < schema.blocks.length) {
+      setState((prev) => ({
+        ...prev,
+        currentStep: nextStep,
+      }));
+
+      emitter.emit("step:next", {
+        from: state.currentStep,
+        to: nextStep,
+      });
+    } else {
+      // Form complete - submit form
+      if (!validate()) return;
+
+      setState((prev) => ({ ...prev, isSubmitting: true }));
+
+      const data: FormData = {
+        formId: config.formId,
+        values: state.values,
+        startedAt: new Date().toISOString(),
+        completedAt: new Date().toISOString(),
+        metadata: {
+          locale: config.locale,
+          userAgent: navigator.userAgent,
+        },
+      };
+
+      if (config.onSubmit) {
+        Promise.resolve(config.onSubmit(data)).catch((error) => {
+          setState((prev) => ({ ...prev, isSubmitting: false }));
+          emitter.emit("form:error", { error: error as Error });
+        });
+      } else {
+        // Default API submission
+        fetch(`${config.apiUrl}/submissions`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+          })
+          .then(() => {
+            setState((prev) => ({
+              ...prev,
+              isSubmitting: false,
+              isComplete: true,
+            }));
+            emitter.emit("form:submit", { data });
+          })
+          .catch((error) => {
+            setState((prev) => ({ ...prev, isSubmitting: false }));
+            emitter.emit("form:error", { error: error as Error });
+          });
+      }
+    }
+  }, [state, schema, canGoNext, validate, config]);
+
+  const goPrev = useCallback(() => {
+    if (state.currentStep > 0) {
+      const prevStep = state.currentStep - 1;
+
+      setState((prev) => ({
+        ...prev,
+        currentStep: prevStep,
+      }));
+
+      emitter.emit("step:prev", {
+        from: state.currentStep,
+        to: prevStep,
+      });
+    }
+  }, [state]);
+
+  const goToStep = useCallback(
+    (step: number) => {
+      if (step >= 0 && step < schema.blocks.length) {
+        setState((prev) => ({
+          ...prev,
+          currentStep: step,
+        }));
+      }
+    },
+    [schema]
+  );
+
+  // Manual submit function
   const submit = useCallback(async () => {
     if (!validate()) return;
 
-    setState(prev => ({ ...prev, isSubmitting: true }));
+    setState((prev) => ({ ...prev, isSubmitting: true }));
 
     const data: FormData = {
       formId: config.formId,
@@ -229,9 +266,9 @@ export function useFormRuntime(
       } else {
         // Default API submission
         const response = await fetch(`${config.apiUrl}/submissions`, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(data),
         });
@@ -241,7 +278,7 @@ export function useFormRuntime(
         }
       }
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isSubmitting: false,
         isComplete: true,
@@ -252,22 +289,20 @@ export function useFormRuntime(
         await storeRef.current.deleteState(config.formId);
       }
 
-      emitter.emit('form:submit', { data });
+      emitter.emit("form:submit", { data });
     } catch (error) {
-      setState(prev => ({ ...prev, isSubmitting: false }));
-      
+      setState((prev) => ({ ...prev, isSubmitting: false }));
+
       if (config.onError) {
         config.onError(error as Error);
       }
 
-      emitter.emit('form:error', { error: error as Error });
+      emitter.emit("form:error", { error: error as Error });
     }
   }, [config, state, validate]);
 
   // Get visible blocks based on logic
-  const visibleBlocks = schema.blocks.filter(block =>
-    shouldShowBlock(block, state.values)
-  );
+  const visibleBlocks = schema.blocks.filter((block) => shouldShowBlock(block, state.values));
 
   const currentBlock = visibleBlocks[state.currentStep];
   const progress = ((state.currentStep + 1) / visibleBlocks.length) * 100;
@@ -278,7 +313,7 @@ export function useFormRuntime(
     currentBlock,
     visibleBlocks,
     progress,
-    
+
     // Actions
     setValue,
     setError,
@@ -288,7 +323,7 @@ export function useFormRuntime(
     goToStep,
     submit,
     validate,
-    
+
     // Utilities
     canGoNext,
     on: emitter.on.bind(emitter),

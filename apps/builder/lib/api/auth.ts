@@ -1,5 +1,6 @@
-import { apiClient } from './client';
-import type { User, Organization } from '@forms/contracts';
+import { apiClient } from "./client";
+
+import type { User, Organization } from "@forms/contracts";
 
 export interface LoginCredentials {
   email: string;
@@ -22,47 +23,47 @@ export interface AuthResponse {
 export const authApi = {
   // Login
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const response = await apiClient.post('/auth/login', credentials);
+    const response = await apiClient.post("/auth/login", credentials);
     return response.data;
   },
 
   // Signup
   signup: async (data: SignupData): Promise<AuthResponse> => {
-    const response = await apiClient.post('/auth/signup', data);
+    const response = await apiClient.post("/auth/signup", data);
     return response.data;
   },
 
   // Logout
   logout: async () => {
-    const refreshToken = localStorage.getItem('refresh_token');
+    const refreshToken = localStorage.getItem("refresh_token");
     if (refreshToken) {
-      await apiClient.post('/auth/logout', { refresh: refreshToken });
+      await apiClient.post("/auth/logout", { refresh: refreshToken });
     }
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
   },
 
   // Get current user
   getMe: async () => {
-    const response = await apiClient.get('/auth/me');
+    const response = await apiClient.get("/auth/me");
     return response.data;
   },
 
   // Refresh token
   refresh: async (refreshToken: string) => {
-    const response = await apiClient.post('/auth/refresh', { refresh: refreshToken });
+    const response = await apiClient.post("/auth/refresh", { refresh: refreshToken });
     return response.data;
   },
 
   // Request password reset
   requestPasswordReset: async (email: string) => {
-    const response = await apiClient.post('/auth/password-reset/request', { email });
+    const response = await apiClient.post("/auth/password-reset/request", { email });
     return response.data;
   },
 
   // Reset password
   resetPassword: async (token: string, password: string) => {
-    const response = await apiClient.post('/auth/password-reset/confirm', { token, password });
+    const response = await apiClient.post("/auth/password-reset/confirm", { token, password });
     return response.data;
   },
 };

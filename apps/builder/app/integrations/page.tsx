@@ -1,12 +1,18 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button } from '@forms/ui';
-import { Input } from '@forms/ui';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@forms/ui';
-import { Badge } from '@forms/ui';
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
+
 import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -14,36 +20,36 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@forms/ui';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@forms/ui';
-import { Label } from '@forms/ui';
-import { Skeleton } from '@forms/ui';
+  Input,
+  Label,
+  Skeleton,
+} from "@forms/ui";
 import {
-  Plus,
-  Search,
-  MoreVertical,
-  Settings,
-  RefreshCw,
-  Trash2,
-  CheckCircle,
   AlertCircle,
-  Sheet,
-  MessageSquare,
-  Database,
+  CheckCircle,
   CreditCard,
+  Database,
+  Link2,
+  MessageSquare,
+  MoreVertical,
+  Plus,
+  RefreshCw,
+  Search,
+  Settings,
+  Sheet,
+  Trash2,
   Webhook,
   Zap,
-  Link2,
-} from 'lucide-react';
-import { toast } from 'react-hot-toast';
-import { integrationsApi } from '../../lib/api/integrations';
-import type { Integration } from '@forms/contracts';
+} from "lucide-react";
+
+import { integrationsApi } from "../../lib/api/integrations";
+
+import type { Integration } from "@forms/contracts";
 
 const integrationIcons: Record<string, any> = {
   google_sheets: Sheet,
@@ -58,66 +64,66 @@ const integrationIcons: Record<string, any> = {
 };
 
 const integrationTypes = [
-  { value: 'google_sheets', label: 'Google Sheets', icon: Sheet },
-  { value: 'slack', label: 'Slack', icon: MessageSquare },
-  { value: 'notion', label: 'Notion', icon: Database },
-  { value: 'airtable', label: 'Airtable', icon: Database },
-  { value: 'hubspot', label: 'HubSpot', icon: Database },
-  { value: 'stripe', label: 'Stripe', icon: CreditCard },
-  { value: 'webhook', label: 'Custom Webhook', icon: Webhook },
-  { value: 'zapier', label: 'Zapier', icon: Zap },
-  { value: 'make', label: 'Make', icon: Link2 },
+  { value: "google_sheets", label: "Google Sheets", icon: Sheet },
+  { value: "slack", label: "Slack", icon: MessageSquare },
+  { value: "notion", label: "Notion", icon: Database },
+  { value: "airtable", label: "Airtable", icon: Database },
+  { value: "hubspot", label: "HubSpot", icon: Database },
+  { value: "stripe", label: "Stripe", icon: CreditCard },
+  { value: "webhook", label: "Custom Webhook", icon: Webhook },
+  { value: "zapier", label: "Zapier", icon: Zap },
+  { value: "make", label: "Make", icon: Link2 },
 ];
 
 export default function IntegrationsPage() {
   const queryClient = useQueryClient();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [selectedType, setSelectedType] = useState('');
+  const [selectedType, setSelectedType] = useState("");
 
   const { data: integrations, isLoading } = useQuery({
-    queryKey: ['integrations', searchQuery],
+    queryKey: ["integrations", searchQuery],
     queryFn: () => integrationsApi.list({ search: searchQuery }),
   });
 
   const createMutation = useMutation({
     mutationFn: integrationsApi.create,
     onSuccess: (integration) => {
-      queryClient.invalidateQueries({ queryKey: ['integrations'] });
+      queryClient.invalidateQueries({ queryKey: ["integrations"] });
       setCreateDialogOpen(false);
-      setSelectedType('');
-      
+      setSelectedType("");
+
       // If OAuth integration, start OAuth flow
-      if (['google_sheets', 'slack', 'notion'].includes(integration.type)) {
+      if (["google_sheets", "slack", "notion"].includes(integration.type)) {
         window.location.href = `/integrations/${integration.id}/oauth`;
       } else {
-        toast.success('Integration created successfully');
+        toast.success("Integration created successfully");
       }
     },
     onError: () => {
-      toast.error('Failed to create integration');
+      toast.error("Failed to create integration");
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => integrationsApi.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['integrations'] });
-      toast.success('Integration deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ["integrations"] });
+      toast.success("Integration deleted successfully");
     },
     onError: () => {
-      toast.error('Failed to delete integration');
+      toast.error("Failed to delete integration");
     },
   });
 
   const syncMutation = useMutation({
     mutationFn: (id: string) => integrationsApi.sync(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['integrations'] });
-      toast.success('Integration synced successfully');
+      queryClient.invalidateQueries({ queryKey: ["integrations"] });
+      toast.success("Integration synced successfully");
     },
     onError: () => {
-      toast.error('Failed to sync integration');
+      toast.error("Failed to sync integration");
     },
   });
 
@@ -126,31 +132,31 @@ export default function IntegrationsPage() {
     const formData = new FormData(e.currentTarget);
     createMutation.mutate({
       type: selectedType,
-      name: formData.get('name') as string,
+      name: formData.get("name") as string,
       config: getInitialConfig(selectedType),
     });
   };
 
   const getInitialConfig = (type: string): any => {
     switch (type) {
-      case 'webhook':
+      case "webhook":
         return {
-          url: '',
-          method: 'POST',
-          secret: '',
+          url: "",
+          method: "POST",
+          secret: "",
         };
-      case 'google_sheets':
+      case "google_sheets":
         return {
-          spreadsheet_id: '',
-          sheet_name: 'Sheet1',
+          spreadsheet_id: "",
+          sheet_name: "Sheet1",
         };
-      case 'slack':
+      case "slack":
         return {
-          channel: '#general',
+          channel: "#general",
         };
-      case 'notion':
+      case "notion":
         return {
-          database_id: '',
+          database_id: "",
         };
       default:
         return {};
@@ -176,9 +182,7 @@ export default function IntegrationsPage() {
             <form onSubmit={handleCreateIntegration}>
               <DialogHeader>
                 <DialogTitle>Add Integration</DialogTitle>
-                <DialogDescription>
-                  Choose a service to connect with your forms
-                </DialogDescription>
+                <DialogDescription>Choose a service to connect with your forms</DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 {!selectedType ? (
@@ -213,7 +217,7 @@ export default function IntegrationsPage() {
                       })()}
                       <div>
                         <div className="font-semibold">
-                          {integrationTypes.find(t => t.value === selectedType)?.label}
+                          {integrationTypes.find((t) => t.value === selectedType)?.label}
                         </div>
                         <div className="text-sm text-muted-foreground">
                           {getIntegrationDescription(selectedType)}
@@ -222,12 +226,7 @@ export default function IntegrationsPage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="name">Integration Name</Label>
-                      <Input
-                        id="name"
-                        name="name"
-                        placeholder="e.g., Main Contact List"
-                        required
-                      />
+                      <Input id="name" name="name" placeholder="e.g., Main Contact List" required />
                     </div>
                   </>
                 )}
@@ -235,15 +234,11 @@ export default function IntegrationsPage() {
               <DialogFooter>
                 {selectedType && (
                   <>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setSelectedType('')}
-                    >
+                    <Button type="button" variant="outline" onClick={() => setSelectedType("")}>
                       Back
                     </Button>
                     <Button type="submit" disabled={createMutation.isPending}>
-                      {createMutation.isPending ? 'Creating...' : 'Create Integration'}
+                      {createMutation.isPending ? "Creating..." : "Create Integration"}
                     </Button>
                   </>
                 )}
@@ -325,7 +320,7 @@ export default function IntegrationsPage() {
                         <DropdownMenuItem
                           className="text-destructive"
                           onClick={() => {
-                            if (confirm('Are you sure you want to delete this integration?')) {
+                            if (confirm("Are you sure you want to delete this integration?")) {
                               deleteMutation.mutate(integration.id);
                             }
                           }}
@@ -340,12 +335,12 @@ export default function IntegrationsPage() {
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                      {integration.status === 'active' ? (
+                      {integration.status === "active" ? (
                         <>
                           <CheckCircle className="h-4 w-4 text-green-600" />
                           <span className="text-sm text-green-600">Active</span>
                         </>
-                      ) : integration.status === 'error' ? (
+                      ) : integration.status === "error" ? (
                         <>
                           <AlertCircle className="h-4 w-4 text-destructive" />
                           <span className="text-sm text-destructive">Error</span>
@@ -357,22 +352,20 @@ export default function IntegrationsPage() {
                         </>
                       )}
                     </div>
-                    
+
                     {integration.config_display && (
                       <div className="text-sm text-muted-foreground">
                         {Object.entries(integration.config_display).map(([key, value]) => (
                           <div key={key}>
-                            <span className="capitalize">{key.replace('_', ' ')}: </span>
+                            <span className="capitalize">{key.replace("_", " ")}: </span>
                             <span className="font-medium">{String(value)}</span>
                           </div>
                         ))}
                       </div>
                     )}
-                    
+
                     {integration.error_message && (
-                      <div className="text-sm text-destructive">
-                        {integration.error_message}
-                      </div>
+                      <div className="text-sm text-destructive">{integration.error_message}</div>
                     )}
                   </div>
                 </CardContent>
@@ -395,8 +388,8 @@ export default function IntegrationsPage() {
           <h3 className="text-lg font-semibold mb-2">No integrations found</h3>
           <p className="text-muted-foreground mb-4">
             {searchQuery
-              ? 'Try a different search query'
-              : 'Connect your forms to external services'}
+              ? "Try a different search query"
+              : "Connect your forms to external services"}
           </p>
           {!searchQuery && (
             <Button onClick={() => setCreateDialogOpen(true)}>
@@ -412,16 +405,16 @@ export default function IntegrationsPage() {
 
 function getIntegrationDescription(type: string): string {
   const descriptions: Record<string, string> = {
-    google_sheets: 'Send form responses to Google Sheets',
-    slack: 'Get notified in Slack when forms are submitted',
-    notion: 'Create pages in Notion databases',
-    airtable: 'Add records to Airtable bases',
-    hubspot: 'Create contacts in HubSpot CRM',
-    stripe: 'Accept payments through your forms',
-    webhook: 'Send data to any URL',
-    zapier: 'Connect to 5,000+ apps with Zapier',
-    make: 'Automate workflows with Make',
+    google_sheets: "Send form responses to Google Sheets",
+    slack: "Get notified in Slack when forms are submitted",
+    notion: "Create pages in Notion databases",
+    airtable: "Add records to Airtable bases",
+    hubspot: "Create contacts in HubSpot CRM",
+    stripe: "Accept payments through your forms",
+    webhook: "Send data to any URL",
+    zapier: "Connect to 5,000+ apps with Zapier",
+    make: "Automate workflows with Make",
   };
-  
-  return descriptions[type] || 'Connect to external service';
+
+  return descriptions[type] || "Connect to external service";
 }

@@ -1,32 +1,29 @@
-const nextJest = require('next/jest')
+const nextJest = require("next/jest");
 
 const createJestConfig = nextJest({
-  dir: './',
-})
+  dir: "./",
+});
 
 const customJestConfig = {
-  displayName: 'marketing',
-  rootDir: '.',
-  setupFilesAfterEnv: ['<rootDir>/../../jest.setup.js'],
+  displayName: "marketing",
+  rootDir: ".",
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/$1',
+    "^@/(.*)$": "<rootDir>/$1",
   },
-  testEnvironment: 'jest-environment-jsdom',
-  testMatch: [
-    '**/__tests__/**/*.{js,jsx,ts,tsx}',
-    '**/*.{spec,test}.{js,jsx,ts,tsx}',
-  ],
+  testEnvironment: "jest-environment-jsdom",
+  testMatch: ["**/__tests__/**/*.{js,jsx,ts,tsx}", "**/*.{spec,test}.{js,jsx,ts,tsx}"],
   collectCoverageFrom: [
-    '**/*.{js,jsx,ts,tsx}',
-    '!**/*.d.ts',
-    '!**/node_modules/**',
-    '!**/.next/**',
-    '!**/coverage/**',
-    '!next.config.mjs',
-    '!jest.config.js',
-    '!tailwind.config.ts',
-    '!postcss.config.mjs',
+    "**/*.{js,jsx,ts,tsx}",
+    "!**/*.d.ts",
+    "!**/node_modules/**",
+    "!**/.next/**",
+    "!**/coverage/**",
+    "!next.config.mjs",
+    "!jest.config.js",
+    "!tailwind.config.ts",
+    "!postcss.config.mjs",
   ],
-}
+};
 
-module.exports = createJestConfig(customJestConfig)
+module.exports = createJestConfig(customJestConfig);

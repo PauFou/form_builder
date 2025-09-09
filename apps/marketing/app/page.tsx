@@ -1,9 +1,20 @@
-'use client';
+"use client";
 
-import { Button } from '@forms/ui';
-import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, Shield, Zap, Check, FileText, BarChart3, Webhook, Lock, Globe } from 'lucide-react';
-import Link from 'next/link';
+import { Button } from "@forms/ui";
+import { motion } from "framer-motion";
+import {
+  ArrowRight,
+  Sparkles,
+  Shield,
+  Zap,
+  Check,
+  FileText,
+  BarChart3,
+  Webhook,
+  Lock,
+  Globe,
+} from "lucide-react";
+import Link from "next/link";
 
 export default function HomePage() {
   return (
@@ -39,7 +50,7 @@ export default function HomePage() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6"
             >
-              Build forms.{' '}
+              Build forms.{" "}
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 Ship answers.
               </span>
@@ -52,8 +63,8 @@ export default function HomePage() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
             >
-              Professional form platform with EU hosting, advanced logic, and blazing fast performance. 
-              The powerful alternative to Typeform you've been waiting for.
+              Professional form platform with EU hosting, advanced logic, and blazing fast
+              performance. The powerful alternative to Typeform you've been waiting for.
             </motion.p>
 
             {/* CTA Buttons */}
@@ -158,7 +169,8 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-semibold mb-2">Smart Logic</h3>
               <p className="text-muted-foreground">
-                Visual branching, conditions, calculations, and outcomes. Build complex flows with ease.
+                Visual branching, conditions, calculations, and outcomes. Build complex flows with
+                ease.
               </p>
             </motion.div>
             <motion.div
@@ -191,14 +203,14 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Everything you need to{' '}
+              Everything you need to{" "}
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 collect answers
               </span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              From simple contact forms to complex surveys with conditional logic, 
-              we've got you covered with a feature set that actually delivers.
+              From simple contact forms to complex surveys with conditional logic, we've got you
+              covered with a feature set that actually delivers.
             </p>
           </motion.div>
 
@@ -212,13 +224,15 @@ export default function HomePage() {
             >
               <h3 className="text-2xl font-bold mb-4">Intuitive Visual Builder</h3>
               <p className="text-muted-foreground mb-6">
-                Drag and drop your way to beautiful forms. No coding required, 
-                but developers will love our API and webhook system.
+                Drag and drop your way to beautiful forms. No coding required, but developers will
+                love our API and webhook system.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <span className="text-primary mt-1">✓</span>
-                  <span className="text-sm">20+ field types including signatures, payments, and file uploads</span>
+                  <span className="text-sm">
+                    20+ field types including signatures, payments, and file uploads
+                  </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-primary mt-1">✓</span>
@@ -273,8 +287,8 @@ export default function HomePage() {
             >
               <h3 className="text-2xl font-bold mb-4">Advanced Logic & Branching</h3>
               <p className="text-muted-foreground mb-6">
-                Create dynamic forms that adapt to your respondents. Show or hide questions, 
-                skip to specific pages, calculate scores, and create personalized outcomes.
+                Create dynamic forms that adapt to your respondents. Show or hide questions, skip to
+                specific pages, calculate scores, and create personalized outcomes.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
@@ -303,8 +317,8 @@ export default function HomePage() {
             >
               <h3 className="text-2xl font-bold mb-4">Real-time Analytics</h3>
               <p className="text-muted-foreground mb-6">
-                Understand your audience with powerful analytics. Track completion rates, 
-                identify drop-off points, and export data in any format you need.
+                Understand your audience with powerful analytics. Track completion rates, identify
+                drop-off points, and export data in any format you need.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
@@ -351,24 +365,25 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Start with a{' '}
+              Start with a{" "}
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 template
               </span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Choose from dozens of professionally designed templates or import your existing Typeform or Google Forms.
+              Choose from dozens of professionally designed templates or import your existing
+              Typeform or Google Forms.
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { icon: FileText, title: 'Contact Form', category: 'General' },
-              { icon: BarChart3, title: 'Customer Survey', category: 'Research' },
-              { icon: Check, title: 'Registration Form', category: 'Events' },
-              { icon: Shield, title: 'Job Application', category: 'HR' },
-              { icon: Sparkles, title: 'Product Feedback', category: 'Product' },
-              { icon: Globe, title: 'Market Research', category: 'Research' },
+              { icon: FileText, title: "Contact Form", category: "General" },
+              { icon: BarChart3, title: "Customer Survey", category: "Research" },
+              { icon: Check, title: "Registration Form", category: "Events" },
+              { icon: Shield, title: "Job Application", category: "HR" },
+              { icon: Sparkles, title: "Product Feedback", category: "Product" },
+              { icon: Globe, title: "Market Research", category: "Research" },
             ].map((template, index) => (
               <motion.div
                 key={template.title}
@@ -425,26 +440,27 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Connect with your{' '}
+              Connect with your{" "}
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 favorite tools
               </span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Native integrations with the tools you already use. Plus webhooks and APIs for custom workflows.
+              Native integrations with the tools you already use. Plus webhooks and APIs for custom
+              workflows.
             </p>
           </motion.div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              'Google Sheets',
-              'Slack',
-              'Notion',
-              'Airtable',
-              'HubSpot',
-              'Stripe',
-              'Zapier',
-              'Make',
+              "Google Sheets",
+              "Slack",
+              "Notion",
+              "Airtable",
+              "HubSpot",
+              "Stripe",
+              "Zapier",
+              "Make",
             ].map((integration, index) => (
               <motion.div
                 key={integration}
@@ -473,31 +489,34 @@ export default function HomePage() {
               <div>
                 <h3 className="text-2xl font-bold mb-4">Developer First</h3>
                 <p className="text-muted-foreground mb-6">
-                  Built by developers, for developers. Every form comes with webhooks, 
-                  REST API access, and signed payloads for secure integrations.
+                  Built by developers, for developers. Every form comes with webhooks, REST API
+                  access, and signed payloads for secure integrations.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Button variant="outline">
-                    API Documentation
-                  </Button>
-                  <Button variant="outline">
-                    Webhook Guide
-                  </Button>
+                  <Button variant="outline">API Documentation</Button>
+                  <Button variant="outline">Webhook Guide</Button>
                 </div>
               </div>
               <div className="relative">
                 <div className="rounded-xl bg-muted/50 p-6 font-mono text-sm overflow-x-auto">
-                  <div className="text-muted-foreground mb-2">// Webhook payload</div>
+                  <div className="text-muted-foreground mb-2">{"// Webhook payload"}</div>
                   <div className="text-primary">POST /webhook</div>
                   <div className="mt-2">
-                    <span className="text-accent">{'{'}</span><br/>
-                    <span className="ml-4">"form_id": "frm_123",</span><br/>
-                    <span className="ml-4">"submission_id": "sub_456",</span><br/>
-                    <span className="ml-4">"completed_at": "2024-01-15T10:30:00Z",</span><br/>
-                    <span className="ml-4">"data": {'{'} ... {'}'}</span><br/>
-                    <span className="text-accent">{'}'}</span>
+                    <span className="text-accent">{"{"}</span>
+                    <br />
+                    <span className="ml-4">"form_id": "frm_123",</span>
+                    <br />
+                    <span className="ml-4">"submission_id": "sub_456",</span>
+                    <br />
+                    <span className="ml-4">"completed_at": "2024-01-15T10:30:00Z",</span>
+                    <br />
+                    <span className="ml-4">
+                      "data": {"{"} ... {"}"}
+                    </span>
+                    <br />
+                    <span className="text-accent">{"}"}</span>
                   </div>
-                  <div className="text-muted-foreground mt-2">// X-Signature: sha256=...</div>
+                  <div className="text-muted-foreground mt-2">{"// X-Signature: sha256=..."}</div>
                 </div>
               </div>
             </div>
@@ -516,7 +535,7 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Everything you need.{' '}
+              Everything you need.{" "}
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 Free forever.
               </span>
@@ -614,13 +633,12 @@ export default function HomePage() {
               </div>
               <div className="text-center pt-8 border-t">
                 <p className="text-sm text-muted-foreground mb-6">
-                  Pro features coming soon: Remove branding, custom domains, unlimited file uploads, team collaboration, and more!
+                  Pro features coming soon: Remove branding, custom domains, unlimited file uploads,
+                  team collaboration, and more!
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link href="http://localhost:3001">
-                    <Button size="lg">
-                      Get started free
-                    </Button>
+                    <Button size="lg">Get started free</Button>
                   </Link>
                   <Link href="/pricing">
                     <Button size="lg" variant="outline">
@@ -640,7 +658,8 @@ export default function HomePage() {
               className="text-center"
             >
               <p className="text-lg mb-4">
-                Save up to <span className="font-bold text-primary">$899/month</span> compared to Typeform
+                Save up to <span className="font-bold text-primary">$899/month</span> compared to
+                Typeform
               </p>
               <Link href="/pricing">
                 <Button variant="link" size="lg">
@@ -669,15 +688,19 @@ export default function HomePage() {
                 Ready to build better forms?
               </h2>
               <p className="text-lg text-white/90 mb-8">
-                Join thousands of teams collecting data the right way. 
-                Start free, no credit card required.
+                Join thousands of teams collecting data the right way. Start free, no credit card
+                required.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="secondary" className="group">
                   Get started free
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
-                <Button size="lg" variant="ghost" className="text-white hover:text-white/90 hover:bg-white/20">
+                <Button
+                  size="lg"
+                  variant="ghost"
+                  className="text-white hover:text-white/90 hover:bg-white/20"
+                >
                   Book a demo
                 </Button>
               </div>
@@ -693,37 +716,149 @@ export default function HomePage() {
             <div>
               <h4 className="font-semibold mb-4">Product</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a></li>
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Templates</a></li>
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Integrations</a></li>
-                <li><Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link></li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Features
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Templates
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Integrations
+                  </a>
+                </li>
+                <li>
+                  <Link
+                    href="/pricing"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Pricing
+                  </Link>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Resources</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Documentation</a></li>
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">API Reference</a></li>
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</a></li>
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Status</a></li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Documentation
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    API Reference
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Blog
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Status
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Company</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</a></li>
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Careers</a></li>
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Security</a></li>
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</a></li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    About
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Careers
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Security
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Contact
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Legal</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy</a></li>
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Terms</a></li>
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">GDPR</a></li>
-                <li><a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">DPA</a></li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Privacy
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Terms
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    GDPR
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    DPA
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
@@ -731,7 +866,9 @@ export default function HomePage() {
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-primary" />
-                <span className="text-sm text-muted-foreground">© 2025 Forms Platform. All rights reserved.</span>
+                <span className="text-sm text-muted-foreground">
+                  © 2025 Forms Platform. All rights reserved.
+                </span>
               </div>
               <div className="flex items-center gap-6">
                 <span className="text-sm text-muted-foreground flex items-center gap-1">

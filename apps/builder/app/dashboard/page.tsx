@@ -1,19 +1,32 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@forms/ui';
-import { Plus, FileText, MoreVertical, Copy, Trash2, BarChart3, Eye, Grid, List, Search } from 'lucide-react';
-import Link from 'next/link';
-import { listForms } from '../../lib/api/forms';
-import { Navigation } from '../../components/shared/navigation';
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@forms/ui";
+import {
+  Plus,
+  FileText,
+  MoreVertical,
+  Copy,
+  Trash2,
+  BarChart3,
+  Eye,
+  Grid,
+  List,
+  Search,
+} from "lucide-react";
+
+import { listForms } from "../../lib/api/forms";
+import { Navigation } from "../../components/shared/navigation";
 
 export default function DashboardPage() {
   const [forms, setForms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -25,17 +38,17 @@ export default function DashboardPage() {
       const response = await listForms();
       setForms(response.data?.forms || []);
     } catch (error) {
-      console.error('Failed to load forms:', error);
+      console.error("Failed to load forms:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleCreateForm = () => {
-    router.push('/');
+    router.push("/");
   };
 
-  const filteredForms = forms.filter(form =>
+  const filteredForms = forms.filter((form) =>
     form.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -72,16 +85,16 @@ export default function DashboardPage() {
               </div>
               <div className="flex items-center gap-2">
                 <Button
-                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                  variant={viewMode === "grid" ? "default" : "ghost"}
                   size="icon"
-                  onClick={() => setViewMode('grid')}
+                  onClick={() => setViewMode("grid")}
                 >
                   <Grid className="h-4 w-4" />
                 </Button>
                 <Button
-                  variant={viewMode === 'list' ? 'default' : 'ghost'}
+                  variant={viewMode === "list" ? "default" : "ghost"}
                   size="icon"
-                  onClick={() => setViewMode('list')}
+                  onClick={() => setViewMode("list")}
                 >
                   <List className="h-4 w-4" />
                 </Button>
@@ -111,10 +124,12 @@ export default function DashboardPage() {
               <CardContent className="text-center py-12">
                 <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-lg font-medium mb-2">
-                  {searchQuery ? 'No forms found' : 'No forms yet'}
+                  {searchQuery ? "No forms found" : "No forms yet"}
                 </p>
                 <p className="text-muted-foreground mb-4">
-                  {searchQuery ? 'Try a different search term' : 'Create your first form to get started'}
+                  {searchQuery
+                    ? "Try a different search term"
+                    : "Create your first form to get started"}
                 </p>
                 {!searchQuery && (
                   <Button onClick={handleCreateForm}>
@@ -124,7 +139,7 @@ export default function DashboardPage() {
                 )}
               </CardContent>
             </Card>
-          ) : viewMode === 'grid' ? (
+          ) : viewMode === "grid" ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredForms.map((form, index) => (
                 <motion.div
@@ -138,7 +153,7 @@ export default function DashboardPage() {
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <CardTitle className="text-lg">{form.title}</CardTitle>
-                          <CardDescription>{form.description || 'No description'}</CardDescription>
+                          <CardDescription>{form.description || "No description"}</CardDescription>
                         </div>
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Button variant="ghost" size="icon">
@@ -152,15 +167,19 @@ export default function DashboardPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full ${
-                          form.status === 'published' 
-                            ? 'bg-green-500/10 text-green-500' 
-                            : 'bg-muted text-muted-foreground'
-                        }`}>
-                          <span className={`w-2 h-2 rounded-full ${
-                            form.status === 'published' ? 'bg-green-500' : 'bg-muted-foreground'
-                          }`} />
-                          {form.status === 'published' ? 'Published' : 'Draft'}
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full ${
+                            form.status === "published"
+                              ? "bg-green-500/10 text-green-500"
+                              : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          <span
+                            className={`w-2 h-2 rounded-full ${
+                              form.status === "published" ? "bg-green-500" : "bg-muted-foreground"
+                            }`}
+                          />
+                          {form.status === "published" ? "Published" : "Draft"}
                         </span>
                         <span>{new Date(form.updatedAt).toLocaleDateString()}</span>
                       </div>
@@ -198,19 +217,25 @@ export default function DashboardPage() {
                       <td className="p-4">
                         <div>
                           <p className="font-medium">{form.title}</p>
-                          <p className="text-sm text-muted-foreground">{form.description || 'No description'}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {form.description || "No description"}
+                          </p>
                         </div>
                       </td>
                       <td className="p-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm ${
-                          form.status === 'published' 
-                            ? 'bg-green-500/10 text-green-500' 
-                            : 'bg-muted text-muted-foreground'
-                        }`}>
-                          <span className={`w-2 h-2 rounded-full ${
-                            form.status === 'published' ? 'bg-green-500' : 'bg-muted-foreground'
-                          }`} />
-                          {form.status === 'published' ? 'Published' : 'Draft'}
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm ${
+                            form.status === "published"
+                              ? "bg-green-500/10 text-green-500"
+                              : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          <span
+                            className={`w-2 h-2 rounded-full ${
+                              form.status === "published" ? "bg-green-500" : "bg-muted-foreground"
+                            }`}
+                          />
+                          {form.status === "published" ? "Published" : "Draft"}
                         </span>
                       </td>
                       <td className="p-4 text-sm text-muted-foreground">

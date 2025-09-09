@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export default function DemoPage() {
   useEffect(() => {
     // Dynamically load the embed script
-    const script = document.createElement('script');
+    const script = document.createElement("script");
     script.innerHTML = `
       // Wait for Forms to be available
       function initForms() {
@@ -171,7 +171,7 @@ export default function DemoPage() {
       initForms();
     `;
     document.body.appendChild(script);
-    
+
     return () => {
       script.remove();
     };
@@ -214,7 +214,7 @@ export default function DemoPage() {
         <div className="bg-white rounded-lg shadow-sm p-8 mb-8">
           <h2 className="text-2xl font-semibold mb-4">Popup Form</h2>
           <p className="text-gray-600 mb-4">Click the button to open a form in a modal popup.</p>
-          <button 
+          <button
             id="popup-trigger"
             className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors"
           >
@@ -226,7 +226,7 @@ export default function DemoPage() {
         <div className="bg-white rounded-lg shadow-sm p-8 mb-8">
           <h2 className="text-2xl font-semibold mb-4">Drawer Form</h2>
           <p className="text-gray-600 mb-4">Click the button to open a form in a side drawer.</p>
-          <button 
+          <button
             id="drawer-trigger"
             className="bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors"
           >
@@ -291,4 +291,4 @@ export default function DemoPage() {
       </div>
     </div>
   );
-}'
+}

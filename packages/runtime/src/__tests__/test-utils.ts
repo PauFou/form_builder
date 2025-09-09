@@ -1,12 +1,21 @@
-import { IDBFactory, IDBKeyRange, IDBDatabase, IDBTransaction, IDBObjectStore, IDBIndex, IDBCursor, IDBRequest } from 'fake-indexeddb';
+import {
+  IDBFactory,
+  IDBKeyRange,
+  IDBDatabase,
+  IDBTransaction,
+  IDBObjectStore,
+  IDBIndex,
+  IDBCursor,
+  IDBRequest,
+} from "fake-indexeddb";
 
 export function mockIndexedDB() {
-  global.indexedDB = new IDBFactory();
-  global.IDBKeyRange = IDBKeyRange;
-  global.IDBDatabase = IDBDatabase;
-  global.IDBTransaction = IDBTransaction;
-  global.IDBObjectStore = IDBObjectStore;
-  global.IDBIndex = IDBIndex;
-  global.IDBCursor = IDBCursor;
-  global.IDBRequest = IDBRequest;
+  (globalThis as any).indexedDB = new IDBFactory();
+  (globalThis as any).IDBKeyRange = IDBKeyRange;
+  (globalThis as any).IDBDatabase = IDBDatabase;
+  (globalThis as any).IDBTransaction = IDBTransaction;
+  (globalThis as any).IDBObjectStore = IDBObjectStore;
+  (globalThis as any).IDBIndex = IDBIndex;
+  (globalThis as any).IDBCursor = IDBCursor;
+  (globalThis as any).IDBRequest = IDBRequest;
 }

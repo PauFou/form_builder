@@ -1,11 +1,21 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button } from '@forms/ui';
-import { Input } from '@forms/ui';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@forms/ui';
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { toast } from "react-hot-toast";
+
 import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -13,82 +23,78 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@forms/ui';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@forms/ui';
-import { Label } from '@forms/ui';
-import { Textarea } from '@forms/ui';
-import { Badge } from '@forms/ui';
-import { Skeleton } from '@forms/ui';
+  Input,
+  Label,
+  Skeleton,
+  Textarea,
+} from "@forms/ui";
 import {
+  BarChart,
+  Copy,
+  Edit,
+  Eye,
+  FileDown,
+  MoreVertical,
   Plus,
   Search,
-  MoreVertical,
-  Edit,
-  Copy,
   Trash2,
-  Eye,
-  BarChart,
-  FileDown,
   Upload,
-} from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { format } from 'date-fns';
-import { toast } from 'react-hot-toast';
-import { formsApi } from '../../lib/api/forms';
-import type { Form } from '@forms/contracts';
-import { ImportDialog } from '../../components/import/import-dialog';
+} from "lucide-react";
+
+import { ImportDialog } from "../../components/import/import-dialog";
+import { formsApi } from "../../lib/api/forms";
+
+import type { Form } from "@forms/contracts";
 
 export default function FormsPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   const { data: forms, isLoading } = useQuery({
-    queryKey: ['forms', searchQuery],
+    queryKey: ["forms", searchQuery],
     queryFn: () => formsApi.list({ search: searchQuery }),
   });
 
   const createMutation = useMutation({
     mutationFn: formsApi.create,
     onSuccess: (form) => {
-      queryClient.invalidateQueries({ queryKey: ['forms'] });
+      queryClient.invalidateQueries({ queryKey: ["forms"] });
       setCreateDialogOpen(false);
       router.push(`/forms/${form.id}/edit`);
-      toast.success('Form created successfully');
+      toast.success("Form created successfully");
     },
     onError: () => {
-      toast.error('Failed to create form');
+      toast.error("Failed to create form");
     },
   });
 
   const duplicateMutation = useMutation({
     mutationFn: (id: string) => formsApi.duplicate(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['forms'] });
-      toast.success('Form duplicated successfully');
+      queryClient.invalidateQueries({ queryKey: ["forms"] });
+      toast.success("Form duplicated successfully");
     },
     onError: () => {
-      toast.error('Failed to duplicate form');
+      toast.error("Failed to duplicate form");
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => formsApi.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['forms'] });
-      toast.success('Form deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ["forms"] });
+      toast.success("Form deleted successfully");
     },
     onError: () => {
-      toast.error('Failed to delete form');
+      toast.error("Failed to delete form");
     },
   });
 
@@ -96,11 +102,10 @@ export default function FormsPage() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     createMutation.mutate({
-      title: formData.get('title') as string,
-      description: formData.get('description') as string,
+      title: formData.get("title") as string,
+      description: formData.get("description") as string,
     });
   };
-
 
   return (
     <div className="container mx-auto py-8">
@@ -115,10 +120,7 @@ export default function FormsPage() {
             <Upload className="h-4 w-4 mr-2" />
             Import
           </Button>
-          <ImportDialog 
-            open={importDialogOpen} 
-            onOpenChange={setImportDialogOpen} 
-          />
+          <ImportDialog open={importDialogOpen} onOpenChange={setImportDialogOpen} />
 
           <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
             <DialogTrigger asChild>
@@ -157,7 +159,7 @@ export default function FormsPage() {
                 </div>
                 <DialogFooter>
                   <Button type="submit" disabled={createMutation.isPending}>
-                    {createMutation.isPending ? 'Creating...' : 'Create Form'}
+                    {createMutation.isPending ? "Creating..." : "Create Form"}
                   </Button>
                 </DialogFooter>
               </form>
@@ -205,9 +207,7 @@ export default function FormsPage() {
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
                     <CardTitle className="text-xl">{form.title}</CardTitle>
-                    <CardDescription>
-                      {form.description || 'No description'}
-                    </CardDescription>
+                    <CardDescription>{form.description || "No description"}</CardDescription>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -228,9 +228,7 @@ export default function FormsPage() {
                           Preview
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => duplicateMutation.mutate(form.id)}
-                      >
+                      <DropdownMenuItem onClick={() => duplicateMutation.mutate(form.id)}>
                         <Copy className="h-4 w-4 mr-2" />
                         Duplicate
                       </DropdownMenuItem>
@@ -249,7 +247,7 @@ export default function FormsPage() {
                       <DropdownMenuItem
                         className="text-destructive"
                         onClick={() => {
-                          if (confirm('Are you sure you want to delete this form?')) {
+                          if (confirm("Are you sure you want to delete this form?")) {
                             deleteMutation.mutate(form.id);
                           }
                         }}
@@ -265,12 +263,12 @@ export default function FormsPage() {
                 <div className="space-y-2 text-sm text-muted-foreground">
                   <div className="flex items-center justify-between">
                     <span>{form.submission_count || 0} responses</span>
-                    <Badge variant={form.status === 'published' ? 'default' : 'secondary'}>
+                    <Badge variant={form.status === "published" ? "default" : "secondary"}>
                       {form.status}
                     </Badge>
                   </div>
                   <div className="text-xs">
-                    Updated {format(new Date(form.updated_at), 'MMM d, yyyy')}
+                    Updated {format(new Date(form.updated_at), "MMM d, yyyy")}
                   </div>
                 </div>
               </CardContent>
@@ -292,8 +290,8 @@ export default function FormsPage() {
           <h3 className="text-lg font-semibold mb-2">No forms found</h3>
           <p className="text-muted-foreground mb-4">
             {searchQuery
-              ? 'Try a different search query'
-              : 'Get started by creating your first form'}
+              ? "Try a different search query"
+              : "Get started by creating your first form"}
           </p>
           {!searchQuery && (
             <Button onClick={() => setCreateDialogOpen(true)}>

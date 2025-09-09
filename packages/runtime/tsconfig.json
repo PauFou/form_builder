@@ -1,5 +1,9 @@
 {
   "extends": "../config/tsconfig/react-library.json",
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src", "src/types/global.d.ts"],
+  "exclude": ["node_modules", "dist"],
+  "compilerOptions": {
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "types": ["jest"]
+  }
 }
