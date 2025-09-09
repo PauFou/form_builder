@@ -1,0 +1,196 @@
+/* Ultra-minimal form runtime styles */
+.form-runtime {
+  font-family: var(--form-font, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+  color: #1f2937;
+  line-height: 1.5;
+}
+
+.form-runtime * {
+  box-sizing: border-box;
+}
+
+/* Form structure */
+.form-page {
+  margin-bottom: var(--form-spacing, 16px);
+}
+
+.form-field {
+  margin-bottom: var(--form-spacing, 16px);
+}
+
+.form-field label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+/* Inputs */
+.form-field input,
+.form-field textarea,
+.form-field select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: var(--form-radius, 8px);
+  font-size: 16px; /* Prevent zoom on iOS */
+  transition: border-color 0.15s;
+}
+
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+  outline: none;
+  border-color: var(--form-primary, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-field textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Radio & Checkbox */
+.form-radio,
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.form-radio input,
+.form-checkbox input {
+  width: auto;
+  margin: 0 8px 0 0;
+}
+
+/* Buttons */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.form-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--form-radius, 8px);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.form-btn-primary {
+  background: var(--form-primary, #3b82f6);
+  color: white;
+}
+
+.form-btn-primary:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.form-btn-primary:active {
+  transform: translateY(0);
+}
+
+.form-btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.form-btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+/* Progress */
+.form-progress {
+  margin-top: 24px;
+  height: 4px;
+  background: #f3f4f6;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.form-progress-bar {
+  height: 100%;
+  background: var(--form-primary, #3b82f6);
+  transition: width 0.3s ease;
+}
+
+/* Errors */
+.form-field-error input,
+.form-field-error textarea,
+.form-field-error select {
+  border-color: #ef4444;
+}
+
+.form-error {
+  display: block;
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Complete */
+.form-complete {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.form-complete h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.form-complete p {
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Loading state */
+.form-btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Accessibility */
+.form-field input:focus-visible,
+.form-field textarea:focus-visible,
+.form-field select:focus-visible,
+.form-btn:focus-visible {
+  outline: 2px solid var(--form-primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .form-runtime {
+    color: #f3f4f6;
+  }
+  
+  .form-field input,
+  .form-field textarea,
+  .form-field select {
+    background: #1f2937;
+    border-color: #374151;
+    color: #f3f4f6;
+  }
+  
+  .form-btn-secondary {
+    background: #374151;
+    color: #f3f4f6;
+  }
+  
+  .form-btn-secondary:hover {
+    background: #4b5563;
+  }
+  
+  .form-progress {
+    background: #374151;
+  }
+}

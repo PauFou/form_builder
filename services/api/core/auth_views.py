@@ -4,6 +4,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
+from drf_spectacular.types import OpenApiTypes
 from .serializers import UserSerializer, RegisterSerializer
 from .models import Organization, Membership
 
@@ -57,6 +59,29 @@ class RegisterView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter(
+            name='email',
+            description='Email address to check',
+            required=True,
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+        )
+    ],
+    responses={
+        200: OpenApiResponse(
+            response={'type': 'object', 'properties': {'exists': {'type': 'boolean'}}},
+            description='Email existence check result'
+        ),
+        400: OpenApiResponse(
+            response={'type': 'object', 'properties': {'error': {'type': 'string'}}},
+            description='Bad request - email parameter missing'
+        ),
+    },
+    description='Check if email is already registered',
+    tags=['Authentication']
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def check_email(request):
@@ -73,6 +98,33 @@ def check_email(request):
     return Response({'exists': exists})
 
 
+@extend_schema(
+    responses={
+        200: OpenApiResponse(
+            response={
+                'type': 'object',
+                'properties': {
+                    'user': {'$ref': '#/components/schemas/User'},
+                    'organizations': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'object',
+                            'properties': {
+                                'id': {'type': 'string', 'format': 'uuid'},
+                                'name': {'type': 'string'},
+                                'slug': {'type': 'string'},
+                                'role': {'type': 'string', 'enum': ['owner', 'admin', 'member', 'viewer']}
+                            }
+                        }
+                    }
+                }
+            },
+            description='Current user information with organizations'
+        )
+    },
+    description='Get current user info with organizations',
+    tags=['Authentication']
+)
 @api_view(['GET'])
 @permission_classes([])
 def current_user(request):

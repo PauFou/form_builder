@@ -3,9 +3,7 @@
 import { useEffect } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, Button, Tabs, TabsContent, TabsList, TabsTrigger } from '@forms/ui';
 import { Plus } from 'lucide-react';
 import { useFormBuilderStore } from '@/lib/stores/form-builder-store';
 import { BlockItem } from './block-item';
@@ -131,5 +129,55 @@ export function FormCanvas() {
         </Tabs>
       </div>
     </Card>
+  );
+}
+
+// Dropzone component for drag and drop
+function Dropzone({ 
+  pageId, 
+  index, 
+  isActive,
+  isEmpty = false 
+}: { 
+  pageId: string; 
+  index: number; 
+  isActive: boolean;
+  isEmpty?: boolean;
+}) {
+  const dropzoneId = `${pageId}-dropzone-${index}`;
+  
+  return (
+    <div
+      data-dropzone-id={dropzoneId}
+      data-dropzone-data={JSON.stringify({ type: 'dropzone', pageId, index })}
+      className={cn(
+        "relative transition-all duration-200",
+        isEmpty ? "h-64" : "h-2",
+        isActive && "h-20"
+      )}
+    >
+      <div
+        className={cn(
+          "absolute inset-0 rounded-lg border-2 transition-all duration-200",
+          isEmpty
+            ? "border-dashed border-muted-foreground/30 bg-muted/20"
+            : isActive
+            ? "border-dashed border-primary bg-primary/5"
+            : "border-transparent"
+        )}
+      >
+        {isEmpty && (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <FileText className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+              <p className="text-muted-foreground font-medium">No blocks yet</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Drag blocks from the library or click to add
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

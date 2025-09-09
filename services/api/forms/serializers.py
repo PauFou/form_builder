@@ -67,3 +67,9 @@ class FormVersionSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'id', 'version', 'published_by', 'created_at'
         ]
+
+
+class FormImportSerializer(serializers.Serializer):
+    type = serializers.ChoiceField(choices=['typeform', 'google_forms'])
+    source = serializers.CharField()
+    credentials = serializers.JSONField(required=False)

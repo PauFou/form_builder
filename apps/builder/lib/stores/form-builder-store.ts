@@ -5,14 +5,16 @@ import type { Form, Block, LogicRule, Theme } from '@forms/contracts';
 interface FormBuilderState {
   form: Form | null;
   selectedBlockId: string | null;
+  selectedPageId: string | null;
   isDirty: boolean;
   history: Form[];
   historyIndex: number;
 
   // Actions
+  initializeForm: (form: Form) => void;
   setForm: (form: Form) => void;
   updateForm: (updates: Partial<Form>) => void;
-  addBlock: (pageId: string, block: Block, index?: number) => void;
+  addBlock: (block: Block, pageId: string, index?: number) => void;
   updateBlock: (blockId: string, updates: Partial<Block>) => void;
   deleteBlock: (blockId: string) => void;
   moveBlock: (blockId: string, newPageId: string, newIndex: number) => void;
@@ -51,9 +53,20 @@ export const useFormBuilderStore = create<FormBuilderState>()(
   immer((set, get) => ({
     form: null,
     selectedBlockId: null,
+    selectedPageId: null,
     isDirty: false,
     history: [],
     historyIndex: -1,
+
+    initializeForm: (form) => {
+      set((state) => {
+        state.form = form;
+        state.selectedPageId = form.pages[0]?.id || null;
+        state.isDirty = false;
+        state.history = [form];
+        state.historyIndex = 0;
+      });
+    },
 
     setForm: (form) => {
       set((state) => {
@@ -74,7 +87,7 @@ export const useFormBuilderStore = create<FormBuilderState>()(
       get().saveHistory();
     },
 
-    addBlock: (pageId, block, index) => {
+    addBlock: (block, pageId, index) => {
       set((state) => {
         if (state.form) {
           const page = state.form.pages.find(p => p.id === pageId);
@@ -85,6 +98,7 @@ export const useFormBuilderStore = create<FormBuilderState>()(
               page.blocks.push(block);
             }
             state.isDirty = true;
+            state.selectedBlockId = block.id;
           }
         }
       });
@@ -336,6 +350,7 @@ export const useFormBuilderStore = create<FormBuilderState>()(
       set({
         form: null,
         selectedBlockId: null,
+        selectedPageId: null,
         isDirty: false,
         history: [],
         historyIndex: -1,

@@ -1,6 +1,6 @@
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
 from core.models import BaseModel, Organization
+from core.db_utils import get_array_field
 import uuid
 import json
 from cryptography.fernet import Fernet
@@ -145,7 +145,7 @@ class IntegrationConnection(BaseModel):
     
     # Configuration
     enabled = models.BooleanField(default=True)
-    trigger_events = ArrayField(
+    trigger_events = get_array_field(
         models.CharField(max_length=50, choices=TRIGGER_EVENTS),
         default=list,
         help_text="Events that trigger this integration"
@@ -196,14 +196,14 @@ class IntegrationLog(BaseModel):
         related_name='logs'
     )
     submission = models.ForeignKey(
-        'submissions.Submission',
+        'core.Submission',
         on_delete=models.CASCADE,
         related_name='integration_logs',
         blank=True,
         null=True
     )
     partial = models.ForeignKey(
-        'submissions.PartialSubmission',
+        'core.Partial',
         on_delete=models.CASCADE,
         related_name='integration_logs',
         blank=True,

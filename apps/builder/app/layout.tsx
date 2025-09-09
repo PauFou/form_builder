@@ -1,13 +1,19 @@
 'use client';
 
 import "./globals.css";
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
 import { Inter } from "next/font/google";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "next-themes";
 import { useState } from "react";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ 
+  subsets: ["latin"],
+  variable: '--font-inter',
+  display: 'swap',
+});
 
 export default function RootLayout({
   children,
@@ -24,8 +30,17 @@ export default function RootLayout({
   }));
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+    <html 
+      lang="en" 
+      suppressHydrationWarning
+      className={`${GeistSans.variable} ${inter.variable} ${GeistMono.variable}`}
+      style={{
+        '--font-geist': GeistSans.style.fontFamily,
+        '--font-inter': inter.style.fontFamily,
+        '--font-geist-mono': GeistMono.style.fontFamily,
+      } as React.CSSProperties}
+    >
+      <body className={GeistSans.className}>
         <QueryClientProvider client={queryClient}>
           <ThemeProvider
             attribute="class"
@@ -39,8 +54,9 @@ export default function RootLayout({
               toastOptions={{
                 className: '',
                 style: {
-                  background: 'hsl(var(--background))',
-                  color: 'hsl(var(--foreground))',
+                  borderRadius: 'var(--radius)',
+                  background: 'hsl(var(--card))',
+                  color: 'hsl(var(--card-foreground))',
                   border: '1px solid hsl(var(--border))',
                 },
               }}

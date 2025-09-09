@@ -14,12 +14,16 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [
-    ['html', { outputFolder: 'test-results/html' }],
+    ['html', { 
+      outputFolder: 'playwright-report',
+      open: 'never',
+    }],
     ['junit', { outputFile: 'test-results/junit.xml' }],
     ['list'],
+    ['line'],
   ],
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:3001',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -52,13 +56,22 @@ export default defineConfig({
   webServer: [
     {
       command: 'pnpm dev',
-      port: 3000,
+      port: 3001,
       reuseExistingServer: !process.env.CI,
+      timeout: 120000,
     },
+    // API server commented out until backend is ready
+    // {
+    //   command: 'cd services/api && python manage.py runserver',
+    //   port: 8000,
+    //   reuseExistingServer: !process.env.CI,
+    //   timeout: 120000,
+    // },
     {
-      command: 'cd services/api && python manage.py runserver',
-      port: 8000,
+      command: 'node scripts/webhook-receiver.js',
+      port: 9000,
       reuseExistingServer: !process.env.CI,
+      timeout: 10000,
     },
   ],
 });

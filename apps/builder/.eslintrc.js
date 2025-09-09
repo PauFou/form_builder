@@ -1,4 +1,7 @@
 module.exports = {
-  root: true,
-  extends: ["@forms/config/eslint-preset"],
+  extends: ['@forms/config/eslint-preset'],
+  parserOptions: {
+    project: './tsconfig.json',
+    tsconfigRootDir: __dirname,
+  },
 };

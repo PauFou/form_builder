@@ -83,3 +83,16 @@ class CanEditForm(permissions.BasePermission):
             organization=form.organization,
             role__in=['owner', 'admin', 'editor']
         ).exists()
+
+
+class IsOwner(permissions.BasePermission):
+    """Check if user owns the object"""
+    
+    def has_object_permission(self, request, view, obj):
+        # Check if the object has a created_by field
+        if hasattr(obj, 'created_by'):
+            return obj.created_by == request.user
+        # Check if the object has a user field
+        if hasattr(obj, 'user'):
+            return obj.user == request.user
+        return False

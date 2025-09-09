@@ -1,5 +1,5 @@
 {
-  "extends": "@forms/config/tsconfig/react-library.json",
+  "extends": "../config/tsconfig/react-library.json",
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }

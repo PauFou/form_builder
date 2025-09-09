@@ -3,6 +3,15 @@ from django.contrib.auth.models import AbstractUser
 import uuid
 
 
+class BaseModel(models.Model):
+    """Abstract base model with common fields for all models"""
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        abstract = True
+
+
 class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True)
@@ -49,47 +58,13 @@ class Membership(models.Model):
         unique_together = ["user", "organization"]
 
 
-class Form(models.Model):
-    STATUS_CHOICES = [
-        ("draft", "Draft"),
-        ("published", "Published"),
-        ("archived", "Archived"),
-    ]
-    
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="forms")
-    slug = models.SlugField()
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
-    default_locale = models.CharField(max_length=10, default="en")
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="created_forms")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        unique_together = ["organization", "slug"]
-        ordering = ["-created_at"]
-
-
-class FormVersion(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="versions")
-    version = models.IntegerField()
-    schema_json = models.JSONField()
-    theme_json = models.JSONField(default=dict)
-    published_at = models.DateTimeField(null=True, blank=True)
-    canary_percent = models.IntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        unique_together = ["form", "version"]
-        ordering = ["-version"]
+# Form model is defined in forms/models.py
+# FormVersion model is defined in forms/models.py
 
 
 class Submission(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="submissions")
+    form = models.ForeignKey("forms.Form", on_delete=models.CASCADE, related_name="submissions")
     version = models.IntegerField()
     respondent_key = models.CharField(max_length=255, db_index=True)
     locale = models.CharField(max_length=10)
@@ -120,7 +95,7 @@ class Answer(models.Model):
 
 class Partial(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="partials")
+    form = models.ForeignKey("forms.Form", on_delete=models.CASCADE, related_name="partials")
     respondent_key = models.CharField(max_length=255)
     last_step = models.CharField(max_length=100)
     value_json = models.JSONField()

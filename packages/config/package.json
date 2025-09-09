@@ -2,9 +2,14 @@
   "name": "@forms/config",
   "version": "1.0.0",
   "private": true,
-  "main": "index.js",
   "files": [
     "eslint-preset.js",
-    "tsconfig/"
-  ]
+    "tsconfig-base.json",
+    "tsconfig"
+  ],
+  "exports": {
+    "./eslint-preset": "./eslint-preset.js",
+    "./tsconfig-base": "./tsconfig-base.json",
+    "./tsconfig/*": "./tsconfig/*.json"
+  }
 }

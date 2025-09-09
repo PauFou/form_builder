@@ -1,6 +1,7 @@
+from typing import Union, Optional
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from .models import User, Organization, Form, FormVersion, Submission, Answer, Membership, AuditLog
+from .models import User, Organization, Submission, Answer, Membership, AuditLog
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -54,10 +55,10 @@ class OrganizationSerializer(serializers.ModelSerializer):
             'slug': {'validators': []},  # We'll handle uniqueness in the view
         }
     
-    def get_member_count(self, obj):
+    def get_member_count(self, obj) -> int:
         return obj.memberships.count()
     
-    def get_current_user_role(self, obj):
+    def get_current_user_role(self, obj) -> Optional[str]:
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             membership = obj.memberships.filter(user=request.user).first()
@@ -65,44 +66,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
         return None
 
 
-class FormSerializer(serializers.ModelSerializer):
-    created_by = UserSerializer(read_only=True)
-    organization_id = serializers.UUIDField(write_only=True, required=False)
-    response_count = serializers.SerializerMethodField()
-    latest_version = serializers.SerializerMethodField()
-    
-    class Meta:
-        model = Form
-        fields = [
-            "id", "title", "description", "slug", "status", 
-            "default_locale", "created_by", "organization_id",
-            "response_count", "latest_version", "created_at", "updated_at"
-        ]
-        read_only_fields = ["id", "created_by", "response_count", "latest_version", "created_at", "updated_at"]
-        extra_kwargs = {
-            'slug': {'validators': []},
-        }
-    
-    def get_response_count(self, obj):
-        return obj.submissions.filter(completed_at__isnull=False).count()
-    
-    def get_latest_version(self, obj):
-        version = obj.versions.first()
-        return {
-            'id': str(version.id),
-            'version': version.version,
-            'published_at': version.published_at
-        } if version else None
-
-
-class FormVersionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FormVersion
-        fields = [
-            "id", "version", "schema_json", "theme_json", 
-            "published_at", "canary_percent", "created_at"
-        ]
-        read_only_fields = ["id", "version", "created_at"]
+# Form serializers moved to forms/serializers.py
 
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -124,9 +88,7 @@ class SubmissionSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "started_at"]
 
 
-class FormImportSerializer(serializers.Serializer):
-    type = serializers.ChoiceField(choices=["typeform", "google_forms"])
-    source = serializers.JSONField()
+# FormImportSerializer moved to forms/serializers.py
 
 
 class AuditLogSerializer(serializers.ModelSerializer):

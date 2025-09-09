@@ -1,3 +1,4 @@
+from typing import Union, Optional
 from rest_framework import serializers
 from .models import Integration, IntegrationConnection, IntegrationLog
 
@@ -17,7 +18,7 @@ class IntegrationSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'last_sync_at']
     
-    def get_config_display(self, obj):
+    def get_config_display(self, obj) -> dict:
         """Return safe config data for display (without secrets)"""
         config = obj.config
         safe_config = {}
@@ -102,10 +103,10 @@ class IntegrationLogSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at']
     
-    def get_connection_name(self, obj):
+    def get_connection_name(self, obj) -> str:
         return f"{obj.connection.form.title} → {obj.connection.integration.name}"
     
-    def get_duration_seconds(self, obj):
+    def get_duration_seconds(self, obj) -> Optional[float]:
         if obj.duration_ms:
             return round(obj.duration_ms / 1000, 2)
         return None

@@ -3,7 +3,7 @@ from .models import Webhook, Delivery, DeadLetterQueue, WebhookLog
 
 
 class WebhookSerializer(serializers.ModelSerializer):
-    success_rate = serializers.ReadOnlyField()
+    success_rate = serializers.SerializerMethodField()
     organization_id = serializers.UUIDField(write_only=True, required=False)
     
     class Meta:
@@ -15,12 +15,17 @@ class WebhookSerializer(serializers.ModelSerializer):
             "success_rate", "organization_id", "created_at", "updated_at"
         ]
         read_only_fields = [
-            "id", "secret", "total_deliveries", "successful_deliveries",
+            "id", "total_deliveries", "successful_deliveries",
             "failed_deliveries", "success_rate", "created_at", "updated_at"
         ]
         extra_kwargs = {
             "secret": {"write_only": True}
         }
+    
+    def get_success_rate(self, obj) -> float:
+        if obj.total_deliveries == 0:
+            return 100.0
+        return round((obj.successful_deliveries / obj.total_deliveries) * 100, 2)
 
 
 class DeliverySerializer(serializers.ModelSerializer):
@@ -37,7 +42,7 @@ class DeliverySerializer(serializers.ModelSerializer):
         ]
         read_only_fields = fields
     
-    def get_has_dlq_entry(self, obj):
+    def get_has_dlq_entry(self, obj) -> bool:
         return hasattr(obj, 'dlq_entry')
 
 

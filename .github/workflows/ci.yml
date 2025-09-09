@@ -9,7 +9,7 @@ on:
 env:
   NODE_VERSION: '20'
   PYTHON_VERSION: '3.11'
-  PNPM_VERSION: '8'
+  PNPM_VERSION: '9.5.0'
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 

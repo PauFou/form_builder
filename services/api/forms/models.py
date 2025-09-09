@@ -1,8 +1,8 @@
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
 import uuid
 
 from core.models import BaseModel, Organization, User
+from core.db_utils import get_array_field
 
 
 class Form(BaseModel):
@@ -35,7 +35,7 @@ class Form(BaseModel):
     
     # Metadata
     metadata = models.JSONField(default=dict, blank=True)
-    tags = ArrayField(
+    tags = get_array_field(
         models.CharField(max_length=50),
         default=list,
         blank=True
@@ -43,7 +43,7 @@ class Form(BaseModel):
     
     # Localization
     default_locale = models.CharField(max_length=10, default='en')
-    locales = ArrayField(
+    locales = get_array_field(
         models.CharField(max_length=10),
         default=list,
         blank=True
