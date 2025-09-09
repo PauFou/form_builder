@@ -1,28 +1,24 @@
 [run]
 source = .
-omit =
+omit = 
     */migrations/*
     */tests/*
     */test_*.py
     */__pycache__/*
     */venv/*
-    */env/*
-    .venv/*
+    */.venv/*
     manage.py
-    */settings/*
     */wsgi.py
     */asgi.py
-    */urls.py
-    */apps.py
-    */admin.py
+    */settings/*
+    api/settings.py
 
 [report]
-precision = 2
-show_missing = True
-skip_covered = False
-
-[html]
-directory = htmlcov
-
-[xml]
-output = coverage.xml
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if settings.DEBUG:
+    if TYPE_CHECKING:

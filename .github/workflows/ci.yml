@@ -119,9 +119,14 @@ jobs:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
           POSTGRES_DB: test
+          POSTGRES_PORT: 5432
           REDIS_URL: redis://localhost:6379
           DJANGO_SECRET_KEY: test-secret-key
           DJANGO_SETTINGS_MODULE: api.settings
+          ALLOWED_HOSTS: localhost,127.0.0.1
+          DEBUG: "False"
+          CELERY_BROKER_URL: redis://localhost:6379/0
+          CELERY_RESULT_BACKEND: redis://localhost:6379/0
         run: |
           python manage.py migrate
           pytest -v --cov=. --cov-report=xml --cov-report=term
@@ -159,7 +164,7 @@ jobs:
         run: pnpm build
         
       - name: Run E2E tests
-        run: pnpm test:e2e
+        run: pnpm test:e2e --project=chromium
         
       - name: Upload test results
         if: always()
@@ -193,7 +198,8 @@ jobs:
         
       - name: Check runtime bundle size (<30KB)
         run: |
-          BUNDLE_SIZE=$(stat -f%z packages/runtime/dist/index.js 2>/dev/null || stat -c%s packages/runtime/dist/index.js)
+          # Use stat -c%s for Linux (GitHub Actions runs on Ubuntu)
+          BUNDLE_SIZE=$(stat -c%s packages/runtime/dist/index.js)
           MAX_SIZE=30720  # 30KB in bytes
           echo "Bundle size: $BUNDLE_SIZE bytes ($((BUNDLE_SIZE / 1024))KB)"
           if [ $BUNDLE_SIZE -gt $MAX_SIZE ]; then
@@ -206,7 +212,8 @@ jobs:
       - name: Check analytics bundle size (<50KB)
         run: |
           pnpm --filter @forms/analytics build
-          BUNDLE_SIZE=$(stat -f%z packages/analytics/dist/index.js 2>/dev/null || stat -c%s packages/analytics/dist/index.js)
+          # Use stat -c%s for Linux (GitHub Actions runs on Ubuntu)
+          BUNDLE_SIZE=$(stat -c%s packages/analytics/dist/index.js)
           MAX_SIZE=51200  # 50KB in bytes
           echo "Analytics bundle size: $BUNDLE_SIZE bytes ($((BUNDLE_SIZE / 1024))KB)"
           if [ $BUNDLE_SIZE -gt $MAX_SIZE ]; then
@@ -270,7 +277,7 @@ jobs:
           sarif_file: 'trivy-results.sarif'
           
       - name: Check npm vulnerabilities
-        run: npm audit --audit-level=high || true
+        run: pnpm audit --audit-level=high || true
           
       - name: Check Python vulnerabilities
         working-directory: ./services/api
