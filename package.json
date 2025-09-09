@@ -7,12 +7,19 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "test": "turbo test",
-    "test:e2e": "turbo test:e2e",
+    "test:ci": "turbo test -- --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:a11y": "node scripts/test-a11y.js",
+    "test:contracts": "turbo test --filter=@forms/contracts",
+    "test:perf": "turbo build --filter=@forms/runtime && node scripts/check-bundle-size.js",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "clean": "turbo clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "prepare": "husky"
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "prepare": "husky",
+    "ci": "pnpm lint && pnpm typecheck && pnpm test:ci && pnpm test:contracts"
   },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx,json,md}": [
@@ -26,8 +33,11 @@
     "@changesets/cli": "^2.27.1",
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
+    "@playwright/test": "^1.40.0",
+    "axe-playwright": "^1.2.3",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.7",
+    "playwright": "^1.40.0",
     "prettier": "^3.3.2",
     "turbo": "^2.0.14"
   },

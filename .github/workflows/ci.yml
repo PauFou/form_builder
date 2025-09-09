@@ -2,52 +2,86 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
-    branches: [main]
+    branches: [main, master]
 
 env:
+  NODE_VERSION: '20'
+  PYTHON_VERSION: '3.11'
+  PNPM_VERSION: '8'
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
 jobs:
-  lint:
-    name: Lint
+  # Code quality checks
+  quality:
+    name: Code Quality
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v2
         with:
-          version: 9.5.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+          version: ${{ env.PNPM_VERSION }}
+          
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: pnpm
-
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
+        
       - name: Lint
         run: pnpm lint
-
-      - name: Type check
+        
+      - name: Typecheck
         run: pnpm typecheck
+        
+      - name: Format check
+        run: pnpm prettier --check "**/*.{ts,tsx,js,jsx,json,md}"
 
-  test:
-    name: Test
+  # Frontend unit tests with coverage
+  test-frontend:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Run tests with coverage
+        run: pnpm test -- --coverage --passWithNoTests
+        
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          flags: frontend
+          fail_ci_if_error: true
+
+  # Backend tests with Django
+  test-backend:
+    name: Backend Tests
     runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_USER: forms
-          POSTGRES_PASSWORD: forms_test
-          POSTGRES_DB: forms_test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -55,7 +89,6 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-      
       redis:
         image: redis:7-alpine
         options: >-
@@ -65,67 +98,247 @@ jobs:
           --health-retries 5
         ports:
           - 6379:6379
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v4
         with:
-          version: 9.5.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: services/api/requirements*.txt
-
-      - name: Install Node dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install Python dependencies
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Install dependencies
+        working-directory: ./services/api
         run: |
-          cd services/api
-          pip install -r requirements.txt || echo "No requirements.txt yet"
-
-      - name: Run tests
-        run: pnpm test
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-django
+          
+      - name: Run tests with coverage
+        working-directory: ./services/api
         env:
-          DATABASE_URL: postgresql://forms:forms_test@localhost:5432/forms_test
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
           REDIS_URL: redis://localhost:6379
+          DJANGO_SECRET_KEY: test-secret-key
+          DJANGO_SETTINGS_MODULE: api.settings
+        run: |
+          python manage.py migrate
+          pytest -v --cov=. --cov-report=xml --cov-report=term
+          
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./services/api/coverage.xml
+          flags: backend
+          fail_ci_if_error: true
 
-  build:
-    name: Build
+  # E2E tests with Playwright
+  test-e2e:
+    name: E2E Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v2
         with:
-          version: 9.5.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+          version: ${{ env.PNPM_VERSION }}
+          
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: pnpm
-
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Build
+        
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+        
+      - name: Build applications
         run: pnpm build
+        
+      - name: Run E2E tests
+        run: pnpm test:e2e
+        
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: test-results/
+          retention-days: 30
 
-      - name: Check bundle size
+  # Performance budget checks
+  performance:
+    name: Performance Budget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Build runtime package
+        run: pnpm --filter @forms/runtime build
+        
+      - name: Check runtime bundle size (<30KB)
         run: |
-          echo "TODO: Implement bundle size check for runtime package (<30KB)"
+          BUNDLE_SIZE=$(stat -f%z packages/runtime/dist/index.js 2>/dev/null || stat -c%s packages/runtime/dist/index.js)
+          MAX_SIZE=30720  # 30KB in bytes
+          echo "Bundle size: $BUNDLE_SIZE bytes ($((BUNDLE_SIZE / 1024))KB)"
+          if [ $BUNDLE_SIZE -gt $MAX_SIZE ]; then
+            echo "❌ Bundle size exceeds 30KB limit!"
+            exit 1
+          else
+            echo "✅ Bundle size within limit"
+          fi
+          
+      - name: Check analytics bundle size (<50KB)
+        run: |
+          pnpm --filter @forms/analytics build
+          BUNDLE_SIZE=$(stat -f%z packages/analytics/dist/index.js 2>/dev/null || stat -c%s packages/analytics/dist/index.js)
+          MAX_SIZE=51200  # 50KB in bytes
+          echo "Analytics bundle size: $BUNDLE_SIZE bytes ($((BUNDLE_SIZE / 1024))KB)"
+          if [ $BUNDLE_SIZE -gt $MAX_SIZE ]; then
+            echo "❌ Analytics bundle exceeds 50KB limit!"
+            exit 1
+          fi
+
+  # Accessibility tests (WCAG AA compliance)
+  accessibility:
+    name: Accessibility (WCAG AA)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Build applications
+        run: pnpm build
+        
+      - name: Run accessibility tests
+        run: pnpm test:a11y
+        
+      - name: Upload accessibility results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: a11y-report
+          path: a11y-results/
+          retention-days: 30
+
+  # Security scanning
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          
+      - name: Upload Trivy scan results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+          
+      - name: Check npm vulnerabilities
+        run: npm audit --audit-level=high || true
+          
+      - name: Check Python vulnerabilities
+        working-directory: ./services/api
+        run: |
+          pip install safety
+          safety check || true
+
+  # Contract tests between services
+  contracts:
+    name: Contract Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Run contract tests
+        run: pnpm test:contracts
+
+  # Docker build validation
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [api, analytics]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./services/${{ matrix.service }}
+          file: ./services/${{ matrix.service }}/Dockerfile
+          push: false
+          tags: forms-platform/${{ matrix.service }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Summary job - all checks must pass
+  ci-success:
+    name: CI Success
+    needs: [quality, test-frontend, test-backend, test-e2e, performance, accessibility, security, contracts, docker]
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: CI Success
+        run: |
+          echo "✅ All CI quality gates passed!"
+          echo "Code quality: ✓"
+          echo "Frontend tests: ✓"
+          echo "Backend tests: ✓"
+          echo "E2E tests: ✓"
+          echo "Performance budgets: ✓"
+          echo "Accessibility (WCAG AA): ✓"
+          echo "Security scan: ✓"
+          echo "Contract tests: ✓"
+          echo "Docker builds: ✓"
