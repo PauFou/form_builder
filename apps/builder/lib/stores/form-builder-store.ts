@@ -36,6 +36,7 @@ interface FormBuilderState {
 
   // Selection
   selectBlock: (blockId: string | null) => void;
+  selectPage: (pageId: string) => void;
 
   // History
   undo: () => void;
@@ -304,6 +305,12 @@ export const useFormBuilderStore = create<FormBuilderState>()(
     selectBlock: (blockId) => {
       set((state) => {
         state.selectedBlockId = blockId;
+      });
+    },
+
+    selectPage: (pageId) => {
+      set((state) => {
+        state.selectedPageId = pageId;
       });
     },
 

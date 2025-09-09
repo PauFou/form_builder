@@ -93,3 +93,10 @@ export const formsApi = {
     return response.data;
   },
 };
+
+// Export individual functions for compatibility
+export const getForm = formsApi.get;
+export const updateForm = formsApi.update;
+export const createForm = formsApi.create;
+export const deleteForm = formsApi.delete;
+export const listForms = formsApi.list;

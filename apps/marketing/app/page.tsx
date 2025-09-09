@@ -617,9 +617,11 @@ export default function HomePage() {
                   Pro features coming soon: Remove branding, custom domains, unlimited file uploads, team collaboration, and more!
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button size="lg">
-                    Get started free
-                  </Button>
+                  <Link href="http://localhost:3001">
+                    <Button size="lg">
+                      Get started free
+                    </Button>
+                  </Link>
                   <Link href="/pricing">
                     <Button size="lg" variant="outline">
                       View full comparison

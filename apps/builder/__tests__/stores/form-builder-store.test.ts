@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { useFormBuilderStore } from '@/lib/stores/form-builder-store';
+import { describe, it, expect, beforeEach } from '@jest/globals';
+import { useFormBuilderStore } from '../../lib/stores/form-builder-store';
 import type { Form } from '@forms/contracts';
 
 describe('FormBuilderStore', () => {

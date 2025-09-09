@@ -3,15 +3,15 @@
 import { useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { Button } from '@forms/ui';
+import { Separator } from '@forms/ui';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@forms/ui';
 import {
   Save,
   Play,
@@ -25,11 +25,11 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
-import { BlockLibrary } from '@/components/builder/block-library';
-import { FormCanvas } from '@/components/builder/form-canvas';
-import { BlockSettings } from '@/components/builder/block-settings';
-import { useFormBuilderStore } from '@/lib/stores/form-builder-store';
-import { formsApi } from '@/lib/api/forms';
+import { BlockLibrary } from '../../../../components/builder/block-library';
+import { FormCanvas } from '../../../../components/builder/form-canvas';
+import { BlockSettings } from '../../../../components/builder/block-settings';
+import { useFormBuilderStore } from '../../../../lib/stores/form-builder-store';
+import { formsApi } from '../../../../lib/api/forms';
 
 export default function EditFormPage() {
   const params = useParams();

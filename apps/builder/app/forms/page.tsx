@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@forms/ui';
+import { Input } from '@forms/ui';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@forms/ui';
 import {
   Dialog,
   DialogContent,
@@ -13,18 +13,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@forms/ui';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+} from '@forms/ui';
+import { Label } from '@forms/ui';
+import { Textarea } from '@forms/ui';
+import { Badge } from '@forms/ui';
+import { Skeleton } from '@forms/ui';
 import {
   Plus,
   Search,
@@ -41,9 +41,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { toast } from 'react-hot-toast';
-import { formsApi } from '@/lib/api/forms';
+import { formsApi } from '../../lib/api/forms';
 import type { Form } from '@forms/contracts';
-import { ImportDialog } from '@/components/import/import-dialog';
+import { ImportDialog } from '../../components/import/import-dialog';
 
 export default function FormsPage() {
   const router = useRouter();

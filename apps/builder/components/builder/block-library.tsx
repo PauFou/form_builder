@@ -1,8 +1,8 @@
 'use client';
 
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Card } from '@forms/ui';
+import { Button } from '@forms/ui';
+import { ScrollArea } from '@forms/ui';
 import {
   Type,
   AlignLeft,
@@ -28,7 +28,7 @@ import {
   Image,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useFormBuilderStore } from '@/lib/stores/form-builder-store';
+import { useFormBuilderStore } from '../../lib/stores/form-builder-store';
 import type { Block } from '@forms/contracts';
 
 const blockTypes = [

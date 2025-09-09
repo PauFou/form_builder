@@ -10,14 +10,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+} from '@forms/ui';
+import { Button } from '@forms/ui';
+import { Input } from '@forms/ui';
+import { Label } from '@forms/ui';
+import { Alert, AlertDescription } from '@forms/ui';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@forms/ui';
+import { Badge } from '@forms/ui';
+import { Skeleton } from '@forms/ui';
 import {
   FileType,
   FileCode2,
@@ -29,7 +29,7 @@ import {
   Import,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { formsApi } from '@/lib/api/forms';
+import { formsApi } from '../../lib/api/forms';
 
 interface ImportDialogProps {
   open: boolean;

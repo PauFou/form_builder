@@ -3,12 +3,12 @@
 import { use } from 'react';
 import { notFound } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
+import { Button } from '@forms/ui';
 import { ArrowLeft, Download, Share2 } from 'lucide-react';
 import Link from 'next/link';
-import { formsApi } from '@/lib/api/forms';
-import { AnalyticsDashboard } from '@/components/analytics/analytics-dashboard';
-import { Skeleton } from '@/components/ui/skeleton';
+import { formsApi } from '../../../../lib/api/forms';
+import { AnalyticsDashboard } from '../../../../components/analytics/analytics-dashboard';
+import { Skeleton } from '@forms/ui';
 
 export default function FormAnalyticsPage({ 
   params 

@@ -1,15 +1,15 @@
 'use client';
 
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card } from '@forms/ui';
+import { Button } from '@forms/ui';
+import { Input } from '@forms/ui';
+import { Label } from '@forms/ui';
+import { Switch } from '@forms/ui';
+import { Textarea } from '@forms/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@forms/ui';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@forms/ui';
 import { X, Plus, Trash2 } from 'lucide-react';
-import { useFormBuilderStore } from '@/lib/stores/form-builder-store';
+import { useFormBuilderStore } from '../../lib/stores/form-builder-store';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function BlockSettings() {

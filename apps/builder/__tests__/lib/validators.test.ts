@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { validateEmail, validateRequired, validateBlockData } from '@/lib/validators';
+import { describe, it, expect } from '@jest/globals';
+import { validateEmail, validateRequired, validateBlockData } from '../../lib/validators';
 
 describe('validators', () => {
   describe('validateEmail', () => {

@@ -1,19 +1,34 @@
 'use client';
 
-import { useEffect } from 'react';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { useEffect, useState } from 'react';
+import { 
+  DndContext, 
+  closestCenter, 
+  KeyboardSensor, 
+  PointerSensor, 
+  useSensor, 
+  useSensors,
+  DragOverlay,
+  useDroppable
+} from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Card, Button, Tabs, TabsContent, TabsList, TabsTrigger } from '@forms/ui';
-import { Plus } from 'lucide-react';
-import { useFormBuilderStore } from '@/lib/stores/form-builder-store';
+import { Card, Button, Tabs, TabsContent, TabsList, TabsTrigger, cn } from '@forms/ui';
+import { Plus, FileText } from 'lucide-react';
+import { useFormBuilderStore } from '../../lib/stores/form-builder-store';
 import { BlockItem } from './block-item';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function FormCanvas() {
-  const { form, addPage, movePage, moveBlock } = useFormBuilderStore();
+  const { form, addPage, addBlock, moveBlock, selectedPageId } = useFormBuilderStore();
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -30,14 +45,44 @@ export function FormCanvas() {
     );
   }
 
+  const handleDragStart = (event: any) => {
+    setActiveId(event.active.id);
+  };
+
+  const handleDragOver = (event: any) => {
+    setOverId(event.over?.id || null);
+  };
+
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
-    if (!over || active.id === over.id) return;
+    setActiveId(null);
+    setOverId(null);
+
+    if (!over) return;
 
     const activeData = active.data.current;
     const overData = over.data.current;
 
-    if (activeData?.type === 'block' && overData?.type === 'block') {
+    // Handle adding new blocks from library
+    if (activeData?.source === 'library' && overData?.type === 'dropzone') {
+      const newBlock = {
+        id: crypto.randomUUID(),
+        type: activeData.blockType,
+        question: '',
+        required: false,
+      };
+      addBlock(newBlock, overData.pageId, overData.index);
+    }
+    // Handle reordering existing blocks
+    else if (activeData?.type === 'block' && overData?.type === 'block') {
+      moveBlock(
+        activeData.blockId,
+        overData.pageId,
+        overData.index
+      );
+    }
+    // Handle moving block to empty dropzone
+    else if (activeData?.type === 'block' && overData?.type === 'dropzone') {
       moveBlock(
         activeData.blockId,
         overData.pageId,
@@ -50,13 +95,27 @@ export function FormCanvas() {
     <Card className="flex-1 overflow-hidden">
       <div className="h-full flex flex-col">
         <div className="p-4 border-b">
-          <h2 className="text-xl font-semibold">{form.title}</h2>
-          {form.description && (
-            <p className="text-sm text-muted-foreground mt-1">{form.description}</p>
-          )}
+          <input
+            type="text"
+            value={form.title || ''}
+            onChange={(e) => useFormBuilderStore.getState().updateForm({ title: e.target.value })}
+            className="text-xl font-semibold bg-transparent border-none outline-none focus:ring-2 focus:ring-primary rounded px-2 -ml-2 w-full"
+            placeholder="Untitled Form"
+          />
+          <input
+            type="text"
+            value={form.description || ''}
+            onChange={(e) => useFormBuilderStore.getState().updateForm({ description: e.target.value })}
+            className="text-sm text-muted-foreground bg-transparent border-none outline-none focus:ring-2 focus:ring-primary rounded px-2 -ml-2 mt-1 w-full"
+            placeholder="Add a description..."
+          />
         </div>
 
-        <Tabs defaultValue={form.pages[0]?.id} className="flex-1 flex flex-col">
+        <Tabs 
+          value={selectedPageId || form.pages[0]?.id}
+          onValueChange={(value) => useFormBuilderStore.getState().selectPage?.(value)}
+          className="flex-1 flex flex-col"
+        >
           <div className="border-b px-4">
             <div className="flex items-center gap-2">
               <TabsList className="h-auto p-0 bg-transparent">
@@ -86,6 +145,8 @@ export function FormCanvas() {
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
               onDragEnd={handleDragEnd}
             >
               {form.pages.map((page) => (
@@ -93,37 +154,57 @@ export function FormCanvas() {
                   <div className="p-6 space-y-4 min-h-full">
                     <AnimatePresence>
                       {page.blocks.length === 0 ? (
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="flex items-center justify-center h-64 border-2 border-dashed rounded-lg"
-                        >
-                          <div className="text-center">
-                            <p className="text-muted-foreground mb-2">No blocks yet</p>
-                            <p className="text-sm text-muted-foreground">
-                              Add blocks from the library or drag them here
-                            </p>
-                          </div>
-                        </motion.div>
+                        <Dropzone
+                          pageId={page.id}
+                          index={0}
+                          isActive={overId === `${page.id}-dropzone-0`}
+                          isEmpty
+                        />
                       ) : (
                         <SortableContext
                           items={page.blocks.map(b => b.id)}
                           strategy={verticalListSortingStrategy}
                         >
-                          {page.blocks.map((block, index) => (
-                            <BlockItem
-                              key={block.id}
-                              block={block}
+                          <div className="space-y-4">
+                            {/* Initial dropzone */}
+                            <Dropzone
                               pageId={page.id}
-                              index={index}
+                              index={0}
+                              isActive={overId === `${page.id}-dropzone-0`}
                             />
-                          ))}
+                            
+                            {page.blocks.map((block, index) => (
+                              <div key={block.id} className="space-y-4">
+                                <BlockItem
+                                  block={block}
+                                  pageId={page.id}
+                                  index={index}
+                                />
+                                
+                                {/* Dropzone after each block */}
+                                <Dropzone
+                                  pageId={page.id}
+                                  index={index + 1}
+                                  isActive={overId === `${page.id}-dropzone-${index + 1}`}
+                                />
+                              </div>
+                            ))}
+                          </div>
                         </SortableContext>
                       )}
                     </AnimatePresence>
                   </div>
                 </TabsContent>
               ))}
+              
+              {/* Drag overlay for visual feedback */}
+              <DragOverlay>
+                {activeId && (
+                  <div className="bg-primary/10 border-2 border-primary rounded-lg p-4 shadow-lg">
+                    <FileText className="h-6 w-6 text-primary" />
+                  </div>
+                )}
+              </DragOverlay>
             </DndContext>
           </div>
         </Tabs>
@@ -146,13 +227,21 @@ function Dropzone({
 }) {
   const dropzoneId = `${pageId}-dropzone-${index}`;
   
+  const { setNodeRef } = useDroppable({
+    id: dropzoneId,
+    data: {
+      type: 'dropzone',
+      pageId,
+      index,
+    },
+  });
+  
   return (
     <div
-      data-dropzone-id={dropzoneId}
-      data-dropzone-data={JSON.stringify({ type: 'dropzone', pageId, index })}
+      ref={setNodeRef}
       className={cn(
         "relative transition-all duration-200",
-        isEmpty ? "h-64" : "h-2",
+        isEmpty ? "h-64" : "h-8",
         isActive && "h-20"
       )}
     >

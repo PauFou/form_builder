@@ -2,7 +2,7 @@
 
 import { TabsContent, Input, Label, Switch, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Button, Textarea } from '@forms/ui';
 import { Plus } from 'lucide-react';
-import { useFormBuilderStore } from '@/lib/stores/form-builder-store';
+import { useFormBuilderStore } from '../../lib/stores/form-builder-store';
 import { Block } from '@forms/contracts';
 
 interface BlockInspectorProps {

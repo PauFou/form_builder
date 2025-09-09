@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import { useEffect } from 'react';
-import { Button, Tabs, TabsContent, TabsList, TabsTrigger, Input, Label, Switch, cn } from '@forms/ui';
+import Link from 'next/link';
+import { Button, Tabs, TabsList, TabsTrigger, Input } from '@forms/ui';
 import { 
   Plus, 
   Settings, 
@@ -17,17 +18,15 @@ import {
   Calendar,
   ChevronDown,
   Square,
-  FileQuestion,
-  Sparkles
+  FileQuestion
 } from 'lucide-react';
-import { useFormBuilderStore } from '@/lib/stores/form-builder-store';
-import { FormCanvas } from '@/components/builder/form-canvas';
-import { DraggableBlock } from '@/components/builder/draggable-block';
-import { BlockInspector } from '@/components/builder/block-inspector';
-import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
-import { useAutosave } from '@/lib/hooks/use-autosave';
-import { PreviewPanel } from '@/components/builder/preview-panel';
-import { motion } from 'framer-motion';
+import { useFormBuilderStore } from '../lib/stores/form-builder-store';
+import { FormCanvas } from '../components/builder/form-canvas';
+import { DraggableBlock } from '../components/builder/draggable-block';
+import { BlockInspector } from '../components/builder/block-inspector';
+import { useKeyboardShortcuts } from '../lib/hooks/use-keyboard-shortcuts';
+import { useAutosave } from '../lib/hooks/use-autosave';
+import { PreviewPanel } from '../components/builder/preview-panel';
 
 // Block definitions for the library
 const BLOCK_LIBRARY = [
@@ -98,10 +97,12 @@ export default function BuilderPage() {
       <div className="fixed top-0 left-0 right-0 h-14 border-b bg-background z-50">
         <div className="h-full px-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm">
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              Forms
-            </Button>
+            <Link href="/dashboard">
+              <Button variant="ghost" size="sm">
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Forms
+              </Button>
+            </Link>
             <div className="h-6 w-px bg-border" />
             <div>
               <h1 className="font-semibold text-sm">{form?.title || 'Loading...'}</h1>

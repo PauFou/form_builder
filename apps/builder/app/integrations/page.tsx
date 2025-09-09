@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@forms/ui';
+import { Input } from '@forms/ui';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@forms/ui';
+import { Badge } from '@forms/ui';
 import {
   Dialog,
   DialogContent,
@@ -14,16 +14,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@forms/ui';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Label } from '@/components/ui/label';
-import { Skeleton } from '@/components/ui/skeleton';
+} from '@forms/ui';
+import { Label } from '@forms/ui';
+import { Skeleton } from '@forms/ui';
 import {
   Plus,
   Search,
@@ -42,7 +42,7 @@ import {
   Link2,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { integrationsApi } from '@/lib/api/integrations';
+import { integrationsApi } from '../../lib/api/integrations';
 import type { Integration } from '@forms/contracts';
 
 const integrationIcons: Record<string, any> = {

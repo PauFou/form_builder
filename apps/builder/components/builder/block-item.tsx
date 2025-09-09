@@ -11,8 +11,8 @@ import {
   Settings,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useFormBuilderStore } from '@/lib/stores/form-builder-store';
-import { BLOCK_COMPONENTS } from '@/components/blocks';
+import { useFormBuilderStore } from '../../lib/stores/form-builder-store';
+import { BLOCK_COMPONENTS } from '../blocks';
 import type { Block } from '@forms/contracts';
 
 
