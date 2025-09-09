@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "drf_spectacular",
     "django_filters",
+    "django_celery_beat",
     # Local
     "core",
     "webhooks",
@@ -158,6 +159,24 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+# Celery task settings
+CELERY_TASK_SOFT_TIME_LIMIT = 300  # 5 minutes
+CELERY_TASK_TIME_LIMIT = 600  # 10 minutes
+CELERY_TASK_MAX_RETRIES = 3
+CELERY_TASK_DEFAULT_RETRY_DELAY = 60  # 1 minute
+
+# Cache (for rate limiting)
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": config("REDIS_URL", default="redis://localhost:6379/1"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
 
 # DRF Spectacular
 SPECTACULAR_SETTINGS = {
