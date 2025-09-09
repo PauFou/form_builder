@@ -8,13 +8,16 @@
   "files": ["dist"],
   "scripts": {
     "dev": "tsup --watch",
-    "build": "tsup",
+    "build": "tsup && npm run size",
+    "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "size": "size-limit"
+    "size": "size-limit",
+    "analyze": "tsup --metafile && esbuild-visualizer --metadata ./dist/metafile-esm.json"
   },
   "dependencies": {
-    "idb": "^8.0.0"
+    "idb": "^8.0.0",
+    "mitt": "^3.0.1"
   },
   "peerDependencies": {
     "react": "^18 || ^19",
@@ -22,28 +25,34 @@
   },
   "devDependencies": {
     "@forms/config": "workspace:*",
+    "@preact/signals-react": "^2.0.0",
     "@size-limit/preset-small-lib": "^11.1.4",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^14.2.1",
+    "@types/jest": "^29.5.12",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "esbuild-visualizer": "^0.6.0",
     "eslint": "^8",
+    "fake-indexeddb": "^5.0.2",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "preact": "^10.20.0",
     "size-limit": "^11.1.4",
+    "ts-jest": "^29.1.2",
     "tsup": "^8.1.0",
     "typescript": "^5"
   },
   "size-limit": [
     {
       "path": "dist/index.js",
-      "limit": "30 KB"
+      "limit": "30 KB",
+      "gzip": true
+    },
+    {
+      "path": "dist/index.mjs",
+      "limit": "28 KB",
+      "gzip": true
     }
-  ],
-  "tsup": {
-    "entry": ["src/index.ts"],
-    "format": ["cjs", "esm"],
-    "dts": true,
-    "splitting": false,
-    "sourcemap": true,
-    "clean": true,
-    "minify": true,
-    "external": ["react", "react-dom"]
-  }
+  ]
 }
