@@ -33,6 +33,10 @@ INSTALLED_APPS = [
     # Local
     "core",
     "webhooks",
+    "accounts",
+    "forms",
+    "submissions",
+    "integrations",
 ]
 
 MIDDLEWARE = [
@@ -185,3 +189,21 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
+
+# Encryption key for sensitive data
+ENCRYPTION_KEY = config("ENCRYPTION_KEY", default="dev_encryption_key_32_chars_long")
+
+# Frontend URL
+FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:3001")
+
+# OAuth Credentials
+GOOGLE_CLIENT_ID = config("GOOGLE_CLIENT_ID", default="")
+GOOGLE_CLIENT_SECRET = config("GOOGLE_CLIENT_SECRET", default="")
+SLACK_CLIENT_ID = config("SLACK_CLIENT_ID", default="")
+SLACK_CLIENT_SECRET = config("SLACK_CLIENT_SECRET", default="")
+NOTION_CLIENT_ID = config("NOTION_CLIENT_ID", default="")
+NOTION_CLIENT_SECRET = config("NOTION_CLIENT_SECRET", default="")
+
+# Stripe
+STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY", default="")
+STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET", default="")

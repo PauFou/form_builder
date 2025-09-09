@@ -15,6 +15,10 @@ urlpatterns = [
     # API v1
     path("v1/", include("core.urls")),
     path("v1/", include("webhooks.urls")),
+    path("v1/", include("forms.urls")),
+    path("v1/", include("submissions.urls")),
+    path("v1/", include("integrations.urls")),
+    path("v1/", include("accounts.urls")),
     
     # Auth
     path("v1/auth/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),

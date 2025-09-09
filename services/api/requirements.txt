@@ -19,3 +19,9 @@ factory-boy==3.3.0
 freezegun==1.5.1
 requests==2.32.3
 responses==0.25.3
+cryptography==42.0.8
+google-api-python-client==2.134.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.0
+stripe==9.10.0
+clickhouse-driver==0.2.7
