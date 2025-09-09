@@ -1,0 +1,20 @@
+{
+  "name": "@forms/analytics",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.0",
+    "tsup": "^7.2.0",
+    "typescript": "^5.2.2"
+  }
+}
