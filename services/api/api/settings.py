@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "submissions",
     "integrations",
     "importers",
+    "gdpr",
 ]
 
 MIDDLEWARE = [
@@ -209,3 +210,36 @@ NOTION_CLIENT_SECRET = config("NOTION_CLIENT_SECRET", default="")
 # Stripe
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY", default="")
 STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET", default="")
+
+# GDPR Settings
+GDPR_DATA_REGIONS = {
+    "eu-west-1": "EU West (Ireland)",
+    "eu-central-1": "EU Central (Frankfurt)",
+    "eu-north-1": "EU North (Stockholm)",
+}
+DEFAULT_DATA_REGION = config("DEFAULT_DATA_REGION", default="eu-west-1")
+
+# Email settings for GDPR notifications
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="noreply@forms-platform.eu")
+EMAIL_BACKEND = config(
+    "EMAIL_BACKEND",
+    default="django.core.mail.backends.console.EmailBackend"
+)
+
+# AWS Settings for data export storage
+AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID", default="")
+AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY", default="")
+AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME", default="forms-gdpr-exports")
+AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME", default="eu-west-1")
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+
+# GDPR Compliance defaults
+GDPR_DEFAULT_RETENTION_DAYS = {
+    "submissions": 365,
+    "partials": 30,
+    "attachments": 365,
+    "audit_logs": 730,  # 2 years
+}
+GDPR_EXPORT_EXPIRY_DAYS = 7
+GDPR_DELETION_REQUEST_EXPIRY_HOURS = 48
