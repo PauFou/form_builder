@@ -411,7 +411,26 @@ importers:
         specifier: ^5.2.2
         version: 5.9.2
 
-  packages/config: {}
+  packages/config:
+    dependencies:
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^7.0.0
+        version: 7.18.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.9.2))(eslint@8.57.1)(typescript@5.9.2)
+      '@typescript-eslint/parser':
+        specifier: ^7.0.0
+        version: 7.2.0(eslint@8.57.1)(typescript@5.9.2)
+      eslint:
+        specifier: ^8.0.0
+        version: 8.57.1
+      eslint-config-prettier:
+        specifier: ^9.0.0
+        version: 9.1.2(eslint@8.57.1)
+      eslint-plugin-react:
+        specifier: ^7.0.0
+        version: 7.37.5(eslint@8.57.1)
+      eslint-plugin-react-hooks:
+        specifier: ^4.0.0
+        version: 4.6.2(eslint@8.57.1)
 
   packages/contracts:
     dependencies:
@@ -574,6 +593,15 @@ importers:
       '@forms/config':
         specifier: workspace:*
         version: link:../config
+      '@testing-library/jest-dom':
+        specifier: ^6.4.2
+        version: 6.8.0
+      '@testing-library/react':
+        specifier: ^14.2.1
+        version: 14.3.1(@types/react@18.3.24)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@types/jest':
+        specifier: ^29.5.12
+        version: 29.5.14
       '@types/react':
         specifier: ^18
         version: 18.3.24
@@ -583,6 +611,12 @@ importers:
       eslint:
         specifier: ^8
         version: 8.57.1
+      jest:
+        specifier: ^29.7.0
+        version: 29.7.0(@types/node@20.19.13)
+      jest-environment-jsdom:
+        specifier: ^29.7.0
+        version: 29.7.0
       typescript:
         specifier: ^5
         version: 5.9.2

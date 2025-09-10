@@ -2,7 +2,8 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework import status
-from core.models import Organization, Membership, Form, FormVersion
+from core.models import Organization, Membership
+from forms.models import Form, FormVersion
 import uuid
 
 User = get_user_model()

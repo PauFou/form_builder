@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIRequestFactory
-from core.models import Organization, Membership, Form
+from core.models import Organization, Membership
+from forms.models import Form
 from core.permissions import IsOrganizationMember, IsOrganizationAdmin, IsOrganizationOwner, CanEditForm
 
 User = get_user_model()

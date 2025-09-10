@@ -5,7 +5,8 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from unittest.mock import patch, Mock
 from celery import states
-from core.models import Organization, Membership, Form, Submission
+from core.models import Organization, Membership
+from forms.models import Form, Submission
 from webhooks.models import Webhook, Delivery, DeadLetterQueue
 from webhooks.tasks import deliver_webhook, process_submission_webhooks
 import responses
