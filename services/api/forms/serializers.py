@@ -39,15 +39,20 @@ class FormSerializer(serializers.ModelSerializer):
     
     def validate_slug(self, value):
         """Ensure slug is unique within organization"""
-        if value and 'organization' in self.initial_data:
-            qs = Form.objects.filter(
-                organization_id=self.initial_data['organization'],
-                slug=value
-            )
-            if self.instance:
-                qs = qs.exclude(pk=self.instance.pk)
-            if qs.exists():
-                raise serializers.ValidationError("This slug is already in use")
+        if value:
+            # Get organization from context if available
+            request = self.context.get('request')
+            if request and hasattr(request, 'data'):
+                org_id = request.data.get('organization_id')
+                if org_id:
+                    qs = Form.objects.filter(
+                        organization_id=org_id,
+                        slug=value
+                    )
+                    if self.instance:
+                        qs = qs.exclude(pk=self.instance.pk)
+                    if qs.exists():
+                        raise serializers.ValidationError("This slug is already in use")
         return value
 
 

@@ -15,12 +15,9 @@ class WebhookSerializer(serializers.ModelSerializer):
             "success_rate", "organization_id", "created_at", "updated_at"
         ]
         read_only_fields = [
-            "id", "total_deliveries", "successful_deliveries",
+            "id", "secret", "total_deliveries", "successful_deliveries",
             "failed_deliveries", "success_rate", "created_at", "updated_at"
         ]
-        extra_kwargs = {
-            "secret": {"write_only": True}
-        }
     
     def get_success_rate(self, obj) -> float:
         if obj.total_deliveries == 0:
