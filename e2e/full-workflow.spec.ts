@@ -1,8 +1,10 @@
+import path from "path";
+
 import { test, expect } from "@playwright/test";
+
 import { WebhookHelper } from "./helpers/webhook-helper";
 import { AuthHelper } from "./helpers/auth-helper";
-import { FormHelper, FormField } from "./helpers/form-helper";
-import path from "path";
+import { FormHelper } from "./helpers/form-helper";
 
 test.describe("Full Form Workflow with Webhook", () => {
   let webhookHelper: WebhookHelper;
@@ -169,7 +171,7 @@ test.describe("Full Form Workflow with Webhook", () => {
 
 // Test for webhook retry mechanism
 test.describe("Webhook Retry Mechanism", () => {
-  test.skip("should retry failed webhook delivery", async ({ page }) => {
+  test.skip("should retry failed webhook delivery", async () => {
     // This test would require simulating webhook failures
     // and verifying the retry mechanism works correctly
     // Skipped for now as it requires more complex setup

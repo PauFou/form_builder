@@ -15,7 +15,9 @@ jest.mock("framer-motion", () => ({
 
 // Mock Next.js Link component
 jest.mock("next/link", () => {
-  return ({ children, href }: any) => <a href={href}>{children}</a>;
+  const MockLink = ({ children, href }: any) => <a href={href}>{children}</a>;
+  MockLink.displayName = "MockLink";
+  return MockLink;
 });
 
 describe("Home Page", () => {

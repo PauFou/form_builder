@@ -1,5 +1,4 @@
 import { Page, expect } from "@playwright/test";
-import path from "path";
 
 export interface FormField {
   type: "text" | "email" | "file" | "signature" | "dropdown" | "number";
@@ -47,7 +46,7 @@ export class FormHelper {
 
     // Extract form ID from URL
     const url = this.page.url();
-    const match = url.match(/\/forms\/([^\/]+)\/edit/);
+    const match = url.match(/\/forms\/([^/]+)\/edit/);
 
     if (!match) {
       throw new Error("Failed to extract form ID from URL");
@@ -142,7 +141,7 @@ export class FormHelper {
     if (!publicUrl) {
       // Try to construct URL from form ID
       const url = this.page.url();
-      const match = url.match(/\/forms\/([^\/]+)/);
+      const match = url.match(/\/forms\/([^/]+)/);
       if (match) {
         return `http://localhost:3000/f/${match[1]}`;
       }

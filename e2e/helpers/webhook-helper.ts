@@ -1,4 +1,3 @@
-import { expect } from "@playwright/test";
 import crypto from "crypto";
 
 export class WebhookHelper {
