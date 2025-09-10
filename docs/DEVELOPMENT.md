@@ -19,25 +19,25 @@ graph TB
         B[Builder App]
         C[Runtime Viewer]
     end
-    
+
     subgraph "API Layer"
         D[Django API]
         E[Analytics API]
         F[Edge Functions]
     end
-    
+
     subgraph "Workers"
         G[Celery Workers]
         H[Webhook Processor]
     end
-    
+
     subgraph "Data"
         I[(PostgreSQL)]
         J[(ClickHouse)]
         K[(Redis)]
         L[S3 Storage]
     end
-    
+
     A --> D
     B --> D
     C --> F
@@ -55,6 +55,7 @@ graph TB
 ### Prerequisites
 
 1. **Required Tools**
+
    ```bash
    # Check versions
    node --version  # >= 20.0.0
@@ -64,15 +65,16 @@ graph TB
    ```
 
 2. **Environment Setup**
+
    ```bash
    # Clone and setup
    git clone <repo>
    cd forms-platform
    cp .env.example .env
-   
+
    # Install dependencies
    pnpm install
-   
+
    # Python virtual environment
    cd services/api
    python -m venv venv
@@ -82,10 +84,11 @@ graph TB
    ```
 
 3. **Database Setup**
+
    ```bash
    # Start services
    docker-compose up -d
-   
+
    # Run migrations
    cd services/api
    python manage.py migrate
@@ -96,18 +99,19 @@ graph TB
 ### Development Workflow
 
 1. **Start Everything**
+
    ```bash
    # Terminal 1: Frontend apps
    pnpm dev
-   
+
    # Terminal 2: API
    cd services/api
    python manage.py runserver
-   
+
    # Terminal 3: Workers
    cd services/api
    celery -A api worker -l info
-   
+
    # Terminal 4: Analytics
    cd services/analytics
    uvicorn app:app --reload
@@ -126,6 +130,7 @@ graph TB
 ### Next.js Apps
 
 #### Project Structure
+
 ```
 apps/builder/
 ├── app/              # App Router pages
@@ -142,11 +147,12 @@ apps/builder/
 #### Key Patterns
 
 **1. Data Fetching with React Query**
+
 ```typescript
 // lib/api/forms.ts
 export const useForm = (id: string) => {
   return useQuery({
-    queryKey: ['form', id],
+    queryKey: ["form", id],
     queryFn: () => formsApi.get(id),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -157,29 +163,31 @@ const { data: form, isLoading, error } = useForm(formId);
 ```
 
 **2. Optimistic Updates**
+
 ```typescript
 const updateMutation = useMutation({
   mutationFn: (data) => formsApi.update(id, data),
   onMutate: async (newData) => {
     // Cancel queries
-    await queryClient.cancelQueries(['form', id]);
-    
+    await queryClient.cancelQueries(["form", id]);
+
     // Snapshot previous value
-    const previous = queryClient.getQueryData(['form', id]);
-    
+    const previous = queryClient.getQueryData(["form", id]);
+
     // Optimistically update
-    queryClient.setQueryData(['form', id], newData);
-    
+    queryClient.setQueryData(["form", id], newData);
+
     return { previous };
   },
   onError: (err, newData, context) => {
     // Rollback on error
-    queryClient.setQueryData(['form', id], context.previous);
+    queryClient.setQueryData(["form", id], context.previous);
   },
 });
 ```
 
 **3. Form State Management**
+
 ```typescript
 // Use React Hook Form for complex forms
 import { useForm } from 'react-hook-form';
@@ -193,11 +201,11 @@ const FormEditor = () => {
       pages: [{ id: 'page_1', blocks: [] }],
     },
   });
-  
+
   const onSubmit = (data) => {
     // Handle submission
   };
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -215,20 +223,20 @@ The runtime viewer is the most performance-critical component.
 #### Bundle Size Optimization
 
 1. **Tree Shaking**
+
    ```typescript
    // ❌ Bad - imports entire library
-   import _ from 'lodash';
-   
+   import _ from "lodash";
+
    // ✅ Good - imports only what's needed
-   import debounce from 'lodash/debounce';
+   import debounce from "lodash/debounce";
    ```
 
 2. **Dynamic Imports**
+
    ```typescript
    // Load heavy components only when needed
-   const SignatureField = lazy(() => 
-     import('./fields/SignatureField')
-   );
+   const SignatureField = lazy(() => import("./fields/SignatureField"));
    ```
 
 3. **Custom Hooks**
@@ -237,7 +245,7 @@ The runtime viewer is the most performance-critical component.
    export function useFormState(initial) {
      const [state, setState] = useState(initial);
      const updateField = useCallback((id, value) => {
-       setState(prev => ({ ...prev, [id]: value }));
+       setState((prev) => ({ ...prev, [id]: value }));
      }, []);
      return [state, updateField];
    }
@@ -248,6 +256,7 @@ The runtime viewer is the most performance-critical component.
 ### Django API
 
 #### Project Structure
+
 ```
 services/api/
 ├── api/              # Main app config
@@ -262,16 +271,17 @@ services/api/
 #### Key Patterns
 
 **1. ViewSets with DRF**
+
 ```python
 class FormViewSet(viewsets.ModelViewSet):
     serializer_class = FormSerializer
     permission_classes = [IsAuthenticated, IsOwner]
-    
+
     def get_queryset(self):
         return Form.objects.filter(
             organization=self.request.user.membership.organization
         ).select_related('created_by').prefetch_related('versions')
-    
+
     @action(detail=True, methods=['post'])
     def publish(self, request, pk=None):
         form = self.get_object()
@@ -283,6 +293,7 @@ class FormViewSet(viewsets.ModelViewSet):
 ```
 
 **2. Async Tasks with Celery**
+
 ```python
 @shared_task(
     bind=True,
@@ -292,7 +303,7 @@ class FormViewSet(viewsets.ModelViewSet):
 )
 def process_webhook_delivery(self, delivery_id):
     delivery = WebhookDelivery.objects.get(id=delivery_id)
-    
+
     try:
         response = requests.post(
             delivery.webhook.url,
@@ -301,7 +312,7 @@ def process_webhook_delivery(self, delivery_id):
             timeout=30
         )
         response.raise_for_status()
-        
+
         delivery.mark_success(response)
     except Exception as exc:
         delivery.mark_failure(str(exc))
@@ -309,6 +320,7 @@ def process_webhook_delivery(self, delivery_id):
 ```
 
 **3. Database Optimization**
+
 ```python
 # Use select_related for ForeignKeys
 forms = Form.objects.select_related('organization', 'created_by')
@@ -336,13 +348,13 @@ async def track_events_batch(
 ):
     # Quick validation
     validated_events = [event.dict() for event in events]
-    
+
     # Queue for processing
     background_tasks.add_task(
         process_events,
         validated_events
     )
-    
+
     # Immediate response
     return {"status": "accepted", "count": len(events)}
 ```
@@ -352,6 +364,7 @@ async def track_events_batch(
 ### Frontend Testing
 
 **1. Unit Tests**
+
 ```typescript
 // components/__tests__/FormField.test.tsx
 describe('FormField', () => {
@@ -361,20 +374,21 @@ describe('FormField', () => {
         field={{ id: 'test', type: 'text', required: true }}
       />
     );
-    
+
     expect(screen.getByText('*')).toBeInTheDocument();
   });
 });
 ```
 
 **2. Integration Tests**
+
 ```typescript
 // Use MSW for API mocking
-import { setupServer } from 'msw/node';
+import { setupServer } from "msw/node";
 
 const server = setupServer(
-  rest.get('/api/forms/:id', (req, res, ctx) => {
-    return res(ctx.json({ id: req.params.id, title: 'Test Form' }));
+  rest.get("/api/forms/:id", (req, res, ctx) => {
+    return res(ctx.json({ id: req.params.id, title: "Test Form" }));
   })
 );
 ```
@@ -382,6 +396,7 @@ const server = setupServer(
 ### Backend Testing
 
 **1. Model Tests**
+
 ```python
 @pytest.mark.django_db
 class TestForm:
@@ -391,7 +406,7 @@ class TestForm:
             organization=organization
         )
         assert form.slug == "my-test-form"
-    
+
     def test_unique_slug_constraint(self):
         Form.objects.create(title="Test", slug="test", organization=org)
         with pytest.raises(IntegrityError):
@@ -399,13 +414,14 @@ class TestForm:
 ```
 
 **2. API Tests**
+
 ```python
 def test_create_form(authenticated_client):
     response = authenticated_client.post('/v1/forms/', {
         'title': 'New Form',
         'pages': [{'id': 'page_1', 'blocks': []}]
     })
-    
+
     assert response.status_code == 201
     assert response.data['title'] == 'New Form'
 ```
@@ -414,21 +430,21 @@ def test_create_form(authenticated_client):
 
 ```typescript
 // e2e/form-creation.spec.ts
-test('should create and publish form', async ({ page }) => {
-  await page.goto('/forms');
+test("should create and publish form", async ({ page }) => {
+  await page.goto("/forms");
   await page.click('button:has-text("Create Form")');
-  
-  await page.fill('[name="title"]', 'E2E Test Form');
+
+  await page.fill('[name="title"]', "E2E Test Form");
   await page.click('button:has-text("Create")');
-  
+
   await expect(page).toHaveURL(/\/forms\/.*\/edit/);
-  
+
   // Add fields and publish
   await page.click('button:has-text("Add Field")');
   await page.click('[data-field-type="text"]');
   await page.click('button:has-text("Publish")');
-  
-  await expect(page.locator('.toast')).toHaveText('Form published');
+
+  await expect(page.locator(".toast")).toHaveText("Form published");
 });
 ```
 
@@ -450,6 +466,7 @@ docker build -f services/analytics/Dockerfile -t forms/analytics:latest services
 ### Environment Configuration
 
 **Required Environment Variables:**
+
 ```bash
 # Database
 POSTGRES_URL=postgresql://user:pass@host:5432/dbname
@@ -474,6 +491,7 @@ FEATURE_ANALYTICS_ENABLED=true
 ### Performance Optimization
 
 1. **Database Indexes**
+
    ```sql
    -- Most common queries
    CREATE INDEX idx_forms_org_status ON forms(organization_id, status);
@@ -482,12 +500,13 @@ FEATURE_ANALYTICS_ENABLED=true
    ```
 
 2. **Caching Strategy**
+
    ```python
    # Cache form schema (rarely changes)
    @cache_page(60 * 15)  # 15 minutes
    def form_runtime_view(request, form_id):
        # ...
-   
+
    # Cache analytics (updates hourly)
    cache_key = f"analytics:{form_id}:{date}"
    data = cache.get(cache_key)
@@ -497,13 +516,14 @@ FEATURE_ANALYTICS_ENABLED=true
    ```
 
 3. **CDN Configuration**
+
    ```nginx
    # Cache static assets forever
    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
        expires 1y;
        add_header Cache-Control "public, immutable";
    }
-   
+
    # Cache form runtime for 5 minutes
    location ~ ^/f/[a-zA-Z0-9-]+$ {
        expires 5m;
@@ -516,6 +536,7 @@ FEATURE_ANALYTICS_ENABLED=true
 ### Common Issues
 
 **1. CORS Errors**
+
 ```python
 # Check CORS settings in settings.py
 CORS_ALLOWED_ORIGINS = [
@@ -525,6 +546,7 @@ CORS_ALLOWED_ORIGINS = [
 ```
 
 **2. Database Connection Issues**
+
 ```bash
 # Test connection
 python manage.py dbshell
@@ -534,6 +556,7 @@ SELECT count(*) FROM pg_stat_activity;
 ```
 
 **3. Celery Task Failures**
+
 ```bash
 # Monitor tasks
 celery -A api flower
@@ -545,6 +568,7 @@ python manage.py retry_failed_tasks
 ### Debugging Tools
 
 1. **Django Debug Toolbar**
+
    ```python
    # Add to INSTALLED_APPS in development
    INSTALLED_APPS += ['debug_toolbar']

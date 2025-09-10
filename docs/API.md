@@ -7,6 +7,7 @@ Base URL: `https://api.forms.io/v1`
 The API uses JWT (JSON Web Tokens) for authentication.
 
 ### Login
+
 ```http
 POST /auth/login
 Content-Type: application/json
@@ -18,6 +19,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "access": "eyJ...",
@@ -32,6 +34,7 @@ Content-Type: application/json
 ```
 
 ### Refresh Token
+
 ```http
 POST /auth/refresh
 Content-Type: application/json
@@ -42,7 +45,9 @@ Content-Type: application/json
 ```
 
 ### Using Tokens
+
 Include the access token in the Authorization header:
+
 ```http
 Authorization: Bearer eyJ...
 ```
@@ -50,17 +55,20 @@ Authorization: Bearer eyJ...
 ## Forms
 
 ### List Forms
+
 ```http
 GET /forms?page=1&limit=20&status=published
 ```
 
 **Query Parameters:**
+
 - `page` (integer): Page number (default: 1)
 - `limit` (integer): Items per page (default: 20, max: 100)
 - `status` (string): Filter by status (draft, published, archived)
 - `search` (string): Search in title and description
 
 **Response:**
+
 ```json
 {
   "results": [
@@ -81,11 +89,13 @@ GET /forms?page=1&limit=20&status=published
 ```
 
 ### Get Form
+
 ```http
 GET /forms/{form_id}
 ```
 
 **Response:**
+
 ```json
 {
   "id": "form_123",
@@ -127,6 +137,7 @@ GET /forms/{form_id}
 ```
 
 ### Create Form
+
 ```http
 POST /forms
 Content-Type: application/json
@@ -144,6 +155,7 @@ Content-Type: application/json
 ```
 
 ### Update Form
+
 ```http
 PUT /forms/{form_id}
 Content-Type: application/json
@@ -155,11 +167,13 @@ Content-Type: application/json
 ```
 
 ### Delete Form
+
 ```http
 DELETE /forms/{form_id}
 ```
 
 ### Publish Form
+
 ```http
 POST /forms/{form_id}/publish
 Content-Type: application/json
@@ -172,11 +186,13 @@ Content-Type: application/json
 ## Submissions
 
 ### List Submissions
+
 ```http
 GET /forms/{form_id}/submissions?page=1&limit=50
 ```
 
 **Query Parameters:**
+
 - `page` (integer): Page number
 - `limit` (integer): Items per page
 - `status` (string): Filter by status (complete, partial)
@@ -186,6 +202,7 @@ GET /forms/{form_id}/submissions?page=1&limit=50
 - `tags` (array): Filter by tags
 
 **Response:**
+
 ```json
 {
   "results": [
@@ -215,11 +232,13 @@ GET /forms/{form_id}/submissions?page=1&limit=50
 ```
 
 ### Get Submission
+
 ```http
 GET /submissions/{submission_id}
 ```
 
 ### Export Submissions
+
 ```http
 POST /forms/{form_id}/submissions/export
 Content-Type: application/json
@@ -237,15 +256,17 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "export_id": "exp_123",
   "status": "processing",
-  "download_url": null  // Will be available when ready
+  "download_url": null // Will be available when ready
 }
 ```
 
 ### Check Export Status
+
 ```http
 GET /exports/{export_id}
 ```
@@ -253,11 +274,13 @@ GET /exports/{export_id}
 ## Webhooks
 
 ### List Webhooks
+
 ```http
 GET /webhooks
 ```
 
 ### Create Webhook
+
 ```http
 POST /webhooks
 Content-Type: application/json
@@ -273,18 +296,20 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "id": "webhook_123",
   "url": "https://example.com/webhook",
   "events": ["submission.created", "submission.updated"],
-  "secret": "whsec_a1b2c3d4e5f6",  // Use for HMAC verification
+  "secret": "whsec_a1b2c3d4e5f6", // Use for HMAC verification
   "active": true,
   "created_at": "2024-03-15T10:00:00Z"
 }
 ```
 
 ### Update Webhook
+
 ```http
 PUT /webhooks/{webhook_id}
 Content-Type: application/json
@@ -296,21 +321,25 @@ Content-Type: application/json
 ```
 
 ### Delete Webhook
+
 ```http
 DELETE /webhooks/{webhook_id}
 ```
 
 ### Test Webhook
+
 ```http
 POST /webhooks/{webhook_id}/test
 ```
 
 ### Webhook Deliveries
+
 ```http
 GET /webhooks/{webhook_id}/deliveries?status=failed
 ```
 
 ### Retry Failed Delivery
+
 ```http
 POST /webhook-deliveries/{delivery_id}/retry
 ```
@@ -318,11 +347,13 @@ POST /webhook-deliveries/{delivery_id}/retry
 ## Integrations
 
 ### List Available Integrations
+
 ```http
 GET /integrations
 ```
 
 ### Connect Integration
+
 ```http
 POST /integrations/{integration_type}/connect
 Content-Type: application/json
@@ -335,16 +366,19 @@ Content-Type: application/json
 ```
 
 **For OAuth integrations:**
+
 ```http
 GET /integrations/{integration_type}/authorize?redirect_uri=https://app.forms.io/integrations/callback
 ```
 
 ### List Connections
+
 ```http
 GET /integrations/connections
 ```
 
 ### Update Connection
+
 ```http
 PUT /integrations/connections/{connection_id}
 Content-Type: application/json
@@ -357,6 +391,7 @@ Content-Type: application/json
 ```
 
 ### Delete Connection
+
 ```http
 DELETE /integrations/connections/{connection_id}
 ```
@@ -364,11 +399,13 @@ DELETE /integrations/connections/{connection_id}
 ## Analytics
 
 ### Form Analytics
+
 ```http
 GET /analytics/forms/{form_id}?start_date=2024-03-01&end_date=2024-03-31
 ```
 
 **Response:**
+
 ```json
 {
   "form_id": "form_123",
@@ -400,11 +437,13 @@ GET /analytics/forms/{form_id}?start_date=2024-03-01&end_date=2024-03-31
 ```
 
 ### Funnel Analysis
+
 ```http
 GET /analytics/forms/{form_id}/funnel
 ```
 
 ### Real-time Stats
+
 ```http
 GET /analytics/forms/{form_id}/realtime
 ```
@@ -412,6 +451,7 @@ GET /analytics/forms/{form_id}/realtime
 ## Import
 
 ### Import from Typeform
+
 ```http
 POST /forms/import
 Content-Type: application/json
@@ -426,6 +466,7 @@ Content-Type: application/json
 ```
 
 ### Import from Google Forms
+
 ```http
 POST /forms/import
 Content-Type: application/json
@@ -437,6 +478,7 @@ Content-Type: application/json
 ```
 
 ### Validate Import Source
+
 ```http
 POST /forms/import/validate
 Content-Type: application/json
@@ -448,6 +490,7 @@ Content-Type: application/json
 ```
 
 ### Preview Import
+
 ```http
 POST /forms/import/preview
 Content-Type: application/json
@@ -468,6 +511,7 @@ Content-Type: application/json
 - **Submissions**: 100 per minute per form
 
 Rate limit headers:
+
 ```http
 X-RateLimit-Limit: 5000
 X-RateLimit-Remaining: 4998
@@ -490,6 +534,7 @@ X-RateLimit-Reset: 1710500000
 ```
 
 Common error codes:
+
 - `authentication_required`: Missing or invalid token
 - `permission_denied`: Insufficient permissions
 - `not_found`: Resource not found
@@ -502,6 +547,7 @@ Common error codes:
 Webhook requests include:
 
 **Headers:**
+
 ```http
 X-Forms-Signature: sha256=a1b2c3d4e5f6...
 X-Forms-Event: submission.created
@@ -510,6 +556,7 @@ Content-Type: application/json
 ```
 
 **Payload:**
+
 ```json
 {
   "id": "evt_123",
@@ -544,6 +591,7 @@ def verify_webhook(payload, signature, secret):
 ## SDKs
 
 Official SDKs available:
+
 - JavaScript/TypeScript: `npm install @forms/sdk`
 - Python: `pip install forms-sdk`
 - PHP: `composer require forms/sdk`
@@ -551,18 +599,15 @@ Official SDKs available:
 Example usage:
 
 ```javascript
-import { FormsClient } from '@forms/sdk';
+import { FormsClient } from "@forms/sdk";
 
 const client = new FormsClient({
-  apiKey: 'your_api_key'
+  apiKey: "your_api_key",
 });
 
 // List forms
 const forms = await client.forms.list();
 
 // Get submissions
-const submissions = await client.forms
-  .get('form_123')
-  .submissions
-  .list({ limit: 100 });
+const submissions = await client.forms.get("form_123").submissions.list({ limit: 100 });
 ```

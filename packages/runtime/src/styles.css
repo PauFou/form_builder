@@ -1,6 +1,6 @@
 /* Ultra-minimal form runtime styles */
 .form-runtime {
-  font-family: var(--form-font, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+  font-family: var(--form-font, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
   color: #1f2937;
   line-height: 1.5;
 }
@@ -172,7 +172,7 @@
   .form-runtime {
     color: #f3f4f6;
   }
-  
+
   .form-field input,
   .form-field textarea,
   .form-field select {
@@ -180,16 +180,16 @@
     border-color: #374151;
     color: #f3f4f6;
   }
-  
+
   .form-btn-secondary {
     background: #374151;
     color: #f3f4f6;
   }
-  
+
   .form-btn-secondary:hover {
     background: #4b5563;
   }
-  
+
   .form-progress {
     background: #374151;
   }

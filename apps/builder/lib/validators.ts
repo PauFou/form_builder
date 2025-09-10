@@ -1,14 +1,14 @@
-import type { Block } from '@forms/contracts';
+import type { Block } from "@forms/contracts";
 
 export function validateEmail(value: string): boolean {
-  if (!value || typeof value !== 'string') return false;
+  if (!value || typeof value !== "string") return false;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(value.trim());
 }
 
 export function validateRequired(value: any): boolean {
   if (value === null || value === undefined) return false;
-  if (typeof value === 'string') return value.trim().length > 0;
+  if (typeof value === "string") return value.trim().length > 0;
   if (Array.isArray(value)) return value.length > 0;
   return true;
 }
@@ -21,13 +21,13 @@ interface ValidationResult {
 export function validateBlockData(block: Block, value: any): ValidationResult {
   // Check required
   if (block.required && !validateRequired(value)) {
-    if (block.type === 'checkbox_group') {
-      return { valid: false, error: 'Please select at least one option' };
+    if (block.type === "checkbox_group") {
+      return { valid: false, error: "Please select at least one option" };
     }
-    if (block.type === 'select') {
-      return { valid: false, error: 'Please select an option' };
+    if (block.type === "select") {
+      return { valid: false, error: "Please select an option" };
     }
-    return { valid: false, error: 'This field is required' };
+    return { valid: false, error: "This field is required" };
   }
 
   // Skip validation if value is empty and not required
@@ -37,13 +37,13 @@ export function validateBlockData(block: Block, value: any): ValidationResult {
 
   // Type-specific validation
   switch (block.type) {
-    case 'email':
+    case "email":
       if (!validateEmail(value)) {
-        return { valid: false, error: 'Please enter a valid email address' };
+        return { valid: false, error: "Please enter a valid email address" };
       }
       break;
 
-    case 'date':
+    case "date":
       if (block.validation?.min && value < block.validation.min) {
         return { valid: false, error: `Date must be after ${block.validation.min}` };
       }
@@ -52,37 +52,43 @@ export function validateBlockData(block: Block, value: any): ValidationResult {
       }
       break;
 
-    case 'select':
+    case "select":
       if (block.options) {
-        const validValues = block.options.map(opt => opt.value);
+        const validValues = block.options.map((opt) => opt.value);
         if (!validValues.includes(value)) {
-          return { valid: false, error: 'Invalid selection' };
+          return { valid: false, error: "Invalid selection" };
         }
       }
       break;
 
-    case 'checkbox_group':
+    case "checkbox_group":
       if (Array.isArray(value)) {
         if (block.validation?.min && value.length < block.validation.min) {
-          return { valid: false, error: `Please select at least ${block.validation.min} option${block.validation.min > 1 ? 's' : ''}` };
+          return {
+            valid: false,
+            error: `Please select at least ${block.validation.min} option${block.validation.min > 1 ? "s" : ""}`,
+          };
         }
         if (block.validation?.max && value.length > block.validation.max) {
-          return { valid: false, error: `Please select at most ${block.validation.max} option${block.validation.max > 1 ? 's' : ''}` };
+          return {
+            valid: false,
+            error: `Please select at most ${block.validation.max} option${block.validation.max > 1 ? "s" : ""}`,
+          };
         }
         if (block.options) {
-          const validValues = block.options.map(opt => opt.value);
-          const allValid = value.every(v => validValues.includes(v));
+          const validValues = block.options.map((opt) => opt.value);
+          const allValid = value.every((v) => validValues.includes(v));
           if (!allValid) {
-            return { valid: false, error: 'Invalid selection' };
+            return { valid: false, error: "Invalid selection" };
           }
         }
       } else {
-        return { valid: false, error: 'Invalid value format' };
+        return { valid: false, error: "Invalid value format" };
       }
       break;
 
-    case 'short_text':
-    case 'long_text':
+    case "short_text":
+    case "long_text":
       if (block.validation?.minLength && value.length < block.validation.minLength) {
         return { valid: false, error: `Minimum ${block.validation.minLength} characters required` };
       }
@@ -92,7 +98,7 @@ export function validateBlockData(block: Block, value: any): ValidationResult {
       if (block.validation?.pattern) {
         const regex = new RegExp(block.validation.pattern);
         if (!regex.test(value)) {
-          return { valid: false, error: 'Invalid format' };
+          return { valid: false, error: "Invalid format" };
         }
       }
       break;

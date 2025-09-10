@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
-import { FormField } from './FormField';
-import { ProgressBar } from './ProgressBar';
-import { useFormRuntime } from '../hooks';
-import type { FormSchema, RuntimeConfig } from '../types';
+import React, { useEffect, useRef } from "react";
+import { FormField } from "./FormField";
+import { ProgressBar } from "./ProgressBar";
+import { useFormRuntime } from "../hooks";
+import type { FormSchema, RuntimeConfig } from "../types";
 
 interface FormViewerProps {
   schema: FormSchema;
@@ -10,18 +10,9 @@ interface FormViewerProps {
   className?: string;
 }
 
-export function FormViewer({ schema, config, className = '' }: FormViewerProps) {
-  const {
-    state,
-    currentBlock,
-    progress,
-    setValue,
-    setTouched,
-    goNext,
-    goPrev,
-    submit,
-    canGoNext,
-  } = useFormRuntime(schema, config);
+export function FormViewer({ schema, config, className = "" }: FormViewerProps) {
+  const { state, currentBlock, progress, setValue, setTouched, goNext, goPrev, submit, canGoNext } =
+    useFormRuntime(schema, config);
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -38,14 +29,14 @@ export function FormViewer({ schema, config, className = '' }: FormViewerProps) 
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && e.ctrlKey && canGoNext()) {
+      if (e.key === "Enter" && e.ctrlKey && canGoNext()) {
         e.preventDefault();
         goNext();
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [canGoNext, goNext]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -69,9 +60,7 @@ export function FormViewer({ schema, config, className = '' }: FormViewerProps) 
               <p>Your response has been submitted successfully.</p>
             </>
           )}
-          {schema.settings.redirectUrl && (
-            <p>Redirecting...</p>
-          )}
+          {schema.settings.redirectUrl && <p>Redirecting...</p>}
         </div>
       </div>
     );
@@ -83,10 +72,8 @@ export function FormViewer({ schema, config, className = '' }: FormViewerProps) 
 
   return (
     <div className={`fr-container ${className}`} data-theme={schema.theme}>
-      {schema.settings.showProgressBar && (
-        <ProgressBar progress={progress} />
-      )}
-      
+      {schema.settings.showProgressBar && <ProgressBar progress={progress} />}
+
       <form ref={formRef} onSubmit={handleSubmit} className="fr-form">
         <div className="fr-step" key={currentBlock.id}>
           <FormField
@@ -98,7 +85,7 @@ export function FormViewer({ schema, config, className = '' }: FormViewerProps) 
             onBlur={() => setTouched(currentBlock.id)}
           />
         </div>
-        
+
         <div className="fr-actions">
           {state.currentStep > 0 && (
             <button
@@ -110,25 +97,23 @@ export function FormViewer({ schema, config, className = '' }: FormViewerProps) 
               Previous
             </button>
           )}
-          
+
           <button
             type="submit"
             className="fr-btn fr-btn-primary"
             disabled={state.isSubmitting || !canGoNext()}
           >
             {state.isSubmitting
-              ? 'Submitting...'
+              ? "Submitting..."
               : state.currentStep === schema.blocks.length - 1
-              ? (schema.settings.submitText || 'Submit')
-              : 'Next'}
+                ? schema.settings.submitText || "Submit"
+                : "Next"}
           </button>
         </div>
       </form>
-      
+
       {config.enableOffline && (
-        <p className="fr-offline-notice">
-          Your progress is automatically saved
-        </p>
+        <p className="fr-offline-notice">Your progress is automatically saved</p>
       )}
     </div>
   );

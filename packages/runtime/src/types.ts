@@ -22,24 +22,24 @@ export interface Theme {
 }
 
 export type BlockType =
-  | 'text'
-  | 'long_text'
-  | 'email'
-  | 'phone'
-  | 'number'
-  | 'currency'
-  | 'date'
-  | 'time'
-  | 'datetime'
-  | 'dropdown'
-  | 'single_select'
-  | 'multi_select'
-  | 'checkbox'
-  | 'rating'
-  | 'scale'
-  | 'file_upload'
-  | 'signature'
-  | 'payment';
+  | "text"
+  | "long_text"
+  | "email"
+  | "phone"
+  | "number"
+  | "currency"
+  | "date"
+  | "time"
+  | "datetime"
+  | "dropdown"
+  | "single_select"
+  | "multi_select"
+  | "checkbox"
+  | "rating"
+  | "scale"
+  | "file_upload"
+  | "signature"
+  | "payment";
 
 export interface Block {
   id: string;
@@ -53,7 +53,7 @@ export interface Block {
 }
 
 export interface ValidationRule {
-  type: 'min' | 'max' | 'pattern' | 'custom';
+  type: "min" | "max" | "pattern" | "custom";
   value: any;
   message?: string;
 }
@@ -65,12 +65,12 @@ export interface LogicRule {
 
 export interface LogicCondition {
   field: string;
-  operator: 'equals' | 'not_equals' | 'contains' | 'greater_than' | 'less_than';
+  operator: "equals" | "not_equals" | "contains" | "greater_than" | "less_than";
   value: any;
 }
 
 export interface LogicAction {
-  type: 'show' | 'hide' | 'jump_to' | 'set_value';
+  type: "show" | "hide" | "jump_to" | "set_value";
   target?: string;
   value?: any;
 }

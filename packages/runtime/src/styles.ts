@@ -1,12 +1,14 @@
-import type { Theme } from './types';
+import type { Theme } from "./types";
 
 export function generateStyles(theme?: Theme): string {
-  const vars = theme ? `
-    --fr-primary: ${theme.primaryColor || '#4F46E5'};
+  const vars = theme
+    ? `
+    --fr-primary: ${theme.primaryColor || "#4F46E5"};
     --fr-font: ${theme.fontFamily || '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'};
-    --fr-radius: ${theme.borderRadius || '6px'};
-    --fr-spacing: ${theme.spacing || '1rem'};
-  ` : '';
+    --fr-radius: ${theme.borderRadius || "6px"};
+    --fr-spacing: ${theme.spacing || "1rem"};
+  `
+    : "";
 
   return `
     .fr-container {
@@ -224,10 +226,10 @@ export function generateStyles(theme?: Theme): string {
 
 // Inject styles function for runtime
 export function injectStyles(theme?: Theme): void {
-  if (typeof document === 'undefined') return;
+  if (typeof document === "undefined") return;
 
-  const styleId = 'form-runtime-styles';
-  
+  const styleId = "form-runtime-styles";
+
   // Remove existing styles if any
   const existing = document.getElementById(styleId);
   if (existing) {
@@ -235,7 +237,7 @@ export function injectStyles(theme?: Theme): void {
   }
 
   // Create and inject new styles
-  const style = document.createElement('style');
+  const style = document.createElement("style");
   style.id = styleId;
   style.textContent = generateStyles(theme);
   document.head.appendChild(style);

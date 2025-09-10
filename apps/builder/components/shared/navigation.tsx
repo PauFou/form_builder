@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Button } from '@forms/ui';
-import { Sparkles, LogIn } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import Link from "next/link";
+import { Button } from "@forms/ui";
+import { Sparkles, LogIn } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export function Navigation() {
   const pathname = usePathname();
-  const isBuilder = pathname?.startsWith('/forms');
+  const isBuilder = pathname?.startsWith("/forms");
 
   return (
     <nav className="fixed top-0 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
@@ -58,9 +58,7 @@ export function Navigation() {
                 </Button>
               </Link>
               <Link href="http://localhost:3001">
-                <Button size="sm">
-                  Get started
-                </Button>
+                <Button size="sm">Get started</Button>
               </Link>
             </>
           )}

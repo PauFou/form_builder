@@ -1,7 +1,17 @@
-'use client';
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, Progress, Alert, AlertTitle, AlertDescription } from '@forms/ui';
-import { BarChart3, Users, Clock, TrendingUp, Activity } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Progress,
+  Alert,
+  AlertTitle,
+  AlertDescription,
+} from "@forms/ui";
+import { BarChart3, Users, Clock, TrendingUp, Activity } from "lucide-react";
 
 interface AnalyticsDashboardProps {
   formId: string;
@@ -12,15 +22,15 @@ export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
   const stats = {
     totalViews: 1234,
     totalSubmissions: 456,
-    avgCompletionTime: '3m 24s',
+    avgCompletionTime: "3m 24s",
     completionRate: 78,
     dropOffRate: 22,
   };
 
   const questionStats = [
-    { question: 'How satisfied are you?', answered: 450, skipped: 6 },
-    { question: 'What features do you use?', answered: 440, skipped: 16 },
-    { question: 'Any suggestions?', answered: 420, skipped: 36 },
+    { question: "How satisfied are you?", answered: 450, skipped: 6 },
+    { question: "What features do you use?", answered: 440, skipped: 16 },
+    { question: "Any suggestions?", answered: 420, skipped: 36 },
   ];
 
   return (
@@ -42,9 +52,7 @@ export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalViews}</div>
-            <p className="text-xs text-muted-foreground">
-              +12% from last period
-            </p>
+            <p className="text-xs text-muted-foreground">+12% from last period</p>
           </CardContent>
         </Card>
 
@@ -55,9 +63,7 @@ export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalSubmissions}</div>
-            <p className="text-xs text-muted-foreground">
-              +4% from last period
-            </p>
+            <p className="text-xs text-muted-foreground">+4% from last period</p>
           </CardContent>
         </Card>
 
@@ -68,9 +74,7 @@ export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.avgCompletionTime}</div>
-            <p className="text-xs text-muted-foreground">
-              -18s from last period
-            </p>
+            <p className="text-xs text-muted-foreground">-18s from last period</p>
           </CardContent>
         </Card>
 
@@ -90,9 +94,7 @@ export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
       <Card>
         <CardHeader>
           <CardTitle>Question Performance</CardTitle>
-          <CardDescription>
-            Response rates for each question in your form
-          </CardDescription>
+          <CardDescription>Response rates for each question in your form</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -100,12 +102,10 @@ export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
               <div key={index} className="space-y-2">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium">{stat.question}</p>
-                  <span className="text-sm text-muted-foreground">
-                    {stat.answered} answered
-                  </span>
+                  <span className="text-sm text-muted-foreground">{stat.answered} answered</span>
                 </div>
-                <Progress 
-                  value={(stat.answered / (stat.answered + stat.skipped)) * 100} 
+                <Progress
+                  value={(stat.answered / (stat.answered + stat.skipped)) * 100}
                   className="h-2"
                 />
               </div>
@@ -118,9 +118,7 @@ export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
       <Card>
         <CardHeader>
           <CardTitle>Funnel Analysis</CardTitle>
-          <CardDescription>
-            Drop-off points in your form
-          </CardDescription>
+          <CardDescription>Drop-off points in your form</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-64 flex items-center justify-center text-muted-foreground">

@@ -35,6 +35,7 @@ pnpm dev
 ```
 
 The platform will be available at:
+
 - Marketing site: http://localhost:3000
 - Builder app: http://localhost:3001
 - API: http://localhost:8000
@@ -74,6 +75,7 @@ The platform will be available at:
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **Next.js 14** - React framework with App Router
 - **TypeScript** - Type safety
 - **Tailwind CSS** - Styling
@@ -82,6 +84,7 @@ The platform will be available at:
 - **Framer Motion** - Animations
 
 ### Backend
+
 - **Django 5** - Python web framework
 - **Django REST Framework** - API development
 - **Celery** - Async task processing
@@ -91,6 +94,7 @@ The platform will be available at:
 - **Redis** - Cache & queues
 
 ### Infrastructure
+
 - **Docker** - Containerization
 - **Turborepo** - Monorepo management
 - **GitHub Actions** - CI/CD
@@ -179,11 +183,13 @@ See `.env.example` for all required environment variables. Key variables:
 ### Production Deployment
 
 1. **Database Migration**
+
    ```bash
    python manage.py migrate
    ```
 
 2. **Build Images**
+
    ```bash
    docker build -t forms/api ./services/api
    docker build -t forms/analytics ./services/analytics
@@ -198,16 +204,19 @@ See `.env.example` for all required environment variables. Key variables:
 ## 📊 Monitoring
 
 ### Health Checks
+
 - API: `GET /health`
 - Analytics: `GET /health`
 - Worker: Redis ping
 
 ### Metrics
+
 - Application metrics via Prometheus
 - Distributed tracing with OpenTelemetry
 - Error tracking with Sentry
 
 ### Dashboards
+
 - System metrics in Grafana
 - Analytics in built-in dashboard
 - Error rates and SLOs
@@ -233,6 +242,7 @@ See `.env.example` for all required environment variables. Key variables:
 ### Commit Convention
 
 We use [Conventional Commits](https://www.conventionalcommits.org/):
+
 - `feat:` - New features
 - `fix:` - Bug fixes
 - `docs:` - Documentation changes
@@ -248,6 +258,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 Built with ❤️ using amazing open source projects:
+
 - [Next.js](https://nextjs.org)
 - [Django](https://www.djangoproject.com)
 - [PostgreSQL](https://www.postgresql.org)

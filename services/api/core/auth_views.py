@@ -39,8 +39,13 @@ class RegisterView(generics.CreateAPIView):
             slug=org_slug,
             plan='free'
         )
-        organization._created_by = user
-        organization.save()
+        
+        # Create membership
+        Membership.objects.create(
+            user=user,
+            organization=organization,
+            role='owner'
+        )
         
         # Generate tokens
         refresh = RefreshToken.for_user(user)

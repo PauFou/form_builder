@@ -22,12 +22,12 @@ Ultra-lightweight form viewer with SSR support and offline capabilities. < 30KB 
 <script src="https://cdn.forms.example/runtime.min.js"></script>
 <script>
   FormsRuntime.embed({
-    containerId: 'my-form',
-    formId: 'contact-form',
-    apiUrl: 'https://api.forms.example/v1',
+    containerId: "my-form",
+    formId: "contact-form",
+    apiUrl: "https://api.forms.example/v1",
     onSubmit: (data) => {
-      console.log('Form submitted:', data);
-    }
+      console.log("Form submitted:", data);
+    },
   });
 </script>
 ```
@@ -35,33 +35,33 @@ Ultra-lightweight form viewer with SSR support and offline capabilities. < 30KB 
 ### React Component
 
 ```tsx
-import { FormViewer } from '@forms/runtime';
+import { FormViewer } from "@forms/runtime";
 
 function App() {
   const schema = {
-    id: 'my-form',
+    id: "my-form",
     version: 1,
     blocks: [
       {
-        id: 'name',
-        type: 'text',
-        question: 'What is your name?',
-        required: true
-      }
+        id: "name",
+        type: "text",
+        question: "What is your name?",
+        required: true,
+      },
     ],
     settings: {
-      submitText: 'Send',
-      showProgressBar: true
-    }
+      submitText: "Send",
+      showProgressBar: true,
+    },
   };
 
   const config = {
-    formId: 'my-form',
-    apiUrl: 'https://api.forms.example/v1',
+    formId: "my-form",
+    apiUrl: "https://api.forms.example/v1",
     enableOffline: true,
     onSubmit: async (data) => {
-      console.log('Submitted:', data);
-    }
+      console.log("Submitted:", data);
+    },
   };
 
   return <FormViewer schema={schema} config={config} />;
@@ -71,12 +71,12 @@ function App() {
 ### Server-Side Rendering
 
 ```tsx
-import { renderFormHTML, renderFormStyles, generateHydrationScript } from '@forms/runtime/ssr';
+import { renderFormHTML, renderFormStyles, generateHydrationScript } from "@forms/runtime/ssr";
 
 // In your server
-app.get('/form/:id', async (req, res) => {
+app.get("/form/:id", async (req, res) => {
   const schema = await fetchFormSchema(req.params.id);
-  
+
   const html = `
     <!DOCTYPE html>
     <html>
@@ -85,15 +85,15 @@ app.get('/form/:id', async (req, res) => {
       </head>
       <body>
         ${renderFormHTML({ schema })}
-        ${generateHydrationScript(schema, { 
+        ${generateHydrationScript(schema, {
           formId: schema.id,
-          apiUrl: process.env.API_URL 
+          apiUrl: process.env.API_URL,
         })}
         <script src="/runtime.js" defer></script>
       </body>
     </html>
   `;
-  
+
   res.send(html);
 });
 ```
@@ -104,8 +104,8 @@ app.get('/form/:id', async (req, res) => {
 
 ```css
 .fr-container {
-  --fr-primary: #4F46E5;
-  --fr-font: 'Inter', sans-serif;
+  --fr-primary: #4f46e5;
+  --fr-font: "Inter", sans-serif;
   --fr-radius: 8px;
   --fr-spacing: 1.25rem;
 }
@@ -114,25 +114,25 @@ app.get('/form/:id', async (req, res) => {
 ### Custom Field Types
 
 ```tsx
-import { FormField } from '@forms/runtime';
+import { FormField } from "@forms/runtime";
 
 // Extend with your custom field
 function CustomField({ block, value, onChange }) {
-  if (block.type === 'custom-map') {
+  if (block.type === "custom-map") {
     return <MapPicker value={value} onChange={onChange} />;
   }
-  
+
   return <FormField {...props} />;
 }
 ```
 
 ## Bundle Size
 
-| Export | Size (gzip) |
-|--------|------------|
-| Full bundle | 28 KB |
-| Core only | 18 KB |
-| SSR only | 8 KB |
+| Export      | Size (gzip) |
+| ----------- | ----------- |
+| Full bundle | 28 KB       |
+| Core only   | 18 KB       |
+| SSR only    | 8 KB        |
 
 ## Browser Support
 

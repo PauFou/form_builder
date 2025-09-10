@@ -3,6 +3,7 @@
 ## Vue d'ensemble
 
 Ces tests E2E vérifient le workflow complet de la plateforme de formulaires, incluant :
+
 - Création de formulaire avec plusieurs types de champs (texte, fichier, signature)
 - Publication du formulaire
 - Soumission avec upload de fichier et capture de signature
@@ -22,26 +23,31 @@ Ces tests E2E vérifient le workflow complet de la plateforme de formulaires, in
 ## Commandes
 
 ### Lancer tous les tests E2E
+
 ```bash
 pnpm test:e2e
 ```
 
 ### Lancer uniquement le test de workflow complet
+
 ```bash
 pnpm test:e2e:full
 ```
 
 ### Mode UI interactif (pour debug)
+
 ```bash
 pnpm test:e2e:ui
 ```
 
 ### Afficher le rapport HTML
+
 ```bash
 pnpm test:e2e:report
 ```
 
 ### Lancer le webhook receiver manuellement
+
 ```bash
 pnpm webhook:start
 # ou
@@ -62,7 +68,7 @@ node scripts/webhook-receiver.js
 Les tests incluent plusieurs mécanismes pour gérer la flakiness :
 
 1. **Retries automatiques** : 2 retries en cas d'échec
-2. **Timeouts appropriés** : 
+2. **Timeouts appropriés** :
    - 30s pour les opérations longues (publication, webhook)
    - 10s pour les opérations standard
 3. **Wait for network idle** : Attente que le réseau soit inactif
@@ -71,16 +77,19 @@ Les tests incluent plusieurs mécanismes pour gérer la flakiness :
 ## Debug des échecs
 
 1. **Consulter le rapport HTML** :
+
    ```bash
    pnpm test:e2e:report
    ```
 
 2. **Vérifier les logs du webhook receiver** :
+
    ```bash
    curl http://localhost:9000/webhooks
    ```
 
 3. **Mode debug avec UI** :
+
    ```bash
    PWDEBUG=1 pnpm test:e2e:full
    ```
@@ -97,17 +106,21 @@ Les tests incluent plusieurs mécanismes pour gérer la flakiness :
 ## Troubleshooting
 
 ### "Webhook receiver not ready"
+
 - Vérifier que le port 9000 est libre : `lsof -i :9000`
 - Lancer manuellement : `pnpm webhook:start`
 
 ### "Failed to create test user"
+
 - Vérifier que l'API Django est lancée
 - Vérifier les migrations : `cd services/api && python manage.py migrate`
 
 ### "Form not published"
+
 - Vérifier que Celery est lancé pour traiter les tâches async
 - Vérifier les logs Django pour les erreurs
 
 ### Tests lents
+
 - Utiliser `--workers=1` pour débugger
 - Désactiver les vidéos : `--video=off`

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@forms/ui';
-import { motion } from 'framer-motion';
-import { Check, X, Sparkles } from 'lucide-react';
+import { useState } from "react";
+import { Button } from "@forms/ui";
+import { motion } from "framer-motion";
+import { Check, X, Sparkles } from "lucide-react";
 
 type Feature = {
   name: string;
@@ -14,41 +14,47 @@ type Feature = {
 };
 
 const features: Feature[] = [
-  { name: 'Unlimited Forms', free: true, pro: true, category: 'Core' },
-  { name: 'Unlimited Responses', free: true, pro: true, category: 'Core' },
-  { name: 'Unlimited Questions per form', free: true, pro: true, category: 'Core' },
-  { name: 'Add Image to Forms', free: true, pro: true, category: 'Core' },
-  { name: 'Custom colors and fonts', free: true, pro: true, category: 'Design' },
-  { name: 'Logic builder', free: true, pro: true, category: 'Logic' },
-  { name: 'Score & calculations', free: true, pro: true, category: 'Logic' },
-  { name: 'Hidden fields', free: true, pro: true, category: 'Logic' },
-  { name: 'Embed forms', free: true, pro: true, category: 'Publishing' },
-  { name: 'Google Sheets integration', free: true, pro: true, category: 'Integrations' },
-  { name: 'Slack integration', free: true, pro: true, category: 'Integrations' },
-  { name: 'Zapier integration', free: true, pro: true, category: 'Integrations' },
-  { name: 'Email notification to self', free: true, pro: true, category: 'Notifications' },
-  { name: 'Multiple endings per form', free: true, pro: true, category: 'Logic' },
-  { name: 'Webhooks', free: true, pro: true, category: 'Developer' },
-  { name: 'Collect Signatures', free: true, pro: true, category: 'Fields' },
-  { name: 'Calendly integration', free: true, pro: true, category: 'Integrations' },
-  { name: 'Cal.com integration', free: true, pro: true, category: 'Integrations' },
-  { name: 'SavvyCal integration', free: true, pro: true, category: 'Integrations' },
-  { name: 'Workspaces (or folders)', free: true, pro: true, category: 'Organization' },
-  { name: 'Non English language support', free: true, pro: true, category: 'Languages' },
-  { name: 'Multiple language support', free: false, pro: true, category: 'Languages' },
-  { name: 'Custom fonts', free: false, pro: true, category: 'Design' },
-  { name: 'Redirect to a URL', free: false, pro: true, category: 'Publishing' },
-  { name: 'Add your brand logo', free: false, pro: true, category: 'Branding' },
-  { name: 'Customize form meta data', free: false, pro: true, category: 'SEO' },
-  { name: 'Remove Forms branding', free: false, pro: true, category: 'Branding' },
-  { name: 'Partial Submissions', free: false, pro: true, category: 'Data' },
-  { name: 'Refill link', free: false, pro: true, category: 'Data' },
-  { name: 'Custom Domains', free: false, pro: true, category: 'Publishing' },
-  { name: 'File Uploads', free: true, pro: true, details: 'Up to 10MB|Unlimited (FUP)' },
-  { name: 'Invite team members', free: false, pro: true, category: 'Team' },
-  { name: 'Collect Payments', free: false, pro: true, category: 'Commerce' },
-  { name: 'Google Tag Manager', free: false, pro: true, category: 'Analytics', details: 'For FB, TikTok Pixel etc.' },
-  { name: 'Form Analytics & Drop-off Rate', free: true, pro: true, details: 'Basic|Advanced' },
+  { name: "Unlimited Forms", free: true, pro: true, category: "Core" },
+  { name: "Unlimited Responses", free: true, pro: true, category: "Core" },
+  { name: "Unlimited Questions per form", free: true, pro: true, category: "Core" },
+  { name: "Add Image to Forms", free: true, pro: true, category: "Core" },
+  { name: "Custom colors and fonts", free: true, pro: true, category: "Design" },
+  { name: "Logic builder", free: true, pro: true, category: "Logic" },
+  { name: "Score & calculations", free: true, pro: true, category: "Logic" },
+  { name: "Hidden fields", free: true, pro: true, category: "Logic" },
+  { name: "Embed forms", free: true, pro: true, category: "Publishing" },
+  { name: "Google Sheets integration", free: true, pro: true, category: "Integrations" },
+  { name: "Slack integration", free: true, pro: true, category: "Integrations" },
+  { name: "Zapier integration", free: true, pro: true, category: "Integrations" },
+  { name: "Email notification to self", free: true, pro: true, category: "Notifications" },
+  { name: "Multiple endings per form", free: true, pro: true, category: "Logic" },
+  { name: "Webhooks", free: true, pro: true, category: "Developer" },
+  { name: "Collect Signatures", free: true, pro: true, category: "Fields" },
+  { name: "Calendly integration", free: true, pro: true, category: "Integrations" },
+  { name: "Cal.com integration", free: true, pro: true, category: "Integrations" },
+  { name: "SavvyCal integration", free: true, pro: true, category: "Integrations" },
+  { name: "Workspaces (or folders)", free: true, pro: true, category: "Organization" },
+  { name: "Non English language support", free: true, pro: true, category: "Languages" },
+  { name: "Multiple language support", free: false, pro: true, category: "Languages" },
+  { name: "Custom fonts", free: false, pro: true, category: "Design" },
+  { name: "Redirect to a URL", free: false, pro: true, category: "Publishing" },
+  { name: "Add your brand logo", free: false, pro: true, category: "Branding" },
+  { name: "Customize form meta data", free: false, pro: true, category: "SEO" },
+  { name: "Remove Forms branding", free: false, pro: true, category: "Branding" },
+  { name: "Partial Submissions", free: false, pro: true, category: "Data" },
+  { name: "Refill link", free: false, pro: true, category: "Data" },
+  { name: "Custom Domains", free: false, pro: true, category: "Publishing" },
+  { name: "File Uploads", free: true, pro: true, details: "Up to 10MB|Unlimited (FUP)" },
+  { name: "Invite team members", free: false, pro: true, category: "Team" },
+  { name: "Collect Payments", free: false, pro: true, category: "Commerce" },
+  {
+    name: "Google Tag Manager",
+    free: false,
+    pro: true,
+    category: "Analytics",
+    details: "For FB, TikTok Pixel etc.",
+  },
+  { name: "Form Analytics & Drop-off Rate", free: true, pro: true, details: "Basic|Advanced" },
 ];
 
 const competitorPricing = [
@@ -65,7 +71,9 @@ export default function PricingPage() {
   const [submissions, setSubmissions] = useState(5000);
   const [showAllFeatures, setShowAllFeatures] = useState(false);
 
-  const currentPricing = competitorPricing.find(p => p.submissions >= submissions) || competitorPricing[competitorPricing.length - 1];
+  const currentPricing =
+    competitorPricing.find((p) => p.submissions >= submissions) ||
+    competitorPricing[competitorPricing.length - 1];
   const savings = currentPricing.typeform - currentPricing.us;
 
   const displayedFeatures = showAllFeatures ? features : features.slice(0, 20);
@@ -79,9 +87,7 @@ export default function PricingPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center max-w-3xl mx-auto"
         >
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Simple, transparent pricing
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Simple, transparent pricing</h1>
           <p className="text-xl text-muted-foreground">
             Everything you need to create professional forms. No surprises, no hidden fees.
           </p>
@@ -147,14 +153,14 @@ export default function PricingPage() {
           className="max-w-4xl mx-auto"
         >
           <h2 className="text-3xl font-bold text-center mb-12">Compare plans</h2>
-          
+
           <div className="bg-card rounded-3xl shadow-lg overflow-hidden">
             <div className="grid grid-cols-3 bg-muted/50 p-6">
               <div className="font-semibold">Feature</div>
               <div className="text-center font-semibold">FREE</div>
               <div className="text-center font-semibold">PRO</div>
             </div>
-            
+
             <div className="divide-y">
               {displayedFeatures.map((feature, index) => (
                 <motion.div
@@ -172,7 +178,7 @@ export default function PricingPage() {
                   </div>
                   <div className="text-center">
                     {feature.details && feature.free ? (
-                      <span className="text-sm">{feature.details.split('|')[0]}</span>
+                      <span className="text-sm">{feature.details.split("|")[0]}</span>
                     ) : feature.free ? (
                       <Check className="h-5 w-5 text-success mx-auto" />
                     ) : (
@@ -181,7 +187,9 @@ export default function PricingPage() {
                   </div>
                   <div className="text-center">
                     {feature.details && feature.pro ? (
-                      <span className="text-sm">{feature.details.split('|')[1] || feature.details.split('|')[0]}</span>
+                      <span className="text-sm">
+                        {feature.details.split("|")[1] || feature.details.split("|")[0]}
+                      </span>
                     ) : feature.pro ? (
                       <Check className="h-5 w-5 text-success mx-auto" />
                     ) : (
@@ -191,7 +199,7 @@ export default function PricingPage() {
                 </motion.div>
               ))}
             </div>
-            
+
             {!showAllFeatures && (
               <div className="p-6 text-center border-t">
                 <Button variant="ghost" onClick={() => setShowAllFeatures(true)}>
@@ -230,7 +238,7 @@ export default function PricingPage() {
                     onChange={(e) => setSubmissions(Number(e.target.value))}
                     className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
                     style={{
-                      background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${(Math.log(submissions) - Math.log(100)) / (Math.log(100000) - Math.log(100)) * 100}%, hsl(var(--muted)) ${(Math.log(submissions) - Math.log(100)) / (Math.log(100000) - Math.log(100)) * 100}%, hsl(var(--muted)) 100%)`
+                      background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${((Math.log(submissions) - Math.log(100)) / (Math.log(100000) - Math.log(100))) * 100}%, hsl(var(--muted)) ${((Math.log(submissions) - Math.log(100)) / (Math.log(100000) - Math.log(100))) * 100}%, hsl(var(--muted)) 100%)`,
                     }}
                   />
                   <div className="flex justify-between mt-2 text-sm text-muted-foreground">
@@ -283,7 +291,8 @@ export default function PricingPage() {
             <div>
               <h3 className="font-semibold mb-2">When will Pro features be available?</h3>
               <p className="text-muted-foreground">
-                We're currently in beta. Pro features will be available soon, and early adopters will get special pricing!
+                We're currently in beta. Pro features will be available soon, and early adopters
+                will get special pricing!
               </p>
             </div>
             <div>
@@ -295,7 +304,8 @@ export default function PricingPage() {
             <div>
               <h3 className="font-semibold mb-2">Can I change plans anytime?</h3>
               <p className="text-muted-foreground">
-                Yes! You can upgrade or downgrade your plan anytime. Changes take effect immediately.
+                Yes! You can upgrade or downgrade your plan anytime. Changes take effect
+                immediately.
               </p>
             </div>
           </div>

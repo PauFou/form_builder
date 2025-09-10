@@ -4,11 +4,11 @@
 
 ### Severity Levels
 
-| Level | Description | Response Time | Examples |
-|-------|-------------|---------------|----------|
-| SEV1 | Complete outage | < 15 mins | API down, data loss |
-| SEV2 | Major degradation | < 1 hour | Submissions failing, auth broken |
-| SEV3 | Minor issues | < 4 hours | Slow queries, UI glitches |
+| Level | Description       | Response Time | Examples                         |
+| ----- | ----------------- | ------------- | -------------------------------- |
+| SEV1  | Complete outage   | < 15 mins     | API down, data loss              |
+| SEV2  | Major degradation | < 1 hour      | Submissions failing, auth broken |
+| SEV3  | Minor issues      | < 4 hours     | Slow queries, UI glitches        |
 
 ### On-Call Rotation
 
@@ -48,6 +48,7 @@
 ### Deployment
 
 #### API Deployment
+
 ```bash
 # 1. Run migrations (if needed)
 kubectl exec -it deployment/api -- python manage.py migrate
@@ -63,6 +64,7 @@ kubectl rollout undo deployment/api
 ```
 
 #### Frontend Deployment
+
 ```bash
 # 1. Build and push to CDN
 pnpm build:prod
@@ -76,29 +78,31 @@ wrangler publish --env production
 ### Database Operations
 
 #### Emergency Queries
+
 ```sql
 -- Find stuck webhooks
-SELECT * FROM webhook_deliveries 
-WHERE status = 'pending' 
+SELECT * FROM webhook_deliveries
+WHERE status = 'pending'
 AND next_retry_at < NOW() - INTERVAL '1 hour';
 
 -- Check submission rate
-SELECT DATE_TRUNC('hour', created_at) as hour, COUNT(*) 
-FROM submissions 
-WHERE created_at > NOW() - INTERVAL '24 hours' 
-GROUP BY hour 
+SELECT DATE_TRUNC('hour', created_at) as hour, COUNT(*)
+FROM submissions
+WHERE created_at > NOW() - INTERVAL '24 hours'
+GROUP BY hour
 ORDER BY hour DESC;
 
 -- Find large forms causing issues
-SELECT f.id, f.title, COUNT(s.id) as submission_count 
-FROM forms f 
-JOIN submissions s ON s.form_id = f.id 
-WHERE f.created_at > NOW() - INTERVAL '7 days' 
-GROUP BY f.id, f.title 
+SELECT f.id, f.title, COUNT(s.id) as submission_count
+FROM forms f
+JOIN submissions s ON s.form_id = f.id
+WHERE f.created_at > NOW() - INTERVAL '7 days'
+GROUP BY f.id, f.title
 HAVING COUNT(s.id) > 10000;
 ```
 
 #### Backup & Restore
+
 ```bash
 # Manual backup
 pg_dump $POSTGRES_URL > backup_$(date +%Y%m%d_%H%M%S).sql
@@ -113,6 +117,7 @@ pgbackrest --stanza=prod --type=time --target="2024-03-15 14:00:00" restore
 ### Scaling Operations
 
 #### Horizontal Scaling
+
 ```bash
 # Scale API pods
 kubectl scale deployment/api --replicas=10
@@ -125,6 +130,7 @@ kubectl get hpa
 ```
 
 #### Vertical Scaling
+
 ```yaml
 # Update resources in k8s
 kubectl edit deployment/api
@@ -134,6 +140,7 @@ kubectl edit deployment/api
 ### Cache Operations
 
 #### Redis Operations
+
 ```bash
 # Connect to Redis
 redis-cli -h $REDIS_HOST
@@ -153,6 +160,7 @@ redis-cli FLUSHDB
 ### High Error Rate
 
 1. **Check Logs**
+
    ```bash
    kubectl logs -f deployment/api --tail=100
    kubectl logs -f deployment/celery-worker --tail=100
@@ -171,13 +179,14 @@ redis-cli FLUSHDB
 ### Slow Performance
 
 1. **Identify Bottleneck**
+
    ```bash
    # Check slow queries
-   SELECT query, mean_time, calls 
-   FROM pg_stat_statements 
-   ORDER BY mean_time DESC 
+   SELECT query, mean_time, calls
+   FROM pg_stat_statements
+   ORDER BY mean_time DESC
    LIMIT 10;
-   
+
    # Check queue depth
    celery -A api inspect active_queues
    ```
@@ -190,15 +199,17 @@ redis-cli FLUSHDB
 ### Webhook Failures
 
 1. **Check Delivery Status**
+
    ```sql
-   SELECT webhook_id, COUNT(*), AVG(attempt) 
-   FROM webhook_deliveries 
-   WHERE status = 'failed' 
-   AND created_at > NOW() - INTERVAL '1 hour' 
+   SELECT webhook_id, COUNT(*), AVG(attempt)
+   FROM webhook_deliveries
+   WHERE status = 'failed'
+   AND created_at > NOW() - INTERVAL '1 hour'
    GROUP BY webhook_id;
    ```
 
 2. **Retry Failed Webhooks**
+
    ```bash
    python manage.py retry_webhooks --hours=24
    ```
@@ -211,11 +222,13 @@ redis-cli FLUSHDB
 ### Authentication Issues
 
 1. **Check JWT Settings**
+
    ```bash
    echo $JWT_SECRET | wc -c  # Should be > 32
    ```
 
 2. **Token Validation**
+
    ```python
    # Debug token issues
    python manage.py shell
@@ -234,13 +247,13 @@ redis-cli FLUSHDB
 
 ### Key Metrics
 
-| Metric | Target | Alert Threshold |
-|--------|--------|-----------------|
-| API Latency (p95) | < 200ms | > 500ms |
-| Error Rate | < 0.1% | > 1% |
-| Queue Depth | < 1000 | > 5000 |
-| DB Connections | < 80% | > 90% |
-| Disk Usage | < 80% | > 90% |
+| Metric            | Target  | Alert Threshold |
+| ----------------- | ------- | --------------- |
+| API Latency (p95) | < 200ms | > 500ms         |
+| Error Rate        | < 0.1%  | > 1%            |
+| Queue Depth       | < 1000  | > 5000          |
+| DB Connections    | < 80%   | > 90%           |
+| Disk Usage        | < 80%   | > 90%           |
 
 ### Dashboard Links
 
@@ -252,16 +265,19 @@ redis-cli FLUSHDB
 ### Alert Runbooks
 
 #### High Memory Usage
+
 1. Check for memory leaks: `kubectl top pods`
 2. Review recent deployments
 3. Restart pods if needed: `kubectl rollout restart deployment/api`
 
 #### Database Connection Exhaustion
+
 1. Check active connections: `SELECT count(*) FROM pg_stat_activity;`
 2. Kill idle connections: `SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE state = 'idle' AND state_change < NOW() - INTERVAL '10 minutes';`
 3. Increase connection pool size
 
 #### Queue Backup
+
 1. Check worker status: `celery -A api inspect stats`
 2. Check for stuck tasks: `celery -A api inspect active`
 3. Scale workers: `kubectl scale deployment/celery-worker --replicas=10`
@@ -272,6 +288,7 @@ redis-cli FLUSHDB
 ### Emergency Procedures
 
 #### Suspected Breach
+
 1. **Immediately**:
    - Rotate all secrets
    - Review audit logs
@@ -288,6 +305,7 @@ redis-cli FLUSHDB
    - Update security measures
 
 #### Key Rotation
+
 ```bash
 # Rotate JWT secret
 kubectl create secret generic jwt-secret --from-literal=secret=$NEW_SECRET --dry-run=client -o yaml | kubectl apply -f -
@@ -302,6 +320,7 @@ python manage.py rotate_webhook_secrets
 ### Compliance
 
 #### GDPR Data Requests
+
 ```bash
 # Export user data
 python manage.py export_user_data --email=user@example.com
@@ -324,12 +343,12 @@ python manage.py anonymize_old_submissions --days=365
 
 ### Key Services
 
-| Service | Contact | Account # |
-|---------|---------|-----------|
-| AWS | support.aws.com | 123456 |
-| Cloudflare | support.cloudflare.com | CF-789 |
-| PagerDuty | support.pagerduty.com | PD-456 |
-| Sentry | support.sentry.io | SEN-123 |
+| Service    | Contact                | Account # |
+| ---------- | ---------------------- | --------- |
+| AWS        | support.aws.com        | 123456    |
+| Cloudflare | support.cloudflare.com | CF-789    |
+| PagerDuty  | support.pagerduty.com  | PD-456    |
+| Sentry     | support.sentry.io      | SEN-123   |
 
 ## 🔄 Maintenance Windows
 

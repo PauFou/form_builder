@@ -1,10 +1,10 @@
-import { Page } from '@playwright/test';
+import { Page } from "@playwright/test";
 
 export class AuthHelper {
   private page: Page;
   private apiUrl: string;
 
-  constructor(page: Page, apiUrl = 'http://localhost:8000') {
+  constructor(page: Page, apiUrl = "http://localhost:8000") {
     this.page = page;
     this.apiUrl = apiUrl;
   }
@@ -12,22 +12,22 @@ export class AuthHelper {
   /**
    * Login to the application
    */
-  async login(email = 'test@example.com', password = 'testpassword123'): Promise<void> {
+  async login(email = "test@example.com", password = "testpassword123"): Promise<void> {
     // Navigate to login page
-    await this.page.goto('/login');
-    
+    await this.page.goto("/login");
+
     // Fill login form
     await this.page.fill('input[name="email"]', email);
     await this.page.fill('input[name="password"]', password);
-    
+
     // Submit form
     await this.page.click('button[type="submit"]');
-    
+
     // Wait for redirect to forms page
-    await this.page.waitForURL('/forms', { timeout: 10000 });
-    
+    await this.page.waitForURL("/forms", { timeout: 10000 });
+
     // Wait for network to be idle
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState("networkidle");
   }
 
   /**
@@ -36,9 +36,9 @@ export class AuthHelper {
   async setupApiAuth(): Promise<string> {
     // Get auth token from localStorage or cookies
     const token = await this.page.evaluate(() => {
-      return localStorage.getItem('auth_token') || '';
+      return localStorage.getItem("auth_token") || "";
     });
-    
+
     return token;
   }
 
@@ -52,21 +52,21 @@ export class AuthHelper {
     } catch (error) {
       // If login fails, create user via API
       const response = await fetch(`${this.apiUrl}/api/v1/auth/register`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: 'test@example.com',
-          password: 'testpassword123',
-          name: 'Test User',
+          email: "test@example.com",
+          password: "testpassword123",
+          name: "Test User",
         }),
       });
-      
+
       if (!response.ok) {
-        throw new Error('Failed to create test user');
+        throw new Error("Failed to create test user");
       }
-      
+
       // Now login
       await this.login();
     }
@@ -78,11 +78,11 @@ export class AuthHelper {
   async logout(): Promise<void> {
     // Click on user menu
     await this.page.click('[data-testid="user-menu"]');
-    
+
     // Click logout
     await this.page.click('[data-testid="logout-button"]');
-    
+
     // Wait for redirect to login
-    await this.page.waitForURL('/login');
+    await this.page.waitForURL("/login");
   }
 }

@@ -2,15 +2,19 @@
 
 ## Erreurs courantes et solutions
 
-### 1. "Module not found" 
+### 1. "Module not found"
+
 **Solution**: Vérifiez que tous les imports utilisent des chemins relatifs ou `@forms/ui`
 
 ### 2. "Cannot read properties of undefined"
+
 **Causes possibles**:
+
 - Le store n'est pas initialisé
 - Un composant essaie d'accéder à une propriété qui n'existe pas
 
 ### 3. "Hydration mismatch"
+
 **Solution**: Vérifiez que les composants client sont marqués avec 'use client'
 
 ## Comment déboguer

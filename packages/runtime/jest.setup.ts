@@ -1,10 +1,10 @@
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
 
 // Polyfill for structuredClone (Node < 17)
 global.structuredClone = (obj) => JSON.parse(JSON.stringify(obj));
 
 // Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
     matches: false,

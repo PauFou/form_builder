@@ -18,7 +18,7 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <main className="flex min-h-screen flex-col">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Aurora Background */}
@@ -882,6 +882,6 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
-    </div>
+    </main>
   );
 }

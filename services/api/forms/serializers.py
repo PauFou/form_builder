@@ -18,7 +18,7 @@ class FormSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at'
         ]
         read_only_fields = [
-            'id', 'submission_count', 'view_count',
+            'id', 'submission_count', 'view_count', 'organization',
             'created_by', 'created_at', 'updated_at'
         ]
     
@@ -39,9 +39,9 @@ class FormSerializer(serializers.ModelSerializer):
     
     def validate_slug(self, value):
         """Ensure slug is unique within organization"""
-        if value:
+        if value and 'organization' in self.initial_data:
             qs = Form.objects.filter(
-                organization=self.context['request'].user.membership.organization,
+                organization_id=self.initial_data['organization'],
                 slug=value
             )
             if self.instance:

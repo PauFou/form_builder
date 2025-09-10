@@ -1,11 +1,23 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useFormBuilderStore } from '../../../lib/stores/form-builder-store';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Progress, RadioGroup, RadioGroupItem, Label, Checkbox } from '@forms/ui';
-import { ChevronLeft, ChevronRight, Send } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import type { Block, Form } from '@forms/contracts';
+import { useEffect, useState } from "react";
+import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Progress,
+  RadioGroup,
+  RadioGroupItem,
+  Label,
+  Checkbox,
+} from "@forms/ui";
+import { ChevronLeft, ChevronRight, Send } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import type { Block, Form } from "@forms/contracts";
 
 // Block render components
 function ShortTextBlock({ block }: { block: Block }) {
@@ -15,9 +27,7 @@ function ShortTextBlock({ block }: { block: Block }) {
         {block.question}
         {block.required && <span className="text-destructive ml-1">*</span>}
       </Label>
-      {block.description && (
-        <p className="text-sm text-muted-foreground">{block.description}</p>
-      )}
+      {block.description && <p className="text-sm text-muted-foreground">{block.description}</p>}
       <input
         type="text"
         id={block.id}
@@ -36,9 +46,7 @@ function LongTextBlock({ block }: { block: Block }) {
         {block.question}
         {block.required && <span className="text-destructive ml-1">*</span>}
       </Label>
-      {block.description && (
-        <p className="text-sm text-muted-foreground">{block.description}</p>
-      )}
+      {block.description && <p className="text-sm text-muted-foreground">{block.description}</p>}
       <textarea
         id={block.id}
         className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary min-h-[120px] resize-y"
@@ -56,9 +64,7 @@ function EmailBlock({ block }: { block: Block }) {
         {block.question}
         {block.required && <span className="text-destructive ml-1">*</span>}
       </Label>
-      {block.description && (
-        <p className="text-sm text-muted-foreground">{block.description}</p>
-      )}
+      {block.description && <p className="text-sm text-muted-foreground">{block.description}</p>}
       <input
         type="email"
         id={block.id}
@@ -77,9 +83,7 @@ function DateBlock({ block }: { block: Block }) {
         {block.question}
         {block.required && <span className="text-destructive ml-1">*</span>}
       </Label>
-      {block.description && (
-        <p className="text-sm text-muted-foreground">{block.description}</p>
-      )}
+      {block.description && <p className="text-sm text-muted-foreground">{block.description}</p>}
       <input
         type="date"
         id={block.id}
@@ -92,16 +96,14 @@ function DateBlock({ block }: { block: Block }) {
 
 function SelectBlock({ block }: { block: Block }) {
   const options = block.options || [];
-  
+
   return (
     <div className="space-y-2">
       <Label>
         {block.question}
         {block.required && <span className="text-destructive ml-1">*</span>}
       </Label>
-      {block.description && (
-        <p className="text-sm text-muted-foreground">{block.description}</p>
-      )}
+      {block.description && <p className="text-sm text-muted-foreground">{block.description}</p>}
       <RadioGroup defaultValue="">
         {options.map((option) => (
           <div key={option.id} className="flex items-center space-x-2">
@@ -118,16 +120,14 @@ function SelectBlock({ block }: { block: Block }) {
 
 function CheckboxGroupBlock({ block }: { block: Block }) {
   const options = block.options || [];
-  
+
   return (
     <div className="space-y-2">
       <Label>
         {block.question}
         {block.required && <span className="text-destructive ml-1">*</span>}
       </Label>
-      {block.description && (
-        <p className="text-sm text-muted-foreground">{block.description}</p>
-      )}
+      {block.description && <p className="text-sm text-muted-foreground">{block.description}</p>}
       <div className="space-y-3">
         {options.map((option) => (
           <div key={option.id} className="flex items-center space-x-2">
@@ -155,7 +155,7 @@ export default function PreviewPage({ params }: { params: { id: string } }) {
   const { form } = useFormBuilderStore();
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [submitted, setSubmitted] = useState(false);
-  
+
   // In a real app, we'd fetch the form by ID
   // For now, we'll use the form from the store
   useEffect(() => {
@@ -163,28 +163,30 @@ export default function PreviewPage({ params }: { params: { id: string } }) {
       // Initialize with a test form if none exists
       useFormBuilderStore.getState().initializeForm({
         id: params.id,
-        title: 'Sample Form',
-        description: 'This is a preview of your form',
-        pages: [{
-          id: 'page-1',
-          title: 'Welcome',
-          blocks: [
-            {
-              id: '1',
-              type: 'short_text',
-              question: 'What is your name?',
-              required: true,
-            },
-            {
-              id: '2',
-              type: 'email',
-              question: 'What is your email?',
-              required: true,
-            }
-          ]
-        }],
+        title: "Sample Form",
+        description: "This is a preview of your form",
+        pages: [
+          {
+            id: "page-1",
+            title: "Welcome",
+            blocks: [
+              {
+                id: "1",
+                type: "short_text",
+                question: "What is your name?",
+                required: true,
+              },
+              {
+                id: "2",
+                type: "email",
+                question: "What is your email?",
+                required: true,
+              },
+            ],
+          },
+        ],
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       });
     }
   }, [params.id, form]);
@@ -230,17 +232,13 @@ export default function PreviewPage({ params }: { params: { id: string } }) {
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Thank you!</CardTitle>
-              <CardDescription>
-                Your response has been recorded.
-              </CardDescription>
+              <CardDescription>Your response has been recorded.</CardDescription>
             </CardHeader>
             <CardContent className="text-center">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Send className="h-8 w-8 text-primary" />
               </div>
-              <p className="text-sm text-muted-foreground">
-                You can close this window now.
-              </p>
+              <p className="text-sm text-muted-foreground">You can close this window now.</p>
             </CardContent>
           </Card>
         </motion.div>
@@ -271,18 +269,22 @@ export default function PreviewPage({ params }: { params: { id: string } }) {
             <Card>
               <CardHeader>
                 <CardTitle>{form.title}</CardTitle>
-                {form.description && (
-                  <CardDescription>{form.description}</CardDescription>
-                )}
+                {form.description && <CardDescription>{form.description}</CardDescription>}
               </CardHeader>
               <CardContent>
-                <form onSubmit={(e) => { e.preventDefault(); handleNext(); }}>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleNext();
+                  }}
+                >
                   {currentPage && (
                     <div className="space-y-6">
-                      {currentPage.title && currentPage.title !== `Page ${currentPageIndex + 1}` && (
-                        <h3 className="text-lg font-semibold">{currentPage.title}</h3>
-                      )}
-                      
+                      {currentPage.title &&
+                        currentPage.title !== `Page ${currentPageIndex + 1}` && (
+                          <h3 className="text-lg font-semibold">{currentPage.title}</h3>
+                        )}
+
                       {currentPage.blocks.map((block) => {
                         const BlockRenderer = BLOCK_RENDERERS[block.type];
                         if (!BlockRenderer) {

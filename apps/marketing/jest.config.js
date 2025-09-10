@@ -13,6 +13,7 @@ const customJestConfig = {
   },
   testEnvironment: "jest-environment-jsdom",
   testMatch: ["**/__tests__/**/*.{js,jsx,ts,tsx}", "**/*.{spec,test}.{js,jsx,ts,tsx}"],
+  testPathIgnorePatterns: ["/node_modules/", "/.next/", "/e2e/"],
   collectCoverageFrom: [
     "**/*.{js,jsx,ts,tsx}",
     "!**/*.d.ts",

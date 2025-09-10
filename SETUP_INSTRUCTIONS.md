@@ -13,6 +13,7 @@
 To run the full stack, you need PostgreSQL and Redis running. Choose one option:
 
 ### Option 1: Docker (Easiest)
+
 ```bash
 # Start Docker Desktop first, then:
 docker-compose up -d postgres redis
@@ -25,6 +26,7 @@ python manage.py runserver
 ```
 
 ### Option 2: Local Services (macOS)
+
 ```bash
 # Start PostgreSQL (if installed via Homebrew)
 brew services start postgresql@16
@@ -49,6 +51,7 @@ python manage.py runserver
 ## Testing Status
 
 ### Frontend Tests (Working ✅)
+
 ```bash
 # Simple E2E test (frontend only)
 pnpm test:e2e:simple
@@ -58,7 +61,9 @@ pnpm test:e2e -- e2e/basic-webhook.spec.ts
 ```
 
 ### Backend API (Requires PostgreSQL + Redis)
+
 Once PostgreSQL and Redis are running:
+
 ```bash
 cd services/api
 source .venv/bin/activate

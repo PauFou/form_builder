@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useDraggable } from '@dnd-kit/core';
-import { CSS } from '@dnd-kit/utilities';
-import { cn } from '@forms/ui';
-import { LucideIcon } from 'lucide-react';
+import { useDraggable } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities";
+import { cn } from "@forms/ui";
+import { LucideIcon } from "lucide-react";
 
 interface DraggableBlockProps {
   block: {
@@ -19,7 +19,7 @@ export function DraggableBlock({ block }: DraggableBlockProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `library-${block.id}`,
     data: {
-      source: 'library',
+      source: "library",
       blockType: block.type,
     },
   });

@@ -122,14 +122,14 @@ class FormAPITestCase(TestCase):
         version = FormVersion.objects.create(
             form=form,
             version=1,
-            schema_json={'blocks': []}
+            schema={'blocks': []}
         )
         
         self.client.force_authenticate(user=self.owner)
         
         response = self.client.post(f'/v1/forms/{form.id}/publish/', {
             'version_id': str(version.id),
-            'canary_percent': 10
+            'canary_percentage': 10
         })
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -142,7 +142,7 @@ class FormAPITestCase(TestCase):
         # Check version was published
         version.refresh_from_db()
         self.assertIsNotNone(version.published_at)
-        self.assertEqual(version.canary_percent, 10)
+        self.assertEqual(version.canary_percentage, 10)
     
     def test_duplicate_form(self):
         """Test duplicating a form"""
@@ -156,7 +156,7 @@ class FormAPITestCase(TestCase):
         FormVersion.objects.create(
             form=form,
             version=1,
-            schema_json={'blocks': [{'type': 'text', 'id': '1'}]}
+            schema={'blocks': [{'type': 'text', 'id': '1'}]}
         )
         
         self.client.force_authenticate(user=self.editor)
@@ -170,4 +170,4 @@ class FormAPITestCase(TestCase):
         # Check new form has version with same schema
         new_form = Form.objects.get(id=response.data['id'])
         new_version = new_form.versions.first()
-        self.assertEqual(new_version.schema_json['blocks'][0]['type'], 'text')
+        self.assertEqual(new_version.schema['blocks'][0]['type'], 'text')
