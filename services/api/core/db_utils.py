@@ -51,8 +51,6 @@ def get_array_field(base_field, **kwargs):
     Returns appropriate ArrayField based on database backend.
     Uses PostgreSQL ArrayField when available, falls back to custom implementation.
     """
-    if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql':
-        from django.contrib.postgres.fields import ArrayField as PGArrayField
-        return PGArrayField(base_field, **kwargs)
-    else:
-        return ArrayField(base_field, **kwargs)
+    # For now, always use JSONField-based ArrayField to avoid PostgreSQL array type issues
+    # TODO: Fix migration to properly handle PostgreSQL arrays
+    return ArrayField(base_field, **kwargs)
