@@ -79,6 +79,22 @@ export default defineConfig([
       options.target = "node18";
     },
   },
+  // Embed script bundle (for script tag embedding)
+  {
+    entry: ["src/embed.ts"],
+    format: ["iife"],
+    dts: false,
+    splitting: false,
+    sourcemap: false,
+    clean: false,
+    minify: true,
+    globalName: "Forms",
+    esbuildOptions(options) {
+      options.target = "es2015";
+      options.platform = "browser";
+      options.bundle = true;
+    },
+  },
   // React component bundle (separate, optional)
   {
     entry: ["src/FormViewer.tsx"],

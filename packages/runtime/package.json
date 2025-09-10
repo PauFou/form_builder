@@ -10,8 +10,8 @@
   ],
   "scripts": {
     "dev": "tsup --watch",
-    "build": "tsup && npm run build:embed && npm run size",
-    "build:embed": "esbuild src/embed.ts --bundle --minify --format=iife --target=es2020 --outfile=dist/embed.js",
+    "build": "tsup && npm run size",
+    "build:embed": "echo 'embed.js is built by tsup'",
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",

@@ -113,6 +113,11 @@ jobs:
           python -m pytest -xvs --cov=. --cov-report=xml --cov-report=term
         env:
           DJANGO_SETTINGS_MODULE: api.settings_test
+          POSTGRES_URL: "postgresql://postgres:postgres@localhost:5432/test_forms"
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/test_forms"
+          SECRET_KEY: "test-secret-key-for-ci"
+          JWT_SECRET: "test-jwt-secret"
+          HMAC_SECRET: "test-hmac-secret"
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
@@ -153,18 +158,40 @@ jobs:
         run: |
           # Start webhook receiver
           pnpm webhook:start &
+          WEBHOOK_PID=$!
           
           # Start frontend apps
           pnpm --filter @forms/marketing dev &
+          MARKETING_PID=$!
+          
           pnpm --filter @forms/builder dev &
+          BUILDER_PID=$!
           
-          # Wait for services to be ready
-          sleep 20
+          # Store PIDs for cleanup
+          echo $WEBHOOK_PID > webhook.pid
+          echo $MARKETING_PID > marketing.pid
+          echo $BUILDER_PID > builder.pid
           
-          # Check services are running
-          curl -f http://localhost:3000 || (echo "Marketing app not ready" && exit 1)
-          curl -f http://localhost:3001 || (echo "Builder app not ready" && exit 1)
-          curl -f http://localhost:9000/health || (echo "Webhook receiver not ready" && exit 1)
+          # Wait for services with retries
+          echo "Waiting for services to start..."
+          for i in {1..30}; do
+            WEBHOOK_OK=$(curl -sf http://localhost:9000/health >/dev/null 2>&1 && echo "true" || echo "false")
+            MARKETING_OK=$(curl -sf http://localhost:3000 >/dev/null 2>&1 && echo "true" || echo "false")
+            BUILDER_OK=$(curl -sf http://localhost:3001 >/dev/null 2>&1 && echo "true" || echo "false")
+            
+            if [[ "$WEBHOOK_OK" == "true" && "$MARKETING_OK" == "true" && "$BUILDER_OK" == "true" ]]; then
+              echo "✅ All services are ready!"
+              break
+            fi
+            
+            echo "Attempt $i/30: Webhook=$WEBHOOK_OK Marketing=$MARKETING_OK Builder=$BUILDER_OK"
+            sleep 2
+          done
+          
+          # Final check
+          curl -f http://localhost:9000/health || (echo "❌ Webhook receiver not ready" && exit 1)
+          curl -f http://localhost:3000 || (echo "❌ Marketing app not ready" && exit 1)
+          curl -f http://localhost:3001 || (echo "❌ Builder app not ready" && exit 1)
         env:
           CI: true
           NODE_ENV: test
@@ -272,9 +299,31 @@ jobs:
 
       - name: Start applications
         run: |
+          # Start apps in background
           pnpm --filter @forms/marketing dev &
+          MARKETING_PID=$!
+          
           pnpm --filter @forms/builder dev &
-          sleep 15
+          BUILDER_PID=$!
+          
+          # Wait for apps with retries
+          echo "Waiting for applications to start..."
+          for i in {1..30}; do
+            MARKETING_OK=$(curl -sf http://localhost:3000 >/dev/null 2>&1 && echo "true" || echo "false")
+            BUILDER_OK=$(curl -sf http://localhost:3001 >/dev/null 2>&1 && echo "true" || echo "false")
+            
+            if [[ "$MARKETING_OK" == "true" && "$BUILDER_OK" == "true" ]]; then
+              echo "✅ Applications are ready!"
+              break
+            fi
+            
+            echo "Attempt $i/30: Marketing=$MARKETING_OK Builder=$BUILDER_OK"
+            sleep 2
+          done
+          
+          # Final check
+          curl -f http://localhost:3000 || (echo "❌ Marketing app not ready" && exit 1)
+          curl -f http://localhost:3001 || (echo "❌ Builder app not ready" && exit 1)
         env:
           CI: true
           NODE_ENV: test
