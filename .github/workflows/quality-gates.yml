@@ -82,6 +82,7 @@ jobs:
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
+        if: env.CODECOV_TOKEN != ''
         with:
           files: ./packages/*/coverage/lcov.info
           fail_ci_if_error: false
@@ -152,6 +153,7 @@ jobs:
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
+        if: env.CODECOV_TOKEN != ''
         with:
           file: ./services/api/coverage.xml
           flags: backend
@@ -424,20 +426,21 @@ jobs:
         run: pnpm audit --audit-level moderate
         continue-on-error: true
 
-      - name: Initialize CodeQL
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript,typescript
-          queries: security-extended
+      # Skip CodeQL - code scanning not enabled
+      # - name: Initialize CodeQL
+      #   if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+      #   uses: github/codeql-action/init@v3
+      #   with:
+      #     languages: javascript,typescript
+      #     queries: security-extended
 
-      - name: Autobuild
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: github/codeql-action/autobuild@v3
+      # - name: Autobuild
+      #   if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+      #   uses: github/codeql-action/autobuild@v3
 
-      - name: Perform CodeQL Analysis
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: github/codeql-action/analyze@v3
+      # - name: Perform CodeQL Analysis
+      #   if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+      #   uses: github/codeql-action/analyze@v3
 
   deployment-ready:
     name: Deployment Ready

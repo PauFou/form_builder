@@ -71,10 +71,13 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        if: env.CODECOV_TOKEN != ''
         with:
           files: ./apps/*/coverage/lcov.info,./packages/*/coverage/lcov.info
           flags: frontend
           fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   # Backend tests with Django
   test-backend:
@@ -138,10 +141,13 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        if: env.CODECOV_TOKEN != ''
         with:
           files: ./services/api/coverage.xml
           flags: backend
-          fail_ci_if_error: true
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   # E2E tests with Playwright
   test-e2e:
@@ -275,11 +281,12 @@ jobs:
           output: "trivy-results.sarif"
           severity: "CRITICAL,HIGH"
 
-      - name: Upload Trivy scan results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        if: always() && github.event_name != 'pull_request'
-        with:
-          sarif_file: "trivy-results.sarif"
+      # Skip SARIF upload - code scanning not enabled
+      # - name: Upload Trivy scan results to GitHub Security
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   if: always() && github.event_name != 'pull_request'
+      #   with:
+      #     sarif_file: "trivy-results.sarif"
 
       - name: Check npm vulnerabilities
         run: pnpm audit --audit-level=high || true
