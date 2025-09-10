@@ -230,7 +230,7 @@ jobs:
           NODE_ENV: test
 
       - name: Run E2E tests
-        run: pnpm exec playwright test e2e/simple-form.spec.ts --reporter=html
+        run: pnpm exec playwright test e2e/simple-form.spec.ts --config=playwright-ci.config.ts
         env:
           PLAYWRIGHT_BROWSERS_PATH: 0
           CI: true
