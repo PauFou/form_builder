@@ -185,7 +185,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
+        run: npx playwright@latest install --with-deps chromium
 
       - name: Build applications
         run: pnpm build
@@ -235,7 +235,6 @@ jobs:
       - name: Run E2E tests
         run: pnpm exec playwright test e2e/simple-form.spec.ts --config=playwright-ci.config.ts
         env:
-          PLAYWRIGHT_BROWSERS_PATH: 0
           CI: true
 
       - name: Upload E2E results
