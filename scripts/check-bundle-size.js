@@ -18,7 +18,7 @@ const BUDGETS = {
     name: "@forms/runtime (ESM)",
   },
   "@forms/runtime-embed": {
-    path: "packages/runtime/dist/embed.js",
+    path: "packages/runtime/dist/embed.global.js",
     maxSize: 5 * 1024, // 5KB
     critical: true,
     name: "@forms/runtime (embed)",
