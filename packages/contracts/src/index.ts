@@ -1,5 +1,5 @@
 // Re-export all types from form.contract.ts
-export * from './form.contract';
+export * from "./form.contract";
 
 // For backward compatibility, also export simplified types
 export interface Block {
@@ -47,5 +47,51 @@ export interface Form {
   logic?: Logic;
   createdAt?: Date;
   updatedAt?: Date;
+  [key: string]: any;
+}
+
+// Additional types needed by the builder
+export interface User {
+  id: string;
+  email: string;
+  username?: string;
+  firstName?: string;
+  lastName?: string;
+  [key: string]: any;
+}
+
+export interface Organization {
+  id: string;
+  name: string;
+  slug?: string;
+  [key: string]: any;
+}
+
+export interface FormVersion {
+  id: string;
+  version: number;
+  schema: any;
+  publishedAt?: Date;
+  [key: string]: any;
+}
+
+export interface CreateFormDto {
+  title: string;
+  description?: string;
+  organizationId?: string;
+  [key: string]: any;
+}
+
+export interface UpdateFormDto {
+  title?: string;
+  description?: string;
+  [key: string]: any;
+}
+
+export interface Integration {
+  id: string;
+  name: string;
+  type: string;
+  config?: any;
   [key: string]: any;
 }
