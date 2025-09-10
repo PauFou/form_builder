@@ -36,7 +36,7 @@ export default function DashboardPage() {
   const loadForms = async () => {
     try {
       const response = await listForms();
-      setForms(response.data?.forms || []);
+      setForms(response.forms || []);
     } catch (error) {
       console.error("Failed to load forms:", error);
     } finally {

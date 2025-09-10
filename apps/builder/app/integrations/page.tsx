@@ -83,7 +83,7 @@ export default function IntegrationsPage() {
 
   const { data: integrations, isLoading } = useQuery({
     queryKey: ["integrations", searchQuery],
-    queryFn: () => integrationsApi.list({ search: searchQuery }),
+    queryFn: () => integrationsApi.list(),
   });
 
   const createMutation = useMutation({
@@ -281,7 +281,7 @@ export default function IntegrationsPage() {
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {integrations?.results.map((integration: Integration) => {
+          {integrations?.data.integrations.map((integration: Integration) => {
             const Icon = integrationIcons[integration.type] || Webhook;
             return (
               <Card key={integration.id} className="hover:shadow-lg transition-shadow">
@@ -293,7 +293,9 @@ export default function IntegrationsPage() {
                       </div>
                       <div>
                         <CardTitle className="text-lg">{integration.name}</CardTitle>
-                        <CardDescription>{integration.type_display}</CardDescription>
+                        <CardDescription>
+                          {(integration as any).type_display || integration.type}
+                        </CardDescription>
                       </div>
                     </div>
                     <DropdownMenu>
@@ -383,7 +385,7 @@ export default function IntegrationsPage() {
         </div>
       )}
 
-      {integrations?.results.length === 0 && !isLoading && (
+      {integrations?.data.integrations.length === 0 && !isLoading && (
         <div className="text-center py-12">
           <h3 className="text-lg font-semibold mb-2">No integrations found</h3>
           <p className="text-muted-foreground mb-4">

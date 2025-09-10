@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { Label, Checkbox } from '@forms/ui';
-import { BlockProps } from './types';
-import { useState } from 'react';
+import { Label, Checkbox } from "@forms/ui";
+import { BlockProps } from "./types";
+import { useState } from "react";
 
 export function CheckboxGroupBlock({ block, isSelected, onUpdate }: BlockProps) {
   const [isEditingQuestion, setIsEditingQuestion] = useState(false);
-  const [question, setQuestion] = useState(block.question || 'Select all that apply');
-  
+  const [question, setQuestion] = useState(block.question || "Select all that apply");
+
   const options = block.options || [
-    { id: '1', label: 'Option 1', value: 'option1' },
-    { id: '2', label: 'Option 2', value: 'option2' },
-    { id: '3', label: 'Option 3', value: 'option3' },
+    { id: "1", label: "Option 1", value: "option1" },
+    { id: "2", label: "Option 2", value: "option2" },
+    { id: "3", label: "Option 3", value: "option3" },
   ];
 
   const handleQuestionBlur = () => {
     setIsEditingQuestion(false);
-    onUpdate({ question });
+    onUpdate?.({ question });
   };
 
   return (
-    <div className={`p-6 ${isSelected ? 'ring-2 ring-primary' : ''}`}>
+    <div className={`p-6 ${isSelected ? "ring-2 ring-primary" : ""}`}>
       <div className="space-y-3">
         <div>
           {isEditingQuestion ? (
@@ -30,7 +30,7 @@ export function CheckboxGroupBlock({ block, isSelected, onUpdate }: BlockProps) 
               onChange={(e) => setQuestion(e.target.value)}
               onBlur={handleQuestionBlur}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   handleQuestionBlur();
                 }
               }}
@@ -38,11 +38,11 @@ export function CheckboxGroupBlock({ block, isSelected, onUpdate }: BlockProps) 
               autoFocus
             />
           ) : (
-            <Label 
-              className="text-base font-medium cursor-text hover:bg-muted/50 rounded px-1 -ml-1 block" 
+            <Label
+              className="text-base font-medium cursor-text hover:bg-muted/50 rounded px-1 -ml-1 block"
               onClick={() => setIsEditingQuestion(true)}
             >
-              {block.question || 'Select all that apply'}
+              {block.question || "Select all that apply"}
               {block.required && <span className="text-destructive ml-1">*</span>}
             </Label>
           )}
@@ -56,7 +56,7 @@ export function CheckboxGroupBlock({ block, isSelected, onUpdate }: BlockProps) 
               key={option.id}
               className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer"
             >
-              <Checkbox 
+              <Checkbox
                 id={`${block.id}-${option.id}`}
                 disabled
                 defaultChecked={block.defaultValue?.includes(option.value)}
@@ -65,9 +65,7 @@ export function CheckboxGroupBlock({ block, isSelected, onUpdate }: BlockProps) 
             </label>
           ))}
         </div>
-        {block.helpText && (
-          <p className="text-xs text-muted-foreground">{block.helpText}</p>
-        )}
+        {block.helpText && <p className="text-xs text-muted-foreground">{block.helpText}</p>}
       </div>
     </div>
   );

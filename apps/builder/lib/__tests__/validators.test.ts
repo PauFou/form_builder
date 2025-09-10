@@ -78,8 +78,8 @@ describe("validators", () => {
         title: "Select",
         required: true,
         options: [
-          { value: "option1", label: "Option 1" },
-          { value: "option2", label: "Option 2" },
+          { id: "opt1", value: "option1", label: "Option 1" },
+          { id: "opt2", value: "option2", label: "Option 2" },
         ],
       };
 

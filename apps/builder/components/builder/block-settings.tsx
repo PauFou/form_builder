@@ -107,12 +107,12 @@ export function BlockSettings() {
                     <Label>Options</Label>
                     <div className="space-y-2">
                       {(block.options || []).map((option, index) => (
-                        <div key={index} className="flex gap-2">
+                        <div key={option.id} className="flex gap-2">
                           <Input
-                            value={option}
+                            value={option.label}
                             onChange={(e) => {
                               const newOptions = [...(block.options || [])];
-                              newOptions[index] = e.target.value;
+                              newOptions[index] = { ...option, label: e.target.value };
                               updateBlock(block.id, { options: newOptions });
                             }}
                             placeholder={`Option ${index + 1}`}
@@ -136,7 +136,14 @@ export function BlockSettings() {
                         variant="outline"
                         className="w-full"
                         onClick={() => {
-                          const newOptions = [...(block.options || []), ""];
+                          const newOptions = [
+                            ...(block.options || []),
+                            {
+                              id: `opt_${Date.now()}`,
+                              label: "",
+                              value: `option_${(block.options || []).length + 1}`,
+                            },
+                          ];
                           updateBlock(block.id, { options: newOptions });
                         }}
                       >
@@ -180,10 +187,10 @@ export function BlockSettings() {
                       <Input
                         id="minLength"
                         type="number"
-                        value={block.validation?.find((v) => v.type === "min")?.value || ""}
+                        value={block.validation?.find((v: any) => v.type === "min")?.value || ""}
                         onChange={(e) => {
                           const validations = block.validation || [];
-                          const minIndex = validations.findIndex((v) => v.type === "min");
+                          const minIndex = validations.findIndex((v: any) => v.type === "min");
                           if (e.target.value) {
                             const minValidation = {
                               type: "min" as const,
@@ -208,10 +215,10 @@ export function BlockSettings() {
                       <Input
                         id="maxLength"
                         type="number"
-                        value={block.validation?.find((v) => v.type === "max")?.value || ""}
+                        value={block.validation?.find((v: any) => v.type === "max")?.value || ""}
                         onChange={(e) => {
                           const validations = block.validation || [];
-                          const maxIndex = validations.findIndex((v) => v.type === "max");
+                          const maxIndex = validations.findIndex((v: any) => v.type === "max");
                           if (e.target.value) {
                             const maxValidation = {
                               type: "max" as const,
@@ -241,10 +248,10 @@ export function BlockSettings() {
                       <Input
                         id="minValue"
                         type="number"
-                        value={block.validation?.find((v) => v.type === "min")?.value || ""}
+                        value={block.validation?.find((v: any) => v.type === "min")?.value || ""}
                         onChange={(e) => {
                           const validations = block.validation || [];
-                          const minIndex = validations.findIndex((v) => v.type === "min");
+                          const minIndex = validations.findIndex((v: any) => v.type === "min");
                           if (e.target.value) {
                             const minValidation = {
                               type: "min" as const,
@@ -269,10 +276,10 @@ export function BlockSettings() {
                       <Input
                         id="maxValue"
                         type="number"
-                        value={block.validation?.find((v) => v.type === "max")?.value || ""}
+                        value={block.validation?.find((v: any) => v.type === "max")?.value || ""}
                         onChange={(e) => {
                           const validations = block.validation || [];
-                          const maxIndex = validations.findIndex((v) => v.type === "max");
+                          const maxIndex = validations.findIndex((v: any) => v.type === "max");
                           if (e.target.value) {
                             const maxValidation = {
                               type: "max" as const,

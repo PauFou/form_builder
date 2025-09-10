@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { Input, Label } from '@forms/ui';
-import { Calendar } from 'lucide-react';
-import { BlockProps } from './types';
-import { useState } from 'react';
+import { Input, Label } from "@forms/ui";
+import { Calendar } from "lucide-react";
+import { BlockProps } from "./types";
+import { useState } from "react";
 
 export function DateBlock({ block, isSelected, onUpdate }: BlockProps) {
   const [isEditingQuestion, setIsEditingQuestion] = useState(false);
-  const [question, setQuestion] = useState(block.question || 'Select a date');
+  const [question, setQuestion] = useState(block.question || "Select a date");
 
   const handleQuestionBlur = () => {
     setIsEditingQuestion(false);
-    onUpdate({ question });
+    onUpdate?.({ question });
   };
 
   return (
-    <div className={`p-6 ${isSelected ? 'ring-2 ring-primary' : ''}`}>
+    <div className={`p-6 ${isSelected ? "ring-2 ring-primary" : ""}`}>
       <div className="space-y-3">
         <div>
           {isEditingQuestion ? (
@@ -25,7 +25,7 @@ export function DateBlock({ block, isSelected, onUpdate }: BlockProps) {
               onChange={(e) => setQuestion(e.target.value)}
               onBlur={handleQuestionBlur}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   handleQuestionBlur();
                 }
               }}
@@ -33,12 +33,12 @@ export function DateBlock({ block, isSelected, onUpdate }: BlockProps) {
               autoFocus
             />
           ) : (
-            <Label 
-              htmlFor={block.id} 
-              className="text-base font-medium cursor-text hover:bg-muted/50 rounded px-1 -ml-1" 
+            <Label
+              htmlFor={block.id}
+              className="text-base font-medium cursor-text hover:bg-muted/50 rounded px-1 -ml-1"
               onClick={() => setIsEditingQuestion(true)}
             >
-              {block.question || 'Select a date'}
+              {block.question || "Select a date"}
               {block.required && <span className="text-destructive ml-1">*</span>}
             </Label>
           )}
@@ -54,13 +54,11 @@ export function DateBlock({ block, isSelected, onUpdate }: BlockProps) {
             disabled
             className="w-full pl-10"
             defaultValue={block.defaultValue}
-            min={block.validation?.min}
-            max={block.validation?.max}
+            min={block.min || block.validation?.find((v: any) => v.type === "min")?.value}
+            max={block.max || block.validation?.find((v: any) => v.type === "max")?.value}
           />
         </div>
-        {block.helpText && (
-          <p className="text-xs text-muted-foreground">{block.helpText}</p>
-        )}
+        {block.helpText && <p className="text-xs text-muted-foreground">{block.helpText}</p>}
       </div>
     </div>
   );

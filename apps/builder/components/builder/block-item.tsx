@@ -1,20 +1,22 @@
-'use client';
+"use client";
 
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { Card, Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@forms/ui';
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
-  GripVertical,
-  MoreVertical,
-  Copy,
-  Trash2,
-  Settings,
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useFormBuilderStore } from '../../lib/stores/form-builder-store';
-import { BLOCK_COMPONENTS } from '../blocks';
-import type { Block } from '@forms/contracts';
-
+  Card,
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@forms/ui";
+import { GripVertical, MoreVertical, Copy, Trash2, Settings } from "lucide-react";
+import { motion } from "framer-motion";
+import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
+import { BLOCK_COMPONENTS } from "../blocks";
+import type { Block } from "@forms/contracts";
+import { contractToBuilderBlock } from "../../lib/block-utils";
 
 interface BlockItemProps {
   block: Block;
@@ -23,25 +25,13 @@ interface BlockItemProps {
 }
 
 export function BlockItem({ block, pageId, index }: BlockItemProps) {
-  const {
-    selectBlock,
-    updateBlock,
-    deleteBlock,
-    duplicateBlock,
-    selectedBlockId,
-  } = useFormBuilderStore();
+  const { selectBlock, updateBlock, deleteBlock, duplicateBlock, selectedBlockId } =
+    useFormBuilderStore();
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: block.id,
     data: {
-      type: 'block',
+      type: "block",
       blockId: block.id,
       pageId,
       index,
@@ -65,11 +55,11 @@ export function BlockItem({ block, pageId, index }: BlockItemProps) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       whileHover={{ scale: 1.005 }}
-      className={`relative ${isDragging ? 'z-50' : ''}`}
+      className={`relative ${isDragging ? "z-50" : ""}`}
     >
       <Card
         className={`relative overflow-hidden cursor-pointer transition-all duration-200 ${
-          isSelected ? 'ring-2 ring-primary shadow-lg' : 'hover:shadow-md'
+          isSelected ? "ring-2 ring-primary shadow-lg" : "hover:shadow-md"
         }`}
         onClick={() => selectBlock(block.id)}
       >
@@ -87,14 +77,12 @@ export function BlockItem({ block, pageId, index }: BlockItemProps) {
           <div className="flex-1">
             {BlockComponent ? (
               <BlockComponent
-                block={block}
+                block={contractToBuilderBlock(block)}
                 isSelected={isSelected}
                 onUpdate={(updates) => updateBlock(block.id, updates)}
               />
             ) : (
-              <div className="p-6 text-muted-foreground">
-                Unknown block type: {block.type}
-              </div>
+              <div className="p-6 text-muted-foreground">Unknown block type: {block.type}</div>
             )}
           </div>
 

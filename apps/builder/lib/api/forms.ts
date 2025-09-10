@@ -4,61 +4,87 @@ import type { Form, FormVersion, CreateFormDto, UpdateFormDto } from "@forms/con
 
 export const formsApi = {
   // List forms
-  list: async (params?: { page?: number; limit?: number; search?: string; status?: string }) => {
-    const response = await apiClient.get("/forms", { params });
-    return response.data;
+  list: async (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: string;
+  }): Promise<{ forms: Form[]; total: number; page: number; limit: number }> => {
+    const response = (await apiClient.get("/forms", { params })) as any;
+    if (!response.data || !response.data.forms) return { forms: [], total: 0, page: 1, limit: 10 };
+    // Map forms to ensure they have all required properties
+    const forms = response.data.forms.map(
+      (f: any): Form => ({
+        id: f.id,
+        title: f.title,
+        description: f.description,
+        pages: f.pages || [],
+        ...f,
+      })
+    );
+    return { ...response.data, forms };
   },
 
   // Get single form
-  get: async (id: string) => {
-    const response = await apiClient.get(`/forms/${id}`);
-    return response.data;
+  get: async (id: string): Promise<Form> => {
+    const response = (await apiClient.get(`/forms/${id}`)) as any;
+    if (!response.data || Array.isArray(response.data)) return { id, title: "", pages: [] };
+    return {
+      id: response.data.id,
+      title: response.data.title,
+      description: response.data.description,
+      pages: response.data.pages || [],
+      ...response.data,
+    };
   },
 
   // Create form
-  create: async (data: CreateFormDto) => {
+  create: async (data: CreateFormDto): Promise<Form> => {
     const response = await apiClient.post("/forms", data);
     return response.data;
   },
 
   // Update form
-  update: async (id: string, data: UpdateFormDto) => {
+  update: async (id: string, data: UpdateFormDto): Promise<Form> => {
     const response = await apiClient.put(`/forms/${id}`, data);
     return response.data;
   },
 
   // Delete form
-  delete: async (id: string) => {
+  delete: async (id: string): Promise<{ success: boolean }> => {
     const response = await apiClient.delete(`/forms/${id}`);
     return response.data;
   },
 
   // Duplicate form
-  duplicate: async (id: string) => {
+  duplicate: async (id: string): Promise<Form> => {
     const response = await apiClient.post(`/forms/${id}/duplicate`);
     return response.data;
   },
 
   // Publish form version
-  publish: async (id: string, data?: { canary_percent?: number }) => {
+  publish: async (id: string, data?: { canary_percent?: number }): Promise<FormVersion> => {
     const response = await apiClient.post(`/forms/${id}/publish`, data);
     return response.data;
   },
 
   // Get form versions
-  versions: async (id: string) => {
-    const response = await apiClient.get(`/forms/${id}/versions`);
-    return response.data;
+  versions: async (id: string): Promise<FormVersion[]> => {
+    const response = (await apiClient.get(`/forms/${id}/versions`)) as any;
+    return Array.isArray(response.data) ? response.data : [];
   },
 
   // Rollback to version
-  rollback: async (id: string, versionId: string) => {
+  rollback: async (id: string, versionId: string): Promise<Form> => {
     const response = await apiClient.post(`/forms/${id}/rollback`, { version_id: versionId });
     return response.data;
   },
 
   // Validate import source
-  validateImport: async (data: { type: "typeform" | "google_forms"; source: string }) => {
+  validateImport: async (data: {
+    type: "typeform" | "google_forms";
+    source: string;
+  }): Promise<{ valid: boolean; message?: string; error?: string }> => {
     const response = await apiClient.post("/forms/import/validate", data);
     return response.data;
   },
@@ -68,7 +94,7 @@ export const formsApi = {
     type: "typeform" | "google_forms";
     source: string;
     credentials?: any;
-  }) => {
+  }): Promise<{ preview: any }> => {
     const response = await apiClient.post("/forms/import/preview", data);
     return response.data;
   },
@@ -78,13 +104,13 @@ export const formsApi = {
     type: "typeform" | "google_forms";
     source: string;
     credentials?: any;
-  }) => {
+  }): Promise<{ success: boolean; form_id?: string; message?: string }> => {
     const response = await apiClient.post("/forms/import", data);
     return response.data;
   },
 
   // Get import requirements
-  getImportRequirements: async (sourceType: "typeform" | "google_forms") => {
+  getImportRequirements: async (sourceType: "typeform" | "google_forms"): Promise<any> => {
     const response = await apiClient.get(`/forms/import/requirements/${sourceType}`);
     return response.data;
   },

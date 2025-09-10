@@ -12,7 +12,9 @@ export interface Block {
   helpText?: string;
   options?: Array<{
     id: string;
-    text: string;
+    text?: string;
+    label?: string;
+    value?: string;
   }>;
   [key: string]: any;
 }

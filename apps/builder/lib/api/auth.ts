@@ -44,25 +44,34 @@ export const authApi = {
   },
 
   // Get current user
-  getMe: async () => {
-    const response = await apiClient.get("/auth/me");
+  getMe: async (): Promise<{ user: User; organization: Organization }> => {
+    const response = (await apiClient.get("/auth/me")) as any;
+    if (!response.data || !response.data.user) {
+      return {
+        user: { id: "", email: "" } as User,
+        organization: { id: "", name: "" } as Organization,
+      };
+    }
     return response.data;
   },
 
   // Refresh token
-  refresh: async (refreshToken: string) => {
+  refresh: async (refreshToken: string): Promise<{ access: string }> => {
     const response = await apiClient.post("/auth/refresh", { refresh: refreshToken });
     return response.data;
   },
 
   // Request password reset
-  requestPasswordReset: async (email: string) => {
+  requestPasswordReset: async (email: string): Promise<{ success: boolean; message?: string }> => {
     const response = await apiClient.post("/auth/password-reset/request", { email });
     return response.data;
   },
 
   // Reset password
-  resetPassword: async (token: string, password: string) => {
+  resetPassword: async (
+    token: string,
+    password: string
+  ): Promise<{ success: boolean; message?: string }> => {
     const response = await apiClient.post("/auth/password-reset/confirm", { token, password });
     return response.data;
   },

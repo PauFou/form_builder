@@ -3,72 +3,97 @@
 
 class MockApiClient {
   async get(url: string, options?: any) {
-    console.log('Mock GET:', url, options);
-    
+    console.log("Mock GET:", url, options);
+
     // Mock responses
-    if (url === '/forms') {
+    if (url === "/forms") {
       return {
         data: {
           forms: [
             {
-              id: '1',
-              title: 'Customer Feedback Survey',
-              description: 'Collect customer feedback',
-              status: 'published',
-              createdAt: new Date('2024-01-01'),
-              updatedAt: new Date('2024-01-15')
+              id: "1",
+              title: "Customer Feedback Survey",
+              description: "Collect customer feedback",
+              status: "published",
+              createdAt: new Date("2024-01-01"),
+              updatedAt: new Date("2024-01-15"),
             },
             {
-              id: '2',
-              title: 'Event Registration',
-              description: 'Register for our upcoming event',
-              status: 'draft',
-              createdAt: new Date('2024-01-10'),
-              updatedAt: new Date('2024-01-20')
-            }
+              id: "2",
+              title: "Event Registration",
+              description: "Register for our upcoming event",
+              status: "draft",
+              createdAt: new Date("2024-01-10"),
+              updatedAt: new Date("2024-01-20"),
+            },
           ],
           total: 2,
           page: 1,
-          limit: 10
-        }
+          limit: 10,
+        },
       };
     }
-    
-    if (url.startsWith('/forms/') && !url.includes('/')) {
-      const id = url.split('/')[2];
+
+    if (url.startsWith("/forms/") && url.endsWith("/versions")) {
+      return {
+        data: [
+          { id: "1", version: 1, schema: {}, publishedAt: new Date() },
+          { id: "2", version: 2, schema: {}, publishedAt: new Date() },
+        ],
+      };
+    }
+
+    if (url.startsWith("/forms/")) {
+      const id = url.split("/")[2];
       return {
         data: {
           id,
-          title: 'Sample Form',
-          description: 'This is a sample form',
+          title: "Sample Form",
+          description: "This is a sample form",
           pages: [
             {
-              id: 'page-1',
-              title: 'Page 1',
-              blocks: []
-            }
+              id: "page-1",
+              title: "Page 1",
+              blocks: [],
+            },
           ],
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       };
     }
-    
+
+    if (url === "/auth/me") {
+      return {
+        data: {
+          user: { id: "1", email: "user@example.com" },
+          organization: { id: "1", name: "Test Org" },
+        },
+      };
+    }
+
+    if (url.startsWith("/integrations/") && url.split("/").length === 3) {
+      const id = url.split("/")[2];
+      return {
+        data: { id, name: "Integration", type: "webhook" },
+      };
+    }
+
     return { data: null };
   }
-  
+
   async post(url: string, data?: any) {
-    console.log('Mock POST:', url, data);
+    console.log("Mock POST:", url, data);
     return { data: { ...data, id: crypto.randomUUID() } };
   }
-  
+
   async put(url: string, data?: any) {
-    console.log('Mock PUT:', url, data);
+    console.log("Mock PUT:", url, data);
     return { data: { ...data, updatedAt: new Date() } };
   }
-  
+
   async delete(url: string) {
-    console.log('Mock DELETE:', url);
+    console.log("Mock DELETE:", url);
     return { data: { success: true } };
   }
 }

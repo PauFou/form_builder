@@ -52,7 +52,8 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
 
   // Validate source
   const validateMutation = useMutation({
-    mutationFn: (data: { type: string; source: string }) => formsApi.validateImport(data),
+    mutationFn: (data: { type: "typeform" | "google_forms"; source: string }) =>
+      formsApi.validateImport(data),
     onSuccess: (data) => {
       setValidationResult(data);
     },
@@ -60,7 +61,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
 
   // Preview import
   const previewMutation = useMutation({
-    mutationFn: (data: { type: string; source: string; credentials?: any }) =>
+    mutationFn: (data: { type: "typeform" | "google_forms"; source: string; credentials?: any }) =>
       formsApi.previewImport(data),
     onSuccess: (data) => {
       setPreview(data.preview);
@@ -69,7 +70,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
 
   // Perform import
   const importMutation = useMutation({
-    mutationFn: (data: { type: string; source: string; credentials?: any }) =>
+    mutationFn: (data: { type: "typeform" | "google_forms"; source: string; credentials?: any }) =>
       formsApi.importForm(data),
     onSuccess: (data) => {
       if (data.success) {
@@ -210,7 +211,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(preview.field_types).map(([type, count]) => (
                       <Badge key={type} variant="outline">
-                        {type}: {count}
+                        {type}: {count as any}
                       </Badge>
                     ))}
                   </div>

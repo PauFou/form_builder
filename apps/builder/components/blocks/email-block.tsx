@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { Input, Label } from '@forms/ui';
-import { Mail } from 'lucide-react';
-import { BlockProps } from './types';
-import { useState } from 'react';
+import { Input, Label } from "@forms/ui";
+import { Mail } from "lucide-react";
+import { BlockProps } from "./types";
+import { useState } from "react";
 
 export function EmailBlock({ block, isSelected, onUpdate }: BlockProps) {
   const [isEditingQuestion, setIsEditingQuestion] = useState(false);
-  const [question, setQuestion] = useState(block.question || 'Email address');
+  const [question, setQuestion] = useState(block.question || "Email address");
 
   const handleQuestionBlur = () => {
     setIsEditingQuestion(false);
-    onUpdate({ question });
+    onUpdate?.({ question });
   };
 
   return (
-    <div className={`p-6 ${isSelected ? 'ring-2 ring-primary' : ''}`}>
+    <div className={`p-6 ${isSelected ? "ring-2 ring-primary" : ""}`}>
       <div className="space-y-3">
         <div>
           {isEditingQuestion ? (
@@ -25,7 +25,7 @@ export function EmailBlock({ block, isSelected, onUpdate }: BlockProps) {
               onChange={(e) => setQuestion(e.target.value)}
               onBlur={handleQuestionBlur}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   handleQuestionBlur();
                 }
               }}
@@ -33,12 +33,12 @@ export function EmailBlock({ block, isSelected, onUpdate }: BlockProps) {
               autoFocus
             />
           ) : (
-            <Label 
-              htmlFor={block.id} 
-              className="text-base font-medium cursor-text hover:bg-muted/50 rounded px-1 -ml-1" 
+            <Label
+              htmlFor={block.id}
+              className="text-base font-medium cursor-text hover:bg-muted/50 rounded px-1 -ml-1"
               onClick={() => setIsEditingQuestion(true)}
             >
-              {block.question || 'Email address'}
+              {block.question || "Email address"}
               {block.required && <span className="text-destructive ml-1">*</span>}
             </Label>
           )}
@@ -51,14 +51,12 @@ export function EmailBlock({ block, isSelected, onUpdate }: BlockProps) {
           <Input
             id={block.id}
             type="email"
-            placeholder={block.placeholder || 'name@example.com'}
+            placeholder={block.placeholder || "name@example.com"}
             disabled
             className="w-full pl-10"
           />
         </div>
-        {block.helpText && (
-          <p className="text-xs text-muted-foreground">{block.helpText}</p>
-        )}
+        {block.helpText && <p className="text-xs text-muted-foreground">{block.helpText}</p>}
       </div>
     </div>
   );

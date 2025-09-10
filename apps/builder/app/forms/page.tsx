@@ -201,7 +201,7 @@ export default function FormsPage() {
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {forms?.results.map((form: Form) => (
+          {forms?.forms.map((form: Form) => (
             <Card key={form.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -262,13 +262,17 @@ export default function FormsPage() {
               <CardContent>
                 <div className="space-y-2 text-sm text-muted-foreground">
                   <div className="flex items-center justify-between">
-                    <span>{form.submission_count || 0} responses</span>
-                    <Badge variant={form.status === "published" ? "default" : "secondary"}>
-                      {form.status}
+                    <span>{(form as any).submission_count || 0} responses</span>
+                    <Badge variant={(form as any).status === "published" ? "default" : "secondary"}>
+                      {(form as any).status || "draft"}
                     </Badge>
                   </div>
                   <div className="text-xs">
-                    Updated {format(new Date(form.updated_at), "MMM d, yyyy")}
+                    Updated{" "}
+                    {format(
+                      new Date((form as any).updated_at || form.updatedAt || Date.now()),
+                      "MMM d, yyyy"
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -285,7 +289,7 @@ export default function FormsPage() {
         </div>
       )}
 
-      {forms?.results.length === 0 && !isLoading && (
+      {forms?.forms.length === 0 && !isLoading && (
         <div className="text-center py-12">
           <h3 className="text-lg font-semibold mb-2">No forms found</h3>
           <p className="text-muted-foreground mb-4">

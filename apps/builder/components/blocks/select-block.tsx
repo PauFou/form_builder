@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@forms/ui';
-import { BlockProps } from './types';
-import { useState } from 'react';
+import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@forms/ui";
+import { BlockProps } from "./types";
+import { useState } from "react";
 
 export function SelectBlock({ block, isSelected, onUpdate }: BlockProps) {
   const [isEditingQuestion, setIsEditingQuestion] = useState(false);
-  const [question, setQuestion] = useState(block.question || 'Select an option');
-  
+  const [question, setQuestion] = useState(block.question || "Select an option");
+
   const options = block.options || [
-    { id: '1', label: 'Option 1', value: 'option1' },
-    { id: '2', label: 'Option 2', value: 'option2' },
-    { id: '3', label: 'Option 3', value: 'option3' },
+    { id: "1", label: "Option 1", value: "option1" },
+    { id: "2", label: "Option 2", value: "option2" },
+    { id: "3", label: "Option 3", value: "option3" },
   ];
 
   const handleQuestionBlur = () => {
     setIsEditingQuestion(false);
-    onUpdate({ question });
+    onUpdate?.({ question });
   };
 
   return (
-    <div className={`p-6 ${isSelected ? 'ring-2 ring-primary' : ''}`}>
+    <div className={`p-6 ${isSelected ? "ring-2 ring-primary" : ""}`}>
       <div className="space-y-3">
         <div>
           {isEditingQuestion ? (
@@ -30,7 +30,7 @@ export function SelectBlock({ block, isSelected, onUpdate }: BlockProps) {
               onChange={(e) => setQuestion(e.target.value)}
               onBlur={handleQuestionBlur}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   handleQuestionBlur();
                 }
               }}
@@ -38,12 +38,12 @@ export function SelectBlock({ block, isSelected, onUpdate }: BlockProps) {
               autoFocus
             />
           ) : (
-            <Label 
-              htmlFor={block.id} 
-              className="text-base font-medium cursor-text hover:bg-muted/50 rounded px-1 -ml-1" 
+            <Label
+              htmlFor={block.id}
+              className="text-base font-medium cursor-text hover:bg-muted/50 rounded px-1 -ml-1"
               onClick={() => setIsEditingQuestion(true)}
             >
-              {block.question || 'Select an option'}
+              {block.question || "Select an option"}
               {block.required && <span className="text-destructive ml-1">*</span>}
             </Label>
           )}
@@ -53,7 +53,7 @@ export function SelectBlock({ block, isSelected, onUpdate }: BlockProps) {
         </div>
         <Select disabled defaultValue={block.defaultValue}>
           <SelectTrigger id={block.id} className="w-full">
-            <SelectValue placeholder={block.placeholder || 'Choose an option'} />
+            <SelectValue placeholder={block.placeholder || "Choose an option"} />
           </SelectTrigger>
           <SelectContent>
             {options.map((option) => (
@@ -63,9 +63,7 @@ export function SelectBlock({ block, isSelected, onUpdate }: BlockProps) {
             ))}
           </SelectContent>
         </Select>
-        {block.helpText && (
-          <p className="text-xs text-muted-foreground">{block.helpText}</p>
-        )}
+        {block.helpText && <p className="text-xs text-muted-foreground">{block.helpText}</p>}
       </div>
     </div>
   );

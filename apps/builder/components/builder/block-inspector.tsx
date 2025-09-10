@@ -1,9 +1,21 @@
-'use client';
+"use client";
 
-import { TabsContent, Input, Label, Switch, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Button, Textarea } from '@forms/ui';
-import { Plus } from 'lucide-react';
-import { useFormBuilderStore } from '../../lib/stores/form-builder-store';
-import { Block } from '@forms/contracts';
+import {
+  TabsContent,
+  Input,
+  Label,
+  Switch,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Button,
+  Textarea,
+} from "@forms/ui";
+import { Plus } from "lucide-react";
+import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
+import { Block } from "@forms/contracts";
 
 interface BlockInspectorProps {
   blockId: string;
@@ -11,20 +23,16 @@ interface BlockInspectorProps {
 
 export function BlockInspector({ blockId }: BlockInspectorProps) {
   const { form, updateBlock } = useFormBuilderStore();
-  
+
   // Find the block across all pages
   let block: Block | undefined;
-  form?.pages.forEach(page => {
-    const found = page.blocks.find(b => b.id === blockId);
+  form?.pages.forEach((page) => {
+    const found = page.blocks.find((b) => b.id === blockId);
     if (found) block = found;
   });
 
   if (!block) {
-    return (
-      <div className="p-4 text-sm text-muted-foreground">
-        Block not found
-      </div>
-    );
+    return <div className="p-4 text-sm text-muted-foreground">Block not found</div>;
   }
 
   return (
@@ -36,7 +44,7 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
           </Label>
           <Input
             id="question"
-            value={block.question || ''}
+            value={block.question || ""}
             onChange={(e) => updateBlock(blockId, { question: e.target.value })}
             placeholder="Enter your question"
           />
@@ -48,7 +56,7 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
           </Label>
           <Textarea
             id="description"
-            value={block.description || ''}
+            value={block.description || ""}
             onChange={(e) => updateBlock(blockId, { description: e.target.value })}
             placeholder="Add a description to help respondents"
             rows={3}
@@ -66,7 +74,7 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
         </div>
 
         {/* Options for select and checkbox_group blocks */}
-        {(block.type === 'select' || block.type === 'checkbox_group') && (
+        {(block.type === "select" || block.type === "checkbox_group") && (
           <div>
             <Label className="text-sm font-medium mb-2 block">Options</Label>
             <div className="space-y-2">
@@ -75,7 +83,7 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
                   <Input
                     value={option.label}
                     onChange={(e) => {
-                      const newOptions = [...(block.options || [])];
+                      const newOptions = [...(block!.options || [])];
                       newOptions[index] = { ...option, label: e.target.value };
                       updateBlock(blockId, { options: newOptions });
                     }}
@@ -90,11 +98,11 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
                 onClick={() => {
                   const newOption = {
                     id: crypto.randomUUID(),
-                    label: `Option ${(block.options?.length || 0) + 1}`,
-                    value: `option_${(block.options?.length || 0) + 1}`
+                    label: `Option ${(block!.options?.length || 0) + 1}`,
+                    value: `option_${(block!.options?.length || 0) + 1}`,
                   };
-                  updateBlock(blockId, { 
-                    options: [...(block.options || []), newOption] 
+                  updateBlock(blockId, {
+                    options: [...(block!.options || []), newOption],
                   });
                 }}
               >
@@ -111,7 +119,7 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
           </Label>
           <Input
             id="helpText"
-            value={block.helpText || ''}
+            value={block.helpText || ""}
             onChange={(e) => updateBlock(blockId, { helpText: e.target.value })}
             placeholder="Additional help text"
           />
@@ -120,9 +128,7 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
 
       <TabsContent value="logic" className="p-4 space-y-4 m-0">
         <div>
-          <Label className="text-sm font-medium mb-2 block">
-            Visibility Conditions
-          </Label>
+          <Label className="text-sm font-medium mb-2 block">Visibility Conditions</Label>
           <p className="text-xs text-muted-foreground mb-3">
             Show or hide this field based on previous answers
           </p>
@@ -133,9 +139,7 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
         </div>
 
         <div>
-          <Label className="text-sm font-medium mb-2 block">
-            Skip Logic
-          </Label>
+          <Label className="text-sm font-medium mb-2 block">Skip Logic</Label>
           <p className="text-xs text-muted-foreground mb-3">
             Jump to a different page based on the answer
           </p>
@@ -151,7 +155,10 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
           <Label htmlFor="width" className="text-sm font-medium mb-2 block">
             Field width
           </Label>
-          <Select defaultValue="full">
+          <Select
+            defaultValue="full"
+            onValueChange={(value) => console.log("Width changed:", value)}
+          >
             <SelectTrigger id="width">
               <SelectValue />
             </SelectTrigger>
@@ -169,20 +176,15 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
           </Label>
           <Input
             id="placeholder"
-            value={block.placeholder || ''}
+            value={block.placeholder || ""}
             onChange={(e) => updateBlock(blockId, { placeholder: e.target.value })}
             placeholder="Enter placeholder text"
           />
         </div>
 
         <div>
-          <Label className="text-sm font-medium mb-2 block">
-            Custom CSS classes
-          </Label>
-          <Input
-            placeholder="e.g., custom-field highlight"
-            disabled
-          />
+          <Label className="text-sm font-medium mb-2 block">Custom CSS classes</Label>
+          <Input placeholder="e.g., custom-field highlight" disabled />
         </div>
       </TabsContent>
 
@@ -206,7 +208,7 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
           </Label>
           <Input
             id="defaultValue"
-            value={block.defaultValue || ''}
+            value={block.defaultValue || ""}
             onChange={(e) => updateBlock(blockId, { defaultValue: e.target.value })}
             placeholder="Default value"
           />
@@ -227,11 +229,7 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
           <Label htmlFor="notes" className="text-sm font-medium mb-2 block">
             Internal notes
           </Label>
-          <Textarea
-            id="notes"
-            rows={3}
-            placeholder="Notes for your team..."
-          />
+          <Textarea id="notes" rows={3} placeholder="Notes for your team..." />
         </div>
       </TabsContent>
     </>

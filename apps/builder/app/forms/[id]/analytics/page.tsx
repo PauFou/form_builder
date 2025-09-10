@@ -89,7 +89,7 @@ export default function FormAnalyticsPage({ params }: { params: Promise<{ id: st
           <Skeleton className="h-96" />
         </div>
       ) : form ? (
-        <AnalyticsDashboard formId={id} organizationId={form.organization_id || ""} />
+        <AnalyticsDashboard formId={id} />
       ) : null}
     </div>
   );
