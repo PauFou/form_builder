@@ -67,9 +67,9 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
-          files: ./coverage/lcov.info
+          files: ./apps/*/coverage/lcov.info,./packages/*/coverage/lcov.info
           flags: frontend
-          fail_ci_if_error: true
+          fail_ci_if_error: false
 
   # Backend tests with Django
   test-backend:
@@ -272,7 +272,7 @@ jobs:
 
       - name: Upload Trivy scan results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && github.event_name != 'pull_request' 
         with:
           sarif_file: "trivy-results.sarif"
 

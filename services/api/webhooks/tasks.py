@@ -32,9 +32,8 @@ def deliver_webhook(self, delivery_id):
     
     try:
         with transaction.atomic():
-            delivery = Delivery.objects.select_for_update().select_related(
-                'webhook', 'submission', 'partial'
-            ).get(id=delivery_id)
+            # Use only() to get just the fields we need with select_for_update
+            delivery = Delivery.objects.select_for_update().only('id', 'status', 'webhook_id').get(id=delivery_id)
             
             # Check if already processed
             if delivery.status in ['success', 'dlq']:
@@ -44,6 +43,11 @@ def deliver_webhook(self, delivery_id):
             # Update status to processing
             delivery.status = 'processing'
             delivery.save()
+        
+        # Now fetch the full delivery with related objects outside the transaction
+        delivery = Delivery.objects.select_related(
+            'webhook', 'submission', 'partial'
+        ).get(id=delivery_id)
         
         # Check webhook is active
         if not delivery.webhook.active:
