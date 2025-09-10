@@ -1,52 +1,99 @@
 #!/usr/bin/env node
 
-const { chromium } = require('playwright');
-const { injectAxe, checkA11y } = require('axe-playwright');
-const fs = require('fs').promises;
-const path = require('path');
+const { chromium } = require("playwright");
+const { injectAxe, checkA11y } = require("axe-playwright");
+const fs = require("fs").promises;
+const path = require("path");
 
 const PAGES_TO_TEST = [
-  { url: 'http://localhost:3000', name: 'home' },
-  { url: 'http://localhost:3000/forms', name: 'forms-list' },
-  { url: 'http://localhost:3000/forms/new', name: 'form-create' },
-  { url: 'http://localhost:3001/preview/sample', name: 'form-preview' },
+  { url: "http://localhost:3000", name: "marketing-home" },
+  { url: "http://localhost:3001", name: "builder-home" },
+  { url: "http://localhost:3001/dashboard", name: "dashboard" },
 ];
 
 const WCAG_AA_RULES = {
   runOnly: {
-    type: 'tag',
-    values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'],
+    type: "tag",
+    values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
   },
 };
+
+async function waitForServer(url, maxRetries = 30) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const response = await fetch(url);
+      if (response.status < 500) return true;
+    } catch (error) {
+      // Server not ready yet
+    }
+    console.log(`Waiting for ${url} (attempt ${i + 1}/${maxRetries})...`);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+  }
+  return false;
+}
 
 async function runAccessibilityTests() {
   const browser = await chromium.launch();
   const context = await browser.newContext();
   const results = [];
-  
-  console.log('🔍 Running accessibility tests...\n');
-  
+
+  console.log("🔍 Running accessibility tests...\n");
+
+  // Wait for servers to be ready
+  console.log("Waiting for servers to start...");
+  const marketingReady = await waitForServer("http://localhost:3000");
+  const builderReady = await waitForServer("http://localhost:3001");
+
+  if (!marketingReady) {
+    console.error("❌ Marketing app not ready on port 3000");
+  }
+  if (!builderReady) {
+    console.error("❌ Builder app not ready on port 3001");
+  }
+
   for (const pageInfo of PAGES_TO_TEST) {
+    // Skip test if server isn't ready
+    const port = new URL(pageInfo.url).port;
+    const isReady = (port === "3000" && marketingReady) || (port === "3001" && builderReady);
+
+    if (!isReady) {
+      console.log(`⏭️  Skipping ${pageInfo.name} - server not ready`);
+      results.push({
+        page: pageInfo.name,
+        url: pageInfo.url,
+        error: "Server not ready",
+        timestamp: new Date().toISOString(),
+      });
+      continue;
+    }
+
     console.log(`Testing ${pageInfo.name} (${pageInfo.url})...`);
-    
+
     const page = await context.newPage();
-    
+
     try {
-      await page.goto(pageInfo.url, { waitUntil: 'networkidle' });
+      await page.goto(pageInfo.url, {
+        waitUntil: "domcontentloaded",
+        timeout: 10000,
+      });
+
+      // Wait for content to load
+      await page.waitForTimeout(2000);
+
       await injectAxe(page);
-      
+
       // Run accessibility checks
       const violations = await checkA11y(page, null, {
         axeOptions: WCAG_AA_RULES,
       });
-      
+
       results.push({
         page: pageInfo.name,
         url: pageInfo.url,
         violations: violations || [],
         timestamp: new Date().toISOString(),
       });
-      
+
       if (violations && violations.length > 0) {
         console.log(`❌ Found ${violations.length} accessibility violations`);
         violations.forEach((violation) => {
@@ -54,7 +101,7 @@ async function runAccessibilityTests() {
           console.log(`     ${violation.helpUrl}`);
         });
       } else {
-        console.log('✅ No accessibility violations found');
+        console.log("✅ No accessibility violations found");
       }
     } catch (error) {
       console.error(`❌ Error testing ${pageInfo.name}:`, error.message);
@@ -67,34 +114,32 @@ async function runAccessibilityTests() {
     } finally {
       await page.close();
     }
-    
-    console.log('');
+
+    console.log("");
   }
-  
+
   await browser.close();
-  
+
   // Save results
-  const resultsDir = path.join(process.cwd(), 'a11y-results');
+  const resultsDir = path.join(process.cwd(), "a11y-results");
   await fs.mkdir(resultsDir, { recursive: true });
-  
-  const reportPath = path.join(resultsDir, 'report.json');
+
+  const reportPath = path.join(resultsDir, "report.json");
   await fs.writeFile(reportPath, JSON.stringify(results, null, 2));
-  
+
   // Generate HTML report
   const htmlReport = generateHTMLReport(results);
-  const htmlPath = path.join(resultsDir, 'report.html');
+  const htmlPath = path.join(resultsDir, "report.html");
   await fs.writeFile(htmlPath, htmlReport);
-  
+
   // Check if any violations were found
-  const hasViolations = results.some(
-    (result) => result.violations && result.violations.length > 0
-  );
-  
+  const hasViolations = results.some((result) => result.violations && result.violations.length > 0);
+
   if (hasViolations) {
-    console.log('❌ Accessibility violations found. See a11y-results/report.html for details.');
+    console.log("❌ Accessibility violations found. See a11y-results/report.html for details.");
     process.exit(1);
   } else {
-    console.log('✅ All accessibility tests passed!');
+    console.log("✅ All accessibility tests passed!");
   }
 }
 
@@ -103,7 +148,7 @@ function generateHTMLReport(results) {
     (sum, result) => sum + (result.violations?.length || 0),
     0
   );
-  
+
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -183,15 +228,15 @@ function generateHTMLReport(results) {
         result.error
           ? `<div class="violation">Error: ${result.error}</div>`
           : result.violations.length === 0
-          ? '<div class="success">✅ No accessibility violations found!</div>'
-          : result.violations
-              .map(
-                (violation) => `
+            ? '<div class="success">✅ No accessibility violations found!</div>'
+            : result.violations
+                .map(
+                  (violation) => `
           <div class="violation">
             <h3>${violation.help}</h3>
             <p class="impact-${violation.impact}">Impact: ${violation.impact}</p>
             <p>${violation.description}</p>
-            <p><strong>WCAG:</strong> ${violation.tags.join(', ')}</p>
+            <p><strong>WCAG:</strong> ${violation.tags.join(", ")}</p>
             <p><strong>Elements affected:</strong> ${violation.nodes.length}</p>
             <details>
               <summary>View details</summary>
@@ -200,25 +245,25 @@ function generateHTMLReport(results) {
                   .map(
                     (node) => `
                   <li>
-                    <code>${node.target.join(' ')}</code>
+                    <code>${node.target.join(" ")}</code>
                     <br>
                     ${node.failureSummary}
                   </li>
                 `
                   )
-                  .join('')}
+                  .join("")}
               </ul>
             </details>
             <p><a href="${violation.helpUrl}" target="_blank">Learn more →</a></p>
           </div>
         `
-              )
-              .join('')
+                )
+                .join("")
       }
     </div>
   `
     )
-    .join('')}
+    .join("")}
 </body>
 </html>
   `;

@@ -10,7 +10,8 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "jest"
   },
   "peerDependencies": {
     "react": "^18 || ^19",
@@ -18,9 +19,14 @@
   },
   "devDependencies": {
     "@forms/config": "workspace:*",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^14.2.1",
+    "@types/jest": "^29.5.12",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "typescript": "^5"
   },
   "dependencies": {

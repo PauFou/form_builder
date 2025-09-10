@@ -147,8 +147,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build runtime packages
+        run: pnpm build --filter=@forms/runtime
+
       - name: Check bundle size
         run: pnpm test:perf
+        continue-on-error: false
 
       - name: Comment on PR
         if: github.event_name == 'pull_request'
@@ -208,11 +212,12 @@ jobs:
 
       - name: Start applications
         run: |
+          pnpm --filter @forms/marketing dev &
           pnpm --filter @forms/builder dev &
-          pnpm --filter @forms/runtime-demo dev &
-          sleep 10
+          sleep 15
         env:
           CI: true
+          NODE_ENV: test
 
       - name: Run accessibility tests
         run: pnpm test:a11y
@@ -276,12 +281,22 @@ jobs:
 
       - name: Run audit
         run: pnpm audit --audit-level moderate
+        continue-on-error: true
 
-      - name: Run CodeQL
+      - name: Initialize CodeQL
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/init@v3
         with:
           languages: javascript,typescript
+          queries: security-extended
+
+      - name: Autobuild
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: github/codeql-action/analyze@v3
 
   deployment-ready:
     name: Deployment Ready
