@@ -48,7 +48,7 @@ class WebhookAPITestCase(TestCase):
             'headers_json': {'X-Custom': 'header'}
         }
         
-        response = self.client.post('/v1/webhooks/', data)
+        response = self.client.post('/v1/webhooks/', data, format='json')
         
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['url'], 'https://example.com/webhook')

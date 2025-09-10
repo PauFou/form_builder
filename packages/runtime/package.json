@@ -60,7 +60,7 @@
       "gzip": true
     },
     {
-      "path": "dist/embed.js",
+      "path": "dist/embed.global.js",
       "limit": "5 KB",
       "gzip": true
     }

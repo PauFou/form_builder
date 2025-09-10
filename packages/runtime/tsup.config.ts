@@ -81,7 +81,9 @@ export default defineConfig([
   },
   // Embed script bundle (for script tag embedding)
   {
-    entry: ["src/embed.ts"],
+    entry: {
+      embed: "src/embed.ts",
+    },
     format: ["iife"],
     dts: false,
     splitting: false,
