@@ -20,6 +20,7 @@ urlpatterns = [
     path("v1/", include("integrations.urls")),
     path("v1/", include("accounts.urls")),
     path("v1/gdpr/", include("gdpr.urls")),
+    path("v1/analytics/", include("analytics.urls")),
     
     # Auth
     path("v1/auth/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),

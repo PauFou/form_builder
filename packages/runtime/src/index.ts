@@ -5,6 +5,7 @@ export const VERSION = "1.0.0";
 export { FormViewer } from "./components/FormViewer";
 export { useFormRuntime } from "./hooks";
 export { OfflineService } from "./services/offline-service";
+export { AnalyticsService } from "./services/analytics-service";
 export { useResume, createResumeLink } from "./hooks/use-resume";
 
 // Type exports
@@ -22,6 +23,8 @@ export type {
   RuntimeConfig,
   FormData,
 } from "./types";
+
+export type { AnalyticsEvent, AnalyticsConfig } from "./services/analytics-service";
 
 // Utility exports
 export { validateField, shouldShowBlock, formatValue } from "./utils";

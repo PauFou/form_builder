@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import mitt from "mitt";
 import type { FormSchema, FormState, RuntimeConfig, FormData } from "./types";
 import { OfflineService } from "./services/offline-service";
+import { AnalyticsService } from "./services/analytics-service";
 import { validateField, shouldShowBlock } from "./utils";
 import { useAntiSpam } from "./hooks/use-anti-spam";
 
@@ -28,6 +29,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
   }));
 
   const offlineServiceRef = useRef<OfflineService | null>(null);
+  const analyticsRef = useRef<AnalyticsService | null>(null);
   const respondentKeyRef = useRef(config.respondentKey || `anon-${Date.now()}-${Math.random()}`);
   const startTimeRef = useRef(new Date().toISOString());
 
@@ -37,8 +39,21 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     minCompletionTime: config.minCompletionTime ?? 3000,
   });
 
-  // Initialize offline service
+  // Initialize services
   useEffect(() => {
+    // Initialize analytics
+    if (config.enableAnalytics !== false && typeof window !== "undefined") {
+      analyticsRef.current = new AnalyticsService({
+        apiUrl: config.analyticsApiUrl || config.apiUrl,
+        enableTracking: config.enableAnalytics !== false,
+        enableDebug: config.enableAnalyticsDebug,
+      });
+
+      // Track form view
+      analyticsRef.current.trackFormView(config.formId, respondentKeyRef.current);
+    }
+
+    // Initialize offline service
     if (config.enableOffline && typeof window !== "undefined") {
       offlineServiceRef.current = new OfflineService(config);
 
@@ -73,6 +88,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
     return () => {
       offlineServiceRef.current?.destroy();
+      analyticsRef.current?.destroy();
     };
   }, [config]);
 
@@ -108,22 +124,51 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
   }, [state.values, state.currentStep, saveOffline]);
 
   // Field handlers
-  const setValue = useCallback((field: string, value: any) => {
-    setState((prev) => ({
-      ...prev,
-      values: { ...prev.values, [field]: value },
-      errors: { ...prev.errors, [field]: "" },
-    }));
+  const setValue = useCallback(
+    (field: string, value: any) => {
+      setState((prev) => ({
+        ...prev,
+        values: { ...prev.values, [field]: value },
+        errors: { ...prev.errors, [field]: "" },
+      }));
 
-    emitter.emit("field:change", { field, value });
-  }, []);
+      // Track field change
+      const block = schema.blocks.find((b) => b.id === field);
+      if (analyticsRef.current && block) {
+        analyticsRef.current.trackFieldChange(
+          config.formId,
+          respondentKeyRef.current,
+          field,
+          block.type,
+          typeof value === "string" ? value : JSON.stringify(value)
+        );
+      }
 
-  const setError = useCallback((field: string, error: string) => {
-    setState((prev) => ({
-      ...prev,
-      errors: { ...prev.errors, [field]: error },
-    }));
-  }, []);
+      emitter.emit("field:change", { field, value });
+    },
+    [config.formId, schema.blocks]
+  );
+
+  const setError = useCallback(
+    (field: string, error: string) => {
+      setState((prev) => ({
+        ...prev,
+        errors: { ...prev.errors, [field]: error },
+      }));
+
+      // Track field error
+      if (analyticsRef.current && error) {
+        analyticsRef.current.trackFieldError(
+          config.formId,
+          respondentKeyRef.current,
+          field,
+          "validation",
+          error
+        );
+      }
+    },
+    [config.formId]
+  );
 
   const setTouched = useCallback((field: string) => {
     setState((prev) => ({
@@ -173,10 +218,26 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     const nextStep = state.currentStep + 1;
 
     if (nextStep < schema.blocks.length) {
+      // Track step completion
+      const currentBlock = schema.blocks[state.currentStep];
+      if (analyticsRef.current && currentBlock) {
+        analyticsRef.current.trackStepComplete(
+          config.formId,
+          respondentKeyRef.current,
+          currentBlock.id
+        );
+      }
+
       setState((prev) => ({
         ...prev,
         currentStep: nextStep,
       }));
+
+      // Track new step view
+      const nextBlock = schema.blocks[nextStep];
+      if (analyticsRef.current && nextBlock) {
+        analyticsRef.current.trackStepView(config.formId, respondentKeyRef.current, nextBlock.id);
+      }
 
       emitter.emit("step:next", {
         from: state.currentStep,
@@ -219,12 +280,23 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
             }
             return response.json();
           })
-          .then(() => {
+          .then((responseData) => {
             setState((prev) => ({
               ...prev,
               isSubmitting: false,
               isComplete: true,
             }));
+
+            // Track form submission
+            if (analyticsRef.current) {
+              analyticsRef.current.trackFormSubmit(
+                config.formId,
+                respondentKeyRef.current,
+                responseData.id || "unknown",
+                false
+              );
+            }
+
             emitter.emit("form:submit", { data });
           })
           .catch((error) => {
@@ -244,12 +316,18 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
         currentStep: prevStep,
       }));
 
+      // Track step navigation
+      const prevBlock = schema.blocks[prevStep];
+      if (analyticsRef.current && prevBlock) {
+        analyticsRef.current.trackStepView(config.formId, respondentKeyRef.current, prevBlock.id);
+      }
+
       emitter.emit("step:prev", {
         from: state.currentStep,
         to: prevStep,
       });
     }
-  }, [state]);
+  }, [state, config.formId, schema.blocks]);
 
   const goToStep = useCallback(
     (step: number) => {
@@ -308,6 +386,18 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
         if (!response.ok) {
           throw new Error(`Submission failed: ${response.statusText}`);
         }
+
+        const responseData = await response.json();
+
+        // Track form submission with response ID
+        if (analyticsRef.current) {
+          analyticsRef.current.trackFormSubmit(
+            config.formId,
+            respondentKeyRef.current,
+            responseData.id || "unknown",
+            false
+          );
+        }
       }
 
       setState((prev) => ({
@@ -315,6 +405,16 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
         isSubmitting: false,
         isComplete: true,
       }));
+
+      // Track form submission for custom handler
+      if (config.onSubmit && analyticsRef.current) {
+        analyticsRef.current.trackFormSubmit(
+          config.formId,
+          respondentKeyRef.current,
+          data.metadata?.submissionId || "unknown",
+          false
+        );
+      }
 
       // Clear offline storage
       if (offlineServiceRef.current) {
@@ -338,6 +438,37 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
   const currentBlock = visibleBlocks[state.currentStep];
   const progress = ((state.currentStep + 1) / visibleBlocks.length) * 100;
+
+  // Track form start on first interaction
+  const hasStartedRef = useRef(false);
+  useEffect(() => {
+    if (!hasStartedRef.current && Object.keys(state.values).length > 0) {
+      hasStartedRef.current = true;
+      if (analyticsRef.current) {
+        analyticsRef.current.trackFormStart(config.formId, respondentKeyRef.current);
+      }
+    }
+  }, [state.values, config.formId]);
+
+  // Track initial step view
+  useEffect(() => {
+    if (currentBlock && analyticsRef.current) {
+      analyticsRef.current.trackStepView(config.formId, respondentKeyRef.current, currentBlock.id);
+    }
+  }, []); // Only on mount
+
+  // Track form abandonment on unmount
+  useEffect(() => {
+    return () => {
+      if (!state.isComplete && hasStartedRef.current && analyticsRef.current) {
+        analyticsRef.current.trackFormAbandon(
+          config.formId,
+          respondentKeyRef.current,
+          currentBlock?.id
+        );
+      }
+    };
+  }, [state.isComplete, config.formId, currentBlock]);
 
   // Check for unsynced data
   const [hasUnsyncedData, setHasUnsyncedData] = useState(false);

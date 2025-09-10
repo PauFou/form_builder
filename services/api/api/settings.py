@@ -211,6 +211,9 @@ NOTION_CLIENT_SECRET = config("NOTION_CLIENT_SECRET", default="")
 STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY", default="")
 STRIPE_WEBHOOK_SECRET = config("STRIPE_WEBHOOK_SECRET", default="")
 
+# Analytics Service
+ANALYTICS_SERVICE_URL = config("ANALYTICS_SERVICE_URL", default="http://localhost:8002")
+
 # GDPR Settings
 GDPR_DATA_REGIONS = {
     "eu-west-1": "EU West (Ireland)",

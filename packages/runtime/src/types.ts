@@ -97,6 +97,9 @@ export interface RuntimeConfig {
   enableAntiSpam?: boolean;
   minCompletionTime?: number;
   onSpamDetected?: (reason: string) => void;
+  enableAnalytics?: boolean;
+  analyticsApiUrl?: string;
+  enableAnalyticsDebug?: boolean;
 }
 
 export interface FormData {
