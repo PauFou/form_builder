@@ -13,6 +13,11 @@ env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
 jobs:
   # Code quality checks
   quality:
@@ -272,7 +277,7 @@ jobs:
 
       - name: Upload Trivy scan results to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
-        if: always() && github.event_name != 'pull_request' 
+        if: always() && github.event_name != 'pull_request'
         with:
           sarif_file: "trivy-results.sarif"
 
