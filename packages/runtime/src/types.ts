@@ -90,10 +90,13 @@ export interface RuntimeConfig {
   respondentKey?: string;
   locale?: string;
   onSubmit?: (data: FormData) => void | Promise<void>;
-  onPartialSave?: (data: Partial<FormData>) => void;
+  onPartialSave?: (data: Partial<FormData>) => void | Promise<void>;
   onError?: (error: Error) => void;
   enableOffline?: boolean;
   autoSaveInterval?: number;
+  enableAntiSpam?: boolean;
+  minCompletionTime?: number;
+  onSpamDetected?: (reason: string) => void;
 }
 
 export interface FormData {

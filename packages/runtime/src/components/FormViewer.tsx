@@ -11,8 +11,19 @@ interface FormViewerProps {
 }
 
 export function FormViewer({ schema, config, className = "" }: FormViewerProps) {
-  const { state, currentBlock, progress, setValue, setTouched, goNext, goPrev, submit, canGoNext } =
-    useFormRuntime(schema, config);
+  const {
+    state,
+    currentBlock,
+    progress,
+    setValue,
+    setTouched,
+    goNext,
+    goPrev,
+    submit,
+    canGoNext,
+    hasUnsyncedData,
+    isOnline,
+  } = useFormRuntime(schema, config);
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -113,7 +124,21 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
       </form>
 
       {config.enableOffline && (
-        <p className="fr-offline-notice">Your progress is automatically saved</p>
+        <div className="fr-status">
+          {!isOnline && (
+            <div className="fr-offline-badge">
+              <span className="fr-offline-icon">⚡</span>
+              Working offline
+            </div>
+          )}
+          {hasUnsyncedData && isOnline && (
+            <div className="fr-syncing-badge">
+              <span className="fr-syncing-icon">↻</span>
+              Syncing...
+            </div>
+          )}
+          <p className="fr-offline-notice">Your progress is automatically saved</p>
+        </div>
       )}
     </div>
   );

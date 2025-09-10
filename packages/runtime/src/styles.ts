@@ -181,11 +181,51 @@ export function generateStyles(theme?: Theme): string {
       margin-bottom: var(--fr-spacing);
     }
 
+    .fr-status {
+      margin-top: var(--fr-spacing);
+      text-align: center;
+    }
+
+    .fr-offline-badge,
+    .fr-syncing-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--fr-radius);
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .fr-offline-badge {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .fr-syncing-badge {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .fr-offline-icon,
+    .fr-syncing-icon {
+      font-size: 1rem;
+    }
+
+    @keyframes fr-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .fr-syncing-icon {
+      animation: fr-spin 2s linear infinite;
+    }
+
     .fr-offline-notice {
       font-size: 0.75rem;
       color: #6b7280;
-      text-align: center;
-      margin-top: var(--fr-spacing);
     }
 
     @keyframes fr-fade-in {

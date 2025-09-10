@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import mitt from "mitt";
 import type { FormSchema, FormState, RuntimeConfig, FormData } from "./types";
-import { OfflineStore } from "./store";
+import { OfflineService } from "./services/offline-service";
 import { validateField, shouldShowBlock } from "./utils";
+import { useAntiSpam } from "./hooks/use-anti-spam";
 
 type Events = {
   "field:change": { field: string; value: any };
@@ -26,66 +27,85 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     isComplete: false,
   }));
 
-  const storeRef = useRef<OfflineStore | null>(null);
-  const saveTimerRef = useRef<number | null>(null);
+  const offlineServiceRef = useRef<OfflineService | null>(null);
   const respondentKeyRef = useRef(config.respondentKey || `anon-${Date.now()}-${Math.random()}`);
+  const startTimeRef = useRef(new Date().toISOString());
 
-  // Initialize offline store
+  // Anti-spam protection
+  const { validateAntiSpam, getCompletionTime } = useAntiSpam({
+    enabled: config.enableAntiSpam ?? true,
+    minCompletionTime: config.minCompletionTime ?? 3000,
+  });
+
+  // Initialize offline service
   useEffect(() => {
     if (config.enableOffline && typeof window !== "undefined") {
-      storeRef.current = new OfflineStore();
+      offlineServiceRef.current = new OfflineService(config);
 
       // Load saved state
-      storeRef.current.getState(config.formId).then((saved) => {
+      offlineServiceRef.current.getState().then((saved) => {
         if (saved) {
           setState(saved.state);
+          respondentKeyRef.current = saved.respondentKey;
+          if (saved.data.startedAt) {
+            startTimeRef.current = saved.data.startedAt;
+          }
         }
       });
+
+      // Listen to online/offline events
+      const handleOnline = () => {
+        console.log("Form is back online, syncing data...");
+      };
+
+      const handleOffline = () => {
+        console.log("Form is offline, data will be saved locally");
+      };
+
+      offlineServiceRef.current.on("online", handleOnline);
+      offlineServiceRef.current.on("offline", handleOffline);
+
+      return () => {
+        offlineServiceRef.current?.off("online", handleOnline);
+        offlineServiceRef.current?.off("offline", handleOffline);
+      };
     }
 
     return () => {
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
-      }
+      offlineServiceRef.current?.destroy();
     };
-  }, [config.formId, config.enableOffline]);
+  }, [config]);
 
   // Auto-save logic
-  const scheduleSave = useCallback(() => {
-    if (!config.enableOffline || !storeRef.current) return;
+  const saveOffline = useCallback(async () => {
+    if (!config.enableOffline || !offlineServiceRef.current) return;
 
-    if (saveTimerRef.current) {
-      clearTimeout(saveTimerRef.current);
-    }
-
-    saveTimerRef.current = setTimeout(() => {
-      const data: Partial<FormData> = {
-        formId: config.formId,
-        values: state.values,
-        startedAt: new Date().toISOString(),
-        metadata: {
-          userAgent: navigator.userAgent,
-          viewport: {
-            width: window.innerWidth,
-            height: window.innerHeight,
-          },
+    const data: Partial<FormData> = {
+      formId: config.formId,
+      values: state.values,
+      startedAt: startTimeRef.current,
+      metadata: {
+        userAgent: navigator.userAgent,
+        viewport: {
+          width: window.innerWidth,
+          height: window.innerHeight,
         },
-      };
+        locale: config.locale,
+        currentStep: state.currentStep,
+        progress: ((state.currentStep + 1) / schema.blocks.length) * 100,
+      },
+    };
 
-      storeRef.current?.saveState(config.formId, respondentKeyRef.current, state, data);
+    // Save to IndexedDB (throttled internally)
+    await offlineServiceRef.current.saveState(respondentKeyRef.current, state, data);
 
-      if (config.onPartialSave) {
-        config.onPartialSave(data);
-      }
+    emitter.emit("form:save", { data });
+  }, [config, state, schema.blocks.length]);
 
-      emitter.emit("form:save", { data });
-    }, config.autoSaveInterval || 5000);
-  }, [config, state]);
-
-  // Schedule save on state change
+  // Save on state change
   useEffect(() => {
-    scheduleSave();
-  }, [state.values, scheduleSave]);
+    saveOffline();
+  }, [state.values, state.currentStep, saveOffline]);
 
   // Field handlers
   const setValue = useCallback((field: string, value: any) => {
@@ -247,16 +267,28 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
   const submit = useCallback(async () => {
     if (!validate()) return;
 
+    // Anti-spam validation
+    const spamCheck = validateAntiSpam();
+    if (!spamCheck.isValid) {
+      console.warn(`Form submission blocked: ${spamCheck.reason}`);
+      if (config.onSpamDetected) {
+        config.onSpamDetected(spamCheck.reason!);
+      }
+      return;
+    }
+
     setState((prev) => ({ ...prev, isSubmitting: true }));
 
     const data: FormData = {
       formId: config.formId,
       values: state.values,
-      startedAt: new Date().toISOString(),
+      startedAt: startTimeRef.current,
       completedAt: new Date().toISOString(),
       metadata: {
         locale: config.locale,
         userAgent: navigator.userAgent,
+        respondentKey: respondentKeyRef.current,
+        completionTime: getCompletionTime(),
       },
     };
 
@@ -285,8 +317,8 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
       }));
 
       // Clear offline storage
-      if (storeRef.current) {
-        await storeRef.current.deleteState(config.formId);
+      if (offlineServiceRef.current) {
+        await offlineServiceRef.current.deleteState();
       }
 
       emitter.emit("form:submit", { data });
@@ -299,13 +331,19 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
       emitter.emit("form:error", { error: error as Error });
     }
-  }, [config, state, validate]);
+  }, [config, state, validate, validateAntiSpam, getCompletionTime]);
 
   // Get visible blocks based on logic
   const visibleBlocks = schema.blocks.filter((block) => shouldShowBlock(block, state.values));
 
   const currentBlock = visibleBlocks[state.currentStep];
   const progress = ((state.currentStep + 1) / visibleBlocks.length) * 100;
+
+  // Check for unsynced data
+  const [hasUnsyncedData, setHasUnsyncedData] = useState(false);
+  useEffect(() => {
+    offlineServiceRef.current?.hasUnsyncedData().then(setHasUnsyncedData);
+  }, [state.values]);
 
   return {
     // State
@@ -326,6 +364,8 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
     // Utilities
     canGoNext,
+    hasUnsyncedData,
+    isOnline: offlineServiceRef.current?.online ?? true,
     on: emitter.on.bind(emitter),
     off: emitter.off.bind(emitter),
   };
