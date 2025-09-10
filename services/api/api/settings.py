@@ -229,13 +229,10 @@ EMAIL_BACKEND = config(
     default="django.core.mail.backends.console.EmailBackend"
 )
 
-# AWS Settings for data export storage
-AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID", default="")
-AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY", default="")
-AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME", default="forms-gdpr-exports")
-AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME", default="eu-west-1")
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
+# Local storage settings for VPS deployment
+SECURE_STORAGE_ROOT = config("SECURE_STORAGE_ROOT", default=os.path.join(BASE_DIR, "secure_storage"))
+SECURE_STORAGE_URL = config("SECURE_STORAGE_URL", default="/secure-storage/")
+SITE_URL = config("SITE_URL", default="http://localhost:8000")
 
 # GDPR Compliance defaults
 GDPR_DEFAULT_RETENTION_DAYS = {

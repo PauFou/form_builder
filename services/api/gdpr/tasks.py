@@ -6,7 +6,6 @@ from datetime import timedelta
 import json
 import csv
 import io
-import boto3
 import uuid
 from typing import Dict, List
 
@@ -17,6 +16,7 @@ from .models import (
 from core.models import (
     Submission, Answer, Partial, AuditLog, User, Organization
 )
+from core.storage import gdpr_export_storage
 
 
 @shared_task(bind=True, max_retries=3)
@@ -398,8 +398,7 @@ def _collect_audit_logs(email: str, organization: Organization) -> List[Dict]:
 
 
 def _generate_export_file(data: Dict, format: str, request_id: str) -> tuple:
-    """Generate export file and upload to S3"""
-    filename = f"gdpr-export-{request_id}.{format}"
+    """Generate export file and save to local storage"""
     
     if format == 'json':
         file_content = json.dumps(data, indent=2).encode('utf-8')
@@ -410,27 +409,18 @@ def _generate_export_file(data: Dict, format: str, request_id: str) -> tuple:
         # Would use pandas/pyarrow here
         file_content = json.dumps(data).encode('utf-8')  # Placeholder
     
-    # Upload to S3 (or compatible storage)
-    s3 = boto3.client('s3')
-    bucket = settings.AWS_STORAGE_BUCKET_NAME
-    key = f"gdpr-exports/{filename}"
+    # Extract organization ID from request
+    export_request = DataExportRequest.objects.get(id=request_id)
+    organization_id = str(export_request.organization.id)
     
-    s3.put_object(
-        Bucket=bucket,
-        Key=key,
-        Body=file_content,
-        ContentType='application/json' if format == 'json' else 'text/csv',
-        ServerSideEncryption='AES256'
+    # Save to local storage and get signed URL
+    file_path, signed_url = gdpr_export_storage.save_export(
+        organization_id=organization_id,
+        export_data=file_content,
+        export_format=format
     )
     
-    # Generate presigned URL
-    url = s3.generate_presigned_url(
-        'get_object',
-        Params={'Bucket': bucket, 'Key': key},
-        ExpiresIn=7 * 24 * 3600  # 7 days
-    )
-    
-    return url, len(file_content)
+    return signed_url, len(file_content)
 
 
 def _json_to_csv(data: Dict) -> str:
