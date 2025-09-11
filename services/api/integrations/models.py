@@ -1,6 +1,6 @@
 from django.db import models
 from core.models import BaseModel, Organization
-from core.db_utils import get_array_field
+# from core.db_utils import get_array_field  # Not needed with JSONField
 import uuid
 import json
 from cryptography.fernet import Fernet
@@ -45,7 +45,7 @@ class Integration(BaseModel):
     config_encrypted = models.TextField()
     
     # Settings
-    settings = models.JSONField(default=dict, blank=True)
+    settings = models.JSONField(null=True, blank=True)
     
     # OAuth tokens (encrypted)
     access_token_encrypted = models.TextField(blank=True, null=True)
@@ -145,20 +145,13 @@ class IntegrationConnection(BaseModel):
     
     # Configuration
     enabled = models.BooleanField(default=True)
-    trigger_events = get_array_field(
-        models.CharField(max_length=50, choices=TRIGGER_EVENTS),
-        default=list,
-        help_text="Events that trigger this integration"
-    )
+    trigger_events = models.JSONField(null=True, blank=True, help_text="Events that trigger this integration")
     
     # Field mapping
-    field_mapping = models.JSONField(
-        default=dict,
-        help_text="Maps form fields to integration fields"
-    )
+    field_mapping = models.JSONField(null=True, blank=True, help_text="Maps form fields to integration fields")
     
     # Integration-specific settings
-    settings = models.JSONField(default=dict, blank=True)
+    settings = models.JSONField(null=True, blank=True)
     
     # Stats
     last_triggered_at = models.DateTimeField(blank=True, null=True)
@@ -219,7 +212,7 @@ class IntegrationLog(BaseModel):
     trigger_event = models.CharField(max_length=50)
     
     # Request/Response data
-    request_data = models.JSONField(default=dict)
+    request_data = models.JSONField(null=True, blank=True)
     response_data = models.JSONField(blank=True, null=True)
     response_code = models.IntegerField(blank=True, null=True)
     

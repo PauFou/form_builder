@@ -2,7 +2,7 @@ from django.db import models
 import uuid
 
 from core.models import BaseModel, Organization, User
-from core.db_utils import get_array_field
+# from core.db_utils import get_array_field  # Not needed with JSONField
 
 
 class Form(BaseModel):
@@ -28,27 +28,19 @@ class Form(BaseModel):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
     
     # Form structure
-    pages = models.JSONField(default=list, help_text="Form pages with blocks")
-    logic = models.JSONField(default=dict, blank=True, help_text="Form logic rules")
-    theme = models.JSONField(default=dict, blank=True, help_text="Form theme configuration")
-    settings = models.JSONField(default=dict, blank=True, help_text="Form settings")
+    pages = models.JSONField(null=True, blank=True, help_text="Form pages with blocks")
+    logic = models.JSONField(null=True, blank=True, help_text="Form logic rules")
+    theme = models.JSONField(null=True, blank=True, help_text="Form theme configuration")
+    settings = models.JSONField(null=True, blank=True, help_text="Form settings")
     
     # Metadata
-    metadata = models.JSONField(default=dict, blank=True)
-    tags = get_array_field(
-        models.CharField(max_length=50),
-        default=list,
-        blank=True
-    )
+    metadata = models.JSONField(null=True, blank=True)
+    tags = models.JSONField(null=True, blank=True)
     
     # Localization
     default_locale = models.CharField(max_length=10, default='en')
-    locales = get_array_field(
-        models.CharField(max_length=10),
-        default=list,
-        blank=True
-    )
-    translations = models.JSONField(default=dict, blank=True)
+    locales = models.JSONField(null=True, blank=True)
+    translations = models.JSONField(null=True, blank=True)
     
     # Stats
     submission_count = models.IntegerField(default=0)

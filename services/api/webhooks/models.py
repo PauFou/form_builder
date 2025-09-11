@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
 from core.models import Organization, Submission, Partial
 import uuid
 
@@ -10,7 +9,8 @@ class Webhook(models.Model):
     url = models.URLField()
     secret = models.CharField(max_length=255)
     active = models.BooleanField(default=True)
-    headers_json = models.JSONField(default=dict)
+    events = models.JSONField(null=True, blank=True)
+    headers_json = models.JSONField(null=True, blank=True)
     include_partials = models.BooleanField(default=False)
     retry_enabled = models.BooleanField(default=True)
     max_retries = models.IntegerField(default=7)
@@ -45,6 +45,8 @@ class Delivery(models.Model):
     webhook = models.ForeignKey(Webhook, on_delete=models.CASCADE, related_name="deliveries")
     submission = models.ForeignKey(Submission, on_delete=models.CASCADE, null=True, blank=True)
     partial = models.ForeignKey(Partial, on_delete=models.CASCADE, null=True, blank=True)
+    event = models.CharField(max_length=50, default='submission.created')
+    payload = models.JSONField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     attempt = models.IntegerField(default=1)
     response_code = models.IntegerField(null=True, blank=True)

@@ -17,7 +17,7 @@ class TypeformImporterTestCase(TestCase):
         )
         self.organization = Organization.objects.create(
             name='Test Org',
-            owner=self.user
+            slug='test-org'
         )
         self.importer = TypeformImporter()
 

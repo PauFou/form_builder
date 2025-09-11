@@ -70,7 +70,7 @@ class Submission(models.Model):
     locale = models.CharField(max_length=10)
     started_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
-    metadata_json = models.JSONField(default=dict)
+    metadata_json = models.JSONField(null=True, blank=True)
     
     class Meta:
         ordering = ["-started_at"]
