@@ -7,7 +7,7 @@ from typing import Dict, List, Any, Optional, Tuple
 from datetime import datetime
 import uuid
 
-from forms.models import Form, FormPage, FormBlock
+from forms.models import Form
 
 
 class TypeformImporter:

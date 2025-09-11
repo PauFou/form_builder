@@ -113,7 +113,7 @@ export function LogicGraph({ rules, onEditRule }: LogicGraphProps) {
         });
 
         // Connect action to target field
-        const targetField = fieldMap.get(action.target);
+        const targetField = fieldMap.get(action.target || "");
         if (targetField) {
           edges.push({
             id: `edge-${edgeId++}`,

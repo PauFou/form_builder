@@ -230,7 +230,7 @@ export function LogicEditor() {
                             <Badge key={idx} variant="default">
                               {getActionIcon(action.type)}
                               <span className="ml-1">
-                                {action.type} {getFieldLabel(action.target)}
+                                {action.type} {getFieldLabel(action.target || "")}
                                 {action.value && ` = ${action.value}`}
                               </span>
                             </Badge>

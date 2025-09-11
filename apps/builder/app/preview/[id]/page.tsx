@@ -113,20 +113,22 @@ export default function PreviewPage() {
   }
 
   // Convert form to FormSchema format expected by runtime
-  const formSchema: FormSchema = {
+  const formSchema = {
     id: form.id,
     title: form.title,
     description: form.description,
     blocks: form.pages.flatMap((page) =>
       page.blocks.map((block) => ({
         ...block,
+        question: block.question || "",
+        type: block.type,
         label: block.label || block.question,
       }))
     ),
     theme: form.theme,
-    logic: form.logic,
+    logic: form.logic?.rules || [],
     settings: form.settings,
-  };
+  } as FormSchema;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-accent/5">

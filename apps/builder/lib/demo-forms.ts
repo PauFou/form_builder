@@ -117,7 +117,7 @@ export const DEMO_FORMS: Record<string, Form> = {
       rules: [
         {
           id: "rule-show-state",
-          name: "Show state field for US residents",
+          // name: "Show state field for US residents",
           conditions: [
             {
               id: "cond-country-us",
@@ -136,7 +136,7 @@ export const DEMO_FORMS: Record<string, Form> = {
         },
         {
           id: "rule-hide-state",
-          name: "Hide state field for non-US residents",
+          // name: "Hide state field for non-US residents",
           conditions: [
             {
               id: "cond-country-not-us",
@@ -155,7 +155,7 @@ export const DEMO_FORMS: Record<string, Form> = {
         },
         {
           id: "rule-show-province",
-          name: "Show province field for Canadian residents",
+          // name: "Show province field for Canadian residents",
           conditions: [
             {
               id: "cond-country-ca",
@@ -174,7 +174,7 @@ export const DEMO_FORMS: Record<string, Form> = {
         },
         {
           id: "rule-hide-province",
-          name: "Hide province field for non-Canadian residents",
+          // name: "Hide province field for non-Canadian residents",
           conditions: [
             {
               id: "cond-country-not-ca",
@@ -193,7 +193,7 @@ export const DEMO_FORMS: Record<string, Form> = {
         },
         {
           id: "rule-show-school",
-          name: "Show school field for students",
+          // name: "Show school field for students",
           conditions: [
             {
               id: "cond-student-yes",
@@ -217,7 +217,7 @@ export const DEMO_FORMS: Record<string, Form> = {
         },
         {
           id: "rule-show-employer",
-          name: "Show employer field for non-students",
+          // name: "Show employer field for non-students",
           conditions: [
             {
               id: "cond-student-no",

@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from core.models import Organization
 from forms.models import Form
 from core.models import Submission
-from webhooks.models import Webhook, WebhookDelivery
+from webhooks.models import Webhook, Delivery
 from webhooks.tasks import send_webhook, retry_failed_webhooks
 from webhooks.services import WebhookService
 
@@ -59,7 +59,7 @@ class WebhookModelTestCase(TestCase):
             data={'field1': 'value1'}
         )
         
-        delivery = WebhookDelivery.objects.create(
+        delivery = Delivery.objects.create(
             webhook=webhook,
             submission=submission,
             event='submission.created',
@@ -133,7 +133,7 @@ class WebhookServiceTestCase(TestCase):
             data={'field1': 'value1'}
         )
         
-        delivery = WebhookDelivery.objects.create(
+        delivery = Delivery.objects.create(
             webhook=webhook,
             submission=submission,
             event='submission.created',
@@ -177,7 +177,7 @@ class WebhookServiceTestCase(TestCase):
             data={'field1': 'value1'}
         )
         
-        delivery = WebhookDelivery.objects.create(
+        delivery = Delivery.objects.create(
             webhook=webhook,
             submission=submission,
             event='submission.created',
@@ -211,7 +211,7 @@ class WebhookServiceTestCase(TestCase):
             data={'field1': 'value1'}
         )
         
-        delivery = WebhookDelivery.objects.create(
+        delivery = Delivery.objects.create(
             webhook=webhook,
             submission=submission,
             event='submission.created',
@@ -243,7 +243,7 @@ class WebhookServiceTestCase(TestCase):
             data={'field1': 'value1'}
         )
         
-        delivery = WebhookDelivery.objects.create(
+        delivery = Delivery.objects.create(
             webhook=webhook,
             submission=submission,
             event='submission.created',
@@ -275,7 +275,7 @@ class WebhookServiceTestCase(TestCase):
             data={'field1': 'value1'}
         )
         
-        delivery = WebhookDelivery.objects.create(
+        delivery = Delivery.objects.create(
             webhook=webhook,
             submission=submission,
             event='submission.created',
@@ -319,7 +319,7 @@ class WebhookTaskTestCase(TestCase):
             data={'field1': 'value1'}
         )
         
-        delivery = WebhookDelivery.objects.create(
+        delivery = Delivery.objects.create(
             webhook=webhook,
             submission=submission,
             event='submission.created',
@@ -352,7 +352,7 @@ class WebhookTaskTestCase(TestCase):
         )
         
         # Create a failed delivery ready for retry
-        delivery = WebhookDelivery.objects.create(
+        delivery = Delivery.objects.create(
             webhook=webhook,
             submission=submission,
             event='submission.created',
@@ -391,7 +391,7 @@ class WebhookTaskTestCase(TestCase):
             submission=submission
         )
         
-        self.assertEqual(WebhookDelivery.objects.filter(event='submission.created').count(), 1)
+        self.assertEqual(Delivery.objects.filter(event='submission.created').count(), 1)
         
         # Should not create delivery for unsubscribed event
         self.service.trigger_webhooks(
@@ -400,4 +400,4 @@ class WebhookTaskTestCase(TestCase):
             submission=submission
         )
         
-        self.assertEqual(WebhookDelivery.objects.filter(event='submission.deleted').count(), 0)
+        self.assertEqual(Delivery.objects.filter(event='submission.deleted').count(), 0)
