@@ -1,0 +1,20 @@
+[
+  {
+    "page": "marketing-home",
+    "url": "http://localhost:3000",
+    "violations": [],
+    "timestamp": "2025-09-11T16:57:35.633Z"
+  },
+  {
+    "page": "builder-home",
+    "url": "http://localhost:3001",
+    "error": "Server not ready",
+    "timestamp": "2025-09-11T16:57:35.636Z"
+  },
+  {
+    "page": "dashboard",
+    "url": "http://localhost:3001/dashboard",
+    "error": "Server not ready",
+    "timestamp": "2025-09-11T16:57:35.636Z"
+  }
+]
