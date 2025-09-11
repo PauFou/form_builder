@@ -18,12 +18,15 @@ export function FormViewer({ schema, config }: FormViewerProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Get all blocks from all pages
+  const allBlocks = schema.pages?.flatMap((page: any) => page.blocks || []) || [];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       await config.onSubmit(formData);
-      setCurrentStep(schema.blocks.length); // Show thank you
+      setCurrentStep(allBlocks.length); // Show thank you
     } catch (error) {
       config.onError?.(error);
     } finally {
@@ -37,7 +40,7 @@ export function FormViewer({ schema, config }: FormViewerProps) {
   };
 
   // Show thank you message after submission
-  if (currentStep >= schema.blocks.length) {
+  if (currentStep >= allBlocks.length) {
     return (
       <div
         style={{
@@ -59,7 +62,7 @@ export function FormViewer({ schema, config }: FormViewerProps) {
     );
   }
 
-  const currentBlock = schema.blocks[currentStep];
+  const currentBlock = allBlocks[currentStep];
 
   return (
     <form
@@ -88,7 +91,7 @@ export function FormViewer({ schema, config }: FormViewerProps) {
             style={{
               background: schema.theme?.primaryColor || "#4F46E5",
               height: "100%",
-              width: `${((currentStep + 1) / schema.blocks.length) * 100}%`,
+              width: `${((currentStep + 1) / allBlocks.length) * 100}%`,
               transition: "width 0.3s ease",
             }}
           />
@@ -132,7 +135,7 @@ export function FormViewer({ schema, config }: FormViewerProps) {
           Previous
         </button>
 
-        {currentStep < schema.blocks.length - 1 ? (
+        {currentStep < allBlocks.length - 1 ? (
           <button
             type="button"
             onClick={() => setCurrentStep((prev) => prev + 1)}

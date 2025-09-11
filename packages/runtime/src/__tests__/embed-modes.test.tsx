@@ -4,6 +4,15 @@ import "@testing-library/jest-dom";
 import { PopoverEmbed, DrawerEmbed } from "../embed-modes";
 import type { FormSchema } from "../types";
 
+// Mock the FormViewer component
+jest.mock("../components/FormViewer", () => ({
+  FormViewer: ({ schema }: any) => (
+    <div data-testid="form-viewer">
+      {schema.blocks?.[0]?.question || schema.pages?.[0]?.blocks?.[0]?.question || "Form content"}
+    </div>
+  ),
+}));
+
 const mockSchema: FormSchema = {
   id: "test-form",
   title: "Test Form",

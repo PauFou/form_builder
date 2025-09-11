@@ -6,7 +6,7 @@ export function useFormBlocks(): Block[] {
   const form = useFormBuilderStore((state) => state.form);
 
   return useMemo(() => {
-    if (!form) return [];
-    return form.pages.flatMap((page) => page.blocks);
+    if (!form || !form.pages) return [];
+    return form.pages.flatMap((page) => page.blocks || []);
   }, [form]);
 }

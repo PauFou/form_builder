@@ -11,7 +11,8 @@ export function renderFormHTML({ schema, locale = "en", nonce: _nonce }: SSROpti
   // const _styles = generateStyles(schema.theme); // TODO: use for styling
 
   // Generate initial HTML structure
-  const firstBlock = schema.blocks[0];
+  const allBlocks = schema.pages?.flatMap((page) => page.blocks || []) || [];
+  const firstBlock = allBlocks[0];
   if (!firstBlock) {
     return "";
   }

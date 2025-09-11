@@ -1,9 +1,15 @@
+export interface Page {
+  id: string;
+  blocks: Block[];
+}
+
 export interface FormSchema {
   id: string;
   version?: number;
   title?: string;
   description?: string;
-  blocks: Block[];
+  pages?: Page[];
+  blocks?: Block[]; // Keep for backward compatibility
   settings?: FormSettings;
   theme?: Theme;
   logic?: LogicRule[];

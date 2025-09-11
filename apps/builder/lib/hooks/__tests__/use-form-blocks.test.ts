@@ -48,7 +48,9 @@ describe("useFormBlocks", () => {
   });
 
   it("should return empty array when no form", () => {
-    (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({ form: null });
+    (useFormBuilderStore as unknown as jest.Mock).mockImplementation((selector) =>
+      selector({ form: null })
+    );
 
     const { result } = renderHook(() => useFormBlocks());
 
@@ -56,7 +58,9 @@ describe("useFormBlocks", () => {
   });
 
   it("should return all blocks from all pages", () => {
-    (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({ form: mockForm });
+    (useFormBuilderStore as unknown as jest.Mock).mockImplementation((selector) =>
+      selector({ form: mockForm })
+    );
 
     const { result } = renderHook(() => useFormBlocks());
 
@@ -67,8 +71,10 @@ describe("useFormBlocks", () => {
   });
 
   it("should update when form changes", () => {
-    const mockStore = { form: mockForm };
-    (useFormBuilderStore as unknown as jest.Mock).mockReturnValue(mockStore);
+    let currentForm = mockForm;
+    (useFormBuilderStore as unknown as jest.Mock).mockImplementation((selector) =>
+      selector({ form: currentForm })
+    );
 
     const { result, rerender } = renderHook(() => useFormBlocks());
 
@@ -92,8 +98,7 @@ describe("useFormBlocks", () => {
       ],
     };
 
-    mockStore.form = updatedForm;
-    (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({ form: updatedForm });
+    currentForm = updatedForm;
 
     rerender();
 

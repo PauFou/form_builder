@@ -10,26 +10,31 @@ describe("Analytics Integration", () => {
   const mockSchema: FormSchema = {
     id: "test-form",
     version: 1,
-    blocks: [
+    pages: [
       {
-        id: "name",
-        type: "text",
-        question: "What is your name?",
-        required: true,
-      },
-      {
-        id: "email",
-        type: "email",
-        question: "What is your email?",
-        required: true,
-      },
-      {
-        id: "rating",
-        type: "rating",
-        question: "How would you rate our service?",
-        properties: {
-          max: 5,
-        },
+        id: "page1",
+        blocks: [
+          {
+            id: "name",
+            type: "text",
+            question: "What is your name?",
+            required: true,
+          },
+          {
+            id: "email",
+            type: "email",
+            question: "What is your email?",
+            required: true,
+          },
+          {
+            id: "rating",
+            type: "rating",
+            question: "How would you rate our service?",
+            properties: {
+              max: 5,
+            },
+          },
+        ],
       },
     ],
     settings: {

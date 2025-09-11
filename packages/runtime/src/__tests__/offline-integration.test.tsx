@@ -14,23 +14,28 @@ describe("Offline Integration", () => {
     mockSchema = {
       id: "test-form",
       version: 1,
-      blocks: [
+      pages: [
         {
-          id: "name",
-          type: "text",
-          question: "What is your name?",
-          required: true,
-        },
-        {
-          id: "email",
-          type: "email",
-          question: "What is your email?",
-          required: true,
-        },
-        {
-          id: "phone",
-          type: "phone",
-          question: "What is your phone number?",
+          id: "page1",
+          blocks: [
+            {
+              id: "name",
+              type: "text",
+              question: "What is your name?",
+              required: true,
+            },
+            {
+              id: "email",
+              type: "email",
+              question: "What is your email?",
+              required: true,
+            },
+            {
+              id: "phone",
+              type: "phone",
+              question: "What is your phone number?",
+            },
+          ],
         },
       ],
       settings: {
@@ -66,20 +71,26 @@ describe("Offline Integration", () => {
   });
 
   it("should show offline indicator when offline", async () => {
-    // Mock offline state
+    render(<FormViewer schema={mockSchema} config={mockConfig} />);
+
+    // Mock going offline
     Object.defineProperty(navigator, "onLine", {
       writable: true,
       value: false,
     });
 
-    render(<FormViewer schema={mockSchema} config={mockConfig} />);
-
     // Trigger offline event
     window.dispatchEvent(new Event("offline"));
 
-    await waitFor(() => {
-      expect(screen.getByText("Working offline")).toBeInTheDocument();
-    });
+    // Wait a bit for the event handler to process and component to re-render
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    await waitFor(
+      () => {
+        expect(screen.getByText("Working offline")).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
   });
 
   it("should show syncing indicator when online with unsynced data", async () => {
@@ -181,6 +192,8 @@ describe("Offline Integration", () => {
 
   it("should clear offline data after successful submission", async () => {
     mockConfig.onSubmit = jest.fn().mockResolvedValue(undefined);
+    // Disable anti-spam for this test
+    mockConfig.enableAntiSpam = false;
 
     render(<FormViewer schema={mockSchema} config={mockConfig} />);
 

@@ -1,13 +1,12 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
 import { PopoverEmbed, DrawerEmbed } from "../src/embed-modes";
 import type { FormSchema } from "../src/types";
 
 // Mock FormViewer
 jest.mock("../src/components/FormViewer", () => ({
-  FormViewer: ({ schema, config }: any) => (
+  FormViewer: ({ config }: any) => (
     <div data-testid="form-viewer">
-      <h2>{schema.title}</h2>
       <button onClick={() => config.onSubmit?.({ test: "data" })}>Submit Form</button>
     </div>
   ),
@@ -25,6 +24,7 @@ describe("PopoverEmbed", () => {
   };
 
   const defaultConfig = {
+    formId: "test-form",
     apiUrl: "http://localhost:8000",
     onSubmit: jest.fn(),
     triggerText: "Open Form",
@@ -84,7 +84,7 @@ describe("PopoverEmbed", () => {
     expect(popover).toHaveClass("fixed", "inset-0", "flex", "items-center", "justify-center");
   });
 
-  it("calls onSubmit and closes when form is submitted", () => {
+  it("calls onSubmit and closes when form is submitted", async () => {
     const onSubmit = jest.fn();
     render(<PopoverEmbed schema={mockSchema} config={{ ...defaultConfig, onSubmit }} />);
 
@@ -92,10 +92,16 @@ describe("PopoverEmbed", () => {
     fireEvent.click(trigger);
 
     const submitButton = screen.getByText("Submit Form");
-    fireEvent.click(submitButton);
+
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
 
     expect(onSubmit).toHaveBeenCalledWith({ test: "data" });
-    expect(screen.queryByText("Test Form")).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.queryByText("Test Form")).not.toBeInTheDocument();
+    });
   });
 });
 
@@ -111,6 +117,7 @@ describe("DrawerEmbed", () => {
   };
 
   const defaultConfig = {
+    formId: "test-form",
     apiUrl: "http://localhost:8000",
     onSubmit: jest.fn(),
     triggerText: "Open Drawer",
@@ -168,7 +175,7 @@ describe("DrawerEmbed", () => {
     expect(drawer).toHaveStyle("left: 0");
   });
 
-  it("handles form submission correctly", () => {
+  it("handles form submission correctly", async () => {
     const onSubmit = jest.fn();
     render(<DrawerEmbed schema={mockSchema} config={{ ...defaultConfig, onSubmit }} />);
 
@@ -176,9 +183,15 @@ describe("DrawerEmbed", () => {
     fireEvent.click(trigger);
 
     const submitButton = screen.getByText("Submit Form");
-    fireEvent.click(submitButton);
+
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
 
     expect(onSubmit).toHaveBeenCalledWith({ test: "data" });
-    expect(screen.queryByText("Test Form")).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.queryByText("Test Form")).not.toBeInTheDocument();
+    });
   });
 });

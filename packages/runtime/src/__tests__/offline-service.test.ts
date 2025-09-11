@@ -308,10 +308,11 @@ describe("OfflineService", () => {
 
   describe("Cleanup", () => {
     it("should cleanup old completed submissions", async () => {
+      service = new OfflineService(config);
       const oldDate = Date.now() - 31 * 24 * 60 * 60 * 1000; // 31 days ago
 
-      // Create a service and save old completed submission
-      const state: FormState = {
+      // First, save a completed submission
+      const completedState: FormState = {
         currentStep: 0,
         values: { test: "old" },
         errors: {},
@@ -320,29 +321,60 @@ describe("OfflineService", () => {
         isComplete: true,
       };
 
-      await service.saveState("user", state, {
+      await service.saveState("user", completedState, {
         formId: config.formId,
-        values: state.values,
+        values: completedState.values,
         startedAt: new Date(oldDate).toISOString(),
         completedAt: new Date(oldDate).toISOString(),
       });
 
-      // Save a recent submission
-      await service.saveState("user2", state, {
-        formId: config.formId,
+      // Wait for throttled save
+      await new Promise((resolve) => setTimeout(resolve, 1100));
+
+      // Now we need to directly update the updatedAt in the database to simulate an old submission
+      const db = await (service as any).initDB();
+      const tx = db.transaction("submissions", "readwrite");
+      const record = await tx.objectStore("submissions").get(`${config.formId}-user`);
+      if (record) {
+        record.updatedAt = oldDate;
+        await tx.objectStore("submissions").put(record);
+      }
+      await tx.done;
+
+      // Save a recent incomplete submission
+      const incompleteState: FormState = {
+        currentStep: 0,
         values: { test: "new" },
+        errors: {},
+        touched: {},
+        isSubmitting: false,
+        isComplete: false,
+      };
+
+      await service.saveState("user2", incompleteState, {
+        formId: config.formId,
+        values: incompleteState.values,
         startedAt: new Date().toISOString(),
       });
+
+      // Wait for throttled save
+      await new Promise((resolve) => setTimeout(resolve, 1100));
 
       // Run cleanup
       await service.cleanup();
 
-      // Old completed should be gone, recent should remain
+      // Old completed should be gone, recent incomplete should remain
       const stats = await service.getOfflineStats();
       expect(stats.total).toBe(1);
+
+      // Verify the remaining submission is the incomplete one
+      const remaining = await service.getState();
+      expect(remaining?.respondentKey).toBe("user2");
+      expect(remaining?.state.values.test).toBe("new");
     });
 
     it("should not cleanup incomplete submissions", async () => {
+      service = new OfflineService(config);
       const oldDate = Date.now() - 31 * 24 * 60 * 60 * 1000; // 31 days ago
 
       const state: FormState = {
@@ -360,11 +392,14 @@ describe("OfflineService", () => {
         startedAt: new Date(oldDate).toISOString(),
       });
 
+      // Wait for throttled save
+      await new Promise((resolve) => setTimeout(resolve, 1100));
+
       // Run cleanup
       await service.cleanup();
 
-      // Should still exist - use the specific respondent key
-      const retrieved = await service.getState("user");
+      // Should still exist - getState() gets the most recent submission
+      const retrieved = await service.getState();
       expect(retrieved).not.toBeNull();
       expect(retrieved?.state.values.test).toBe("old-incomplete");
     });
@@ -372,6 +407,7 @@ describe("OfflineService", () => {
 
   describe("Statistics", () => {
     it("should provide offline statistics", async () => {
+      service = new OfflineService(config);
       const state: FormState = {
         currentStep: 0,
         values: {},
@@ -400,6 +436,7 @@ describe("OfflineService", () => {
 
   describe("Event Emitter", () => {
     it("should emit state saved events", async () => {
+      service = new OfflineService(config);
       const handler = jest.fn();
       service.on("state:saved", handler);
 
@@ -428,6 +465,7 @@ describe("OfflineService", () => {
     });
 
     it("should emit state restored events", async () => {
+      service = new OfflineService(config);
       const handler = jest.fn();
       service.on("state:restored", handler);
 
@@ -462,6 +500,7 @@ describe("OfflineService", () => {
     });
 
     it("should properly remove event handlers", () => {
+      service = new OfflineService(config);
       const handler = jest.fn();
 
       service.on("online", handler);

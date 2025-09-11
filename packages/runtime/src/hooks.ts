@@ -47,6 +47,11 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     minCompletionTime: config.minCompletionTime ?? 3000,
   });
 
+  // Get all blocks from all pages
+  const allBlocks = useMemo(() => {
+    return schema.pages?.flatMap((page) => page.blocks || []) || [];
+  }, [schema.pages]);
+
   // Initialize services
   useEffect(() => {
     // Initialize logic evaluator
@@ -126,7 +131,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
         },
         locale: config.locale,
         currentStep: state.currentStep,
-        progress: ((state.currentStep + 1) / schema.blocks.length) * 100,
+        progress: ((state.currentStep + 1) / allBlocks.length) * 100,
       },
     };
 
@@ -134,7 +139,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     await offlineServiceRef.current.saveState(respondentKeyRef.current, state, data);
 
     emitter.emit("form:save", { data });
-  }, [config, state, schema.blocks.length]);
+  }, [config, state, schema.pages, allBlocks]);
 
   // Save on state change
   useEffect(() => {
@@ -183,7 +188,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
       }));
 
       // Track field change
-      const block = schema.blocks.find((b) => b.id === field);
+      const block = allBlocks.find((b) => b.id === field);
       if (analyticsRef.current && block) {
         analyticsRef.current.trackFieldChange(
           config.formId,
@@ -196,7 +201,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
       emitter.emit("field:change", { field, value });
     },
-    [config.formId, schema.blocks, logicState.hiddenFields]
+    [config.formId, allBlocks, logicState.hiddenFields]
   );
 
   const setError = useCallback(
@@ -229,9 +234,37 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     emitter.emit("field:blur", { field });
   }, []);
 
-  // Navigation
+  // We'll define these functions after visibleBlocks is computed
+  // to avoid circular dependencies
+  const canGoNextRef = useRef<() => boolean>(() => false);
+  const validateRef = useRef<() => boolean>(() => false);
+  const goNextRef = useRef<() => void>(() => {});
+  const goPrevRef = useRef<() => void>(() => {});
+  const goToStepRef = useRef<(step: number) => void>(() => {});
+
+  // These will be defined after visibleBlocks
+
+  // Submit function will be defined after visibleBlocks
+  const submitRef = useRef<() => Promise<void>>(async () => {});
+
+  // Get visible blocks based on logic
+  const visibleBlocks = useMemo(() => {
+    return allBlocks.filter((block) => {
+      // Check if block is hidden by logic rules
+      if (logicState.hiddenFields.includes(block.id)) {
+        return false;
+      }
+      // Also check the basic shouldShowBlock logic
+      return shouldShowBlock(block, state.values);
+    });
+  }, [allBlocks, state.values, logicState.hiddenFields]);
+
+  const currentBlock = visibleBlocks[state.currentStep];
+  const progress = ((state.currentStep + 1) / visibleBlocks.length) * 100;
+
+  // Now define the actual functions that depend on visibleBlocks
   const canGoNext = useCallback((): boolean => {
-    const currentBlock = schema.blocks[state.currentStep];
+    const currentBlock = visibleBlocks[state.currentStep];
     if (!currentBlock) return false;
 
     if (currentBlock.required && !state.values[currentBlock.id]) {
@@ -241,14 +274,16 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     const error = validateField(currentBlock, state.values[currentBlock.id]);
 
     return !error;
-  }, [schema, state]);
+  }, [visibleBlocks, state]);
 
-  // Validation
+  // Update ref
+  canGoNextRef.current = canGoNext;
+
   const validate = useCallback((): boolean => {
     const errors: Record<string, string> = {};
     let isValid = true;
 
-    schema.blocks.forEach((block) => {
+    visibleBlocks.forEach((block) => {
       const value = state.values[block.id];
       const error = validateField(block, value);
 
@@ -260,7 +295,10 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
     setState((prev) => ({ ...prev, errors }));
     return isValid;
-  }, [schema, state]);
+  }, [visibleBlocks, state]);
+
+  // Update ref
+  validateRef.current = validate;
 
   const goNext = useCallback(() => {
     if (!canGoNext()) return;
@@ -288,9 +326,9 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
     const nextStep = state.currentStep + 1;
 
-    if (nextStep < schema.blocks.length) {
+    if (nextStep < visibleBlocks.length) {
       // Track step completion
-      const currentBlock = schema.blocks[state.currentStep];
+      const currentBlock = visibleBlocks[state.currentStep];
       if (analyticsRef.current && currentBlock) {
         analyticsRef.current.trackStepComplete(
           config.formId,
@@ -305,7 +343,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
       }));
 
       // Track new step view
-      const nextBlock = schema.blocks[nextStep];
+      const nextBlock = visibleBlocks[nextStep];
       if (analyticsRef.current && nextBlock) {
         analyticsRef.current.trackStepView(config.formId, respondentKeyRef.current, nextBlock.id);
       }
@@ -376,7 +414,10 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
           });
       }
     }
-  }, [state, schema, canGoNext, validate, config]);
+  }, [state, visibleBlocks, logicState, canGoNext, validate, config]);
+
+  // Update ref
+  goNextRef.current = goNext;
 
   const goPrev = useCallback(() => {
     if (state.currentStep > 0) {
@@ -388,7 +429,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
       }));
 
       // Track step navigation
-      const prevBlock = schema.blocks[prevStep];
+      const prevBlock = visibleBlocks[prevStep];
       if (analyticsRef.current && prevBlock) {
         analyticsRef.current.trackStepView(config.formId, respondentKeyRef.current, prevBlock.id);
       }
@@ -398,21 +439,26 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
         to: prevStep,
       });
     }
-  }, [state, config.formId, schema.blocks]);
+  }, [state, config.formId, visibleBlocks]);
+
+  // Update ref
+  goPrevRef.current = goPrev;
 
   const goToStep = useCallback(
     (step: number) => {
-      if (step >= 0 && step < schema.blocks.length) {
+      if (step >= 0 && step < visibleBlocks.length) {
         setState((prev) => ({
           ...prev,
           currentStep: step,
         }));
       }
     },
-    [schema]
+    [visibleBlocks]
   );
 
-  // Manual submit function
+  // Update ref
+  goToStepRef.current = goToStep;
+
   const submit = useCallback(async () => {
     if (!validate()) return;
 
@@ -504,20 +550,8 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     }
   }, [config, state, validate, validateAntiSpam, getCompletionTime]);
 
-  // Get visible blocks based on logic
-  const visibleBlocks = useMemo(() => {
-    return schema.blocks.filter((block) => {
-      // Check if block is hidden by logic rules
-      if (logicState.hiddenFields.includes(block.id)) {
-        return false;
-      }
-      // Also check the basic shouldShowBlock logic
-      return shouldShowBlock(block, state.values);
-    });
-  }, [schema.blocks, state.values, logicState.hiddenFields]);
-
-  const currentBlock = visibleBlocks[state.currentStep];
-  const progress = ((state.currentStep + 1) / visibleBlocks.length) * 100;
+  // Update ref
+  submitRef.current = submit;
 
   // Track form start on first interaction
   const hasStartedRef = useRef(false);
@@ -556,6 +590,27 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     offlineServiceRef.current?.hasUnsyncedData().then(setHasUnsyncedData);
   }, [state.values]);
 
+  // Track online/offline status
+  const [isOnline, setIsOnline] = useState(true);
+  useEffect(() => {
+    if (!offlineServiceRef.current) return;
+
+    // Set initial state
+    setIsOnline(offlineServiceRef.current.online);
+
+    // Listen to online/offline events
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    offlineServiceRef.current.on("online", handleOnline);
+    offlineServiceRef.current.on("offline", handleOffline);
+
+    return () => {
+      offlineServiceRef.current?.off("online", handleOnline);
+      offlineServiceRef.current?.off("offline", handleOffline);
+    };
+  }, [config.enableOffline]);
+
   return {
     // State
     state,
@@ -577,7 +632,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     // Utilities
     canGoNext,
     hasUnsyncedData,
-    isOnline: offlineServiceRef.current?.online ?? true,
+    isOnline,
     on: emitter.on.bind(emitter),
     off: emitter.off.bind(emitter),
   };

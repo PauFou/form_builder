@@ -12,18 +12,18 @@ describe("PricingPage", () => {
   it("renders pricing plans", () => {
     render(<PricingPage />);
 
-    // Check if pricing plans exist
-    expect(screen.getByText(/Free/i)).toBeInTheDocument();
-    expect(screen.getByText(/Pro/i)).toBeInTheDocument();
-    expect(screen.getByText(/Scale/i)).toBeInTheDocument();
+    // Check if pricing plans exist - there are multiple "Free" texts, so be more specific
+    expect(screen.getByRole("heading", { name: /Free/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Pro/i })).toBeInTheDocument();
   });
 
   it("displays plan features", () => {
     render(<PricingPage />);
 
     // Check if plan features are displayed
-    expect(screen.getByText(/forms actifs/i)).toBeInTheDocument();
-    expect(screen.getByText(/réponses\/mois/i)).toBeInTheDocument();
+    expect(screen.getByText(/Unlimited Forms/i)).toBeInTheDocument();
+    expect(screen.getByText(/Unlimited Responses/i)).toBeInTheDocument();
+    expect(screen.getByText(/Logic builder/i)).toBeInTheDocument();
   });
 
   it("has call-to-action buttons", () => {

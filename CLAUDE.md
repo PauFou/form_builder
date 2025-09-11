@@ -319,6 +319,78 @@ POST   /v1/webhook-deliveries/:id/redrive
 
 ---
 
+## 🚨 Code Quality & Commit Standards (CRITICAL)
+
+### Pre-Commit Requirements
+
+**EVERY piece of code MUST pass ALL checks before commit:**
+
+1. **ESLint**: Zero errors allowed
+
+   ```bash
+   pnpm lint  # Must pass with 0 errors
+   ```
+
+2. **TypeScript**: Strict type checking
+
+   ```bash
+   pnpm typecheck  # Must pass completely
+   ```
+
+3. **Tests**: All tests must pass
+
+   ```bash
+   pnpm test  # 100% of tests must pass
+   ```
+
+4. **Build**: Must build successfully
+   ```bash
+   pnpm build  # No build errors
+   ```
+
+### Common Issues to Avoid
+
+1. **NO `any` types**: Always provide proper types
+
+   ```typescript
+   // ❌ BAD
+   const handleSubmit = (data: any) => {};
+
+   // ✅ GOOD
+   const handleSubmit = (data: FormData) => {};
+   ```
+
+2. **Fix React warnings**:
+   - Always wrap async state updates in `act()`
+   - Include all dependencies in useEffect/useCallback
+   - Don't pass non-DOM props to DOM elements
+
+3. **ESLint compliance**:
+   - Use `eslint-disable-next-line` sparingly and with justification
+   - Fix the actual issue instead of disabling rules
+
+### Pre-Commit Checklist
+
+Before ANY commit:
+
+1. Run `pnpm lint:fix` to auto-fix what's possible
+2. Manually fix remaining lint errors
+3. Run `pnpm typecheck` and fix all type errors
+4. Run `pnpm test` and ensure ALL tests pass
+5. Run `pnpm build` to verify build succeeds
+
+### Git Hooks
+
+The project uses Husky for pre-commit hooks that will:
+
+- Run ESLint on staged files
+- Block commits if there are any errors
+- Automatically revert changes if checks fail
+
+**If pre-commit fails, you MUST fix the issues before committing.**
+
+---
+
 ## Commit & PR Standards
 
 ### Conventional Commits

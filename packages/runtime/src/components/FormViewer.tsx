@@ -14,6 +14,7 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
   const {
     state,
     currentBlock,
+    visibleBlocks,
     progress,
     setValue,
     setTouched,
@@ -52,7 +53,7 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (state.currentStep === schema.blocks.length - 1) {
+    if (state.currentStep === visibleBlocks.length - 1) {
       submit();
     } else {
       goNext();
@@ -116,7 +117,7 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
           >
             {state.isSubmitting
               ? "Submitting..."
-              : state.currentStep === schema.blocks.length - 1
+              : state.currentStep === visibleBlocks.length - 1
                 ? schema.settings?.submitText || "Submit"
                 : "Next"}
           </button>
