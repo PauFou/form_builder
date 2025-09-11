@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework.test import APIClient
 from rest_framework import status
+from unittest.mock import patch
 import json
 
 from core.models import Organization, Membership
@@ -122,6 +123,7 @@ class GDPRAPITestCase(TestCase):
         url = '/v1/gdpr/retention/'
         data = {
             'organization': str(self.organization.id),
+            'form': None,
             'submission_retention_days': 365,
             'partial_retention_days': 30,
             'attachment_retention_days': 365,
@@ -144,7 +146,8 @@ class GDPRAPITestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn('id', response.data)
     
-    def test_export_request_api(self):
+    @patch('gdpr.tasks.process_export_request.delay')
+    def test_export_request_api(self, mock_task):
         url = '/v1/gdpr/export-requests/'
         data = {
             'requester_email': self.user.email,
@@ -156,6 +159,8 @@ class GDPRAPITestCase(TestCase):
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # Verify task was called
+        self.assertTrue(mock_task.called)
     
     def test_compliance_status_api(self):
         # Create some GDPR configurations

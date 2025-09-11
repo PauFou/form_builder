@@ -151,7 +151,8 @@ class WebhookDeliveryTestCase(TestCase):
         self.webhook = Webhook.objects.create(
             organization=self.org,
             url='https://example.com/webhook',
-            secret='test-secret-key'
+            secret='test-secret-key',
+            headers_json={}
         )
         
         self.form = Form.objects.create(

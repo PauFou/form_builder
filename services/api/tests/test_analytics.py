@@ -49,7 +49,7 @@ class AnalyticsAPITestCase(TestCase):
         mock_httpx.return_value.__enter__.return_value = mock_client
         
         # Send track event request
-        response = self.client.post('/api/analytics/events', {
+        response = self.client.post('/v1/analytics/events/', {
             'form_id': str(self.form.id),
             'event_type': 'form_view',
             'session_id': 'session123',
@@ -78,7 +78,7 @@ class AnalyticsAPITestCase(TestCase):
         mock_httpx.return_value.__enter__.return_value = mock_client
         
         # Send batch track request
-        response = self.client.post('/api/analytics/events/batch', {
+        response = self.client.post('/v1/analytics/events/batch/', {
             'events': [
                 {
                     'form_id': str(self.form.id),
@@ -112,7 +112,7 @@ class AnalyticsAPITestCase(TestCase):
         mock_httpx.return_value.__enter__.return_value = mock_client
         
         # Get form analytics
-        response = self.client.get(f'/api/analytics/forms/{self.form.id}/')
+        response = self.client.get(f'/v1/analytics/forms/{self.form.id}/')
         
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['views'], 100)
@@ -142,7 +142,7 @@ class AnalyticsAPITestCase(TestCase):
         mock_httpx.return_value.__enter__.return_value = mock_client
         
         # Get funnel analytics
-        response = self.client.get(f'/api/analytics/forms/{self.form.id}/funnel/')
+        response = self.client.get(f'/v1/analytics/forms/{self.form.id}/funnel/')
         
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data['funnel']), 3)
@@ -159,7 +159,7 @@ class AnalyticsAPITestCase(TestCase):
         self.client.force_authenticate(user=other_user)
         
         # Try to track event
-        response = self.client.post('/api/analytics/events', {
+        response = self.client.post('/v1/analytics/events/', {
             'form_id': str(self.form.id),
             'event_type': 'form_view',
             'session_id': 'session123'
@@ -170,7 +170,7 @@ class AnalyticsAPITestCase(TestCase):
 
     def test_analytics_form_not_found(self):
         """Test tracking event for non-existent form"""
-        response = self.client.post('/api/analytics/events', {
+        response = self.client.post('/v1/analytics/events/', {
             'form_id': 'non-existent-id',
             'event_type': 'form_view',
             'session_id': 'session123'

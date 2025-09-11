@@ -4,6 +4,7 @@ Analytics API views - Proxy to ClickHouse analytics service
 import httpx
 from datetime import datetime, timedelta
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -22,8 +23,14 @@ def track_event(request):
         # Validate organization access
         form_id = request.data.get('form_id')
         if form_id:
-            form = Form.objects.select_related('organization').get(id=form_id)
-            if not OrganizationMember.objects.filter(
+            try:
+                form = Form.objects.select_related('organization').get(id=form_id)
+            except (Form.DoesNotExist, ValueError, ValidationError):
+                return Response(
+                    {"error": "Form not found"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            if not Membership.objects.filter(
                 organization=form.organization,
                 user=request.user
             ).exists():
@@ -44,11 +51,6 @@ def track_event(request):
             )
             return Response(response.json(), status=response.status_code)
             
-    except Form.DoesNotExist:
-        return Response(
-            {"error": "Form not found"},
-            status=status.HTTP_404_NOT_FOUND
-        )
     except Exception as e:
         return Response(
             {"error": str(e)},
