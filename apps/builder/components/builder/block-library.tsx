@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { Card } from "@forms/ui";
 import { Button } from "@forms/ui";
 import { ScrollArea } from "@forms/ui";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@forms/ui";
 import {
   Type,
   AlignLeft,
@@ -26,10 +28,13 @@ import {
   Code,
   Heading,
   Image,
+  GitBranch,
+  Blocks,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 import type { Block } from "@forms/contracts";
+import { LogicEditor } from "../logic/logic-editor";
 
 const blockTypes = [
   { icon: Type, type: "text", label: "Short Text", category: "Text" },
@@ -69,6 +74,7 @@ const categories = [
 ];
 
 export function BlockLibrary() {
+  const [activeTab, setActiveTab] = useState<"blocks" | "logic">("blocks");
   const { form, addBlock } = useFormBuilderStore();
 
   const handleAddBlock = (type: string) => {
@@ -86,43 +92,72 @@ export function BlockLibrary() {
   };
 
   return (
-    <Card className="h-full">
-      <div className="p-4 border-b">
-        <h3 className="text-lg font-semibold">Block Library</h3>
-        <p className="text-sm text-muted-foreground">Drag or click to add</p>
-      </div>
-      <ScrollArea className="h-[calc(100%-80px)]">
-        <div className="p-4 space-y-6">
-          {categories.map((category) => (
-            <div key={category}>
-              <h4 className="text-sm font-medium mb-3 text-muted-foreground">{category}</h4>
-              <div className="grid gap-2">
-                {blockTypes
-                  .filter((block) => block.category === category)
-                  .map((block) => {
-                    const Icon = block.icon;
-                    return (
-                      <motion.div
-                        key={block.type}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start gap-3 h-auto py-3"
-                          onClick={() => handleAddBlock(block.type)}
-                        >
-                          <Icon className="h-4 w-4" />
-                          <span className="text-sm">{block.label}</span>
-                        </Button>
-                      </motion.div>
-                    );
-                  })}
-              </div>
-            </div>
-          ))}
+    <Card className="h-full flex flex-col">
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) => setActiveTab(v as "blocks" | "logic")}
+        className="flex-1 flex flex-col"
+      >
+        <div className="px-4 pt-4 pb-2 border-b">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="blocks" className="gap-2">
+              <Blocks className="h-4 w-4" />
+              Blocks
+            </TabsTrigger>
+            <TabsTrigger value="logic" className="gap-2">
+              <GitBranch className="h-4 w-4" />
+              Logic
+            </TabsTrigger>
+          </TabsList>
         </div>
-      </ScrollArea>
+
+        <TabsContent value="blocks" className="flex-1 mt-0">
+          <div className="p-4 border-b">
+            <h3 className="text-lg font-semibold">Block Library</h3>
+            <p className="text-sm text-muted-foreground">Drag or click to add</p>
+          </div>
+          <ScrollArea className="h-[calc(100%-120px)]">
+            <div className="p-4 space-y-6">
+              {categories.map((category) => (
+                <div key={category}>
+                  <h4 className="text-sm font-medium mb-3 text-muted-foreground">{category}</h4>
+                  <div className="grid gap-2">
+                    {blockTypes
+                      .filter((block) => block.category === category)
+                      .map((block) => {
+                        const Icon = block.icon;
+                        return (
+                          <motion.div
+                            key={block.type}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start gap-3 h-auto py-3"
+                              onClick={() => handleAddBlock(block.type)}
+                            >
+                              <Icon className="h-4 w-4" />
+                              <span className="text-sm">{block.label}</span>
+                            </Button>
+                          </motion.div>
+                        );
+                      })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        </TabsContent>
+
+        <TabsContent value="logic" className="flex-1 mt-0 overflow-hidden">
+          <ScrollArea className="h-full">
+            <div className="p-4">
+              <LogicEditor />
+            </div>
+          </ScrollArea>
+        </TabsContent>
+      </Tabs>
     </Card>
   );
 }

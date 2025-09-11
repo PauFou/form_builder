@@ -329,7 +329,7 @@ describe("OfflineService", () => {
 
       // Save a recent submission
       await service.saveState("user2", state, {
-        formId: config.formId + "-new",
+        formId: config.formId,
         values: { test: "new" },
         startedAt: new Date().toISOString(),
       });
@@ -363,8 +363,8 @@ describe("OfflineService", () => {
       // Run cleanup
       await service.cleanup();
 
-      // Should still exist
-      const retrieved = await service.getState();
+      // Should still exist - use the specific respondent key
+      const retrieved = await service.getState("user");
       expect(retrieved).not.toBeNull();
       expect(retrieved?.state.values.test).toBe("old-incomplete");
     });
@@ -412,7 +412,11 @@ describe("OfflineService", () => {
         isComplete: false,
       };
 
-      await service.saveState("user", state, {} as any);
+      await service.saveState("user", state, {
+        formId: config.formId,
+        values: state.values,
+        startedAt: new Date().toISOString(),
+      });
 
       // Wait for throttled save
       await new Promise((resolve) => setTimeout(resolve, 1100));

@@ -1,4 +1,4 @@
-import type { Block, LogicRule, ValidationRule } from "./types";
+import type { Block, ValidationRule } from "./types";
 
 export function validateField(block: Block, value: any): string | null {
   // Required validation
@@ -75,55 +75,10 @@ function applyValidationRule(rule: ValidationRule, value: any): string | null {
   return null;
 }
 
-export function evaluateLogic(rules: LogicRule[], values: Record<string, any>): LogicRule | null {
-  for (const rule of rules) {
-    if (evaluateCondition(rule.condition, values)) {
-      return rule;
-    }
-  }
-  return null;
-}
-
-function evaluateCondition(
-  condition: LogicRule["condition"],
-  values: Record<string, any>
-): boolean {
-  const fieldValue = values[condition.field];
-  const compareValue = condition.value;
-
-  switch (condition.operator) {
-    case "equals":
-      return fieldValue === compareValue;
-
-    case "not_equals":
-      return fieldValue !== compareValue;
-
-    case "contains":
-      return String(fieldValue).includes(String(compareValue));
-
-    case "greater_than":
-      return Number(fieldValue) > Number(compareValue);
-
-    case "less_than":
-      return Number(fieldValue) < Number(compareValue);
-
-    default:
-      return false;
-  }
-}
-
-export function shouldShowBlock(block: Block, values: Record<string, any>): boolean {
-  if (!block.logic || block.logic.length === 0) {
-    return true;
-  }
-
-  const applicableRule = evaluateLogic(block.logic, values);
-
-  if (applicableRule) {
-    return applicableRule.action.type === "show";
-  }
-
-  return true; // Default to showing if no rules match
+export function shouldShowBlock(_block: Block, _values: Record<string, any>): boolean {
+  // Blocks are shown by default unless hidden by logic rules
+  // Logic evaluation is now handled by LogicEvaluator in hooks.ts
+  return true;
 }
 
 // Validation helpers

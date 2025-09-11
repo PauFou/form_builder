@@ -1,9 +1,12 @@
 export interface FormSchema {
   id: string;
-  version: number;
+  version?: number;
+  title?: string;
+  description?: string;
   blocks: Block[];
-  settings: FormSettings;
+  settings?: FormSettings;
   theme?: Theme;
+  logic?: LogicRule[];
 }
 
 export interface FormSettings {
@@ -45,11 +48,13 @@ export interface Block {
   id: string;
   type: BlockType;
   question: string;
+  label?: string;
   description?: string;
+  placeholder?: string;
   required?: boolean;
   properties?: Record<string, any>;
   validation?: ValidationRule[];
-  logic?: LogicRule[];
+  options?: BlockOption[];
 }
 
 export interface ValidationRule {
@@ -58,20 +63,30 @@ export interface ValidationRule {
   message?: string;
 }
 
+export interface BlockOption {
+  id: string;
+  text: string;
+  value?: string;
+}
+
 export interface LogicRule {
-  condition: LogicCondition;
-  action: LogicAction;
+  id: string;
+  name?: string;
+  conditions: LogicCondition[];
+  actions: LogicAction[];
 }
 
 export interface LogicCondition {
+  id?: string;
   field: string;
-  operator: "equals" | "not_equals" | "contains" | "greater_than" | "less_than";
+  operator: "equals" | "not_equals" | "contains" | "not_contains" | "greater_than" | "less_than";
   value: any;
 }
 
 export interface LogicAction {
-  type: "show" | "hide" | "jump_to" | "set_value";
-  target?: string;
+  id?: string;
+  type: "show" | "hide" | "skip" | "jump" | "set_value";
+  target: string;
   value?: any;
 }
 
@@ -109,3 +124,5 @@ export interface FormData {
   completedAt?: string;
   metadata?: Record<string, any>;
 }
+
+export type FormDataPartial = Record<string, any>;

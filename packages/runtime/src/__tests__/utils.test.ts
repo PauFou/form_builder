@@ -1,5 +1,5 @@
-import { validateField, evaluateLogic, formatValue } from "../utils";
-import type { Block, LogicRule } from "../types";
+import { validateField, formatValue, shouldShowBlock } from "../utils";
+import type { Block } from "../types";
 
 describe("validateField", () => {
   it("should validate required fields", () => {
@@ -56,46 +56,16 @@ describe("validateField", () => {
   });
 });
 
-describe("evaluateLogic", () => {
-  it("should evaluate equals condition", () => {
-    const rules: LogicRule[] = [
-      {
-        condition: {
-          field: "country",
-          operator: "equals",
-          value: "US",
-        },
-        action: {
-          type: "show",
-          target: "state",
-        },
-      },
-    ];
+describe("shouldShowBlock", () => {
+  it("should always return true for blocks", () => {
+    const block: Block = {
+      id: "test",
+      type: "text",
+      question: "Test",
+    };
 
-    const result = evaluateLogic(rules, { country: "US" });
-    expect(result).toBe(rules[0]);
-
-    const noMatch = evaluateLogic(rules, { country: "CA" });
-    expect(noMatch).toBeNull();
-  });
-
-  it("should evaluate contains condition", () => {
-    const rules: LogicRule[] = [
-      {
-        condition: {
-          field: "message",
-          operator: "contains",
-          value: "help",
-        },
-        action: {
-          type: "jump_to",
-          target: "support",
-        },
-      },
-    ];
-
-    const result = evaluateLogic(rules, { message: "I need help with..." });
-    expect(result).toBe(rules[0]);
+    expect(shouldShowBlock(block, {})).toBe(true);
+    expect(shouldShowBlock(block, { test: "value" })).toBe(true);
   });
 });
 

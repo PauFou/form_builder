@@ -50,7 +50,11 @@ interface FormBuilderState {
 
 const MAX_HISTORY = 50;
 
-export const useFormBuilderStore = create<FormBuilderState>()(
+interface FormBuilderStateWithComputed extends FormBuilderState {
+  blocks?: Block[];
+}
+
+export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
   immer((set, get) => ({
     form: null,
     selectedBlockId: null,
@@ -254,9 +258,9 @@ export const useFormBuilderStore = create<FormBuilderState>()(
       set((state) => {
         if (state.form) {
           if (!state.form.logic) {
-            state.form.logic = { rules: [] };
+            state.form.logic = [];
           }
-          state.form.logic.rules.push(rule);
+          state.form.logic.push(rule);
           state.isDirty = true;
         }
       });
@@ -266,7 +270,7 @@ export const useFormBuilderStore = create<FormBuilderState>()(
     updateLogicRule: (ruleId, updates) => {
       set((state) => {
         if (state.form?.logic) {
-          const rule = state.form.logic.rules.find((r) => r.id === ruleId);
+          const rule = state.form.logic.find((r) => r.id === ruleId);
           if (rule) {
             Object.assign(rule, updates);
             state.isDirty = true;
@@ -279,9 +283,9 @@ export const useFormBuilderStore = create<FormBuilderState>()(
     deleteLogicRule: (ruleId) => {
       set((state) => {
         if (state.form?.logic) {
-          const index = state.form.logic.rules.findIndex((r) => r.id === ruleId);
+          const index = state.form.logic.findIndex((r) => r.id === ruleId);
           if (index !== -1) {
-            state.form.logic.rules.splice(index, 1);
+            state.form.logic.splice(index, 1);
             state.isDirty = true;
           }
         }

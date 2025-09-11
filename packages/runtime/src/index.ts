@@ -3,10 +3,12 @@ export const VERSION = "1.0.0";
 
 // Main exports
 export { FormViewer } from "./components/FormViewer";
+export { FormViewer as FormRenderer } from "./components/FormViewer"; // Alias for compatibility
 export { useFormRuntime } from "./hooks";
 export { OfflineService } from "./services/offline-service";
 export { AnalyticsService } from "./services/analytics-service";
 export { useResume, createResumeLink } from "./hooks/use-resume";
+export { PopoverEmbed, DrawerEmbed, embedStyles } from "./embed-modes";
 
 // Type exports
 export type {

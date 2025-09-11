@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import mitt from "mitt";
 import type { FormSchema, FormState, RuntimeConfig, FormData } from "./types";
 import { OfflineService } from "./services/offline-service";
 import { AnalyticsService } from "./services/analytics-service";
+import { LogicEvaluator } from "./logic/evaluator";
 import { validateField, shouldShowBlock } from "./utils";
 import { useAntiSpam } from "./hooks/use-anti-spam";
 
@@ -28,8 +29,15 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     isComplete: false,
   }));
 
+  const [logicState, setLogicState] = useState({
+    hiddenFields: [] as string[],
+    fieldUpdates: {} as Record<string, any>,
+    navigation: undefined as { type: "skip" | "jump"; target: string } | undefined,
+  });
+
   const offlineServiceRef = useRef<OfflineService | null>(null);
   const analyticsRef = useRef<AnalyticsService | null>(null);
+  const logicEvaluatorRef = useRef<LogicEvaluator | null>(null);
   const respondentKeyRef = useRef(config.respondentKey || `anon-${Date.now()}-${Math.random()}`);
   const startTimeRef = useRef(new Date().toISOString());
 
@@ -41,11 +49,20 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
   // Initialize services
   useEffect(() => {
+    // Initialize logic evaluator
+    if (schema.logic?.length) {
+      logicEvaluatorRef.current = new LogicEvaluator({
+        formId: config.formId,
+        values: state.values,
+        startedAt: startTimeRef.current,
+      });
+    }
+
     // Initialize analytics
     if (config.enableAnalytics !== false && typeof window !== "undefined") {
       analyticsRef.current = new AnalyticsService({
         apiUrl: config.analyticsApiUrl || config.apiUrl,
-        enableTracking: config.enableAnalytics !== false,
+        enableTracking: true,
         enableDebug: config.enableAnalyticsDebug,
       });
 
@@ -89,8 +106,9 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     return () => {
       offlineServiceRef.current?.destroy();
       analyticsRef.current?.destroy();
+      logicEvaluatorRef.current?.reset();
     };
-  }, [config]);
+  }, [config, schema.logic?.length]);
 
   // Auto-save logic
   const saveOffline = useCallback(async () => {
@@ -123,9 +141,41 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     saveOffline();
   }, [state.values, state.currentStep, saveOffline]);
 
+  // Evaluate logic rules on value changes
+  useEffect(() => {
+    if (!logicEvaluatorRef.current || !schema.logic?.length) return;
+
+    // Update evaluator with current values
+    logicEvaluatorRef.current.updateFormData({ values: state.values });
+
+    // Evaluate rules and get actions
+    const actions = logicEvaluatorRef.current.evaluateRules(schema.logic);
+    const result = logicEvaluatorRef.current.applyActions(actions);
+
+    // Update logic state
+    setLogicState({
+      hiddenFields: result.hiddenFields,
+      fieldUpdates: result.fieldUpdates,
+      navigation: result.navigation,
+    });
+
+    // Apply field updates if any
+    if (Object.keys(result.fieldUpdates).length > 0) {
+      setState((prev) => ({
+        ...prev,
+        values: { ...prev.values, ...result.fieldUpdates },
+      }));
+    }
+  }, [state.values, schema.logic]);
+
   // Field handlers
   const setValue = useCallback(
     (field: string, value: any) => {
+      // Check if field is hidden by logic
+      if (logicState.hiddenFields.includes(field)) {
+        return;
+      }
+
       setState((prev) => ({
         ...prev,
         values: { ...prev.values, [field]: value },
@@ -146,7 +196,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
       emitter.emit("field:change", { field, value });
     },
-    [config.formId, schema.blocks]
+    [config.formId, schema.blocks, logicState.hiddenFields]
   );
 
   const setError = useCallback(
@@ -214,6 +264,27 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
   const goNext = useCallback(() => {
     if (!canGoNext()) return;
+
+    // Check for navigation actions from logic
+    if (logicState.navigation) {
+      const { type, target } = logicState.navigation;
+
+      if (type === "jump") {
+        // Find the target block index
+        const targetIndex = visibleBlocks.findIndex((b) => b.id === target);
+        if (targetIndex !== -1) {
+          setState((prev) => ({ ...prev, currentStep: targetIndex }));
+          return;
+        }
+      } else if (type === "skip") {
+        // Skip to the block after the target
+        const targetIndex = visibleBlocks.findIndex((b) => b.id === target);
+        if (targetIndex !== -1 && targetIndex < visibleBlocks.length - 1) {
+          setState((prev) => ({ ...prev, currentStep: targetIndex + 1 }));
+          return;
+        }
+      }
+    }
 
     const nextStep = state.currentStep + 1;
 
@@ -434,7 +505,16 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
   }, [config, state, validate, validateAntiSpam, getCompletionTime]);
 
   // Get visible blocks based on logic
-  const visibleBlocks = schema.blocks.filter((block) => shouldShowBlock(block, state.values));
+  const visibleBlocks = useMemo(() => {
+    return schema.blocks.filter((block) => {
+      // Check if block is hidden by logic rules
+      if (logicState.hiddenFields.includes(block.id)) {
+        return false;
+      }
+      // Also check the basic shouldShowBlock logic
+      return shouldShowBlock(block, state.values);
+    });
+  }, [schema.blocks, state.values, logicState.hiddenFields]);
 
   const currentBlock = visibleBlocks[state.currentStep];
   const progress = ((state.currentStep + 1) / visibleBlocks.length) * 100;
@@ -482,6 +562,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     currentBlock,
     visibleBlocks,
     progress,
+    logicState,
 
     // Actions
     setValue,

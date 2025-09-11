@@ -63,7 +63,7 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
     return (
       <div className={`fr-container ${className}`}>
         <div className="fr-complete">
-          {schema.settings.thankYouMessage ? (
+          {schema.settings?.thankYouMessage ? (
             <div dangerouslySetInnerHTML={{ __html: schema.settings.thankYouMessage }} />
           ) : (
             <>
@@ -71,7 +71,7 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
               <p>Your response has been submitted successfully.</p>
             </>
           )}
-          {schema.settings.redirectUrl && <p>Redirecting...</p>}
+          {schema.settings?.redirectUrl && <p>Redirecting...</p>}
         </div>
       </div>
     );
@@ -83,7 +83,7 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
 
   return (
     <div className={`fr-container ${className}`} data-theme={schema.theme}>
-      {schema.settings.showProgressBar && <ProgressBar progress={progress} />}
+      {schema.settings?.showProgressBar && <ProgressBar progress={progress} />}
 
       <form ref={formRef} onSubmit={handleSubmit} className="fr-form">
         <div className="fr-step" key={currentBlock.id}>
@@ -117,7 +117,7 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
             {state.isSubmitting
               ? "Submitting..."
               : state.currentStep === schema.blocks.length - 1
-                ? schema.settings.submitText || "Submit"
+                ? schema.settings?.submitText || "Submit"
                 : "Next"}
           </button>
         </div>

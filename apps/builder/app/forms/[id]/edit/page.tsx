@@ -32,6 +32,7 @@ import { FormCanvas } from "../../../../components/builder/form-canvas";
 import { BlockSettings } from "../../../../components/builder/block-settings";
 import { formsApi } from "../../../../lib/api/forms";
 import { useFormBuilderStore } from "../../../../lib/stores/form-builder-store";
+import { DEMO_FORMS } from "../../../../lib/demo-forms";
 
 export default function EditFormPage() {
   const params = useParams();
@@ -42,7 +43,13 @@ export default function EditFormPage() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["form", formId],
-    queryFn: () => formsApi.get(formId),
+    queryFn: async () => {
+      // Check if it's a demo form first
+      if (DEMO_FORMS[formId]) {
+        return DEMO_FORMS[formId];
+      }
+      return formsApi.get(formId);
+    },
   });
 
   useEffect(() => {
