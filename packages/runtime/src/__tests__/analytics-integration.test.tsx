@@ -5,7 +5,7 @@ import type { FormSchema, RuntimeConfig } from "../types";
 
 // Mock fetch
 // @ts-expect-error - Mock fetch for testing
-global.fetch = jest.fn();
+(globalThis as any).fetch = jest.fn();
 
 describe("Analytics Integration", () => {
   const mockSchema: FormSchema = {
@@ -57,7 +57,7 @@ describe("Analytics Integration", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (global.fetch as jest.Mock).mockResolvedValue({
+    (globalThis as any).fetch.mockResolvedValue({
       ok: true,
       json: async () => ({ id: "submission-123" }),
     });
@@ -305,7 +305,7 @@ describe("Analytics Integration", () => {
 
   it("should handle analytics API errors gracefully", async () => {
     const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
-    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error("Network error"));
+    (globalThis as any).fetch.mockRejectedValueOnce(new Error("Network error"));
 
     const { getByLabelText } = render(<FormViewer schema={mockSchema} config={mockConfig} />);
 

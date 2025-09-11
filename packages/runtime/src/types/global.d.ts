@@ -13,6 +13,14 @@ declare global {
   // Jest globals
   // eslint-disable-next-line no-var
   var fetch: jest.Mock;
+
+  // Test environment globals
+  namespace NodeJS {
+    interface Global {
+      fetch: jest.Mock;
+      indexedDB: IDBFactory;
+    }
+  }
 }
 
 interface EmbedOptions {

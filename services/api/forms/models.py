@@ -114,3 +114,56 @@ class FormVersion(BaseModel):
     
     def __str__(self):
         return f"{self.form.title} v{self.version}"
+
+
+class Submission(BaseModel):
+    """Form submission model"""
+    
+    STATUS_CHOICES = [
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+        ('abandoned', 'Abandoned'),
+    ]
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    form = models.ForeignKey(
+        Form,
+        on_delete=models.CASCADE,
+        related_name='submissions'
+    )
+    form_version = models.ForeignKey(
+        FormVersion,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='submissions'
+    )
+    
+    # Respondent info
+    respondent_key = models.CharField(max_length=255, help_text="Unique key for the respondent")
+    respondent_email = models.EmailField(blank=True, null=True)
+    
+    # Submission data
+    data = models.JSONField(default=dict, help_text="Form submission data")
+    metadata = models.JSONField(default=dict, blank=True, help_text="Additional metadata")
+    
+    # Status tracking
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='in_progress')
+    started_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(blank=True, null=True)
+    
+    # Analytics
+    time_spent = models.IntegerField(default=0, help_text="Time spent in seconds")
+    device_type = models.CharField(max_length=50, blank=True)
+    browser = models.CharField(max_length=100, blank=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['form', 'status']),
+            models.Index(fields=['respondent_key']),
+            models.Index(fields=['-created_at']),
+        ]
+    
+    def __str__(self):
+        return f"Submission {self.id} for {self.form.title}"

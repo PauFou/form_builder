@@ -9,7 +9,7 @@ import "fake-indexeddb/auto";
 
 // Mock fetch
 // @ts-expect-error - Mock fetch for testing
-global.fetch = jest.fn();
+(globalThis as any).fetch = jest.fn();
 
 const mockSchema: FormSchema = {
   id: "test-form",
@@ -59,13 +59,13 @@ describe("FormViewer Offline Integration", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Clear IndexedDB
-    if (global.indexedDB) {
+    if ((globalThis as any).indexedDB) {
       indexedDB.deleteDatabase("forms-runtime-test-form");
     }
   });
 
   afterEach(() => {
-    if (offlineService) {
+    if (offlineService && "destroy" in offlineService) {
       offlineService.destroy();
     }
   });
@@ -269,7 +269,7 @@ describe("FormViewer Offline Integration", () => {
   });
 
   it("should clear offline data after successful submission", async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
+    (globalThis as any).fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({ id: "123", status: "success" }),
     });
@@ -335,7 +335,7 @@ describe("FormViewer Offline Integration", () => {
     );
 
     // Check API was called
-    expect(global.fetch).toHaveBeenCalledWith(
+    expect((globalThis as any).fetch).toHaveBeenCalledWith(
       "/api/v1/submissions",
       expect.objectContaining({
         method: "POST",

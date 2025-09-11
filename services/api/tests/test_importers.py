@@ -3,7 +3,7 @@ import json
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from core.models import Organization
-from forms.models import Form, FormPage, FormBlock
+from forms.models import Form
 from importers.typeform_importer import TypeformImporter
 from importers.google_forms_importer import GoogleFormsImporter
 
@@ -53,20 +53,20 @@ class TypeformImporterTestCase(TestCase):
         self.assertEqual(form.organization, self.organization)
         self.assertEqual(form.created_by, self.user)
         
-        # Check pages and blocks
-        self.assertEqual(form.pages.count(), 1)
-        page = form.pages.first()
-        self.assertEqual(page.blocks.count(), 2)
+        # Check pages and blocks stored as JSON
+        self.assertEqual(len(form.pages), 1)
+        page = form.pages[0]
+        self.assertEqual(len(page['blocks']), 2)
         
         # Check blocks
-        blocks = page.blocks.all()
-        self.assertEqual(blocks[0].data['type'], 'text')
-        self.assertEqual(blocks[0].data['question'], 'What is your name?')
-        self.assertEqual(blocks[0].data['required'], True)
+        blocks = page['blocks']
+        self.assertEqual(blocks[0]['type'], 'text')
+        self.assertEqual(blocks[0]['question'], 'What is your name?')
+        self.assertEqual(blocks[0]['required'], True)
         
-        self.assertEqual(blocks[1].data['type'], 'email')
-        self.assertEqual(blocks[1].data['question'], 'What is your email?')
-        self.assertEqual(blocks[1].data['required'], False)
+        self.assertEqual(blocks[1]['type'], 'email')
+        self.assertEqual(blocks[1]['question'], 'What is your email?')
+        self.assertEqual(blocks[1]['required'], False)
 
         # Check report
         self.assertEqual(report['total_questions'], 2)
@@ -95,11 +95,11 @@ class TypeformImporterTestCase(TestCase):
 
         form, report = self.importer.import_form(typeform_data, self.user)
         
-        block = form.pages.first().blocks.first()
-        self.assertEqual(block.data['type'], 'single_select')
-        self.assertEqual(len(block.data['options']), 3)
-        self.assertEqual(block.data['options'][0]['text'], 'Red')
-        self.assertEqual(block.data['options'][0]['value'], 'red')
+        block = form.pages[0]['blocks'][0]
+        self.assertEqual(block['type'], 'single_select')
+        self.assertEqual(len(block['options']), 3)
+        self.assertEqual(block['options'][0]['text'], 'Red')
+        self.assertEqual(block['options'][0]['value'], 'red')
 
     def test_import_unsupported_field(self):
         """Test handling of unsupported field types"""
@@ -156,8 +156,8 @@ class TypeformImporterTestCase(TestCase):
 
         form, report = self.importer.import_form(typeform_data, self.user)
         
-        self.assertIn('logic', form.data)
-        logic_rules = form.data['logic']
+        self.assertIsNotNone(form.logic)
+        logic_rules = form.logic
         self.assertEqual(len(logic_rules), 1)
         self.assertEqual(logic_rules[0]['actions'][0]['type'], 'jump')
 
@@ -211,19 +211,19 @@ class GoogleFormsImporterTestCase(TestCase):
         self.assertEqual(form.description, "A test form from Google Forms")
         
         # Check blocks
-        page = form.pages.first()
-        blocks = page.blocks.all()
+        page = form.pages[0]
+        blocks = page['blocks']
         
-        self.assertEqual(blocks[0].data['type'], 'text')
-        self.assertEqual(blocks[0].data['question'], 'What is your name?')
-        self.assertEqual(blocks[0].data['required'], True)
+        self.assertEqual(blocks[0]['type'], 'text')
+        self.assertEqual(blocks[0]['question'], 'What is your name?')
+        self.assertEqual(blocks[0]['required'], True)
         
-        self.assertEqual(blocks[1].data['type'], 'single_select')
-        self.assertEqual(len(blocks[1].data['options']), 3)
+        self.assertEqual(blocks[1]['type'], 'single_select')
+        self.assertEqual(len(blocks[1]['options']), 3)
 
         # Check settings
-        self.assertIn('settings', form.data)
-        self.assertEqual(form.data['settings']['submitText'], 'Submit')
+        self.assertIsNotNone(form.settings)
+        self.assertEqual(form.settings['submitText'], 'Submit')
 
     def test_import_with_sections(self):
         """Test importing form with page breaks/sections"""
@@ -253,9 +253,9 @@ class GoogleFormsImporterTestCase(TestCase):
 
         form, report = self.importer.import_form(gforms_data, self.user)
         
-        self.assertEqual(form.pages.count(), 2)
-        self.assertEqual(form.pages.first().title, "Personal Information")
-        self.assertEqual(form.pages.last().title, "Preferences")
+        self.assertEqual(len(form.pages), 2)
+        self.assertEqual(form.pages[0]['title'], "Personal Information")
+        self.assertEqual(form.pages[1]['title'], "Preferences")
 
     def test_import_linear_scale(self):
         """Test importing linear scale questions"""
@@ -278,12 +278,12 @@ class GoogleFormsImporterTestCase(TestCase):
 
         form, report = self.importer.import_form(gforms_data, self.user)
         
-        block = form.pages.first().blocks.first()
-        self.assertEqual(block.data['type'], 'scale')
-        self.assertEqual(block.data['properties']['min'], 1)
-        self.assertEqual(block.data['properties']['max'], 10)
-        self.assertEqual(block.data['properties']['min_label'], 'Poor')
-        self.assertEqual(block.data['properties']['max_label'], 'Excellent')
+        block = form.pages[0]['blocks'][0]
+        self.assertEqual(block['type'], 'scale')
+        self.assertEqual(block['properties']['min'], 1)
+        self.assertEqual(block['properties']['max'], 10)
+        self.assertEqual(block['properties']['min_label'], 'Poor')
+        self.assertEqual(block['properties']['max_label'], 'Excellent')
 
     def test_import_with_validation(self):
         """Test importing text fields with validation"""
@@ -305,9 +305,9 @@ class GoogleFormsImporterTestCase(TestCase):
 
         form, report = self.importer.import_form(gforms_data, self.user)
         
-        block = form.pages.first().blocks.first()
-        self.assertEqual(block.data['type'], 'email')
-        self.assertEqual(len(block.data['validation']), 2)
+        block = form.pages[0]['blocks'][0]
+        self.assertEqual(block['type'], 'email')
+        self.assertEqual(len(block['validation']), 2)
 
     def test_parse_google_forms_url(self):
         """Test URL parsing for Google Forms"""
