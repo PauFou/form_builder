@@ -54,7 +54,7 @@ const mockSchema: FormSchema = {
 };
 
 describe("FormViewer Offline Integration", () => {
-  let offlineService: OfflineService;
+  const offlineService: OfflineService | null = null;
 
   beforeEach(() => {
     jest.clearAllMocks();

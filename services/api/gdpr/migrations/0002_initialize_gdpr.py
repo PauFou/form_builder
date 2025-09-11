@@ -3,7 +3,7 @@ from django.db import migrations
 
 def initialize_gdpr_settings(apps, schema_editor):
     """Initialize default GDPR settings for existing organizations"""
-    Organization = apps.get_model('organizations', 'Organization')
+    Organization = apps.get_model('core', 'Organization')
     DataResidencyConfig = apps.get_model('gdpr', 'DataResidencyConfig')
     DataRetentionPolicy = apps.get_model('gdpr', 'DataRetentionPolicy')
     
@@ -119,7 +119,7 @@ class Migration(migrations.Migration):
     
     dependencies = [
         ('gdpr', '0001_initial'),
-        ('organizations', '0001_initial'),
+        ('core', '0001_initial'),
         ('forms', '0001_initial'),
     ]
     

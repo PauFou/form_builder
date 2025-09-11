@@ -20,7 +20,7 @@ export function renderFormHTML({ schema, locale = "en", nonce: _nonce }: SSROpti
   const html = `
     <div class="fr-container" data-form-id="${schema.id}" lang="${locale}">
       ${
-        schema.settings.showProgressBar
+        schema.settings?.showProgressBar
           ? `
         <div class="fr-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
           <div class="fr-progress-fill" style="width: 0%"></div>

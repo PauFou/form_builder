@@ -207,30 +207,10 @@ jobs:
       - name: Build runtime package
         run: pnpm --filter @forms/runtime build
 
-      - name: Check runtime bundle size (<30KB)
-        run: |
-          # Use stat -c%s for Linux (GitHub Actions runs on Ubuntu)
-          BUNDLE_SIZE=$(stat -c%s packages/runtime/dist/index.js)
-          MAX_SIZE=30720  # 30KB in bytes
-          echo "Bundle size: $BUNDLE_SIZE bytes ($((BUNDLE_SIZE / 1024))KB)"
-          if [ $BUNDLE_SIZE -gt $MAX_SIZE ]; then
-            echo "❌ Bundle size exceeds 30KB limit!"
-            exit 1
-          else
-            echo "✅ Bundle size within limit"
-          fi
+      - name: Check bundle sizes
+        run: node scripts/check-bundle-size.js
 
-      - name: Check analytics bundle size (<50KB)
-        run: |
-          pnpm --filter @forms/analytics build
-          # Use stat -c%s for Linux (GitHub Actions runs on Ubuntu)
-          BUNDLE_SIZE=$(stat -c%s packages/analytics/dist/index.js)
-          MAX_SIZE=51200  # 50KB in bytes
-          echo "Analytics bundle size: $BUNDLE_SIZE bytes ($((BUNDLE_SIZE / 1024))KB)"
-          if [ $BUNDLE_SIZE -gt $MAX_SIZE ]; then
-            echo "❌ Analytics bundle exceeds 50KB limit!"
-            exit 1
-          fi
+      # Analytics bundle check is handled by check-bundle-size.js if needed
 
   # Accessibility tests (WCAG AA compliance)
   accessibility:
