@@ -19,20 +19,24 @@ describe("HomePage", () => {
     render(<HomePage />);
 
     // Check if main heading exists
-    expect(screen.getByText(/Professional Forms/i)).toBeInTheDocument();
+    expect(screen.getByText(/Build forms/i)).toBeInTheDocument();
+    expect(screen.getByText(/Ship answers/i)).toBeInTheDocument();
   });
 
-  it("renders pricing section", () => {
+  it("renders USP section", () => {
     render(<HomePage />);
 
-    // Check if pricing section exists
-    expect(screen.getByText(/Choose Your Plan/i)).toBeInTheDocument();
+    // Check if USP section exists
+    expect(screen.getByText(/Lightning Fast/i)).toBeInTheDocument();
+    expect(screen.getByText(/Smart Logic/i)).toBeInTheDocument();
+    expect(screen.getByText(/Data First/i)).toBeInTheDocument();
   });
 
   it("renders features section", () => {
     render(<HomePage />);
 
     // Check if features section exists
-    expect(screen.getByText(/Why Choose Our Platform/i)).toBeInTheDocument();
+    expect(screen.getByText(/Everything you need to/i)).toBeInTheDocument();
+    expect(screen.getByText(/Intuitive Visual Builder/i)).toBeInTheDocument();
   });
 });

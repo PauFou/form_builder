@@ -1,1 +1,1 @@
-export { ScrollArea } from "@forms/ui";
+export { ScrollArea, ScrollBar } from "@forms/ui";

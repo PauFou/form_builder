@@ -10,10 +10,12 @@ const customJestConfig = {
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
+    "^geist$": "<rootDir>/__mocks__/geist.js",
   },
   testEnvironment: "jest-environment-jsdom",
   testMatch: ["**/__tests__/**/*.{js,jsx,ts,tsx}", "**/*.{spec,test}.{js,jsx,ts,tsx}"],
   testPathIgnorePatterns: ["/node_modules/", "/.next/", "/e2e/"],
+  transformIgnorePatterns: ["node_modules/(?!(geist)/)"],
   collectCoverageFrom: [
     "**/*.{js,jsx,ts,tsx}",
     "!**/*.d.ts",

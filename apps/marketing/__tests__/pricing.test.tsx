@@ -12,9 +12,12 @@ describe("PricingPage", () => {
   it("renders pricing plans", () => {
     render(<PricingPage />);
 
-    // Check if pricing plans exist - there are multiple "Free" texts, so be more specific
-    expect(screen.getByRole("heading", { name: /Free/i })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /Pro/i })).toBeInTheDocument();
+    // Check if pricing plan cards exist by looking for the plan headings within cards
+    const freeHeading = screen.getAllByText(/Free/i).find((el) => el.tagName === "H2");
+    const proHeading = screen.getAllByText(/Pro/i).find((el) => el.tagName === "H2");
+
+    expect(freeHeading).toBeInTheDocument();
+    expect(proHeading).toBeInTheDocument();
   });
 
   it("displays plan features", () => {
