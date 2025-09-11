@@ -11,6 +11,7 @@ from forms.models import Form
 
 
 class GoogleFormsImporter:
+    """DEPRECATED: Google Forms importer - needs refactor for JSON-based form structure"""
     """Import Google Forms JSON exports"""
     
     # Google Forms to our block type mapping

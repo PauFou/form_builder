@@ -111,7 +111,7 @@ export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
           end_date: dateRange?.to?.toISOString(),
         },
       });
-      setAnalytics(analyticsResponse.data);
+      setAnalytics(analyticsResponse.data as unknown as FormAnalytics);
 
       // Fetch question performance
       const questionsResponse = await api.get(`/analytics/forms/${formId}/questions/`, {
@@ -120,7 +120,7 @@ export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
           end_date: dateRange?.to?.toISOString(),
         },
       });
-      setQuestionStats(questionsResponse.data.questions || []);
+      setQuestionStats((questionsResponse.data as any)?.questions || []);
 
       // Fetch funnel data
       const funnelResponse = await api.get(`/analytics/forms/${formId}/funnel/`, {
@@ -129,7 +129,7 @@ export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
           end_date: dateRange?.to?.toISOString(),
         },
       });
-      setFunnelData(funnelResponse.data.funnel || []);
+      setFunnelData((funnelResponse.data as any)?.funnel || []);
     } catch (error) {
       console.error("Failed to fetch analytics:", error);
       toast({
@@ -400,7 +400,7 @@ export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
                       <FunnelComponent dataKey="count" data={funnelData} isAnimationActive>
                         <LabelList
                           position="center"
-                          content={({ value, payload }) => (
+                          content={({ value, payload }: any) => (
                             <text
                               x={payload.x}
                               y={payload.y}

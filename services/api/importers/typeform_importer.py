@@ -11,6 +11,7 @@ from forms.models import Form
 
 
 class TypeformImporter:
+    """DEPRECATED: Typeform importer - needs refactor for JSON-based form structure"""
     """Import Typeform JSON exports with maximum parity"""
     
     # Typeform to our block type mapping
@@ -103,7 +104,7 @@ class TypeformImporter:
         # TODO: Analyze jump logic to create smart page breaks
         return [fields]
     
-    def _import_field(self, field: Dict, page: FormPage, order: int) -> Optional[FormBlock]:
+    def _import_field(self, field: Dict, page: Dict, order: int) -> Optional[Dict]:
         """Import a single Typeform field"""
         field_type = field.get("type")
         field_id = field.get("id") or str(uuid.uuid4())

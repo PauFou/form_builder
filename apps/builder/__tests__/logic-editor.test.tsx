@@ -24,13 +24,15 @@ const mockStore = {
         ],
       },
     ],
-    logic: [
-      {
-        id: "rule1",
-        conditions: [{ field: "block3", operator: "equals", value: "opt1" }],
-        actions: [{ type: "show", target: "block2" }],
-      },
-    ],
+    logic: {
+      rules: [
+        {
+          id: "rule1",
+          conditions: [{ field: "block3", operator: "equals", value: "opt1" }],
+          actions: [{ type: "show", target: "block2" }],
+        },
+      ],
+    },
   },
   updateForm: jest.fn(),
   addLogicRule: jest.fn(),

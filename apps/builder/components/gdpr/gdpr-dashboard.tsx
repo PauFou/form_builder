@@ -49,8 +49,8 @@ export function GDPRDashboard() {
   const loadComplianceStatus = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/gdpr/compliance/status/?organization=${organization.id}`);
-      setComplianceStatus(response.data);
+      const response = await api.get(`/gdpr/compliance/status/?organization=${organization?.id}`);
+      setComplianceStatus(response.data as unknown as ComplianceStatus);
     } catch (error) {
       console.error("Failed to load compliance status:", error);
     } finally {
