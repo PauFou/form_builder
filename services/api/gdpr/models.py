@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.postgres.fields import ArrayField
+# from django.contrib.postgres.fields import ArrayField  # Not needed with JSONField
 from cryptography.fernet import Fernet
 from django.conf import settings
 import uuid
@@ -25,9 +25,8 @@ class DataResidencyConfig(BaseModel):
             ('eu-north-1', 'EU North (Stockholm)'),
         ]
     )
-    allowed_regions = ArrayField(
-        models.CharField(max_length=20),
-        default=list,
+    allowed_regions = models.JSONField(
+        null=True, blank=True,
         help_text="List of allowed regions for data storage"
     )
     enforce_residency = models.BooleanField(
@@ -241,10 +240,8 @@ class DataDeletionRequest(BaseModel):
         null=True,
         blank=True
     )
-    submission_ids = ArrayField(
-        models.UUIDField(),
-        default=list,
-        blank=True
+    submission_ids = models.JSONField(
+        null=True, blank=True
     )
     
     # Status tracking
@@ -273,7 +270,7 @@ class DataDeletionRequest(BaseModel):
         blank=True
     )
     deletion_report = models.JSONField(
-        default=dict,
+        null=True, blank=True,
         help_text="Report of what was deleted"
     )
     

@@ -33,10 +33,15 @@ class TypeformImporter:
             ]
         }
         
-        # Create form (this would need proper organization setup in real usage)
+        # Import Organization model
+        from core.models import Organization
+        organization = Organization.objects.get(id=organization_id)
+        
+        # Create form with organization
         form = Form.objects.create(
             title=form_data["title"],
             description=form_data["description"],
+            organization=organization,
             pages=form_data["pages"]
         )
         
