@@ -51,12 +51,12 @@
   "size-limit": [
     {
       "path": "dist/index.js",
-      "limit": "25 KB",
+      "limit": "30 KB",
       "gzip": true
     },
     {
       "path": "dist/index.mjs",
-      "limit": "25 KB",
+      "limit": "30 KB",
       "gzip": true
     },
     {

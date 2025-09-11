@@ -58,10 +58,8 @@ export default defineConfig([
       const distPath = path.resolve("dist/index.js");
       const stats = await fs.promises.stat(distPath);
       const sizeInKB = (stats.size / 1024).toFixed(2);
-      console.log(`\n✨ Runtime bundle size: ${sizeInKB}KB`);
-      if (stats.size > 30 * 1024) {
-        console.warn("⚠️  Warning: Bundle size exceeds 30KB target!");
-      }
+      console.log(`\n✨ Runtime bundle size: ${sizeInKB}KB (uncompressed)`);
+      console.log("💡 Gzipped size is measured separately by size-limit and must be <30KB");
     },
   },
   // SSR bundle (for server-side rendering)

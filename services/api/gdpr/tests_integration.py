@@ -9,9 +9,9 @@ from django.core import mail
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from organizations.models import Organization, Membership
+from core.models import Organization, Membership
 from forms.models import Form
-from submissions.models import Submission, Answer
+from core.models import Submission, Answer
 from .models import (
     DataResidencyConfig, PIIFieldConfig, DataRetentionPolicy,
     ConsentRecord, DataDeletionRequest, DataExportRequest,

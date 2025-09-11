@@ -4,6 +4,7 @@ import { FormViewer } from "../components/FormViewer";
 import type { FormSchema, RuntimeConfig } from "../types";
 
 // Mock fetch
+// @ts-expect-error - Mock fetch for testing
 global.fetch = jest.fn();
 
 describe("Analytics Integration", () => {

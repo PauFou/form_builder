@@ -9,6 +9,10 @@ declare global {
       version: string;
     };
   }
+
+  // Jest globals
+  // eslint-disable-next-line no-var
+  var fetch: jest.Mock;
 }
 
 interface EmbedOptions {
@@ -17,7 +21,7 @@ interface EmbedOptions {
   mode?: "inline" | "popup" | "drawer";
   theme?: Record<string, string>;
   onReady?: () => void;
-  onSubmit?: (data: any) => void;
+  onSubmit?: (data: unknown) => void;
 }
 
 export {};

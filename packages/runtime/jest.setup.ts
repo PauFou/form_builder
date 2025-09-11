@@ -1,7 +1,8 @@
 import "@testing-library/jest-dom";
 
 // Polyfill for structuredClone (Node < 17)
-global.structuredClone = (obj) => JSON.parse(JSON.stringify(obj));
+// @ts-expect-error - Polyfill for Node < 17
+global.structuredClone = (obj: unknown) => JSON.parse(JSON.stringify(obj));
 
 // Mock window.matchMedia
 Object.defineProperty(window, "matchMedia", {
@@ -19,6 +20,7 @@ Object.defineProperty(window, "matchMedia", {
 });
 
 // Mock IntersectionObserver
+// @ts-expect-error - Mock for testing
 global.IntersectionObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
@@ -26,6 +28,7 @@ global.IntersectionObserver = jest.fn().mockImplementation(() => ({
 }));
 
 // Mock ResizeObserver
+// @ts-expect-error - Mock for testing
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),

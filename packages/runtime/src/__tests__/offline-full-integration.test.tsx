@@ -8,6 +8,7 @@ import { OfflineService } from "../services/offline-service";
 import "fake-indexeddb/auto";
 
 // Mock fetch
+// @ts-expect-error - Mock fetch for testing
 global.fetch = jest.fn();
 
 const mockSchema: FormSchema = {

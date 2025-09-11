@@ -2,7 +2,7 @@ import pytest
 import json
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from organizations.models import Organization
+from core.models import Organization
 from forms.models import Form, FormPage, FormBlock
 from importers.typeform_importer import TypeformImporter
 from importers.google_forms_importer import GoogleFormsImporter

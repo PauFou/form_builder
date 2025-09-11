@@ -110,6 +110,9 @@ importers:
       '@forms/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@forms/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
       '@forms/ui':
         specifier: workspace:*
         version: link:../../packages/ui

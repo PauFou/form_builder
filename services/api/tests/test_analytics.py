@@ -1,350 +1,180 @@
 import pytest
+from unittest.mock import patch, Mock
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from django.utils import timezone
-from datetime import datetime, timedelta
-from unittest.mock import patch, Mock
-from organizations.models import Organization
+from rest_framework.test import APIClient
+from rest_framework import status
+from core.models import Organization, Membership
 from forms.models import Form
-from analytics.models import AnalyticsEvent
-from analytics.services import AnalyticsService
-from analytics.tasks import process_analytics_batch
 
 User = get_user_model()
 
 
-class AnalyticsEventTestCase(TestCase):
+class AnalyticsAPITestCase(TestCase):
+    """Test the analytics API endpoints that proxy to ClickHouse"""
+    
     def setUp(self):
+        self.client = APIClient()
         self.user = User.objects.create_user(
             email='test@example.com',
-            password='testpass123'
+            password='testpass123',
+            username='testuser'
         )
         self.organization = Organization.objects.create(
             name='Test Org',
-            owner=self.user
+            slug='test-org'
+        )
+        # Create owner membership
+        Membership.objects.create(
+            user=self.user,
+            organization=self.organization,
+            role='owner'
         )
         self.form = Form.objects.create(
             organization=self.organization,
             title='Test Form',
             created_by=self.user
         )
+        self.client.force_authenticate(user=self.user)
 
-    def test_create_analytics_event(self):
-        """Test creating an analytics event"""
-        event = AnalyticsEvent.objects.create(
-            form=self.form,
-            event_type='form_view',
-            session_id='session123',
-            user_agent='Mozilla/5.0...',
-            ip_address='192.168.1.1',
-            properties={'page': 'landing'}
-        )
-        
-        self.assertEqual(event.form, self.form)
-        self.assertEqual(event.event_type, 'form_view')
-        self.assertEqual(event.session_id, 'session123')
-        self.assertEqual(event.properties['page'], 'landing')
-
-    def test_event_timestamp_auto_set(self):
-        """Test that timestamp is automatically set"""
-        before = timezone.now()
-        event = AnalyticsEvent.objects.create(
-            form=self.form,
-            event_type='form_view',
-            session_id='session123'
-        )
-        after = timezone.now()
-        
-        self.assertGreaterEqual(event.timestamp, before)
-        self.assertLessEqual(event.timestamp, after)
-
-
-class AnalyticsServiceTestCase(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(
-            email='test@example.com',
-            password='testpass123'
-        )
-        self.organization = Organization.objects.create(
-            name='Test Org',
-            owner=self.user
-        )
-        self.form = Form.objects.create(
-            organization=self.organization,
-            title='Test Form',
-            created_by=self.user
-        )
-        self.service = AnalyticsService()
-
-    def test_track_event(self):
+    @patch('analytics.views.httpx.Client')
+    def test_track_event(self, mock_httpx):
         """Test tracking an analytics event"""
-        self.service.track_event(
-            form_id=self.form.id,
-            event_type='form_view',
-            session_id='session123',
-            properties={'page': 'landing'}
-        )
+        # Mock the httpx response
+        mock_response = Mock()
+        mock_response.json.return_value = {'status': 'ok'}
+        mock_response.status_code = 200
+        mock_client = Mock()
+        mock_client.post.return_value = mock_response
+        mock_httpx.return_value.__enter__.return_value = mock_client
         
-        event = AnalyticsEvent.objects.get(form=self.form)
-        self.assertEqual(event.event_type, 'form_view')
-        self.assertEqual(event.session_id, 'session123')
-        self.assertEqual(event.properties['page'], 'landing')
-
-    @patch('analytics.services.requests.post')
-    def test_send_to_clickhouse(self, mock_post):
-        """Test sending events to ClickHouse"""
-        mock_post.return_value.status_code = 200
-        
-        events = [
-            {
-                'form_id': str(self.form.id),
-                'event_type': 'form_view',
-                'timestamp': timezone.now().isoformat(),
-                'session_id': 'session123',
-                'properties': {'page': 'landing'}
-            }
-        ]
-        
-        self.service.send_to_clickhouse(events)
-        
-        mock_post.assert_called_once()
-        args, kwargs = mock_post.call_args
-        
-        self.assertIn('clickhouse', args[0])  # ClickHouse URL
-        self.assertIn('INSERT INTO analytics_events', kwargs['data'])
-
-    def test_get_form_analytics(self):
-        """Test getting analytics for a form"""
-        # Create test events
-        now = timezone.now()
-        
-        # Form views
-        for i in range(5):
-            AnalyticsEvent.objects.create(
-                form=self.form,
-                event_type='form_view',
-                session_id=f'session{i}',
-                timestamp=now - timedelta(days=i)
-            )
-        
-        # Submissions
-        for i in range(2):
-            AnalyticsEvent.objects.create(
-                form=self.form,
-                event_type='form_submit',
-                session_id=f'session{i}',
-                timestamp=now - timedelta(days=i)
-            )
-        
-        analytics = self.service.get_form_analytics(
-            self.form.id,
-            start_date=now - timedelta(days=7),
-            end_date=now
-        )
-        
-        self.assertIn('overview', analytics)
-        self.assertIn('views_over_time', analytics)
-        self.assertEqual(analytics['overview']['total_views'], 5)
-        self.assertEqual(analytics['overview']['total_submissions'], 2)
-        self.assertEqual(analytics['overview']['conversion_rate'], 40.0)  # 2/5 * 100
-
-    def test_get_funnel_analytics(self):
-        """Test getting funnel analytics"""
-        # Create events representing a funnel
-        session = 'session123'
-        
-        AnalyticsEvent.objects.create(
-            form=self.form,
-            event_type='form_view',
-            session_id=session
-        )
-        
-        AnalyticsEvent.objects.create(
-            form=self.form,
-            event_type='step_view',
-            session_id=session,
-            properties={'step': 1}
-        )
-        
-        AnalyticsEvent.objects.create(
-            form=self.form,
-            event_type='step_view',
-            session_id=session,
-            properties={'step': 2}
-        )
-        
-        AnalyticsEvent.objects.create(
-            form=self.form,
-            event_type='form_submit',
-            session_id=session
-        )
-        
-        funnel = self.service.get_funnel_analytics(self.form.id)
-        
-        self.assertIsInstance(funnel, list)
-        self.assertEqual(len(funnel), 4)  # View, Step 1, Step 2, Submit
-        
-        # Check that counts decrease through funnel
-        self.assertEqual(funnel[0]['count'], 1)  # Form view
-        self.assertEqual(funnel[-1]['count'], 1)  # Submit
-
-    def test_get_completion_rates(self):
-        """Test getting field completion rates"""
-        # Create events for different fields
-        session1 = 'session1'
-        session2 = 'session2'
-        
-        # Both sessions view form
-        for session in [session1, session2]:
-            AnalyticsEvent.objects.create(
-                form=self.form,
-                event_type='form_view',
-                session_id=session
-            )
-        
-        # Both sessions fill field1
-        for session in [session1, session2]:
-            AnalyticsEvent.objects.create(
-                form=self.form,
-                event_type='field_change',
-                session_id=session,
-                properties={'field': 'field1'}
-            )
-        
-        # Only session1 fills field2
-        AnalyticsEvent.objects.create(
-            form=self.form,
-            event_type='field_change',
-            session_id=session1,
-            properties={'field': 'field2'}
-        )
-        
-        completion_rates = self.service.get_completion_rates(self.form.id)
-        
-        self.assertIsInstance(completion_rates, list)
-        # Should show 100% completion for field1, 50% for field2
-
-    @patch('analytics.services.cache.get')
-    @patch('analytics.services.cache.set')
-    def test_analytics_caching(self, mock_cache_set, mock_cache_get):
-        """Test that analytics results are cached"""
-        mock_cache_get.return_value = None  # Cache miss
-        
-        self.service.get_form_analytics(self.form.id)
-        
-        # Check that cache.set was called
-        mock_cache_set.assert_called_once()
-        cache_key = mock_cache_set.call_args[0][0]
-        self.assertIn(str(self.form.id), cache_key)
-
-    def test_real_time_analytics(self):
-        """Test real-time analytics updates"""
-        # Track events in real-time
-        self.service.track_event(
-            form_id=self.form.id,
-            event_type='form_view',
-            session_id='session123',
-            real_time=True
-        )
-        
-        # Should create event immediately
-        self.assertEqual(AnalyticsEvent.objects.count(), 1)
-
-    def test_batch_processing(self):
-        """Test batch processing of analytics events"""
-        # Create multiple events
-        events = []
-        for i in range(10):
-            events.append({
-                'form_id': str(self.form.id),
-                'event_type': 'form_view',
-                'session_id': f'session{i}',
-                'timestamp': timezone.now().isoformat()
-            })
-        
-        # Process batch
-        self.service.process_batch(events)
-        
-        # Check events were created
-        self.assertEqual(AnalyticsEvent.objects.count(), 10)
-
-
-class AnalyticsTaskTestCase(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(
-            email='test@example.com',
-            password='testpass123'
-        )
-        self.organization = Organization.objects.create(
-            name='Test Org',
-            owner=self.user
-        )
-        self.form = Form.objects.create(
-            organization=self.organization,
-            title='Test Form',
-            created_by=self.user
-        )
-
-    @patch('analytics.tasks.AnalyticsService.process_batch')
-    def test_process_analytics_batch_task(self, mock_process):
-        """Test processing analytics batch task"""
-        events = [
-            {
-                'form_id': str(self.form.id),
-                'event_type': 'form_view',
-                'session_id': 'session123',
-                'timestamp': timezone.now().isoformat()
-            }
-        ]
-        
-        # Run the task
-        process_analytics_batch(events)
-        
-        # Check that service method was called
-        mock_process.assert_called_once_with(events)
-
-    def test_event_deduplication(self):
-        """Test that duplicate events are not processed twice"""
-        event_data = {
+        # Send track event request
+        response = self.client.post('/api/analytics/events', {
             'form_id': str(self.form.id),
             'event_type': 'form_view',
             'session_id': 'session123',
-            'timestamp': timezone.now().isoformat(),
-            'event_id': 'unique123'  # Unique identifier
-        }
+            'properties': {'page': 'landing'}
+        }, format='json')
         
-        service = AnalyticsService()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['status'], 'ok')
         
-        # Process same event twice
-        service.process_batch([event_data])
-        service.process_batch([event_data])
-        
-        # Should only create one event
-        self.assertEqual(AnalyticsEvent.objects.count(), 1)
+        # Verify the request was forwarded to analytics service
+        mock_client.post.assert_called_once()
+        call_args = mock_client.post.call_args
+        self.assertIn('/events', call_args[0][0])
+        self.assertEqual(call_args[1]['json']['form_id'], str(self.form.id))
+        self.assertEqual(call_args[1]['json']['organization_id'], str(self.organization.id))
 
-    def test_analytics_retention_cleanup(self):
-        """Test cleanup of old analytics events"""
-        # Create old events
-        old_date = timezone.now() - timedelta(days=400)  # Older than retention period
+    @patch('analytics.views.httpx.Client')
+    def test_track_events_batch(self, mock_httpx):
+        """Test tracking multiple analytics events"""
+        # Mock the httpx response
+        mock_response = Mock()
+        mock_response.json.return_value = {'status': 'ok'}
+        mock_response.status_code = 200
+        mock_client = Mock()
+        mock_client.post.return_value = mock_response
+        mock_httpx.return_value.__enter__.return_value = mock_client
         
-        AnalyticsEvent.objects.create(
-            form=self.form,
-            event_type='form_view',
-            session_id='session123',
-            timestamp=old_date
+        # Send batch track request
+        response = self.client.post('/api/analytics/events/batch', {
+            'events': [
+                {
+                    'form_id': str(self.form.id),
+                    'event_type': 'form_view',
+                    'session_id': 'session123'
+                },
+                {
+                    'form_id': str(self.form.id),
+                    'event_type': 'form_submit',
+                    'session_id': 'session123'
+                }
+            ]
+        }, format='json')
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['status'], 'ok')
+
+    @patch('analytics.views.httpx.Client')
+    def test_get_form_analytics(self, mock_httpx):
+        """Test getting analytics for a form"""
+        # Mock the httpx response
+        mock_response = Mock()
+        mock_response.json.return_value = {
+            'views': 100,
+            'submissions': 25,
+            'conversion_rate': 25.0
+        }
+        mock_response.status_code = 200
+        mock_client = Mock()
+        mock_client.get.return_value = mock_response
+        mock_httpx.return_value.__enter__.return_value = mock_client
+        
+        # Get form analytics
+        response = self.client.get(f'/api/analytics/forms/{self.form.id}/')
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['views'], 100)
+        self.assertEqual(response.data['submissions'], 25)
+        self.assertEqual(response.data['conversion_rate'], 25.0)
+        
+        # Verify the request was forwarded to analytics service
+        mock_client.get.assert_called_once()
+        call_args = mock_client.get.call_args
+        self.assertIn(f'/analytics/form/{self.form.id}', call_args[0][0])
+
+    @patch('analytics.views.httpx.Client')
+    def test_get_form_funnel(self, mock_httpx):
+        """Test getting funnel analytics for a form"""
+        # Mock the httpx response
+        mock_response = Mock()
+        mock_response.json.return_value = {
+            'funnel': [
+                {'step': 'view', 'count': 100},
+                {'step': 'start', 'count': 80},
+                {'step': 'complete', 'count': 25}
+            ]
+        }
+        mock_response.status_code = 200
+        mock_client = Mock()
+        mock_client.get.return_value = mock_response
+        mock_httpx.return_value.__enter__.return_value = mock_client
+        
+        # Get funnel analytics
+        response = self.client.get(f'/api/analytics/forms/{self.form.id}/funnel/')
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data['funnel']), 3)
+        self.assertEqual(response.data['funnel'][0]['step'], 'view')
+        
+    def test_analytics_permission_denied(self):
+        """Test that users without access to form can't track events"""
+        # Create another user without access
+        other_user = User.objects.create_user(
+            email='other@example.com',
+            password='otherpass123',
+            username='otheruser'
         )
+        self.client.force_authenticate(user=other_user)
         
-        # Create recent events
-        AnalyticsEvent.objects.create(
-            form=self.form,
-            event_type='form_view',
-            session_id='session456'
-        )
+        # Try to track event
+        response = self.client.post('/api/analytics/events', {
+            'form_id': str(self.form.id),
+            'event_type': 'form_view',
+            'session_id': 'session123'
+        }, format='json')
         
-        service = AnalyticsService()
-        service.cleanup_old_events(retention_days=365)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data['error'], 'Permission denied')
+
+    def test_analytics_form_not_found(self):
+        """Test tracking event for non-existent form"""
+        response = self.client.post('/api/analytics/events', {
+            'form_id': 'non-existent-id',
+            'event_type': 'form_view',
+            'session_id': 'session123'
+        }, format='json')
         
-        # Should only have recent event
-        self.assertEqual(AnalyticsEvent.objects.count(), 1)
-        remaining_event = AnalyticsEvent.objects.first()
-        self.assertEqual(remaining_event.session_id, 'session456')
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.data['error'], 'Form not found')

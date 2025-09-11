@@ -5,7 +5,7 @@ import hashlib
 from unittest.mock import patch, Mock
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from organizations.models import Organization
+from core.models import Organization
 from forms.models import Form, Submission
 from webhooks.models import Webhook, WebhookDelivery
 from webhooks.tasks import send_webhook, retry_failed_webhooks

@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from organizations.models import OrganizationMember
+from core.models import Membership
 from forms.models import Form
 
 ANALYTICS_SERVICE_URL = getattr(settings, 'ANALYTICS_SERVICE_URL', 'http://localhost:8002')
@@ -71,7 +71,7 @@ def track_events_batch(request):
         
         # Validate user has access to all organizations
         user_orgs = set(
-            OrganizationMember.objects.filter(user=request.user)
+            Membership.objects.filter(user=request.user)
             .values_list('organization_id', flat=True)
         )
         
@@ -109,7 +109,7 @@ def get_form_analytics(request, form_id):
     try:
         # Validate access
         form = Form.objects.select_related('organization').get(id=form_id)
-        if not OrganizationMember.objects.filter(
+        if not Membership.objects.filter(
             organization=form.organization,
             user=request.user
         ).exists():
@@ -158,7 +158,7 @@ def get_form_funnel(request, form_id):
     try:
         # Validate access
         form = Form.objects.select_related('organization').get(id=form_id)
-        if not OrganizationMember.objects.filter(
+        if not Membership.objects.filter(
             organization=form.organization,
             user=request.user
         ).exists():
@@ -207,7 +207,7 @@ def get_form_realtime(request, form_id):
     try:
         # Validate access
         form = Form.objects.select_related('organization').get(id=form_id)
-        if not OrganizationMember.objects.filter(
+        if not Membership.objects.filter(
             organization=form.organization,
             user=request.user
         ).exists():
@@ -243,7 +243,7 @@ def get_form_questions_performance(request, form_id):
     try:
         # Validate access
         form = Form.objects.select_related('organization').get(id=form_id)
-        if not OrganizationMember.objects.filter(
+        if not Membership.objects.filter(
             organization=form.organization,
             user=request.user
         ).exists():
