@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
-import { FormRenderer } from "@forms/runtime";
-import type { FormSchema } from "@forms/contracts";
+import { FormRenderer, type FormSchema } from "@forms/runtime";
 
 export default function PreviewPage() {
   const params = useParams();

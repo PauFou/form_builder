@@ -30,10 +30,24 @@ export interface Theme {
   [key: string]: any;
 }
 
+export interface LogicCondition {
+  id: string;
+  field: string;
+  operator: string;
+  value: any;
+}
+
+export interface LogicAction {
+  id: string;
+  type: string;
+  target?: string;
+  value?: any;
+}
+
 export interface LogicRule {
   id: string;
-  conditions: any[];
-  actions: any[];
+  conditions: LogicCondition[];
+  actions: LogicAction[];
 }
 
 export interface Logic {

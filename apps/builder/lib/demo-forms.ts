@@ -113,132 +113,134 @@ export const DEMO_FORMS: Record<string, Form> = {
         ],
       },
     ],
-    logic: [
-      {
-        id: "rule-show-state",
-        name: "Show state field for US residents",
-        conditions: [
-          {
-            id: "cond-country-us",
-            field: "country",
-            operator: "equals",
-            value: "US",
-          },
-        ],
-        actions: [
-          {
-            id: "action-show-state",
-            type: "show",
-            target: "state",
-          },
-        ],
-      },
-      {
-        id: "rule-hide-state",
-        name: "Hide state field for non-US residents",
-        conditions: [
-          {
-            id: "cond-country-not-us",
-            field: "country",
-            operator: "not_equals",
-            value: "US",
-          },
-        ],
-        actions: [
-          {
-            id: "action-hide-state",
-            type: "hide",
-            target: "state",
-          },
-        ],
-      },
-      {
-        id: "rule-show-province",
-        name: "Show province field for Canadian residents",
-        conditions: [
-          {
-            id: "cond-country-ca",
-            field: "country",
-            operator: "equals",
-            value: "CA",
-          },
-        ],
-        actions: [
-          {
-            id: "action-show-province",
-            type: "show",
-            target: "province",
-          },
-        ],
-      },
-      {
-        id: "rule-hide-province",
-        name: "Hide province field for non-Canadian residents",
-        conditions: [
-          {
-            id: "cond-country-not-ca",
-            field: "country",
-            operator: "not_equals",
-            value: "CA",
-          },
-        ],
-        actions: [
-          {
-            id: "action-hide-province",
-            type: "hide",
-            target: "province",
-          },
-        ],
-      },
-      {
-        id: "rule-show-school",
-        name: "Show school field for students",
-        conditions: [
-          {
-            id: "cond-student-yes",
-            field: "student",
-            operator: "equals",
-            value: "yes",
-          },
-        ],
-        actions: [
-          {
-            id: "action-show-school",
-            type: "show",
-            target: "school",
-          },
-          {
-            id: "action-hide-employer",
-            type: "hide",
-            target: "employer",
-          },
-        ],
-      },
-      {
-        id: "rule-show-employer",
-        name: "Show employer field for non-students",
-        conditions: [
-          {
-            id: "cond-student-no",
-            field: "student",
-            operator: "equals",
-            value: "no",
-          },
-        ],
-        actions: [
-          {
-            id: "action-hide-school",
-            type: "hide",
-            target: "school",
-          },
-          {
-            id: "action-show-employer",
-            type: "show",
-            target: "employer",
-          },
-        ],
-      },
-    ],
+    logic: {
+      rules: [
+        {
+          id: "rule-show-state",
+          name: "Show state field for US residents",
+          conditions: [
+            {
+              id: "cond-country-us",
+              field: "country",
+              operator: "equals",
+              value: "US",
+            },
+          ],
+          actions: [
+            {
+              id: "action-show-state",
+              type: "show",
+              target: "state",
+            },
+          ],
+        },
+        {
+          id: "rule-hide-state",
+          name: "Hide state field for non-US residents",
+          conditions: [
+            {
+              id: "cond-country-not-us",
+              field: "country",
+              operator: "not_equals",
+              value: "US",
+            },
+          ],
+          actions: [
+            {
+              id: "action-hide-state",
+              type: "hide",
+              target: "state",
+            },
+          ],
+        },
+        {
+          id: "rule-show-province",
+          name: "Show province field for Canadian residents",
+          conditions: [
+            {
+              id: "cond-country-ca",
+              field: "country",
+              operator: "equals",
+              value: "CA",
+            },
+          ],
+          actions: [
+            {
+              id: "action-show-province",
+              type: "show",
+              target: "province",
+            },
+          ],
+        },
+        {
+          id: "rule-hide-province",
+          name: "Hide province field for non-Canadian residents",
+          conditions: [
+            {
+              id: "cond-country-not-ca",
+              field: "country",
+              operator: "not_equals",
+              value: "CA",
+            },
+          ],
+          actions: [
+            {
+              id: "action-hide-province",
+              type: "hide",
+              target: "province",
+            },
+          ],
+        },
+        {
+          id: "rule-show-school",
+          name: "Show school field for students",
+          conditions: [
+            {
+              id: "cond-student-yes",
+              field: "student",
+              operator: "equals",
+              value: "yes",
+            },
+          ],
+          actions: [
+            {
+              id: "action-show-school",
+              type: "show",
+              target: "school",
+            },
+            {
+              id: "action-hide-employer",
+              type: "hide",
+              target: "employer",
+            },
+          ],
+        },
+        {
+          id: "rule-show-employer",
+          name: "Show employer field for non-students",
+          conditions: [
+            {
+              id: "cond-student-no",
+              field: "student",
+              operator: "equals",
+              value: "no",
+            },
+          ],
+          actions: [
+            {
+              id: "action-hide-school",
+              type: "hide",
+              target: "school",
+            },
+            {
+              id: "action-show-employer",
+              type: "show",
+              target: "employer",
+            },
+          ],
+        },
+      ],
+    },
     theme: {
       colors: {
         primary: "#3B82F6",

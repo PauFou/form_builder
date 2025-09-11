@@ -36,7 +36,7 @@ export function LogicEditor() {
   const [editingRule, setEditingRule] = useState<LogicRule | null>(null);
   const [activeView, setActiveView] = useState<"list" | "graph">("list");
 
-  const logic = form?.logic || [];
+  const logic = form?.logic?.rules || [];
 
   const handleAddRule = () => {
     setEditingRule(null);

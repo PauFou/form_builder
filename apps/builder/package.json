@@ -47,6 +47,7 @@
     "next": "14.2.32",
     "next-themes": "^0.3.0",
     "react": "^19.0.0-rc",
+    "react-day-picker": "^8.10.0",
     "react-dom": "^19.0.0-rc",
     "react-hook-form": "^7.52.0",
     "react-hot-toast": "^2.4.1",

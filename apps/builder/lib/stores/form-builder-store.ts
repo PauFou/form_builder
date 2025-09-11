@@ -258,9 +258,9 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
       set((state) => {
         if (state.form) {
           if (!state.form.logic) {
-            state.form.logic = [];
+            state.form.logic = { rules: [] };
           }
-          state.form.logic.push(rule);
+          state.form.logic.rules.push(rule);
           state.isDirty = true;
         }
       });
@@ -269,8 +269,8 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
 
     updateLogicRule: (ruleId, updates) => {
       set((state) => {
-        if (state.form?.logic) {
-          const rule = state.form.logic.find((r) => r.id === ruleId);
+        if (state.form?.logic?.rules) {
+          const rule = state.form.logic.rules.find((r) => r.id === ruleId);
           if (rule) {
             Object.assign(rule, updates);
             state.isDirty = true;
@@ -282,10 +282,10 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
 
     deleteLogicRule: (ruleId) => {
       set((state) => {
-        if (state.form?.logic) {
-          const index = state.form.logic.findIndex((r) => r.id === ruleId);
+        if (state.form?.logic?.rules) {
+          const index = state.form.logic.rules.findIndex((r) => r.id === ruleId);
           if (index !== -1) {
-            state.form.logic.splice(index, 1);
+            state.form.logic.rules.splice(index, 1);
             state.isDirty = true;
           }
         }
