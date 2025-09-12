@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent } from "../lib/test-utils";
 import BuilderPage from "../app/page";
 import { useRouter } from "next/navigation";
 import { useFormBuilderStore } from "../lib/stores/form-builder-store";

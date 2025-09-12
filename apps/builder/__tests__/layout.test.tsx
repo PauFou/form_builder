@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "@testing-library/react";
+import { render } from "../lib/test-utils";
 import RootLayout from "../app/layout";
 
 // Mock the geist font imports
@@ -30,7 +30,7 @@ jest.mock("next/font/google", () => ({
 // Mock dependencies
 jest.mock("@tanstack/react-query", () => ({
   QueryClient: jest.fn().mockImplementation(() => ({})),
-  QueryClientProvider: ({ children }: any) => <div>{children}</div>,
+  QueryClientProvider: ({ children }: any) => <>{children}</>,
 }));
 
 jest.mock("react-hot-toast", () => ({
@@ -38,7 +38,7 @@ jest.mock("react-hot-toast", () => ({
 }));
 
 jest.mock("next-themes", () => ({
-  ThemeProvider: ({ children }: any) => <div>{children}</div>,
+  ThemeProvider: ({ children }: any) => <>{children}</>,
 }));
 
 describe("RootLayout", () => {

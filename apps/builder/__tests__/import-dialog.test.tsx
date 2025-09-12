@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "../lib/test-utils";
 import { ImportDialog } from "@/components/import/import-dialog";
 import toast from "react-hot-toast";
 import { formsApi } from "@/lib/api/forms";
@@ -13,23 +13,17 @@ jest.mock("next/navigation", () => ({
   }),
 }));
 
-// Mock React Query
-const mockMutate = jest.fn();
-const createMockMutation = (successData?: any, isError = false) => ({
-  mutate: mockMutate,
-  isPending: false,
-  isError,
-  data: successData,
-});
-
+// Mock API calls
 const mockValidateMutate = jest.fn();
 const mockPreviewMutate = jest.fn();
 const mockImportMutate = jest.fn();
 
+// Mock React Query hooks
 jest.mock("@tanstack/react-query", () => ({
+  ...jest.requireActual("@tanstack/react-query"),
   useMutation: ({ mutationFn, onSuccess, onError }: any) => {
     // Determine which mutation this is based on the mutationFn
-    let mutate = mockMutate;
+    let mutate = jest.fn();
     if (mutationFn && mutationFn.toString().includes("validateImport")) {
       mutate = mockValidateMutate;
     } else if (mutationFn && mutationFn.toString().includes("previewImport")) {
@@ -43,11 +37,11 @@ jest.mock("@tanstack/react-query", () => ({
         mutate(data);
         // Simulate success for validation
         if (mutate === mockValidateMutate && onSuccess) {
-          onSuccess({ valid: true, message: "Valid Typeform URL" });
+          setTimeout(() => onSuccess({ valid: true, message: "Valid Typeform URL" }), 0);
         }
         // Default success handling for other mutations
         else if (onSuccess && mutate.mock.calls.length > 0) {
-          onSuccess(mockMutation.data || { success: true, form_id: "test-form-id" });
+          setTimeout(() => onSuccess({ success: true, form_id: "test-form-id" }), 0);
         }
       },
       isPending: false,
@@ -163,7 +157,6 @@ jest.mock("lucide-react", () => ({
 describe("ImportDialog", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockMutate.mockClear();
     mockValidateMutate.mockClear();
     mockPreviewMutate.mockClear();
     mockImportMutate.mockClear();

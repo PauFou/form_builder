@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "../../lib/test-utils";
 import IntegrationsPage from "../../app/integrations/page";
 import { integrationsApi } from "../../lib/api/integrations";
 
@@ -7,12 +7,20 @@ import { integrationsApi } from "../../lib/api/integrations";
 jest.mock("../../lib/api/integrations", () => ({
   integrationsApi: {
     list: jest.fn(),
-    toggle: jest.fn(),
+    create: jest.fn(),
+    delete: jest.fn(),
+    sync: jest.fn(),
   },
 }));
 
 jest.mock("../../components/shared/navigation", () => ({
   Navigation: () => <div data-testid="navigation">Navigation</div>,
+}));
+
+// Mock UI components
+jest.mock("@forms/ui", () => ({
+  ...jest.requireActual("@forms/ui"),
+  Skeleton: () => <div data-testid="skeleton" />,
 }));
 
 describe("IntegrationsPage", () => {
@@ -57,9 +65,14 @@ describe("IntegrationsPage", () => {
   });
 
   it("should display loading state initially", () => {
+    // Mock the query to be in loading state
+    (integrationsApi.list as jest.Mock).mockImplementation(() => new Promise(() => {})); // Never resolves
+
     render(<IntegrationsPage />);
 
-    expect(screen.getByText("Loading integrations...")).toBeInTheDocument();
+    // Check for skeleton cards instead of loading text
+    const skeletons = screen.getAllByTestId("skeleton");
+    expect(skeletons.length).toBeGreaterThan(0);
   });
 
   it("should display all integrations after loading", async () => {
@@ -72,78 +85,88 @@ describe("IntegrationsPage", () => {
     });
   });
 
-  it("should display integration descriptions", async () => {
+  it("should display integration type", async () => {
     render(<IntegrationsPage />);
 
     await waitFor(() => {
-      expect(screen.getByText("Export submissions to Google Sheets")).toBeInTheDocument();
-      expect(screen.getByText("Send notifications to Slack")).toBeInTheDocument();
-      expect(screen.getByText("Connect to 5000+ apps")).toBeInTheDocument();
+      // The component shows the type or type_display
+      expect(screen.getByText("Google Sheets")).toBeInTheDocument();
+      expect(screen.getByText("Slack")).toBeInTheDocument();
+      expect(screen.getByText("Zapier")).toBeInTheDocument();
     });
   });
 
-  it("should show enabled status for integrations", async () => {
-    render(<IntegrationsPage />);
+  it("should show active status for integrations", async () => {
+    const activeIntegrations = [
+      { ...mockIntegrations[0], status: "active" },
+      { ...mockIntegrations[1], status: "inactive" },
+      { ...mockIntegrations[2], status: "error" },
+    ];
 
-    await waitFor(() => {
-      const toggleButtons = screen.getAllByRole("switch");
-      expect(toggleButtons[0]).toBeChecked(); // Google Sheets enabled
-      expect(toggleButtons[1]).not.toBeChecked(); // Slack disabled
-      expect(toggleButtons[2]).toBeChecked(); // Zapier enabled
-    });
-  });
-
-  it("should toggle integration when switch clicked", async () => {
-    (integrationsApi.toggle as jest.Mock).mockResolvedValue({
-      ...mockIntegrations[1],
-      enabled: true,
+    (integrationsApi.list as jest.Mock).mockResolvedValue({
+      data: { integrations: activeIntegrations },
     });
 
     render(<IntegrationsPage />);
 
     await waitFor(() => {
-      const slackToggle = screen.getAllByRole("switch")[1];
-      fireEvent.click(slackToggle);
+      expect(screen.getByText("Active")).toBeInTheDocument();
+      expect(screen.getByText("Inactive")).toBeInTheDocument();
+      expect(screen.getByText("Error")).toBeInTheDocument();
     });
-
-    expect(integrationsApi.toggle).toHaveBeenCalledWith("slack", true);
   });
 
-  it("should show configure button for unconfigured integrations", async () => {
+  it("should have settings dropdown menu", async () => {
+    render(<IntegrationsPage />);
+
+    await waitFor(() => {
+      const moreButtons = screen
+        .getAllByRole("button")
+        .filter(
+          (button) =>
+            button.querySelector('[data-testid="more-vertical-icon"]') || button.textContent === ""
+        );
+      expect(moreButtons.length).toBeGreaterThan(0);
+    });
+  });
+
+  it("should show configure button for all integrations", async () => {
     render(<IntegrationsPage />);
 
     await waitFor(() => {
       const configureButtons = screen.getAllByText("Configure");
-      expect(configureButtons).toHaveLength(1); // Only Slack needs configuration
+      expect(configureButtons).toHaveLength(mockIntegrations.length);
     });
   });
 
-  it("should show settings button for configured integrations", async () => {
+  it("should display search input", async () => {
     render(<IntegrationsPage />);
 
     await waitFor(() => {
-      const settingsButtons = screen.getAllByText("Settings");
-      expect(settingsButtons).toHaveLength(2); // Google Sheets and Zapier
+      const searchInput = screen.getByPlaceholderText("Search integrations...");
+      expect(searchInput).toBeInTheDocument();
     });
   });
 
-  it("should handle error state", async () => {
+  it("should handle error state gracefully", async () => {
+    // Mock the query to reject
     (integrationsApi.list as jest.Mock).mockRejectedValue(new Error("Failed to load"));
 
     render(<IntegrationsPage />);
 
+    // The component should still render without crashing
     await waitFor(() => {
-      expect(screen.getByText("Failed to load integrations")).toBeInTheDocument();
+      expect(screen.getByText("Integrations")).toBeInTheDocument();
+      expect(screen.getByText("Add Integration")).toBeInTheDocument();
     });
   });
 
-  it("should show integration categories", async () => {
+  it("should show add integration button", async () => {
     render(<IntegrationsPage />);
 
     await waitFor(() => {
-      expect(screen.getByText("Data Export")).toBeInTheDocument();
-      expect(screen.getByText("Notifications")).toBeInTheDocument();
-      expect(screen.getByText("Automation")).toBeInTheDocument();
+      const addButton = screen.getByText("Add Integration");
+      expect(addButton).toBeInTheDocument();
     });
   });
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen } from "../../../../lib/test-utils";
 import FormEditPage from "../../../../app/forms/[id]/edit/page";
 import { useFormBuilderStore } from "../../../../lib/stores/form-builder-store";
 import { formsApi } from "../../../../lib/api/forms";
@@ -9,8 +9,9 @@ jest.mock("next/navigation", () => ({
   useParams: jest.fn(),
 }));
 
-// Mock tanstack/react-query
+// Mock tanstack/react-query hooks
 jest.mock("@tanstack/react-query", () => ({
+  ...jest.requireActual("@tanstack/react-query"),
   useQuery: jest.fn(),
 }));
 

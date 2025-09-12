@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "../lib/test-utils";
 import { AnalyticsDashboard } from "../components/analytics/analytics-dashboard";
 import { api } from "@/lib/api";
 

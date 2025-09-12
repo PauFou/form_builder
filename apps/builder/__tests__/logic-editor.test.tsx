@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent } from "../lib/test-utils";
 import { LogicEditor } from "@/components/logic/logic-editor";
 
 // Mock the form builder store

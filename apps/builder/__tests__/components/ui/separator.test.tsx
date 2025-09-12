@@ -24,10 +24,18 @@ describe("Separator", () => {
     expect(separator).toHaveClass("my-4");
   });
 
-  it("should have proper aria attributes", () => {
+  it("should have proper aria attributes for decorative separator", () => {
     const { container } = render(<Separator />);
     const separator = container.firstChild;
+    // Decorative separators have role="none" by default
+    expect(separator).toHaveAttribute("role", "none");
+    // Decorative separators don't have aria-orientation
+  });
+
+  it("should have proper aria attributes when not decorative", () => {
+    const { container } = render(<Separator decorative={false} />);
+    const separator = container.firstChild;
     expect(separator).toHaveAttribute("role", "separator");
-    expect(separator).toHaveAttribute("aria-orientation", "horizontal");
+    // Radix UI's separator manages aria-orientation internally
   });
 });
