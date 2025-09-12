@@ -1,5 +1,18 @@
 # Tests E2E Playwright
 
+## ⚠️ Note importante
+
+Certains tests E2E sont actuellement **désactivés** car ils nécessitent des fonctionnalités d'authentification pas encore implémentées :
+
+- `form-creation.spec.ts` - Workflow de création de formulaire (nécessite login)
+- `gdpr-compliance.spec.ts` - Fonctionnalités GDPR (nécessite login admin)
+- `full-workflow.spec.ts` - Workflow complet (nécessite login)
+
+**Tests actifs** qui fonctionnent sans authentification :
+
+- `simple-form.spec.ts` - Tests de fonctionnalités basiques
+- `basic-webhook.spec.ts` - Tests du webhook receiver
+
 ## Vue d'ensemble
 
 Ces tests E2E vérifient le workflow complet de la plateforme de formulaires, incluant :
