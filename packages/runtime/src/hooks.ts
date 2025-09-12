@@ -81,6 +81,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
       // Load saved state with cleanup
       const loadSavedState = async () => {
+        if (!offlineServiceRef.current) return;
         const saved = await offlineServiceRef.current.getState();
         if (saved) {
           setState(saved.state);
