@@ -34,6 +34,8 @@ export interface Block {
   isPII?: boolean;
   excludeFromAnalytics?: boolean;
   notes?: string;
+  // Block-specific properties
+  properties?: Record<string, any>;
 }
 
 export interface BlockProps {
