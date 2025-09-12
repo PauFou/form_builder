@@ -514,3 +514,59 @@ def check_rate_limit(webhook):
     cache.set(cache_key, current_count + 1, RATE_LIMIT_WINDOW)
     
     return True
+
+
+@shared_task
+def process_incoming_webhook(webhook_id, event_type, payload, headers, source_ip):
+    """Process incoming webhook received from external source"""
+    try:
+        webhook = Webhook.objects.get(id=webhook_id)
+        
+        # Log the incoming webhook
+        logger.info(
+            f"Processing incoming webhook {webhook_id}. "
+            f"Event: {event_type}, Source: {source_ip}"
+        )
+        
+        # Store incoming webhook data
+        from .models import IncomingWebhook
+        incoming = IncomingWebhook.objects.create(
+            webhook=webhook,
+            event_type=event_type,
+            payload_json=payload,
+            headers_json=headers,
+            source_ip=source_ip,
+            status='processed'
+        )
+        
+        # Process based on event type
+        if event_type == 'payment.success':
+            # Handle Stripe payment success
+            handle_payment_success(webhook, payload)
+        elif event_type == 'form.submitted':
+            # Handle external form submission
+            handle_external_submission(webhook, payload)
+        else:
+            # Generic webhook processing
+            logger.info(f"Received webhook event {event_type} for webhook {webhook_id}")
+        
+        return {'status': 'success', 'webhook_id': str(webhook_id)}
+        
+    except Webhook.DoesNotExist:
+        logger.error(f"Webhook {webhook_id} not found")
+        raise
+    except Exception as e:
+        logger.exception(f"Error processing incoming webhook {webhook_id}: {e}")
+        raise
+
+
+def handle_payment_success(webhook, payload):
+    """Handle successful payment webhook"""
+    # Implementation for payment success handling
+    pass
+
+
+def handle_external_submission(webhook, payload):
+    """Handle external form submission webhook"""
+    # Implementation for external form submission
+    pass
