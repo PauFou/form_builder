@@ -5,6 +5,16 @@ import { EmailBlock } from "../../../components/blocks/email-block";
 import { SelectBlock } from "../../../components/blocks/select-block";
 import { CheckboxGroupBlock } from "../../../components/blocks/checkbox-group-block";
 import { DateBlock } from "../../../components/blocks/date-block";
+import { NumberBlock } from "../../../components/blocks/number-block";
+import { PhoneBlock } from "../../../components/blocks/phone-block";
+import { CurrencyBlock } from "../../../components/blocks/currency-block";
+import { AddressBlock } from "../../../components/blocks/address-block";
+import { SingleSelectBlock } from "../../../components/blocks/single-select-block";
+import { MultiSelectBlock } from "../../../components/blocks/multi-select-block";
+import { RatingBlock } from "../../../components/blocks/rating-block";
+import { NPSBlock } from "../../../components/blocks/nps-block";
+import { ScaleBlock } from "../../../components/blocks/scale-block";
+import { FileUploadBlock } from "../../../components/blocks/file-upload-block";
 
 describe("Block Registry", () => {
   describe("BLOCK_COMPONENTS", () => {
@@ -32,6 +42,46 @@ describe("Block Registry", () => {
       expect(BLOCK_COMPONENTS.date).toBe(DateBlock);
     });
 
+    it("should contain NumberBlock for number type", () => {
+      expect(BLOCK_COMPONENTS.number).toBe(NumberBlock);
+    });
+
+    it("should contain PhoneBlock for phone type", () => {
+      expect(BLOCK_COMPONENTS.phone).toBe(PhoneBlock);
+    });
+
+    it("should contain CurrencyBlock for currency type", () => {
+      expect(BLOCK_COMPONENTS.currency).toBe(CurrencyBlock);
+    });
+
+    it("should contain AddressBlock for address type", () => {
+      expect(BLOCK_COMPONENTS.address).toBe(AddressBlock);
+    });
+
+    it("should contain SingleSelectBlock for single_select type", () => {
+      expect(BLOCK_COMPONENTS.single_select).toBe(SingleSelectBlock);
+    });
+
+    it("should contain MultiSelectBlock for multi_select type", () => {
+      expect(BLOCK_COMPONENTS.multi_select).toBe(MultiSelectBlock);
+    });
+
+    it("should contain RatingBlock for rating type", () => {
+      expect(BLOCK_COMPONENTS.rating).toBe(RatingBlock);
+    });
+
+    it("should contain NPSBlock for nps type", () => {
+      expect(BLOCK_COMPONENTS.nps).toBe(NPSBlock);
+    });
+
+    it("should contain ScaleBlock for scale type", () => {
+      expect(BLOCK_COMPONENTS.scale).toBe(ScaleBlock);
+    });
+
+    it("should contain FileUploadBlock for file_upload type", () => {
+      expect(BLOCK_COMPONENTS.file_upload).toBe(FileUploadBlock);
+    });
+
     it("should return undefined for unknown type", () => {
       expect(BLOCK_COMPONENTS.unknown_type).toBeUndefined();
     });
@@ -46,11 +96,21 @@ describe("Block Registry", () => {
       expect(blockTypes).toContain("select");
       expect(blockTypes).toContain("checkbox_group");
       expect(blockTypes).toContain("date");
+      expect(blockTypes).toContain("number");
+      expect(blockTypes).toContain("phone");
+      expect(blockTypes).toContain("currency");
+      expect(blockTypes).toContain("address");
+      expect(blockTypes).toContain("single_select");
+      expect(blockTypes).toContain("multi_select");
+      expect(blockTypes).toContain("rating");
+      expect(blockTypes).toContain("nps");
+      expect(blockTypes).toContain("scale");
+      expect(blockTypes).toContain("file_upload");
     });
 
-    it("should have exactly 6 block types", () => {
+    it("should have exactly 22 block types", () => {
       const blockTypes = Object.keys(BLOCK_COMPONENTS);
-      expect(blockTypes).toHaveLength(6);
+      expect(blockTypes).toHaveLength(22);
     });
   });
 });

@@ -101,8 +101,206 @@ export function BlockSettings() {
                   />
                 </div>
 
+                {/* Placeholder for text inputs */}
+                {["short_text", "long_text", "email", "phone", "number", "currency"].includes(
+                  block.type
+                ) && (
+                  <div className="space-y-2">
+                    <Label htmlFor="placeholder">Placeholder</Label>
+                    <Input
+                      id="placeholder"
+                      value={block.properties?.placeholder || ""}
+                      onChange={(e) =>
+                        updateBlock(block.id, {
+                          properties: { ...block.properties, placeholder: e.target.value },
+                        })
+                      }
+                      placeholder="Enter placeholder text"
+                    />
+                  </div>
+                )}
+
+                {/* Number specific settings */}
+                {block.type === "number" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="step">Step</Label>
+                      <Input
+                        id="step"
+                        type="number"
+                        value={block.properties?.step || 1}
+                        onChange={(e) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, step: parseFloat(e.target.value) },
+                          })
+                        }
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Currency specific settings */}
+                {block.type === "currency" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="currency">Currency</Label>
+                      <Select
+                        value={block.properties?.currency || "USD"}
+                        onValueChange={(value) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, currency: value },
+                          })
+                        }
+                      >
+                        <SelectTrigger id="currency">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="USD">USD ($)</SelectItem>
+                          <SelectItem value="EUR">EUR (€)</SelectItem>
+                          <SelectItem value="GBP">GBP (£)</SelectItem>
+                          <SelectItem value="JPY">JPY (¥)</SelectItem>
+                          <SelectItem value="CHF">CHF (Fr)</SelectItem>
+                          <SelectItem value="CAD">CAD ($)</SelectItem>
+                          <SelectItem value="AUD">AUD ($)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </>
+                )}
+
+                {/* Phone specific settings */}
+                {block.type === "phone" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="defaultCountry">Default Country</Label>
+                      <Select
+                        value={block.properties?.defaultCountry || "US"}
+                        onValueChange={(value) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, defaultCountry: value },
+                          })
+                        }
+                      >
+                        <SelectTrigger id="defaultCountry">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="US">United States</SelectItem>
+                          <SelectItem value="CA">Canada</SelectItem>
+                          <SelectItem value="GB">United Kingdom</SelectItem>
+                          <SelectItem value="FR">France</SelectItem>
+                          <SelectItem value="DE">Germany</SelectItem>
+                          <SelectItem value="IT">Italy</SelectItem>
+                          <SelectItem value="ES">Spain</SelectItem>
+                          <SelectItem value="NL">Netherlands</SelectItem>
+                          <SelectItem value="BE">Belgium</SelectItem>
+                          <SelectItem value="CH">Switzerland</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </>
+                )}
+
+                {/* Address specific settings */}
+                {block.type === "address" && (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="showLine2">Show Address Line 2</Label>
+                      <Switch
+                        id="showLine2"
+                        checked={block.properties?.showLine2 ?? true}
+                        onCheckedChange={(checked) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, showLine2: checked },
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="defaultCountry">Default Country</Label>
+                      <Select
+                        value={block.properties?.defaultCountry || "US"}
+                        onValueChange={(value) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, defaultCountry: value },
+                          })
+                        }
+                      >
+                        <SelectTrigger id="defaultCountry">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="US">United States</SelectItem>
+                          <SelectItem value="CA">Canada</SelectItem>
+                          <SelectItem value="GB">United Kingdom</SelectItem>
+                          <SelectItem value="FR">France</SelectItem>
+                          <SelectItem value="DE">Germany</SelectItem>
+                          <SelectItem value="IT">Italy</SelectItem>
+                          <SelectItem value="ES">Spain</SelectItem>
+                          <SelectItem value="NL">Netherlands</SelectItem>
+                          <SelectItem value="BE">Belgium</SelectItem>
+                          <SelectItem value="CH">Switzerland</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </>
+                )}
+
+                {/* File upload specific settings */}
+                {block.type === "file_upload" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="accept">Accepted File Types</Label>
+                      <Input
+                        id="accept"
+                        value={block.properties?.accept || "*"}
+                        onChange={(e) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, accept: e.target.value },
+                          })
+                        }
+                        placeholder="e.g., .pdf,.jpg,.png"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="maxSize">Max File Size (MB)</Label>
+                      <Input
+                        id="maxSize"
+                        type="number"
+                        value={block.properties?.maxSize || 10}
+                        onChange={(e) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, maxSize: parseInt(e.target.value) },
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="maxFiles">Max Files</Label>
+                      <Input
+                        id="maxFiles"
+                        type="number"
+                        value={block.properties?.maxFiles || 1}
+                        onChange={(e) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, maxFiles: parseInt(e.target.value) },
+                          })
+                        }
+                      />
+                    </div>
+                  </>
+                )}
+
                 {/* Options for choice-based blocks */}
-                {["single_select", "multi_select", "dropdown", "ranking"].includes(block.type) && (
+                {[
+                  "single_select",
+                  "multi_select",
+                  "select",
+                  "checkbox_group",
+                  "dropdown",
+                  "ranking",
+                ].includes(block.type) && (
                   <div className="space-y-2">
                     <Label>Options</Label>
                     <div className="space-y-2">
@@ -154,16 +352,83 @@ export function BlockSettings() {
                   </div>
                 )}
 
-                {/* Scale/Rating specific settings */}
-                {["scale", "rating", "nps"].includes(block.type) && (
+                {/* Choice layout options */}
+                {["single_select", "multi_select", "checkbox_group"].includes(block.type) && (
+                  <div className="space-y-2">
+                    <Label htmlFor="layout">Layout</Label>
+                    <Select
+                      value={block.properties?.layout || "vertical"}
+                      onValueChange={(value) =>
+                        updateBlock(block.id, {
+                          properties: { ...block.properties, layout: value },
+                        })
+                      }
+                    >
+                      <SelectTrigger id="layout">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="vertical">Vertical</SelectItem>
+                        <SelectItem value="horizontal">Horizontal</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {/* Multi-select specific settings */}
+                {block.type === "multi_select" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="minSelections">Min Selections</Label>
+                      <Input
+                        id="minSelections"
+                        type="number"
+                        value={block.properties?.minSelections || ""}
+                        onChange={(e) =>
+                          updateBlock(block.id, {
+                            properties: {
+                              ...block.properties,
+                              minSelections: e.target.value ? parseInt(e.target.value) : undefined,
+                            },
+                          })
+                        }
+                        placeholder="No minimum"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="maxSelections">Max Selections</Label>
+                      <Input
+                        id="maxSelections"
+                        type="number"
+                        value={block.properties?.maxSelections || ""}
+                        onChange={(e) =>
+                          updateBlock(block.id, {
+                            properties: {
+                              ...block.properties,
+                              maxSelections: e.target.value ? parseInt(e.target.value) : undefined,
+                            },
+                          })
+                        }
+                        placeholder="No maximum"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Scale specific settings */}
+                {block.type === "scale" && (
                   <>
                     <div className="space-y-2">
                       <Label htmlFor="min">Minimum Value</Label>
                       <Input
                         id="min"
                         type="number"
-                        value={block.min || 1}
-                        onChange={(e) => updateBlock(block.id, { min: parseInt(e.target.value) })}
+                        value={block.properties?.min || 1}
+                        onChange={(e) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, min: parseInt(e.target.value) },
+                          })
+                        }
                       />
                     </div>
                     <div className="space-y-2">
@@ -171,8 +436,118 @@ export function BlockSettings() {
                       <Input
                         id="max"
                         type="number"
-                        value={block.max || (block.type === "nps" ? 10 : 5)}
-                        onChange={(e) => updateBlock(block.id, { max: parseInt(e.target.value) })}
+                        value={block.properties?.max || 10}
+                        onChange={(e) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, max: parseInt(e.target.value) },
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="step">Step</Label>
+                      <Input
+                        id="step"
+                        type="number"
+                        value={block.properties?.step || 1}
+                        onChange={(e) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, step: parseFloat(e.target.value) },
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="showLabels">Show Labels</Label>
+                      <Switch
+                        id="showLabels"
+                        checked={block.properties?.showLabels ?? true}
+                        onCheckedChange={(checked) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, showLabels: checked },
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="showValue">Show Current Value</Label>
+                      <Switch
+                        id="showValue"
+                        checked={block.properties?.showValue ?? true}
+                        onCheckedChange={(checked) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, showValue: checked },
+                          })
+                        }
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Rating specific settings */}
+                {block.type === "rating" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="maxRating">Max Rating</Label>
+                      <Input
+                        id="maxRating"
+                        type="number"
+                        value={block.properties?.maxRating || 5}
+                        onChange={(e) =>
+                          updateBlock(block.id, {
+                            properties: {
+                              ...block.properties,
+                              maxRating: parseInt(e.target.value),
+                            },
+                          })
+                        }
+                        min={1}
+                        max={10}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="iconSize">Icon Size</Label>
+                      <Input
+                        id="iconSize"
+                        type="number"
+                        value={block.properties?.iconSize || 24}
+                        onChange={(e) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, iconSize: parseInt(e.target.value) },
+                          })
+                        }
+                        min={16}
+                        max={48}
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* NPS specific settings */}
+                {block.type === "nps" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="lowLabel">Low Label</Label>
+                      <Input
+                        id="lowLabel"
+                        value={block.properties?.lowLabel || "Not at all likely"}
+                        onChange={(e) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, lowLabel: e.target.value },
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="highLabel">High Label</Label>
+                      <Input
+                        id="highLabel"
+                        value={block.properties?.highLabel || "Extremely likely"}
+                        onChange={(e) =>
+                          updateBlock(block.id, {
+                            properties: { ...block.properties, highLabel: e.target.value },
+                          })
+                        }
                       />
                     </div>
                   </>
