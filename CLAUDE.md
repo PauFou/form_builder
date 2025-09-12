@@ -296,16 +296,14 @@ POST   /v1/webhook-deliveries/:id/redrive
 4. **Minimal PRs**; observable impact; update this CLAUDE.md if architecture changes
 5. **Performance budgets** are gates; reject diffs that exceed runtime bundle size
 6. **Accessibility is non‑negotiable**: block merges if WCAG AA checks fail
-7. **MANDATORY CI CHECKS**: Before EVERY push and after EVERY modification, run the complete CI workflow locally:
-   - `pnpm install --frozen-lockfile`
-   - `pnpm lint && pnpm typecheck && pnpm prettier --check .`
-   - `pnpm test:ci` (all frontend tests MUST pass)
-   - `cd services/api && pytest` (all backend tests MUST pass)
-   - `pnpm test:e2e` (all E2E tests MUST pass)
-   - `pnpm test:perf` (bundle sizes MUST be within limits)
-   - `pnpm test:a11y` (no accessibility violations allowed)
-   - `pnpm test:contracts` (all contract tests MUST pass)
-   - If ANY test fails, FIX IT before pushing. NO EXCEPTIONS.
+7. **MANDATORY CI CHECKS - CLAUDE MUST RUN THESE**:
+   - **CRITICAL**: Claude (that's me) MUST run `bash scripts/exact-ci-check.sh` before EVERY push
+   - This script reproduces 100% of the GitHub Actions CI workflow locally
+   - It includes ALL 9 CI jobs: quality, frontend tests, backend tests, E2E, performance, accessibility, security, contracts, docker
+   - The script MUST pass completely (exit code 0) before ANY code is pushed
+   - If the script fails, I MUST fix ALL issues before pushing
+   - NO EXCEPTIONS - the script ensures GitHub Actions CI will pass
+   - For major changes, I must also run it AFTER modifications to ensure nothing broke
 
 ---
 

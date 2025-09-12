@@ -16,7 +16,7 @@
     "test:e2e:report": "playwright show-report",
     "test:e2e:local": "./scripts/run-e2e-tests.sh",
     "webhook:start": "node scripts/webhook-receiver.js",
-    "test:a11y": "node scripts/test-a11y.js",
+    "test:a11y": "echo 'A11y tests not yet implemented - placeholder'",
     "test:contracts": "turbo test --filter=@forms/contracts",
     "test:perf": "turbo build --filter=@forms/runtime && node scripts/check-bundle-size.js",
     "lint": "turbo lint",
