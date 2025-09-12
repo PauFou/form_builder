@@ -2,7 +2,25 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import FormEditPage from "../../../../app/forms/[id]/edit/page";
 import { useFormBuilderStore } from "../../../../lib/stores/form-builder-store";
-import { getForm } from "../../../../lib/api/forms";
+import { formsApi } from "../../../../lib/api/forms";
+
+// Mock next/navigation
+jest.mock("next/navigation", () => ({
+  useParams: jest.fn(),
+}));
+
+// Mock tanstack/react-query
+jest.mock("@tanstack/react-query", () => ({
+  useQuery: jest.fn(),
+}));
+
+// Mock react-hot-toast
+jest.mock("react-hot-toast", () => ({
+  toast: {
+    success: jest.fn(),
+    error: jest.fn(),
+  },
+}));
 
 // Mock dependencies
 jest.mock("../../../../lib/stores/form-builder-store", () => ({
@@ -10,7 +28,15 @@ jest.mock("../../../../lib/stores/form-builder-store", () => ({
 }));
 
 jest.mock("../../../../lib/api/forms", () => ({
-  getForm: jest.fn(),
+  formsApi: {
+    get: jest.fn(),
+    update: jest.fn(),
+    publish: jest.fn(),
+  },
+}));
+
+jest.mock("../../../../lib/demo-forms", () => ({
+  DEMO_FORMS: {},
 }));
 
 jest.mock("../../../../components/builder/form-canvas", () => ({
@@ -25,76 +51,105 @@ jest.mock("../../../../components/builder/block-inspector", () => ({
   BlockInspector: () => <div data-testid="block-inspector">Block Inspector</div>,
 }));
 
+jest.mock("../../../../components/builder/block-settings", () => ({
+  BlockSettings: () => <div data-testid="block-settings">Block Settings</div>,
+}));
+
+// Import mocked modules
+import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+
 describe("FormEditPage", () => {
   const mockStore = {
-    loadForm: jest.fn(),
     form: {
       id: "123",
       title: "Test Form",
-      blocks: [],
+      pages: [],
     },
+    setForm: jest.fn(),
+    isDirty: false,
+    undo: jest.fn(),
+    redo: jest.fn(),
+    history: [],
+    historyIndex: 0,
+    markClean: jest.fn(),
   };
 
   const mockForm = {
     id: "123",
     title: "Test Form",
     description: "Test Description",
-    blocks: [],
+    pages: [],
     logic: [],
     theme: {},
+    settings: {},
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (useFormBuilderStore as jest.Mock).mockReturnValue(mockStore);
-    (getForm as jest.Mock).mockResolvedValue(mockForm);
+    (useFormBuilderStore as unknown as jest.Mock).mockReturnValue(mockStore);
+    (useParams as jest.Mock).mockReturnValue({ id: "123" });
+    (useQuery as jest.Mock).mockReturnValue({
+      data: mockForm,
+      isLoading: false,
+      error: null,
+    });
+    (formsApi.get as jest.Mock).mockResolvedValue(mockForm);
   });
 
   it("should load form on mount", async () => {
-    const params = { id: "123" };
-    render(<FormEditPage params={params} />);
+    render(<FormEditPage />);
 
     await screen.findByTestId("form-canvas");
 
-    expect(getForm).toHaveBeenCalledWith("123");
-    expect(mockStore.loadForm).toHaveBeenCalledWith(mockForm);
+    expect(mockStore.setForm).toHaveBeenCalledWith(mockForm);
   });
 
   it("should render form builder components", async () => {
-    const params = { id: "123" };
-    render(<FormEditPage params={params} />);
+    render(<FormEditPage />);
 
     await screen.findByTestId("form-canvas");
 
     expect(screen.getByTestId("form-canvas")).toBeInTheDocument();
     expect(screen.getByTestId("block-library")).toBeInTheDocument();
-    expect(screen.getByTestId("block-inspector")).toBeInTheDocument();
+    expect(screen.getByTestId("block-settings")).toBeInTheDocument();
   });
 
   it("should display loading state initially", () => {
-    const params = { id: "123" };
-    render(<FormEditPage params={params} />);
+    (useQuery as jest.Mock).mockReturnValue({
+      data: null,
+      isLoading: true,
+      error: null,
+    });
+
+    render(<FormEditPage />);
 
     expect(screen.getByText("Loading form...")).toBeInTheDocument();
   });
 
   it("should handle error when form not found", async () => {
-    (getForm as jest.Mock).mockRejectedValue(new Error("Form not found"));
+    (useQuery as jest.Mock).mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: new Error("Form not found"),
+    });
 
-    const params = { id: "123" };
-    render(<FormEditPage params={params} />);
-
-    await screen.findByText("Failed to load form");
+    render(<FormEditPage />);
 
     expect(screen.getByText("Failed to load form")).toBeInTheDocument();
   });
 
   it("should pass correct form ID to API", async () => {
-    const params = { id: "456" };
-    render(<FormEditPage params={params} />);
+    (useParams as jest.Mock).mockReturnValue({ id: "456" });
+
+    render(<FormEditPage />);
 
     await screen.findByTestId("form-canvas");
 
-    expect(getForm).toHaveBeenCalledWith("456");
+    expect(useQuery).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryKey: ["form", "456"],
+      })
+    );
   });
 });

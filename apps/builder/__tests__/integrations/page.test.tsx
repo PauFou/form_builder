@@ -1,12 +1,14 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import IntegrationsPage from "../../app/integrations/page";
-import { getIntegrations, toggleIntegration } from "../../lib/api/integrations";
+import { integrationsApi } from "../../lib/api/integrations";
 
 // Mock dependencies
 jest.mock("../../lib/api/integrations", () => ({
-  getIntegrations: jest.fn(),
-  toggleIntegration: jest.fn(),
+  integrationsApi: {
+    list: jest.fn(),
+    toggle: jest.fn(),
+  },
 }));
 
 jest.mock("../../components/shared/navigation", () => ({
@@ -43,7 +45,9 @@ describe("IntegrationsPage", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (getIntegrations as jest.Mock).mockResolvedValue(mockIntegrations);
+    (integrationsApi.list as jest.Mock).mockResolvedValue({
+      data: { integrations: mockIntegrations },
+    });
   });
 
   it("should render the integrations page heading", () => {
@@ -90,7 +94,10 @@ describe("IntegrationsPage", () => {
   });
 
   it("should toggle integration when switch clicked", async () => {
-    (toggleIntegration as jest.Mock).mockResolvedValue({ ...mockIntegrations[1], enabled: true });
+    (integrationsApi.toggle as jest.Mock).mockResolvedValue({
+      ...mockIntegrations[1],
+      enabled: true,
+    });
 
     render(<IntegrationsPage />);
 
@@ -99,7 +106,7 @@ describe("IntegrationsPage", () => {
       fireEvent.click(slackToggle);
     });
 
-    expect(toggleIntegration).toHaveBeenCalledWith("slack", true);
+    expect(integrationsApi.toggle).toHaveBeenCalledWith("slack", true);
   });
 
   it("should show configure button for unconfigured integrations", async () => {
@@ -121,7 +128,7 @@ describe("IntegrationsPage", () => {
   });
 
   it("should handle error state", async () => {
-    (getIntegrations as jest.Mock).mockRejectedValue(new Error("Failed to load"));
+    (integrationsApi.list as jest.Mock).mockRejectedValue(new Error("Failed to load"));
 
     render(<IntegrationsPage />);
 

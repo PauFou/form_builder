@@ -22,23 +22,41 @@ jest.mock("../components/builder/block-library", () => ({
 }));
 
 jest.mock("../components/builder/block-inspector", () => ({
-  BlockInspector: () => <div data-testid="block-inspector">Block Inspector</div>,
+  BlockInspector: ({ blockId }: { blockId: string }) => (
+    <div data-testid="block-inspector">Block Inspector for {blockId}</div>
+  ),
 }));
 
 jest.mock("../components/builder/preview-panel", () => ({
-  PreviewPanel: () => <div data-testid="preview-panel">Preview Panel</div>,
+  PreviewPanel: ({ isOpen }: { isOpen: boolean }) =>
+    isOpen ? <div data-testid="preview-panel">Preview Panel</div> : null,
 }));
 
-jest.mock("../components/shared/navigation", () => ({
-  Navigation: () => <div data-testid="navigation">Navigation</div>,
+jest.mock("../components/builder/draggable-block", () => ({
+  DraggableBlock: ({ block }: any) => <div data-testid={`block-${block.id}`}>{block.label}</div>,
+}));
+
+jest.mock("../lib/hooks/use-keyboard-shortcuts", () => ({
+  useKeyboardShortcuts: jest.fn(),
+}));
+
+jest.mock("../lib/hooks/use-autosave", () => ({
+  useAutosave: jest.fn(),
 }));
 
 describe("BuilderPage", () => {
   const mockRouter = { push: jest.fn() };
   const mockStore = {
-    form: { id: "123", title: "Test Form" },
+    form: {
+      id: "123",
+      title: "Test Form",
+      pages: [{ id: "page-1", title: "Page 1", blocks: [] }],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
     isDirty: false,
     selectedBlockId: null,
+    initializeForm: jest.fn(),
     updateFormTitle: jest.fn(),
     saveForm: jest.fn(),
   };
@@ -46,48 +64,30 @@ describe("BuilderPage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useRouter as jest.Mock).mockReturnValue(mockRouter);
-    (useFormBuilderStore as jest.Mock).mockReturnValue(mockStore);
+    (useFormBuilderStore as unknown as jest.Mock).mockReturnValue(mockStore);
   });
 
   it("should render all main components", () => {
     render(<BuilderPage />);
 
-    expect(screen.getByTestId("navigation")).toBeInTheDocument();
     expect(screen.getByTestId("form-canvas")).toBeInTheDocument();
-    expect(screen.getByTestId("block-library")).toBeInTheDocument();
-    expect(screen.getByTestId("block-inspector")).toBeInTheDocument();
+    expect(screen.getByText("Block Library")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search blocks...")).toBeInTheDocument();
+    // Block inspector area shows message when no block selected
+    expect(screen.getByText("Select a block to configure")).toBeInTheDocument();
   });
 
-  it("should display form title input", () => {
+  it("should display form title", () => {
     render(<BuilderPage />);
 
-    const titleInput = screen.getByDisplayValue("Test Form");
-    expect(titleInput).toBeInTheDocument();
+    expect(screen.getByText("Test Form")).toBeInTheDocument();
   });
 
-  it("should update form title on input change", () => {
+  it("should show publish button", () => {
     render(<BuilderPage />);
 
-    const titleInput = screen.getByDisplayValue("Test Form");
-    fireEvent.change(titleInput, { target: { value: "New Title" } });
-
-    expect(mockStore.updateFormTitle).toHaveBeenCalledWith("New Title");
-  });
-
-  it("should show save button", () => {
-    render(<BuilderPage />);
-
-    const saveButton = screen.getByText("Save");
-    expect(saveButton).toBeInTheDocument();
-  });
-
-  it("should call saveForm when save button clicked", () => {
-    render(<BuilderPage />);
-
-    const saveButton = screen.getByText("Save");
-    fireEvent.click(saveButton);
-
-    expect(mockStore.saveForm).toHaveBeenCalled();
+    const publishButton = screen.getByText("Publish");
+    expect(publishButton).toBeInTheDocument();
   });
 
   it("should show preview button", () => {
@@ -110,24 +110,31 @@ describe("BuilderPage", () => {
     expect(screen.getByTestId("preview-panel")).toBeInTheDocument();
   });
 
-  it("should show dirty indicator when form has unsaved changes", () => {
-    (useFormBuilderStore as jest.Mock).mockReturnValue({
+  it("should show last saved time", () => {
+    render(<BuilderPage />);
+
+    expect(screen.getByText(/Last saved/)).toBeInTheDocument();
+  });
+
+  it("should navigate to dashboard when back button clicked", () => {
+    render(<BuilderPage />);
+
+    const backButton = screen.getByText("Forms");
+    fireEvent.click(backButton);
+
+    // This is a link, not a router push
+    expect(backButton.closest("a")).toHaveAttribute("href", "/dashboard");
+  });
+
+  it("should show block inspector when a block is selected", () => {
+    (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       ...mockStore,
-      isDirty: true,
+      selectedBlockId: "block-123",
     });
 
     render(<BuilderPage />);
 
-    const saveButton = screen.getByText("Save");
-    expect(saveButton).toHaveClass("bg-primary"); // Assuming primary color for dirty state
-  });
-
-  it("should navigate to forms list when back button clicked", () => {
-    render(<BuilderPage />);
-
-    const backButton = screen.getByLabelText("Back to forms");
-    fireEvent.click(backButton);
-
-    expect(mockRouter.push).toHaveBeenCalledWith("/forms");
+    expect(screen.getByTestId("block-inspector")).toBeInTheDocument();
+    expect(screen.getByText("Block Inspector for block-123")).toBeInTheDocument();
   });
 });

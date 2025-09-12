@@ -1,4 +1,4 @@
-import { BLOCK_TYPES, getBlockComponent, getBlockIcon } from "../../../components/blocks";
+import { BLOCK_COMPONENTS } from "../../../components/blocks";
 import { ShortTextBlock } from "../../../components/blocks/short-text-block";
 import { LongTextBlock } from "../../../components/blocks/long-text-block";
 import { EmailBlock } from "../../../components/blocks/email-block";
@@ -7,66 +7,50 @@ import { CheckboxGroupBlock } from "../../../components/blocks/checkbox-group-bl
 import { DateBlock } from "../../../components/blocks/date-block";
 
 describe("Block Registry", () => {
-  describe("getBlockComponent", () => {
-    it("should return ShortTextBlock for short_text type", () => {
-      const Component = getBlockComponent("short_text");
-      expect(Component).toBe(ShortTextBlock);
+  describe("BLOCK_COMPONENTS", () => {
+    it("should contain ShortTextBlock for short_text type", () => {
+      expect(BLOCK_COMPONENTS.short_text).toBe(ShortTextBlock);
     });
 
-    it("should return LongTextBlock for long_text type", () => {
-      const Component = getBlockComponent("long_text");
-      expect(Component).toBe(LongTextBlock);
+    it("should contain LongTextBlock for long_text type", () => {
+      expect(BLOCK_COMPONENTS.long_text).toBe(LongTextBlock);
     });
 
-    it("should return EmailBlock for email type", () => {
-      const Component = getBlockComponent("email");
-      expect(Component).toBe(EmailBlock);
+    it("should contain EmailBlock for email type", () => {
+      expect(BLOCK_COMPONENTS.email).toBe(EmailBlock);
     });
 
-    it("should return SelectBlock for select type", () => {
-      const Component = getBlockComponent("select");
-      expect(Component).toBe(SelectBlock);
+    it("should contain SelectBlock for select type", () => {
+      expect(BLOCK_COMPONENTS.select).toBe(SelectBlock);
     });
 
-    it("should return CheckboxGroupBlock for checkbox_group type", () => {
-      const Component = getBlockComponent("checkbox_group");
-      expect(Component).toBe(CheckboxGroupBlock);
+    it("should contain CheckboxGroupBlock for checkbox_group type", () => {
+      expect(BLOCK_COMPONENTS.checkbox_group).toBe(CheckboxGroupBlock);
     });
 
-    it("should return DateBlock for date type", () => {
-      const Component = getBlockComponent("date");
-      expect(Component).toBe(DateBlock);
+    it("should contain DateBlock for date type", () => {
+      expect(BLOCK_COMPONENTS.date).toBe(DateBlock);
     });
 
-    it("should return null for unknown type", () => {
-      const Component = getBlockComponent("unknown_type");
-      expect(Component).toBeNull();
+    it("should return undefined for unknown type", () => {
+      expect(BLOCK_COMPONENTS.unknown_type).toBeUndefined();
     });
   });
 
-  describe("getBlockIcon", () => {
-    it("should return icon for each block type", () => {
-      expect(getBlockIcon("short_text")).toBe("📝");
-      expect(getBlockIcon("long_text")).toBe("📄");
-      expect(getBlockIcon("email")).toBe("📧");
-      expect(getBlockIcon("select")).toBe("📋");
-      expect(getBlockIcon("checkbox_group")).toBe("☑️");
-      expect(getBlockIcon("date")).toBe("📅");
+  describe("Block types", () => {
+    it("should have all expected block types", () => {
+      const blockTypes = Object.keys(BLOCK_COMPONENTS);
+      expect(blockTypes).toContain("short_text");
+      expect(blockTypes).toContain("long_text");
+      expect(blockTypes).toContain("email");
+      expect(blockTypes).toContain("select");
+      expect(blockTypes).toContain("checkbox_group");
+      expect(blockTypes).toContain("date");
     });
 
-    it("should return question mark for unknown type", () => {
-      expect(getBlockIcon("unknown")).toBe("❓");
-    });
-  });
-
-  describe("BLOCK_TYPES", () => {
-    it("should export all block types", () => {
-      expect(BLOCK_TYPES).toContain("short_text");
-      expect(BLOCK_TYPES).toContain("long_text");
-      expect(BLOCK_TYPES).toContain("email");
-      expect(BLOCK_TYPES).toContain("select");
-      expect(BLOCK_TYPES).toContain("checkbox_group");
-      expect(BLOCK_TYPES).toContain("date");
+    it("should have exactly 6 block types", () => {
+      const blockTypes = Object.keys(BLOCK_COMPONENTS);
+      expect(blockTypes).toHaveLength(6);
     });
   });
 });

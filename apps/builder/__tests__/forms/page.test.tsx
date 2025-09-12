@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import FormsPage from "../../app/forms/page";
 import { useRouter } from "next/navigation";
-import { getForms } from "../../lib/api/forms";
+import { listForms } from "../../lib/api/forms";
 
 // Mock dependencies
 jest.mock("next/navigation", () => ({
@@ -42,7 +42,12 @@ describe("FormsPage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useRouter as jest.Mock).mockReturnValue(mockRouter);
-    (getForms as jest.Mock).mockResolvedValue(mockForms);
+    (listForms as jest.Mock).mockResolvedValue({
+      forms: mockForms,
+      total: mockForms.length,
+      page: 1,
+      limit: 10,
+    });
   });
 
   it("should render the forms page heading", async () => {
@@ -122,7 +127,12 @@ describe("FormsPage", () => {
   });
 
   it("should show empty state when no forms", async () => {
-    (getForms as jest.Mock).mockResolvedValue([]);
+    (listForms as jest.Mock).mockResolvedValue({
+      forms: [],
+      total: 0,
+      page: 1,
+      limit: 10,
+    });
 
     render(<FormsPage />);
 
@@ -133,7 +143,7 @@ describe("FormsPage", () => {
   });
 
   it("should handle error state", async () => {
-    (getForms as jest.Mock).mockRejectedValue(new Error("Failed to load forms"));
+    (listForms as jest.Mock).mockRejectedValue(new Error("Failed to load forms"));
 
     render(<FormsPage />);
 
