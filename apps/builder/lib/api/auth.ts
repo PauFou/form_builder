@@ -1,4 +1,4 @@
-import { apiClient } from "./client";
+import { apiClient } from "./axios-client";
 
 import type { User, Organization } from "@forms/contracts";
 
@@ -8,6 +8,7 @@ export interface LoginCredentials {
 }
 
 export interface SignupData {
+  name: string;
   email: string;
   password: string;
   organization_name: string;
@@ -23,13 +24,13 @@ export interface AuthResponse {
 export const authApi = {
   // Login
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const response = await apiClient.post("/auth/login", credentials);
+    const response = await apiClient.post("/v1/auth/login/", credentials);
     return response.data;
   },
 
   // Signup
   signup: async (data: SignupData): Promise<AuthResponse> => {
-    const response = await apiClient.post("/auth/signup", data);
+    const response = await apiClient.post("/v1/auth/signup/", data);
     return response.data;
   },
 
@@ -37,7 +38,7 @@ export const authApi = {
   logout: async () => {
     const refreshToken = localStorage.getItem("refresh_token");
     if (refreshToken) {
-      await apiClient.post("/auth/logout", { refresh: refreshToken });
+      await apiClient.post("/v1/auth/logout/", { refresh: refreshToken });
     }
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
@@ -45,7 +46,7 @@ export const authApi = {
 
   // Get current user
   getMe: async (): Promise<{ user: User; organization: Organization }> => {
-    const response = (await apiClient.get("/auth/me")) as any;
+    const response = (await apiClient.get("/v1/auth/me/")) as any;
     if (!response.data || !response.data.user) {
       return {
         user: { id: "", email: "" } as User,
@@ -57,13 +58,13 @@ export const authApi = {
 
   // Refresh token
   refresh: async (refreshToken: string): Promise<{ access: string }> => {
-    const response = await apiClient.post("/auth/refresh", { refresh: refreshToken });
+    const response = await apiClient.post("/v1/auth/refresh/", { refresh: refreshToken });
     return response.data;
   },
 
   // Request password reset
   requestPasswordReset: async (email: string): Promise<{ success: boolean; message?: string }> => {
-    const response = await apiClient.post("/auth/password-reset/request", { email });
+    const response = await apiClient.post("/v1/auth/password-reset/request/", { email });
     return response.data;
   },
 
@@ -72,7 +73,7 @@ export const authApi = {
     token: string,
     password: string
   ): Promise<{ success: boolean; message?: string }> => {
-    const response = await apiClient.post("/auth/password-reset/confirm", { token, password });
+    const response = await apiClient.post("/v1/auth/password-reset/confirm/", { token, password });
     return response.data;
   },
 };
