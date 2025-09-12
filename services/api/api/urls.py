@@ -22,9 +22,7 @@ urlpatterns = [
     path("v1/gdpr/", include("gdpr.urls")),
     path("v1/analytics/", include("analytics.urls")),
     
-    # Auth
-    path("v1/auth/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("v1/auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    # Auth is included in core.urls
     
     # API Documentation
     path("v1/schema/", SpectacularAPIView.as_view(), name="schema"),
