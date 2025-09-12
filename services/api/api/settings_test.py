@@ -40,3 +40,6 @@ SECRET_KEY = 'test-secret-key-for-testing-only'
 ALLOWED_HOSTS = ['*']
 CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
+
+# Disable rate limiting for tests
+RATELIMIT_ENABLE = False

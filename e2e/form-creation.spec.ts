@@ -1,19 +1,19 @@
 import { test, expect } from "@playwright/test";
 
-test.describe.skip("Form Creation", () => {
-  // TODO: Enable when authentication is implemented
+import { AuthHelper } from "./helpers/auth-helper";
+
+test.describe("Form Creation", () => {
+  let authHelper: AuthHelper;
+
   test.beforeEach(async ({ page }) => {
-    // Login before each test
-    await page.goto("/login");
-    await page.fill('[name="email"]', "test@example.com");
-    await page.fill('[name="password"]', "testpassword");
-    await page.click('button[type="submit"]');
-    await page.waitForURL("/forms");
+    authHelper = new AuthHelper(page);
+    // Create test user and login
+    await authHelper.ensureTestUser();
   });
 
   test("should create a new form", async ({ page }) => {
-    // Navigate to forms page
-    await page.goto("/forms");
+    // Navigate to dashboard page
+    await page.goto("/dashboard");
 
     // Click create button
     await page.click('button:has-text("Create Form")');
@@ -23,7 +23,7 @@ test.describe.skip("Form Creation", () => {
     await page.fill('[name="description"]', "This is a test form created by E2E tests");
 
     // Submit
-    await page.click('button:has-text("Create Form")');
+    await page.click('button:has-text("Create")');
 
     // Should redirect to form editor
     await expect(page).toHaveURL(/\/forms\/.*\/edit/);
@@ -34,10 +34,10 @@ test.describe.skip("Form Creation", () => {
 
   test("should add fields to form", async ({ page }) => {
     // Create a form first
-    await page.goto("/forms");
+    await page.goto("/dashboard");
     await page.click('button:has-text("Create Form")');
     await page.fill('[name="title"]', "Field Test Form");
-    await page.click('button:has-text("Create Form")');
+    await page.click('button:has-text("Create")');
 
     // Add a text field
     await page.click('button:has-text("Add Field")');
@@ -58,8 +58,8 @@ test.describe.skip("Form Creation", () => {
   });
 
   test("should preview form", async ({ page }) => {
-    // Navigate to existing form
-    await page.goto("/forms");
+    // Navigate to dashboard
+    await page.goto("/dashboard");
     await page.click('.card:first-child button:has-text("Edit")');
 
     // Click preview button

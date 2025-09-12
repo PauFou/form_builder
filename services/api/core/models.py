@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 import uuid
+import secrets
+from datetime import timedelta
+from django.utils import timezone
 
 
 class BaseModel(models.Model):
@@ -124,3 +127,35 @@ class AuditLog(models.Model):
             models.Index(fields=["organization", "created_at"]),
             models.Index(fields=["entity", "entity_id"]),
         ]
+
+
+class EmailVerificationToken(models.Model):
+    """Email verification tokens for user registration"""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="verification_tokens")
+    token = models.CharField(max_length=255, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["token"]),
+            models.Index(fields=["expires_at"]),
+        ]
+    
+    @classmethod
+    def create_for_user(cls, user):
+        """Create a new verification token for a user"""
+        token = secrets.token_urlsafe(32)
+        expires_at = timezone.now() + timedelta(hours=24)
+        return cls.objects.create(
+            user=user,
+            token=token,
+            expires_at=expires_at
+        )
+    
+    def is_valid(self):
+        """Check if token is valid (not used and not expired)"""
+        return self.used_at is None and self.expires_at > timezone.now()

@@ -73,6 +73,28 @@ class IsOrganizationOwner(permissions.BasePermission):
 class CanEditForm(permissions.BasePermission):
     """Check if user can edit forms (editor role or above)"""
     
+    def has_permission(self, request, view):
+        """Check permission at the view level"""
+        if not request.user.is_authenticated:
+            return False
+        
+        # For create operations, check organization_id in request
+        if request.method == 'POST' and 'organization_id' in request.data:
+            org_id = request.data.get('organization_id')
+            membership = Membership.objects.filter(
+                user=request.user,
+                organization_id=org_id
+            ).first()
+            
+            if not membership:
+                return False
+            
+            # Need editor role or above to create forms
+            return membership.role in ['owner', 'admin', 'editor']
+        
+        # For other operations, defer to object-level permission
+        return True
+    
     def has_object_permission(self, request, view, obj):
         form = obj if hasattr(obj, 'organization') else obj.form
         

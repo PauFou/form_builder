@@ -9,16 +9,20 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import send_mail
 from django.conf import settings
+from django.utils import timezone
+from django_ratelimit.decorators import ratelimit
+from django.utils.decorators import method_decorator
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from drf_spectacular.types import OpenApiTypes
 from .serializers import UserSerializer, RegisterSerializer
-from .models import Organization, Membership
+from .models import Organization, Membership, EmailVerificationToken
 import logging
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
 
+@method_decorator(ratelimit(key='ip', rate='10/h', method='POST'), name='dispatch')
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
@@ -54,6 +58,12 @@ class RegisterView(generics.CreateAPIView):
             role='owner'
         )
         
+        # Create email verification token
+        verification_token = EmailVerificationToken.create_for_user(user)
+        
+        # Send verification email
+        self.send_verification_email(user, verification_token)
+        
         # Generate tokens
         refresh = RefreshToken.for_user(user)
         
@@ -67,8 +77,36 @@ class RegisterView(generics.CreateAPIView):
                 'id': str(organization.id),
                 'name': organization.name,
                 'slug': organization.slug
-            }
+            },
+            'message': 'Please check your email to verify your account.'
         }, status=status.HTTP_201_CREATED)
+    
+    def send_verification_email(self, user, token):
+        """Send email verification email"""
+        verification_url = f"{settings.FRONTEND_URL}/auth/verify-email?token={token.token}"
+        
+        try:
+            send_mail(
+                subject='Verify your email address',
+                message=f'''Hi {user.username},
+                
+Welcome to Forms Platform! Please verify your email address by clicking the link below:
+
+{verification_url}
+
+This link will expire in 24 hours.
+
+If you didn't create an account, please ignore this email.
+
+Best regards,
+Forms Platform Team''',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+            logger.info(f"Verification email sent to {user.email}")
+        except Exception as e:
+            logger.error(f"Failed to send verification email to {user.email}: {str(e)}")
 
 
 @extend_schema(
@@ -233,6 +271,8 @@ def logout_view(request):
 )
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@ratelimit(key='ip', rate='3/h', method='POST')
+@ratelimit(key='post:email', rate='3/d', method='POST')
 def password_reset_request(request):
     """Request password reset link"""
     email = request.data.get('email', '').lower()
@@ -255,10 +295,10 @@ def password_reset_request(request):
         
         # Send email
         send_mail(
-            'Password Reset Request',
-            f'Click the following link to reset your password: {reset_url}',
-            settings.DEFAULT_FROM_EMAIL,
-            [email],
+            subject='Password Reset Request',
+            message=f'Click the following link to reset your password: {reset_url}',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
             fail_silently=False,
         )
         
@@ -350,3 +390,185 @@ def password_reset_confirm(request):
             {'error': 'Invalid token'},
             status=status.HTTP_400_BAD_REQUEST
         )
+
+
+# Rate limited login view
+from rest_framework_simplejwt.views import TokenObtainPairView
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
+@method_decorator(ratelimit(key='ip', rate='5/m', method='POST'), name='dispatch')
+@method_decorator(ratelimit(key='post:email', rate='10/h', method='POST'), name='dispatch')
+class RateLimitedLoginView(TokenObtainPairView):
+    """
+    Login view with rate limiting:
+    - 5 attempts per minute per IP
+    - 10 attempts per hour per email
+    """
+    
+    @extend_schema(
+        description='Obtain JWT token pair with rate limiting',
+        tags=['Authentication'],
+        responses={
+            200: OpenApiResponse(
+                response={
+                    'type': 'object',
+                    'properties': {
+                        'access': {'type': 'string'},
+                        'refresh': {'type': 'string'}
+                    }
+                }
+            ),
+            429: OpenApiResponse(
+                response={'type': 'object', 'properties': {'detail': {'type': 'string'}}},
+                description='Rate limit exceeded'
+            ),
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+@extend_schema(
+    parameters=[
+        OpenApiParameter(
+            name='token',
+            description='Email verification token',
+            required=True,
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+        )
+    ],
+    responses={
+        200: OpenApiResponse(
+            response={'type': 'object', 'properties': {
+                'success': {'type': 'boolean'},
+                'message': {'type': 'string'}
+            }},
+            description='Email verified successfully'
+        ),
+        400: OpenApiResponse(
+            response={'type': 'object', 'properties': {'error': {'type': 'string'}}},
+            description='Invalid or expired token'
+        ),
+    },
+    description='Verify email address with token',
+    tags=['Authentication']
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def verify_email(request):
+    """Verify email with token"""
+    token = request.query_params.get('token') or request.data.get('token')
+    
+    if not token:
+        return Response(
+            {'error': 'Token is required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    try:
+        verification_token = EmailVerificationToken.objects.get(token=token)
+        
+        if not verification_token.is_valid():
+            return Response(
+                {'error': 'Token is invalid or expired'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Mark user as verified
+        user = verification_token.user
+        user.verified_at = timezone.now()
+        user.save()
+        
+        # Mark token as used
+        verification_token.used_at = timezone.now()
+        verification_token.save()
+        
+        logger.info(f"Email verified for user {user.email}")
+        
+        return Response({
+            'success': True,
+            'message': 'Email verified successfully. You can now login.'
+        })
+        
+    except EmailVerificationToken.DoesNotExist:
+        return Response(
+            {'error': 'Invalid token'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+@extend_schema(
+    request={
+        'type': 'object',
+        'properties': {
+            'email': {'type': 'string', 'format': 'email', 'description': 'Email address to resend verification to'}
+        },
+        'required': ['email']
+    },
+    responses={
+        200: OpenApiResponse(
+            response={'type': 'object', 'properties': {
+                'success': {'type': 'boolean'},
+                'message': {'type': 'string'}
+            }},
+            description='Verification email resent'
+        ),
+        400: OpenApiResponse(
+            response={'type': 'object', 'properties': {'error': {'type': 'string'}}},
+            description='Invalid email or already verified'
+        ),
+    },
+    description='Resend email verification link',
+    tags=['Authentication']
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+@ratelimit(key='ip', rate='3/h', method='POST')
+@ratelimit(key='post:email', rate='3/d', method='POST')
+def resend_verification_email(request):
+    """Resend email verification link"""
+    email = request.data.get('email', '').lower()
+    
+    if not email:
+        return Response(
+            {'error': 'Email is required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    try:
+        user = User.objects.get(email=email)
+        
+        # Check if already verified
+        if user.verified_at:
+            return Response(
+                {'error': 'Email is already verified'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Invalidate old tokens
+        EmailVerificationToken.objects.filter(
+            user=user,
+            used_at__isnull=True
+        ).update(used_at=timezone.now())
+        
+        # Create new token
+        verification_token = EmailVerificationToken.create_for_user(user)
+        
+        # Send email
+        RegisterView().send_verification_email(user, verification_token)
+        
+        logger.info(f"Verification email resent to {email}")
+        
+        return Response({
+            'success': True,
+            'message': 'Verification email has been resent. Please check your inbox.'
+        })
+        
+    except User.DoesNotExist:
+        # Don't reveal if user exists
+        return Response({
+            'success': True,
+            'message': 'If the email exists and is unverified, a verification email has been sent.'
+        })

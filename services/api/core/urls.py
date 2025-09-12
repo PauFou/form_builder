@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
 from .views import OrganizationViewSet, SubmissionViewSet, download_file
-from .auth_views import RegisterView, check_email, current_user, logout_view, password_reset_request, password_reset_confirm
+from .auth_views import RegisterView, check_email, current_user, logout_view, password_reset_request, password_reset_confirm, RateLimitedLoginView, verify_email, resend_verification_email
 
 router = DefaultRouter()
 router.register(r"orgs", OrganizationViewSet, basename="organization")
@@ -13,12 +13,14 @@ submissions_router.register(r"submissions", SubmissionViewSet, basename="submiss
 
 urlpatterns = [
     # Auth endpoints
-    path("auth/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("auth/login/", RateLimitedLoginView.as_view(), name="token_obtain_pair"),
     path("auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("auth/signup/", RegisterView.as_view(), name="register"),
     path("auth/logout/", logout_view, name="logout"),
     path("auth/check-email/", check_email, name="check-email"),
     path("auth/me/", current_user, name="current-user"),
+    path("auth/verify-email/", verify_email, name="verify-email"),
+    path("auth/resend-verification/", resend_verification_email, name="resend-verification"),
     path("auth/password-reset/request/", password_reset_request, name="password-reset-request"),
     path("auth/password-reset/confirm/", password_reset_confirm, name="password-reset-confirm"),
     
