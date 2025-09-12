@@ -296,14 +296,87 @@ POST   /v1/webhook-deliveries/:id/redrive
 4. **Minimal PRs**; observable impact; update this CLAUDE.md if architecture changes
 5. **Performance budgets** are gates; reject diffs that exceed runtime bundle size
 6. **Accessibility is non‑negotiable**: block merges if WCAG AA checks fail
-7. **MANDATORY CI CHECKS - CLAUDE MUST RUN THESE**:
-   - **CRITICAL**: Claude (that's me) MUST run `bash scripts/exact-ci-check.sh` before EVERY push
-   - This script reproduces 100% of the GitHub Actions CI workflow locally
-   - It includes ALL 9 CI jobs: quality, frontend tests, backend tests, E2E, performance, accessibility, security, contracts, docker
-   - The script MUST pass completely (exit code 0) before ANY code is pushed
-   - If the script fails, I MUST fix ALL issues before pushing
-   - NO EXCEPTIONS - the script ensures GitHub Actions CI will pass
-   - For major changes, I must also run it AFTER modifications to ensure nothing broke
+
+## 🚨 MANDATORY CI/CD SYNCHRONIZATION (CRITICAL FOR CLAUDE)
+
+### Two-Stage Validation Process
+
+Claude MUST follow this exact process before EVERY push:
+
+#### Stage 1: Quick Development Check
+
+```bash
+bash scripts/ci-check-fixed.sh  # Fast local validation
+```
+
+#### Stage 2: EXACT GitHub Actions Reproduction (REQUIRED)
+
+```bash
+bash scripts/github-actions-exact.sh  # MUST PASS before push
+```
+
+### Why This Matters
+
+**PROBLEM**: Local tests can pass while GitHub Actions fail due to:
+
+- Different command syntax (e.g., `pnpm test` vs `pnpm test:ci`)
+- Environment differences (macOS vs Ubuntu)
+- Missing dependencies or services
+- Different Node/Python versions
+- Subtle timing issues
+
+**SOLUTION**: The `github-actions-exact.sh` script runs EXACTLY what GitHub Actions runs, in the same order, with the same commands.
+
+### Claude's Intelligent CI/CD Approach
+
+Claude must be SMART about CI/CD:
+
+1. **Understand the Root Cause**: When tests fail, analyze WHY:
+   - Is it an environment issue?
+   - Is it a real code problem?
+   - Is it a flaky test?
+
+2. **Adapt and Fix**: Don't just try to make tests pass locally. Fix the ACTUAL issue:
+   - If React warnings: Fix the code, don't suppress
+   - If bundle size: Optimize imports, don't increase limits
+   - If type errors: Add proper types, don't use `any`
+
+3. **Evolution**: Claude can and SHOULD:
+   - Update test scripts when they become outdated
+   - Improve CI efficiency while maintaining accuracy
+   - Add new validations as the project grows
+   - Fix flaky tests permanently
+
+### Common CI/CD Discrepancies and Solutions
+
+| Local Pass / CI Fail | Root Cause                       | Solution                        |
+| -------------------- | -------------------------------- | ------------------------------- |
+| Frontend tests       | `pnpm test` vs `pnpm test:ci`    | Always use `pnpm test:ci`       |
+| Bundle size          | Missing analytics check          | Run full `check-bundle-size.js` |
+| React warnings       | act() not wrapping async updates | Properly wrap with act()        |
+| Type errors          | Different TypeScript config      | Use strict mode everywhere      |
+| Backend tests        | SQLite vs PostgreSQL             | Use PostgreSQL locally          |
+
+### Pre-Push Checklist
+
+Before EVERY push, Claude MUST:
+
+1. ✅ Run `pnpm lint` - ZERO errors allowed
+2. ✅ Run `pnpm typecheck` - ZERO errors allowed
+3. ✅ Run `pnpm test:ci` - ALL tests must pass
+4. ✅ Run `bash scripts/github-actions-exact.sh` - MUST exit 0
+5. ✅ Verify no `any` types added
+6. ✅ Verify no ESLint disables added
+7. ✅ Verify bundle size < 30KB
+
+### Smart CI Maintenance
+
+Claude should proactively:
+
+- Keep CI scripts synchronized with `.github/workflows/ci.yml`
+- Update scripts when GitHub Actions workflow changes
+- Document any new environment requirements
+- Fix root causes, not symptoms
 
 ---
 

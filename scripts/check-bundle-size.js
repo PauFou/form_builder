@@ -42,7 +42,8 @@ if (fs.existsSync(runtimePath)) {
     console.log(output);
 
     // Parse size-limit output to check if it passed
-    if (output.includes("Size limit:") && !output.includes("✔")) {
+    // Look for actual failures, not just absence of checkmark
+    if (output.includes("Size limit exceeded") || output.includes("failed")) {
       hasErrors = true;
     }
   } catch (error) {
@@ -51,30 +52,66 @@ if (fs.existsSync(runtimePath)) {
   }
 }
 
-// Check analytics package if it exists
-const analyticsPath = path.join(__dirname, "../packages/analytics/dist");
+// Check analytics package
+const analyticsPath = path.join(__dirname, "../packages/analytics");
 if (fs.existsSync(analyticsPath)) {
   console.log("\n📦 Checking @forms/analytics bundle sizes...");
 
-  for (const [file, budget] of Object.entries(BUDGETS["@forms/analytics"])) {
-    const filePath = path.join(analyticsPath, file);
+  // First check if dist exists, if not try to build
+  const distPath = path.join(analyticsPath, "dist");
+  if (!fs.existsSync(distPath)) {
+    console.log("  Building @forms/analytics package...");
+    const { execSync } = require("child_process");
 
-    if (fs.existsSync(filePath)) {
-      const stats = fs.statSync(filePath);
-      const size = stats.size;
-
-      // Note: This is uncompressed size. In real CI, we'd use gzip size
-      console.log(
-        `  ${file}: ${(size / 1024).toFixed(2)}KB (budget: ${(budget / 1024).toFixed(0)}KB)`
-      );
-
-      // For now, just warn since we're checking uncompressed size
-      if (size > budget * 3) {
-        // Rough estimate: gzip usually reduces by ~70%
-        console.log(`  ⚠️  Warning: ${file} might exceed budget when gzipped`);
-      }
+    try {
+      execSync("pnpm --filter @forms/analytics build", {
+        cwd: path.join(__dirname, ".."),
+        encoding: "utf8",
+        stdio: "inherit",
+      });
+    } catch (error) {
+      console.error("  ❌ Failed to build analytics package");
+      hasErrors = true;
     }
   }
+
+  // Now check the bundle sizes
+  if (fs.existsSync(distPath)) {
+    for (const [file, budget] of Object.entries(BUDGETS["@forms/analytics"])) {
+      // file already contains "dist/" prefix from BUDGETS config
+      const filePath = path.join(analyticsPath, file);
+
+      if (fs.existsSync(filePath)) {
+        const stats = fs.statSync(filePath);
+        const size = stats.size;
+
+        // Note: This is uncompressed size. In real CI, we'd use gzip size
+        console.log(
+          `  ${file}: ${(size / 1024).toFixed(2)}KB uncompressed (budget: ${(budget / 1024).toFixed(0)}KB gzipped)`
+        );
+
+        // For now, pass if uncompressed is less than budget * 3
+        // Rough estimate: gzip usually reduces by ~70%
+        if (size > budget * 3) {
+          console.log(
+            `  ❌ ${file} exceeds budget (estimated gzipped: ${((size * 0.3) / 1024).toFixed(2)}KB)`
+          );
+          hasErrors = true;
+        } else {
+          console.log(`  ✓ Within budget`);
+        }
+      } else {
+        console.error(`  ❌ File not found: ${file}`);
+        console.error(`    Looking in: ${filePath}`);
+        hasErrors = true;
+      }
+    }
+  } else {
+    console.error("  ❌ Analytics package dist folder not found even after build attempt");
+    hasErrors = true;
+  }
+} else {
+  console.log("\n⚠️  Analytics package not found");
 }
 
 console.log(

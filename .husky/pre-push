@@ -1,0 +1,61 @@
+#!/usr/bin/env sh
+
+# Pre-push hook that ensures CI will pass on GitHub Actions
+
+echo "🔍 Running pre-push validation..."
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# Quick checks first
+echo "→ Running lint..."
+if ! pnpm lint > /dev/null 2>&1; then
+    echo -e "${RED}❌ Lint failed! Fix errors before pushing.${NC}"
+    echo "Run: pnpm lint"
+    exit 1
+fi
+
+echo "→ Running typecheck..."
+if ! pnpm typecheck > /dev/null 2>&1; then
+    echo -e "${RED}❌ TypeScript errors! Fix before pushing.${NC}"
+    echo "Run: pnpm typecheck"
+    exit 1
+fi
+
+# Check if exact CI script exists
+if [ -f "scripts/github-actions-exact.sh" ]; then
+    echo ""
+    echo -e "${YELLOW}⚠️  Running EXACT GitHub Actions validation...${NC}"
+    echo "This ensures GitHub Actions will pass"
+    echo ""
+    
+    # Run the exact CI reproduction
+    if bash scripts/github-actions-exact.sh; then
+        echo -e "${GREEN}✅ All CI checks passed! Safe to push.${NC}"
+        exit 0
+    else
+        echo ""
+        echo -e "${RED}❌ CI validation failed!${NC}"
+        echo -e "${RED}GitHub Actions will FAIL if you push now.${NC}"
+        echo ""
+        echo "Fix the issues above and try again."
+        echo "For quick fixes, you can also run:"
+        echo "  bash scripts/ci-check-fixed.sh"
+        exit 1
+    fi
+else
+    echo -e "${YELLOW}⚠️  Exact CI script not found${NC}"
+    echo "Running basic validation only..."
+    
+    # At least run tests
+    if pnpm test:ci; then
+        echo -e "${YELLOW}⚠️  Basic tests passed, but full CI validation skipped${NC}"
+        exit 0
+    else
+        echo -e "${RED}❌ Tests failed!${NC}"
+        exit 1
+    fi
+fi
