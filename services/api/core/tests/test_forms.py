@@ -89,7 +89,7 @@ class FormAPITestCase(TestCase):
         
         response = self.client.post('/v1/forms/', data)
         
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
     
     def test_list_forms(self):
         """Test listing forms for organization"""

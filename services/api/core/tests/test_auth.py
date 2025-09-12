@@ -23,7 +23,7 @@ class AuthenticationTestCase(TestCase):
             'organization_name': 'Test Organization'
         }
         
-        response = self.client.post('/v1/auth/register/', data)
+        response = self.client.post('/v1/auth/signup/', data)
         
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn('tokens', response.data)
