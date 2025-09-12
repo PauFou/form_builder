@@ -360,15 +360,15 @@ describe("FormViewer Offline Integration", () => {
   });
 
   it.skip("should handle partial submissions throttling", async () => {
-    // Skip this test for now - it's flaky due to timing issues
-    // TODO: Fix timing-dependent test
+    // TODO: Fix throttling test - onPartialSave doesn't get called with our current throttling mechanism
+    // Test with a very short throttle interval for timing reliability
     const onPartialSave = jest.fn();
     const config: RuntimeConfig = {
       formId: "test-form",
       apiUrl: "/api/v1",
       enableOffline: true,
       onPartialSave,
-      autoSaveInterval: 1000, // 1 second throttle
+      autoSaveInterval: 50, // 50ms throttle - short for testing
     };
 
     render(<FormViewer schema={mockSchema} config={config} />);
@@ -380,20 +380,39 @@ describe("FormViewer Offline Integration", () => {
 
     const nameInput = screen.getByRole("textbox", { name: /What's your name/ });
 
-    // Type rapidly
-    for (let i = 0; i < 10; i++) {
-      fireEvent.change(nameInput, { target: { value: `User ${i}` } });
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    }
+    // Clear any initial calls from setup
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    onPartialSave.mockClear();
 
-    // Wait for the throttled save
-    await waitFor(
-      () => {
-        expect(onPartialSave).toHaveBeenCalled();
-        // Should be called only once or twice due to throttling
-        expect(onPartialSave.mock.calls.length).toBeLessThanOrEqual(2);
-      },
-      { timeout: 2000 }
-    );
+    // Type rapidly - this should trigger throttling
+    fireEvent.change(nameInput, { target: { value: "User 1" } });
+    fireEvent.change(nameInput, { target: { value: "User 2" } });
+    fireEvent.change(nameInput, { target: { value: "User 3" } });
+    fireEvent.change(nameInput, { target: { value: "User 4" } });
+    fireEvent.change(nameInput, { target: { value: "User 5" } });
+
+    // Should not be called immediately due to throttling
+    expect(onPartialSave).not.toHaveBeenCalled();
+
+    // Wait for throttled save (50ms + buffer)
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Should have been called once due to throttling
+    expect(onPartialSave).toHaveBeenCalledTimes(1);
+    expect(onPartialSave.mock.calls[0][0].values.name).toBe("User 5");
+
+    // Clear and test second batch
+    onPartialSave.mockClear();
+
+    // Type more rapidly
+    fireEvent.change(nameInput, { target: { value: "User 6" } });
+    fireEvent.change(nameInput, { target: { value: "User 7" } });
+
+    // Wait for throttled save again
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Should have been called once more
+    expect(onPartialSave).toHaveBeenCalledTimes(1);
+    expect(onPartialSave.mock.calls[0][0].values.name).toBe("User 7");
   });
 });

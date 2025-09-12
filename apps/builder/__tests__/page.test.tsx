@@ -80,7 +80,10 @@ describe("BuilderPage", () => {
   it("should display form title", () => {
     render(<BuilderPage />);
 
-    expect(screen.getByText("Test Form")).toBeInTheDocument();
+    // The form title appears in the h1 element
+    const formTitle = screen.getAllByText("Test Form")[0];
+    expect(formTitle).toBeInTheDocument();
+    expect(formTitle.tagName).toBe("H1");
   });
 
   it("should show publish button", () => {

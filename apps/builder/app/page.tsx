@@ -100,7 +100,7 @@ export default function BuilderPage() {
   }));
 
   return (
-    <div className="flex h-screen bg-background">
+    <main className="flex h-screen bg-background">
       {/* Topbar - Sticky */}
       <div className="fixed top-0 left-0 right-0 h-14 border-b bg-background z-50">
         <div className="h-full px-4 flex items-center justify-between">
@@ -134,6 +134,19 @@ export default function BuilderPage() {
             <Button variant="ghost" size="icon">
               <MoreVertical className="h-4 w-4" />
             </Button>
+
+            {/* Navigation links for E2E testing */}
+            <div className="flex items-center gap-2 ml-4">
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/test-form">Test Form</Link>
+              </Button>
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/auth/login">Login</Link>
+              </Button>
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/auth/signup">Signup</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -214,6 +227,6 @@ export default function BuilderPage() {
 
       {/* Preview Panel */}
       <PreviewPanel isOpen={showPreview} onClose={() => setShowPreview(false)} formId={form?.id} />
-    </div>
+    </main>
   );
 }

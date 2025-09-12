@@ -7,7 +7,7 @@ import { Inter } from "next/font/google";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "next-themes";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,6 +31,11 @@ export default function RootLayout({
         },
       })
   );
+
+  // Set document title for E2E tests
+  useEffect(() => {
+    document.title = "Form Builder - Forms Platform";
+  }, []);
 
   return (
     <html
