@@ -1,84 +1,105 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
+import { antiSpamService } from "../services/anti-spam-service";
 
 interface AntiSpamOptions {
   honeypotField?: string;
   minCompletionTime?: number; // milliseconds
   enabled?: boolean;
+  formId?: string;
+  skipRateLimit?: boolean;
 }
 
 export function useAntiSpam(options: AntiSpamOptions = {}) {
   const {
-    honeypotField = "website_url",
+    honeypotField = "_website_url",
     minCompletionTime = 3000, // 3 seconds minimum
     enabled = true,
+    formId,
+    skipRateLimit = false,
   } = options;
 
-  const startTimeRef = useRef<number>(Date.now());
-  const honeypotRef = useRef<string>("");
+  const sessionIdRef = useRef<string>(`session_${Date.now()}_${Math.random()}`);
+  const honeypotFieldRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!enabled) return;
 
-    // Reset start time on mount
-    startTimeRef.current = Date.now();
+    const sessionId = sessionIdRef.current;
 
-    // Create hidden honeypot field
-    const createHoneypot = () => {
-      const input = document.createElement("input");
-      input.type = "text";
-      input.name = honeypotField;
-      input.tabIndex = -1;
-      input.style.position = "absolute";
-      input.style.left = "-9999px";
-      input.style.top = "-9999px";
-      input.setAttribute("aria-hidden", "true");
-      input.setAttribute("autocomplete", "off");
+    // Initialize session in anti-spam service
+    antiSpamService.initializeFormSession(sessionId);
 
-      // Monitor honeypot
-      input.addEventListener("change", (e) => {
-        honeypotRef.current = (e.target as HTMLInputElement).value;
+    // Update config if custom values provided
+    if (honeypotField !== "_website_url" || minCompletionTime !== 3000) {
+      antiSpamService.updateConfig({
+        honeypot: {
+          enabled: true,
+          fieldName: honeypotField,
+        },
+        timeTrap: {
+          enabled: true,
+          minCompletionTimeMs: minCompletionTime,
+        },
       });
-
-      return input;
-    };
+    }
 
     // Add honeypot to first form found
     const timer = setTimeout(() => {
       const form = document.querySelector(".fr-form");
-      if (form) {
-        const honeypot = createHoneypot();
-        form.appendChild(honeypot);
+      if (form && !form.querySelector(`#${honeypotField}`)) {
+        const honeypotInput = antiSpamService.createHoneypotField();
+        honeypotFieldRef.current = honeypotInput;
+
+        // Monitor honeypot value changes
+        honeypotInput.addEventListener("input", (e) => {
+          const value = (e.target as HTMLInputElement).value;
+          antiSpamService.updateHoneypotValue(sessionId, value);
+        });
+
+        form.appendChild(honeypotInput);
       }
     }, 100);
 
-    return () => clearTimeout(timer);
-  }, [enabled, honeypotField]);
+    return () => {
+      clearTimeout(timer);
+      // Clean up session on unmount
+      antiSpamService.clearSession(sessionId);
 
-  const validateAntiSpam = (): { isValid: boolean; reason?: string } => {
-    if (!enabled) return { isValid: true };
+      // Remove honeypot field
+      if (honeypotFieldRef.current) {
+        honeypotFieldRef.current.remove();
+      }
+    };
+  }, [enabled, honeypotField, minCompletionTime]);
 
-    // Check honeypot
-    if (honeypotRef.current) {
-      return {
-        isValid: false,
-        reason: "honeypot_filled",
-      };
-    }
+  const validateAntiSpam = useCallback(
+    async (options?: {
+      ip?: string;
+    }): Promise<{ isValid: boolean; reason?: string; details?: any }> => {
+      if (!enabled) return { isValid: true };
 
-    // Check time trap
-    const completionTime = Date.now() - startTimeRef.current;
-    if (completionTime < minCompletionTime) {
-      return {
-        isValid: false,
-        reason: "too_fast",
-      };
-    }
+      return await antiSpamService.validate(sessionIdRef.current, {
+        ip: options?.ip,
+        formId,
+        skipRateLimit,
+      });
+    },
+    [enabled, formId, skipRateLimit]
+  );
 
-    return { isValid: true };
-  };
+  const getCompletionTime = useCallback((): number => {
+    const startTime = (antiSpamService as any).startTimes?.get(sessionIdRef.current);
+    return startTime ? Date.now() - startTime : 0;
+  }, []);
+
+  const getStatistics = useCallback(() => {
+    return antiSpamService.getStatistics();
+  }, []);
 
   return {
     validateAntiSpam,
-    getCompletionTime: () => Date.now() - startTimeRef.current,
+    getCompletionTime,
+    getStatistics,
+    sessionId: sessionIdRef.current,
   };
 }
