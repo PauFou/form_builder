@@ -71,9 +71,17 @@ describe("FormEditPage", () => {
     isDirty: false,
     undo: jest.fn(),
     redo: jest.fn(),
+    canUndo: jest.fn(() => false),
+    canRedo: jest.fn(() => false),
     history: [],
     historyIndex: 0,
     markClean: jest.fn(),
+    selectedBlockId: null,
+    selectBlock: jest.fn(),
+    duplicateBlock: jest.fn(),
+    deleteBlock: jest.fn(),
+    addLogicRule: jest.fn(),
+    validationErrors: [],
   };
 
   const mockForm = {

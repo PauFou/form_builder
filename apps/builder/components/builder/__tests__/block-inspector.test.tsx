@@ -108,6 +108,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="non-existent" />);
@@ -119,6 +121,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -141,6 +145,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -158,6 +164,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -175,6 +183,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -192,6 +202,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -208,6 +220,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-2" />);
@@ -223,6 +237,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-2" />);
@@ -243,6 +259,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-2" />);
@@ -267,6 +285,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-3" />);
@@ -280,6 +300,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -299,6 +321,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -317,6 +341,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -333,6 +359,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -353,6 +381,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -370,6 +400,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -400,6 +432,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -423,6 +457,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: formWithBlock,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-no-key" />);
@@ -451,6 +487,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: multiPageForm,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     // Should find block on page 2
@@ -463,6 +501,8 @@ describe("BlockInspector", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: null,
       updateBlock: mockUpdateBlock,
+      validationErrors: [],
+      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
     });
 
     render(<BlockInspector blockId="block-1" />);

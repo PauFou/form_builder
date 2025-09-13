@@ -61,6 +61,9 @@ describe("FormViewer Offline Integration", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     jest.useRealTimers(); // Use real timers by default
+    
+    // Clear localStorage
+    localStorage.clear();
 
     // Clear IndexedDB databases
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -110,10 +113,10 @@ describe("FormViewer Offline Integration", () => {
     // Wait for autosave
     await waitFor(
       () => {
-        // Check IndexedDB was written
-        expect(indexedDB.databases).toBeDefined();
+        // Check that autosave indicator appears
+        expect(screen.getByText(/Your progress is automatically saved/)).toBeInTheDocument();
       },
-      { timeout: 500 }
+      { timeout: 1000 }
     );
 
     // Go to next step

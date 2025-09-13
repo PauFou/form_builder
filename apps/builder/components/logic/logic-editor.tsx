@@ -19,6 +19,7 @@ import {
   AlertCircle,
   PlayCircle,
   Copy,
+  AlertTriangle,
 } from "lucide-react";
 import { useFormBuilderStore } from "@/lib/stores/form-builder-store";
 import { useFormBlocks } from "@/lib/hooks/use-form-blocks";
@@ -27,9 +28,10 @@ import { RuleBuilder } from "./rule-builder";
 import { LogicGraph } from "./logic-graph";
 import { FullScreenLogicGraph } from "./full-screen-logic-graph";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 export function LogicEditor() {
-  const { form, updateForm, addLogicRule, updateLogicRule, deleteLogicRule } =
+  const { form, updateForm, addLogicRule, updateLogicRule, deleteLogicRule, validateFormData, validationErrors } =
     useFormBuilderStore();
   const blocks = useFormBlocks();
   const [selectedRule, setSelectedRule] = useState<string | null>(null);
@@ -37,8 +39,16 @@ export function LogicEditor() {
   const [editingRule, setEditingRule] = useState<LogicRule | null>(null);
   const [activeView, setActiveView] = useState<"list" | "graph">("list");
   const [showFullScreenGraph, setShowFullScreenGraph] = useState(false);
+  
+  // Check for logic cycles whenever rules change
+  useEffect(() => {
+    if (form?.logic?.rules && form.logic.rules.length > 0) {
+      validateFormData();
+    }
+  }, [form?.logic?.rules, validateFormData]);
 
   const logic = form?.logic?.rules || [];
+  const logicCycles = validationErrors?.filter(e => e.type === "logic_cycle") || [];
 
   const handleAddRule = () => {
     setEditingRule(null);
@@ -130,6 +140,23 @@ export function LogicEditor() {
           </Button>
         </div>
       </div>
+
+      {logicCycles.length > 0 && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Logic cycles detected!</strong> Your logic rules contain circular references that could create infinite loops:
+            <ul className="mt-2 space-y-1">
+              {logicCycles.map((error, index) => (
+                <li key={index} className="text-sm">
+                  • {error.message}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2 text-sm">Please review and fix these cycles before publishing.</p>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {logic.length === 0 ? (
         <Card>

@@ -34,6 +34,7 @@ import { formsApi } from "../../lib/api/forms";
 import type { FormVersion } from "@forms/contracts";
 import { cn } from "../../lib/utils";
 import { toast } from "react-hot-toast";
+import { ValidationErrorsDialog } from "./validation-errors-dialog";
 
 interface PublishDialogProps {
   isOpen: boolean;
@@ -48,7 +49,7 @@ interface ValidationIssue {
 }
 
 export function PublishDialog({ isOpen, onClose, formId }: PublishDialogProps) {
-  const { form } = useFormBuilderStore();
+  const { form, validateFormData, validationErrors } = useFormBuilderStore();
   const [isPublishing, setIsPublishing] = useState(false);
   const [canaryPercent, setCanaryPercent] = useState(5);
   const [enableCanary, setEnableCanary] = useState(false);
@@ -56,6 +57,7 @@ export function PublishDialog({ isOpen, onClose, formId }: PublishDialogProps) {
   const [versions, setVersions] = useState<FormVersion[]>([]);
   const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>([]);
   const [isValidating, setIsValidating] = useState(false);
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
 
   // Form validation function
   const validateForm = useCallback(async () => {
@@ -64,7 +66,20 @@ export function PublishDialog({ isOpen, onClose, formId }: PublishDialogProps) {
     setIsValidating(true);
     const issues: ValidationIssue[] = [];
 
-    // Validation logic based on brief requirements
+    // Use our validation system
+    const formErrors = validateFormData();
+    
+    // Convert our validation errors to the dialog format
+    formErrors.forEach((error) => {
+      issues.push({
+        type: "error",
+        message: error.message,
+        location: error.type === "duplicate_key" ? "Field Keys" : 
+                  error.type === "logic_cycle" ? "Logic Rules" : "Form Structure",
+      });
+    });
+
+    // Additional validation logic based on brief requirements
     try {
       // Check for required fields
       if (!form.title?.trim()) {
@@ -166,7 +181,7 @@ export function PublishDialog({ isOpen, onClose, formId }: PublishDialogProps) {
     } finally {
       setIsValidating(false);
     }
-  }, [form]);
+  }, [form, validateFormData]);
 
   // Load form versions on open
   useEffect(() => {
@@ -188,9 +203,12 @@ export function PublishDialog({ isOpen, onClose, formId }: PublishDialogProps) {
   const handlePublish = async () => {
     if (!form) return;
 
+    // Run validation again to ensure we have latest errors
+    const formErrors = validateFormData();
     const errors = validationIssues.filter((issue) => issue.type === "error");
-    if (errors.length > 0) {
-      toast.error("Please fix all errors before publishing");
+    
+    if (formErrors.length > 0 || errors.length > 0) {
+      setShowValidationErrors(true);
       return;
     }
 
@@ -438,6 +456,16 @@ export function PublishDialog({ isOpen, onClose, formId }: PublishDialogProps) {
           </Button>
         </DialogFooter>
       </DialogContent>
+      
+      <ValidationErrorsDialog
+        open={showValidationErrors}
+        onOpenChange={setShowValidationErrors}
+        errors={validationErrors}
+        onFix={() => {
+          setShowValidationErrors(false);
+          onClose();
+        }}
+      />
     </Dialog>
   );
 }

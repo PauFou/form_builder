@@ -9,7 +9,23 @@ describe("useKeyboardShortcuts", () => {
   const mockUndo = jest.fn();
   const mockRedo = jest.fn();
   const mockDeleteBlock = jest.fn();
-  const mockForm = { id: "test-form", title: "Test", pages: [] };
+  const mockDuplicateBlock = jest.fn();
+  const mockMoveBlock = jest.fn();
+  const mockForm = { 
+    id: "test-form", 
+    title: "Test", 
+    pages: [
+      {
+        id: "page-1",
+        title: "Page 1",
+        blocks: [
+          { id: "block-1", type: "short_text", question: "Question 1" },
+          { id: "block-2", type: "short_text", question: "Question 2" },
+          { id: "block-3", type: "short_text", question: "Question 3" }
+        ]
+      }
+    ] 
+  };
 
   let addEventListenerSpy: jest.SpyInstance;
   let removeEventListenerSpy: jest.SpyInstance;
@@ -24,7 +40,10 @@ describe("useKeyboardShortcuts", () => {
       redo: mockRedo,
       form: mockForm,
       selectedBlockId: null,
+      selectedPageId: "page-1",
       deleteBlock: mockDeleteBlock,
+      duplicateBlock: mockDuplicateBlock,
+      moveBlock: mockMoveBlock,
     });
 
     addEventListenerSpy = jest.spyOn(window, "addEventListener");
@@ -106,6 +125,65 @@ describe("useKeyboardShortcuts", () => {
       });
     });
 
+    describe("duplicate block", () => {
+      it("duplicates selected block on Cmd+D", () => {
+        // Update the mock to include selectedBlockId
+        (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
+          undo: mockUndo,
+          redo: mockRedo,
+          form: mockForm,
+          selectedBlockId: "block-2",
+          selectedPageId: "page-1",
+          deleteBlock: mockDeleteBlock,
+          duplicateBlock: mockDuplicateBlock,
+          moveBlock: mockMoveBlock,
+        });
+
+        // Re-render the hook to pick up the new state
+        renderHook(() => useKeyboardShortcuts());
+        handleKeyDown =
+          addEventListenerSpy.mock.calls[addEventListenerSpy.mock.calls.length - 1][1];
+
+        const event = createKeyboardEvent("d", { metaKey: true });
+        handleKeyDown(event);
+
+        expect(event.preventDefault).toHaveBeenCalled();
+        expect(mockDuplicateBlock).toHaveBeenCalledWith("block-2");
+      });
+
+      it("duplicates selected block on Ctrl+D", () => {
+        // Update the mock to include selectedBlockId
+        (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
+          undo: mockUndo,
+          redo: mockRedo,
+          form: mockForm,
+          selectedBlockId: "block-2",
+          selectedPageId: "page-1",
+          deleteBlock: mockDeleteBlock,
+          duplicateBlock: mockDuplicateBlock,
+          moveBlock: mockMoveBlock,
+        });
+
+        // Re-render the hook to pick up the new state
+        renderHook(() => useKeyboardShortcuts());
+        handleKeyDown =
+          addEventListenerSpy.mock.calls[addEventListenerSpy.mock.calls.length - 1][1];
+
+        const event = createKeyboardEvent("d", { ctrlKey: true });
+        handleKeyDown(event);
+
+        expect(event.preventDefault).toHaveBeenCalled();
+        expect(mockDuplicateBlock).toHaveBeenCalledWith("block-2");
+      });
+
+      it("does not duplicate when no block is selected", () => {
+        const event = createKeyboardEvent("d", { metaKey: true });
+        handleKeyDown(event);
+
+        expect(mockDuplicateBlock).not.toHaveBeenCalled();
+      });
+    });
+
     describe("delete block", () => {
       it("deletes selected block on Delete key", () => {
         // Update the mock to include selectedBlockId
@@ -114,7 +192,10 @@ describe("useKeyboardShortcuts", () => {
           redo: mockRedo,
           form: mockForm,
           selectedBlockId: "block-123",
+          selectedPageId: "page-1",
           deleteBlock: mockDeleteBlock,
+          duplicateBlock: mockDuplicateBlock,
+          moveBlock: mockMoveBlock,
         });
 
         // Re-render the hook to pick up the new state
@@ -140,7 +221,10 @@ describe("useKeyboardShortcuts", () => {
           redo: mockRedo,
           form: mockForm,
           selectedBlockId: "block-123",
+          selectedPageId: "page-1",
           deleteBlock: mockDeleteBlock,
+          duplicateBlock: mockDuplicateBlock,
+          moveBlock: mockMoveBlock,
         });
 
         // Re-render the hook to pick up the new state
@@ -189,7 +273,10 @@ describe("useKeyboardShortcuts", () => {
           redo: mockRedo,
           form: mockForm,
           selectedBlockId: null,
+          selectedPageId: "page-1",
           deleteBlock: mockDeleteBlock,
+          duplicateBlock: mockDuplicateBlock,
+          moveBlock: mockMoveBlock,
         });
 
         const event = createKeyboardEvent("Delete");
@@ -200,6 +287,193 @@ describe("useKeyboardShortcuts", () => {
         handleKeyDown(event);
 
         expect(mockDeleteBlock).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("reorder blocks", () => {
+      it("moves block up on ArrowUp key", () => {
+        // Update the mock to include selectedBlockId
+        (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
+          undo: mockUndo,
+          redo: mockRedo,
+          form: mockForm,
+          selectedBlockId: "block-2",
+          selectedPageId: "page-1",
+          deleteBlock: mockDeleteBlock,
+          duplicateBlock: mockDuplicateBlock,
+          moveBlock: mockMoveBlock,
+        });
+
+        // Re-render the hook to pick up the new state
+        renderHook(() => useKeyboardShortcuts());
+        handleKeyDown =
+          addEventListenerSpy.mock.calls[addEventListenerSpy.mock.calls.length - 1][1];
+
+        const event = createKeyboardEvent("ArrowUp");
+        Object.defineProperty(event, "target", {
+          value: { tagName: "DIV" },
+          writable: true,
+        });
+        handleKeyDown(event);
+
+        expect(event.preventDefault).toHaveBeenCalled();
+        expect(mockMoveBlock).toHaveBeenCalledWith("block-2", "page-1", 0);
+      });
+
+      it("moves block down on ArrowDown key", () => {
+        // Update the mock to include selectedBlockId
+        (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
+          undo: mockUndo,
+          redo: mockRedo,
+          form: mockForm,
+          selectedBlockId: "block-2",
+          selectedPageId: "page-1",
+          deleteBlock: mockDeleteBlock,
+          duplicateBlock: mockDuplicateBlock,
+          moveBlock: mockMoveBlock,
+        });
+
+        // Re-render the hook to pick up the new state
+        renderHook(() => useKeyboardShortcuts());
+        handleKeyDown =
+          addEventListenerSpy.mock.calls[addEventListenerSpy.mock.calls.length - 1][1];
+
+        const event = createKeyboardEvent("ArrowDown");
+        Object.defineProperty(event, "target", {
+          value: { tagName: "DIV" },
+          writable: true,
+        });
+        handleKeyDown(event);
+
+        expect(event.preventDefault).toHaveBeenCalled();
+        expect(mockMoveBlock).toHaveBeenCalledWith("block-2", "page-1", 2);
+      });
+
+      it("does not move first block up", () => {
+        // Update the mock to include selectedBlockId
+        (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
+          undo: mockUndo,
+          redo: mockRedo,
+          form: mockForm,
+          selectedBlockId: "block-1",
+          selectedPageId: "page-1",
+          deleteBlock: mockDeleteBlock,
+          duplicateBlock: mockDuplicateBlock,
+          moveBlock: mockMoveBlock,
+        });
+
+        // Re-render the hook to pick up the new state
+        renderHook(() => useKeyboardShortcuts());
+        handleKeyDown =
+          addEventListenerSpy.mock.calls[addEventListenerSpy.mock.calls.length - 1][1];
+
+        const event = createKeyboardEvent("ArrowUp");
+        Object.defineProperty(event, "target", {
+          value: { tagName: "DIV" },
+          writable: true,
+        });
+        handleKeyDown(event);
+
+        expect(event.preventDefault).not.toHaveBeenCalled();
+        expect(mockMoveBlock).not.toHaveBeenCalled();
+      });
+
+      it("does not move last block down", () => {
+        // Update the mock to include selectedBlockId
+        (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
+          undo: mockUndo,
+          redo: mockRedo,
+          form: mockForm,
+          selectedBlockId: "block-3",
+          selectedPageId: "page-1",
+          deleteBlock: mockDeleteBlock,
+          duplicateBlock: mockDuplicateBlock,
+          moveBlock: mockMoveBlock,
+        });
+
+        // Re-render the hook to pick up the new state
+        renderHook(() => useKeyboardShortcuts());
+        handleKeyDown =
+          addEventListenerSpy.mock.calls[addEventListenerSpy.mock.calls.length - 1][1];
+
+        const event = createKeyboardEvent("ArrowDown");
+        Object.defineProperty(event, "target", {
+          value: { tagName: "DIV" },
+          writable: true,
+        });
+        handleKeyDown(event);
+
+        expect(event.preventDefault).not.toHaveBeenCalled();
+        expect(mockMoveBlock).not.toHaveBeenCalled();
+      });
+
+      it("does not reorder when focused on input", () => {
+        // Update the mock to include selectedBlockId
+        (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
+          undo: mockUndo,
+          redo: mockRedo,
+          form: mockForm,
+          selectedBlockId: "block-2",
+          selectedPageId: "page-1",
+          deleteBlock: mockDeleteBlock,
+          duplicateBlock: mockDuplicateBlock,
+          moveBlock: mockMoveBlock,
+        });
+
+        // Re-render the hook to pick up the new state
+        renderHook(() => useKeyboardShortcuts());
+        handleKeyDown =
+          addEventListenerSpy.mock.calls[addEventListenerSpy.mock.calls.length - 1][1];
+
+        const event = createKeyboardEvent("ArrowUp");
+        Object.defineProperty(event, "target", {
+          value: { tagName: "INPUT" },
+          writable: true,
+        });
+        handleKeyDown(event);
+
+        expect(event.preventDefault).not.toHaveBeenCalled();
+        expect(mockMoveBlock).not.toHaveBeenCalled();
+      });
+
+      it("does not reorder when focused on textarea", () => {
+        // Update the mock to include selectedBlockId
+        (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
+          undo: mockUndo,
+          redo: mockRedo,
+          form: mockForm,
+          selectedBlockId: "block-2",
+          selectedPageId: "page-1",
+          deleteBlock: mockDeleteBlock,
+          duplicateBlock: mockDuplicateBlock,
+          moveBlock: mockMoveBlock,
+        });
+
+        // Re-render the hook to pick up the new state
+        renderHook(() => useKeyboardShortcuts());
+        handleKeyDown =
+          addEventListenerSpy.mock.calls[addEventListenerSpy.mock.calls.length - 1][1];
+
+        const event = createKeyboardEvent("ArrowDown");
+        Object.defineProperty(event, "target", {
+          value: { tagName: "TEXTAREA" },
+          writable: true,
+        });
+        handleKeyDown(event);
+
+        expect(event.preventDefault).not.toHaveBeenCalled();
+        expect(mockMoveBlock).not.toHaveBeenCalled();
+      });
+
+      it("does not reorder when no block is selected", () => {
+        const event = createKeyboardEvent("ArrowUp");
+        Object.defineProperty(event, "target", {
+          value: { tagName: "DIV" },
+          writable: true,
+        });
+        handleKeyDown(event);
+
+        expect(mockMoveBlock).not.toHaveBeenCalled();
       });
     });
 
@@ -271,7 +545,10 @@ describe("useKeyboardShortcuts", () => {
       redo: newRedo,
       form: mockForm,
       selectedBlockId: "new-block",
+      selectedPageId: "page-1",
       deleteBlock: mockDeleteBlock,
+      duplicateBlock: mockDuplicateBlock,
+      moveBlock: mockMoveBlock,
     });
 
     rerender();

@@ -67,7 +67,7 @@ export const FormField = memo(function FormField({
         );
 
       case "dropdown":
-      case "single_select":
+      case "select":
         return (
           <select {...baseProps} value={value || ""} onChange={handleChange} className="fr-select">
             <option value="">Choose an option</option>
@@ -79,7 +79,7 @@ export const FormField = memo(function FormField({
           </select>
         );
 
-      case "multi_select":
+      case "checkboxGroup":
         return (
           <div className="fr-checkbox-group" role="group" aria-labelledby={`${block.id}-label`}>
             {block.properties?.options?.map((option: string) => (

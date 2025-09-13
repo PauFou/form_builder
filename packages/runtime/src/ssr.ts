@@ -89,7 +89,7 @@ function renderField(block: any): string {
       break;
 
     case "dropdown":
-    case "single_select":
+    case "select":
       input = `
         <select
           id="${block.id}"

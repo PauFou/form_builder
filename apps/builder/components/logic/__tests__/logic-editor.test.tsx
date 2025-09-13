@@ -113,9 +113,12 @@ describe("LogicEditor", () => {
     jest.clearAllMocks();
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
+      updateForm: jest.fn(),
       addLogicRule: mockAddLogicRule,
       updateLogicRule: mockUpdateLogicRule,
       deleteLogicRule: mockDeleteLogicRule,
+      validateFormData: jest.fn(),
+      validationErrors: [],
     });
   });
 
@@ -137,9 +140,12 @@ describe("LogicEditor", () => {
   it("shows empty state when no rules", () => {
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: { ...mockForm, logic: { rules: [] } },
+      updateForm: jest.fn(),
       addLogicRule: mockAddLogicRule,
       updateLogicRule: mockUpdateLogicRule,
       deleteLogicRule: mockDeleteLogicRule,
+      validateFormData: jest.fn(),
+      validationErrors: [],
     });
 
     render(<LogicEditor />);

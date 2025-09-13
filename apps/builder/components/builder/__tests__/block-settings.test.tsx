@@ -312,7 +312,7 @@ describe("BlockSettings", () => {
     const user = userEvent.setup();
     const choiceBlock = {
       id: "block-4",
-      type: "single_select",
+      type: "select",
       question: "Choose one",
       options: [
         { id: "opt1", label: "Option 1", value: "option_1" },

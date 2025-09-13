@@ -57,8 +57,8 @@ jest.mock("../canvas", () => ({
   Canvas: () => <div data-testid="canvas">Canvas</div>,
 }));
 
-jest.mock("../properties-panel", () => ({
-  PropertiesPanel: () => <div data-testid="properties-panel">Properties Panel</div>,
+jest.mock("../inspector", () => ({
+  Inspector: () => <div data-testid="properties-panel">Inspector Panel</div>,
 }));
 
 describe("FormBuilder", () => {
@@ -81,6 +81,12 @@ describe("FormBuilder", () => {
       selectedBlockId: "block-1", // Set a selectedBlockId to render PropertiesPanel
       selectedPageId: "page-1",
       selectPage: jest.fn(),
+      canUndo: jest.fn(() => false),
+      canRedo: jest.fn(() => false),
+      undo: jest.fn(),
+      redo: jest.fn(),
+      getHistoryStatus: jest.fn(() => ({ current: 1, total: 1 })),
+      isDirty: false,
     });
   });
 
@@ -123,6 +129,12 @@ describe("FormBuilder", () => {
       selectedBlockId: null,
       selectedPageId: null,
       selectPage: jest.fn(),
+      canUndo: jest.fn(() => false),
+      canRedo: jest.fn(() => false),
+      undo: jest.fn(),
+      redo: jest.fn(),
+      getHistoryStatus: jest.fn(() => ({ current: 0, total: 0 })),
+      isDirty: false,
     });
 
     render(<FormBuilder />);

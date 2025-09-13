@@ -13,16 +13,19 @@ import {
   Button,
   Textarea,
 } from "@forms/ui";
-import { Plus } from "lucide-react";
+import { Plus, AlertCircle } from "lucide-react";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 import { Block } from "@forms/contracts";
+import { useState, useEffect } from "react";
 
 interface BlockInspectorProps {
   blockId: string;
 }
 
 export function BlockInspector({ blockId }: BlockInspectorProps) {
-  const { form, updateBlock } = useFormBuilderStore();
+  const { form, updateBlock, validationErrors, getExistingKeys } = useFormBuilderStore();
+  const [keyError, setKeyError] = useState<string | null>(null);
+  const [tempKey, setTempKey] = useState<string>("");
 
   // Find the block across all pages
   let block: Block | undefined;
@@ -31,9 +34,47 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
     if (found) block = found;
   });
 
+  useEffect(() => {
+    if (block) {
+      setTempKey(block.key || block.id);
+    }
+  }, [block]);
+
+  // Check for duplicate key errors
+  useEffect(() => {
+    const duplicateError = validationErrors.find(
+      (error) => error.type === "duplicate_key" && 
+      error.details?.blockIds?.includes(blockId)
+    );
+    
+    if (duplicateError) {
+      setKeyError("This key is already used by another field");
+    } else {
+      setKeyError(null);
+    }
+  }, [validationErrors, blockId]);
+
   if (!block) {
     return <div className="p-4 text-sm text-muted-foreground">Block not found</div>;
   }
+
+  const validateKey = (key: string) => {
+    if (!key.trim()) {
+      setKeyError("Field key cannot be empty");
+      return false;
+    }
+
+    const existingKeys = getExistingKeys();
+    existingKeys.delete(block.key || block.id); // Remove current key from check
+    
+    if (existingKeys.has(key)) {
+      setKeyError("This key is already used by another field");
+      return false;
+    }
+
+    setKeyError(null);
+    return true;
+  };
 
   return (
     <>
@@ -193,13 +234,35 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
           <Label htmlFor="fieldKey" className="text-sm font-medium mb-2 block">
             Field key
           </Label>
-          <Input
-            id="fieldKey"
-            value={block.key || block.id}
-            onChange={(e) => updateBlock(blockId, { key: e.target.value })}
-            className="font-mono text-sm"
-            placeholder="e.g., customer_email"
-          />
+          <div className="space-y-2">
+            <Input
+              id="fieldKey"
+              value={tempKey}
+              onChange={(e) => {
+                setTempKey(e.target.value);
+                if (validateKey(e.target.value)) {
+                  updateBlock(blockId, { key: e.target.value });
+                }
+              }}
+              onBlur={() => {
+                if (!tempKey.trim() && block) {
+                  setTempKey(block.key || block.id);
+                  setKeyError(null);
+                }
+              }}
+              className={`font-mono text-sm ${keyError ? "border-red-500" : ""}`}
+              placeholder="e.g., customer_email"
+            />
+            {keyError && (
+              <div className="flex items-center gap-2 text-sm text-red-500">
+                <AlertCircle className="h-4 w-4" />
+                <span>{keyError}</span>
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Unique identifier for this field in submissions and integrations
+            </p>
+          </div>
         </div>
 
         <div>

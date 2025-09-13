@@ -10,6 +10,8 @@ export interface Block {
   placeholder?: string;
   required?: boolean;
   helpText?: string;
+  key?: string;
+  validation?: any;
   options?: Array<{
     id: string;
     label: string;
@@ -60,6 +62,9 @@ export interface Form {
   pages: Page[];
   theme?: Theme;
   logic?: Logic;
+  layout?: any;
+  webhooks?: any[];
+  trackingId?: string;
   createdAt?: Date;
   updatedAt?: Date;
   [key: string]: any;

@@ -23,9 +23,9 @@ class TypeformImporter:
         "number": "number",
         "date": "date",
         "dropdown": "dropdown",
-        "multiple_choice": "single_select",
-        "picture_choice": "single_select",
-        "yes_no": "single_select",
+        "multiple_choice": "select",
+        "picture_choice": "select",
+        "yes_no": "select",
         "legal": "checkbox",
         "rating": "rating",
         "opinion_scale": "scale",
@@ -40,7 +40,7 @@ class TypeformImporter:
     
     # Features that don't have direct mapping
     UNSUPPORTED_FEATURES = {
-        "picture_choice": "Use single_select with image URLs in description",
+        "picture_choice": "Use select with image URLs in description",
         "legal": "Use checkbox with legal text in description",
         "website": "Use text field with URL validation",
         "group": "Flatten into individual questions",

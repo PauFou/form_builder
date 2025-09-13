@@ -34,3 +34,34 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
   unobserve: jest.fn(),
   disconnect: jest.fn(),
 }));
+
+// Mock Element.scrollIntoView
+Element.prototype.scrollIntoView = jest.fn();
+
+// Mock window.location
+Object.defineProperty(window, "location", {
+  value: {
+    href: "https://example.com",
+    search: "",
+    toString: () => "https://example.com",
+  },
+  writable: true,
+});
+
+// Mock URL constructor
+(global as any).URL = jest.fn().mockImplementation((href) => ({
+  searchParams: new Map(),
+  toString: () => href,
+}));
+
+// Mock URLSearchParams
+(global as any).URLSearchParams = jest.fn().mockImplementation((search) => ({
+  get: jest.fn((key) => null),
+  set: jest.fn(),
+}));
+
+// Mock fetch globally
+(global as any).fetch = jest.fn();
+
+// Mock indexedDB
+import "fake-indexeddb/auto";

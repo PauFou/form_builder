@@ -20,7 +20,7 @@ describe("Form Contract Tests", () => {
     test("should validate a select field with options", () => {
       const field: Field = {
         id: "field_2",
-        type: "single_select",
+        type: "select",
         title: "Choose your country",
         options: [
           { value: "us", label: "United States" },

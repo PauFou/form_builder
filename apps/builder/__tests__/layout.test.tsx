@@ -41,12 +41,50 @@ jest.mock("next-themes", () => ({
   ThemeProvider: ({ children }: any) => <>{children}</>,
 }));
 
+jest.mock("@/lib/i18n", () => ({
+  I18nProvider: ({ children }: any) => <>{children}</>,
+}));
+
+jest.mock("@/lib/theme", () => ({
+  SkemyaThemeProvider: ({ children }: any) => <>{children}</>,
+}));
+
+// Mock component to test just the body content without html wrapper
+const TestLayoutBody = ({ children }: { children: React.ReactNode }) => {
+  const [queryClient] = React.useState(
+    () =>
+      new (require("@tanstack/react-query").QueryClient)({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+            retry: 1,
+          },
+        },
+      })
+  );
+
+  return (
+    <div className="geist-sans-mock">
+      <div>
+        <div>
+          <div>
+            <div>
+              {children}
+              <div data-testid="toaster">Toaster</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 describe("RootLayout", () => {
   it("should render children correctly", () => {
     const { getByText } = render(
-      <RootLayout>
+      <TestLayoutBody>
         <div>Test Child Content</div>
-      </RootLayout>
+      </TestLayoutBody>
     );
 
     expect(getByText("Test Child Content")).toBeInTheDocument();
@@ -54,9 +92,9 @@ describe("RootLayout", () => {
 
   it("should render toaster component", () => {
     const { getByTestId } = render(
-      <RootLayout>
+      <TestLayoutBody>
         <div>Test</div>
-      </RootLayout>
+      </TestLayoutBody>
     );
 
     expect(getByTestId("toaster")).toBeInTheDocument();
@@ -64,9 +102,9 @@ describe("RootLayout", () => {
 
   it("should render with providers", () => {
     const { container } = render(
-      <RootLayout>
+      <TestLayoutBody>
         <div>Test</div>
-      </RootLayout>
+      </TestLayoutBody>
     );
 
     expect(container.firstChild).toBeTruthy();

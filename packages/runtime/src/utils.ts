@@ -126,7 +126,7 @@ export function formatValue(value: any, type: Block["type"]): string {
     case "datetime":
       return new Date(value).toLocaleString();
 
-    case "multi_select":
+    case "checkboxGroup":
       return Array.isArray(value) ? value.join(", ") : String(value);
 
     default:

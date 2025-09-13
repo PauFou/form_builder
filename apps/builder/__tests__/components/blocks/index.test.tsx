@@ -9,8 +9,6 @@ import { NumberBlock } from "../../../components/blocks/number-block";
 import { PhoneBlock } from "../../../components/blocks/phone-block";
 import { CurrencyBlock } from "../../../components/blocks/currency-block";
 import { AddressBlock } from "../../../components/blocks/address-block";
-import { SingleSelectBlock } from "../../../components/blocks/single-select-block";
-import { MultiSelectBlock } from "../../../components/blocks/multi-select-block";
 import { RatingBlock } from "../../../components/blocks/rating-block";
 import { NPSBlock } from "../../../components/blocks/nps-block";
 import { ScaleBlock } from "../../../components/blocks/scale-block";
@@ -58,13 +56,6 @@ describe("Block Registry", () => {
       expect(BLOCK_COMPONENTS.address).toBe(AddressBlock);
     });
 
-    it("should contain SingleSelectBlock for single_select type", () => {
-      expect(BLOCK_COMPONENTS.single_select).toBe(SingleSelectBlock);
-    });
-
-    it("should contain MultiSelectBlock for multi_select type", () => {
-      expect(BLOCK_COMPONENTS.multi_select).toBe(MultiSelectBlock);
-    });
 
     it("should contain RatingBlock for rating type", () => {
       expect(BLOCK_COMPONENTS.rating).toBe(RatingBlock);
@@ -100,17 +91,15 @@ describe("Block Registry", () => {
       expect(blockTypes).toContain("phone");
       expect(blockTypes).toContain("currency");
       expect(blockTypes).toContain("address");
-      expect(blockTypes).toContain("single_select");
-      expect(blockTypes).toContain("multi_select");
       expect(blockTypes).toContain("rating");
       expect(blockTypes).toContain("nps");
       expect(blockTypes).toContain("scale");
       expect(blockTypes).toContain("file_upload");
     });
 
-    it("should have exactly 22 block types", () => {
+    it("should have exactly 24 block types", () => {
       const blockTypes = Object.keys(BLOCK_COMPONENTS);
-      expect(blockTypes).toHaveLength(24); // Updated: added Enhanced file upload and signature
+      expect(blockTypes).toHaveLength(24);
     });
   });
 });

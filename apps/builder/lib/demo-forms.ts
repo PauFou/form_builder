@@ -88,7 +88,7 @@ export const DEMO_FORMS: Record<string, Form> = {
           },
           {
             id: "student",
-            type: "single_select",
+            type: "select",
             question: "Are you a student?",
             required: true,
             options: [

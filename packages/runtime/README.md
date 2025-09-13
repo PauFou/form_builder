@@ -9,7 +9,7 @@ Ultra-lightweight form viewer with SSR support and offline capabilities. < 30KB 
 - 📱 **Mobile-first**: Touch-optimized, responsive design
 - ♿ **Accessible**: WCAG AA compliant with full keyboard navigation
 - 🔌 **Offline**: Automatic progress saving with IndexedDB + resume links
-- 🛡️ **Anti-Spam**: Built-in honeypot and time-based protection
+- 🛡️ **Anti-Spam**: Built-in honeypot, time-trap, and rate limiting protection
 - 🎭 **Embed Types**: Fullpage, inline, popover, and drawer modes
 - 🎨 **Themeable**: CSS variables for easy customization
 - 🌐 **SSR**: Server-side rendering support
@@ -178,11 +178,26 @@ if (runtime?.hasUnsyncedData) {
 
 ## Anti-Spam Protection
 
-Built-in protection against bots:
+Comprehensive protection against bots and spam:
 
-- **Honeypot**: Hidden field that bots might fill
-- **Time-based**: Minimum completion time required
-- **Server validation**: Additional checks on backend
+- **Honeypot**: Invisible field that bots typically fill
+- **Time-trap**: Minimum completion time requirement (default 3s)
+- **Rate limiting**: IP-based (10/min) and form-based (50/min) limits
+- **Transparent**: No CAPTCHAs or user friction
+- **Configurable**: Adjust thresholds for your needs
+
+```javascript
+// Enable with defaults
+config.enableAntiSpam = true;
+
+// Or customize
+config.minCompletionTime = 5000; // 5 seconds
+config.onSpamDetected = (reason) => {
+  console.warn("Spam blocked:", reason);
+};
+```
+
+See [Anti-Spam Documentation](./docs/anti-spam.md) for detailed configuration.
 
 ## Bundle Size
 

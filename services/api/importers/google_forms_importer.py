@@ -18,12 +18,12 @@ class GoogleFormsImporter:
     TYPE_MAPPING = {
         0: "text",           # Short answer
         1: "long_text",      # Paragraph
-        2: "single_select",  # Multiple choice
+        2: "select",         # Multiple choice
         3: "dropdown",       # Dropdown
-        4: "multi_select",   # Checkboxes
+        4: "checkboxGroup",  # Checkboxes
         5: "scale",          # Linear scale
-        7: "single_select",  # Multiple choice grid -> simplified
-        8: "multi_select",   # Checkbox grid -> simplified
+        7: "select",         # Multiple choice grid -> simplified
+        8: "checkboxGroup",  # Checkbox grid -> simplified
         9: "date",           # Date
         10: "time",          # Time
         11: "file_upload",   # File upload
@@ -31,8 +31,8 @@ class GoogleFormsImporter:
     
     # Features that need adaptation
     ADAPTATION_NOTES = {
-        7: "Multiple choice grid simplified to single select",
-        8: "Checkbox grid simplified to multi select",
+        7: "Multiple choice grid simplified to select",
+        8: "Checkbox grid simplified to checkbox group",
         6: "Section header converted to statement block",
     }
     

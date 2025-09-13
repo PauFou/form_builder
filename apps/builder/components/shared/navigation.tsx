@@ -51,6 +51,11 @@ export function Navigation() {
                   Integrations
                 </Button>
               </Link>
+              <Link href="/demo/grid-mode">
+                <Button variant="ghost" size="sm">
+                  Grid Demo
+                </Button>
+              </Link>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="gap-2">

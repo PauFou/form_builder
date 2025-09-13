@@ -21,6 +21,8 @@ export interface FormSettings {
   allowSave?: boolean;
   redirectUrl?: string;
   thankYouMessage?: string;
+  displayMode?: "one-question" | "grid";
+  allowModeSwitch?: boolean;
 }
 
 export interface Theme {
@@ -41,8 +43,8 @@ export type BlockType =
   | "time"
   | "datetime"
   | "dropdown"
-  | "single_select"
-  | "multi_select"
+  | "select"
+  | "checkboxGroup"
   | "checkbox"
   | "rating"
   | "scale"

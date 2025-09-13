@@ -81,7 +81,7 @@ describe("formatValue", () => {
     expect(formatted).toMatch(/\d{1,2}\/\d{1,2}\/\d{4}/);
   });
 
-  it("should format multi-select values", () => {
-    expect(formatValue(["Option 1", "Option 2"], "multi_select")).toBe("Option 1, Option 2");
+  it("should format checkboxGroup values", () => {
+    expect(formatValue(["Option 1", "Option 2"], "checkboxGroup")).toBe("Option 1, Option 2");
   });
 });

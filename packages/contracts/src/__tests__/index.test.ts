@@ -39,10 +39,10 @@ describe("Form Schema Contracts", () => {
       expect(() => Field.parse(emailField)).not.toThrow();
     });
 
-    it("should validate single_select field with options", () => {
+    it("should validate select field with options", () => {
       const selectField = {
         id: "role_1",
-        type: "single_select" as const,
+        type: "select" as const,
         title: "What is your role?",
         required: true,
         options: [

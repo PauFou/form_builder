@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -17,6 +18,7 @@ import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 import { BLOCK_COMPONENTS } from "../blocks";
 import type { Block } from "@forms/contracts";
 import { contractToBuilderBlock } from "../../lib/block-utils";
+import { DeleteFieldDialog } from "./delete-field-dialog";
 
 interface BlockItemProps {
   block: Block;
@@ -25,8 +27,17 @@ interface BlockItemProps {
 }
 
 export function BlockItem({ block, pageId, index }: BlockItemProps) {
-  const { selectBlock, updateBlock, deleteBlock, duplicateBlock, selectedBlockId } =
-    useFormBuilderStore();
+  const { 
+    selectBlock, 
+    updateBlock, 
+    deleteBlock, 
+    deleteBlockWithReferences,
+    duplicateBlock, 
+    selectedBlockId,
+    checkFieldReferences 
+  } = useFormBuilderStore();
+  
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: block.id,
@@ -106,7 +117,10 @@ export function BlockItem({ block, pageId, index }: BlockItemProps) {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="text-destructive focus:text-destructive"
-                  onClick={() => deleteBlock(block.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowDeleteDialog(true);
+                  }}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete
@@ -116,6 +130,20 @@ export function BlockItem({ block, pageId, index }: BlockItemProps) {
           </div>
         </div>
       </Card>
+      
+      <DeleteFieldDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        fieldName={block.question || block.title || "this field"}
+        references={checkFieldReferences(block.id)}
+        onConfirm={(removeReferences) => {
+          if (removeReferences) {
+            deleteBlockWithReferences(block.id, true);
+          } else {
+            deleteBlock(block.id);
+          }
+        }}
+      />
     </motion.div>
   );
 }

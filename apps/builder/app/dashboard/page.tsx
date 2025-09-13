@@ -21,6 +21,7 @@ import {
 
 import { listForms } from "../../lib/api/forms";
 import { Navigation } from "../../components/shared/navigation";
+import { useI18n } from "@/lib/i18n";
 
 export default function DashboardPage() {
   const [forms, setForms] = useState<any[]>([]);
@@ -28,6 +29,7 @@ export default function DashboardPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+  const { t, formatDate } = useI18n();
 
   useEffect(() => {
     loadForms();
@@ -60,10 +62,10 @@ export default function DashboardPage() {
         <div className="border-b bg-card">
           <div className="container mx-auto px-6 py-4">
             <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold">My Forms</h1>
+              <h1 className="text-2xl font-bold">{t.navigation.forms}</h1>
               <Button onClick={handleCreateForm}>
                 <Plus className="h-4 w-4 mr-2" />
-                Create form
+                {t.forms.createForm}
               </Button>
             </div>
           </div>
@@ -77,7 +79,7 @@ export default function DashboardPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input
                   type="text"
-                  placeholder="Search forms..."
+                  placeholder={t.placeholders.searchForms}
                   className="w-full pl-9 pr-3 py-2 border rounded-lg text-sm bg-background"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -124,17 +126,17 @@ export default function DashboardPage() {
               <CardContent className="text-center py-12">
                 <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-lg font-medium mb-2">
-                  {searchQuery ? "No forms found" : "No forms yet"}
+                  {searchQuery ? t.errors.notFound : t.forms.noForms}
                 </p>
                 <p className="text-muted-foreground mb-4">
                   {searchQuery
-                    ? "Try a different search term"
-                    : "Create your first form to get started"}
+                    ? t.common.search + "..."
+                    : t.forms.createFirstForm}
                 </p>
                 {!searchQuery && (
                   <Button onClick={handleCreateForm}>
                     <Plus className="h-4 w-4 mr-2" />
-                    Create Form
+                    {t.forms.createForm}
                   </Button>
                 )}
               </CardContent>
@@ -153,7 +155,7 @@ export default function DashboardPage() {
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <CardTitle className="text-lg">{form.title}</CardTitle>
-                          <CardDescription>{form.description || "No description"}</CardDescription>
+                          <CardDescription>{form.description || t.builder.description}</CardDescription>
                         </div>
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Button variant="ghost" size="icon">
@@ -179,14 +181,14 @@ export default function DashboardPage() {
                               form.status === "published" ? "bg-green-500" : "bg-muted-foreground"
                             }`}
                           />
-                          {form.status === "published" ? "Published" : "Draft"}
+                          {form.status === "published" ? t.common.published : t.common.draft}
                         </span>
-                        <span>{new Date(form.updatedAt).toLocaleDateString()}</span>
+                        <span>{formatDate(form.updatedAt, { dateStyle: 'medium' })}</span>
                       </div>
                       <div className="flex gap-2">
                         <Link href="/" className="flex-1">
                           <Button variant="outline" size="sm" className="w-full">
-                            Edit
+                            {t.common.edit}
                           </Button>
                         </Link>
                         <Link href={`/forms/${form.id}/analytics`}>
@@ -205,9 +207,9 @@ export default function DashboardPage() {
               <table className="w-full">
                 <thead className="border-b bg-muted/50">
                   <tr>
-                    <th className="p-4 text-left text-sm font-medium">Form</th>
-                    <th className="p-4 text-left text-sm font-medium">Status</th>
-                    <th className="p-4 text-left text-sm font-medium">Last Modified</th>
+                    <th className="p-4 text-left text-sm font-medium">{t.forms.formName}</th>
+                    <th className="p-4 text-left text-sm font-medium">{t.integrations.status}</th>
+                    <th className="p-4 text-left text-sm font-medium">{t.forms.lastModified}</th>
                     <th className="p-4"></th>
                   </tr>
                 </thead>
@@ -218,7 +220,7 @@ export default function DashboardPage() {
                         <div>
                           <p className="font-medium">{form.title}</p>
                           <p className="text-sm text-muted-foreground">
-                            {form.description || "No description"}
+                            {form.description || t.builder.description}
                           </p>
                         </div>
                       </td>
@@ -235,17 +237,17 @@ export default function DashboardPage() {
                               form.status === "published" ? "bg-green-500" : "bg-muted-foreground"
                             }`}
                           />
-                          {form.status === "published" ? "Published" : "Draft"}
+                          {form.status === "published" ? t.common.published : t.common.draft}
                         </span>
                       </td>
                       <td className="p-4 text-sm text-muted-foreground">
-                        {new Date(form.updatedAt).toLocaleDateString()}
+                        {formatDate(form.updatedAt, { dateStyle: 'medium' })}
                       </td>
                       <td className="p-4">
                         <div className="flex items-center gap-1">
                           <Link href="/">
                             <Button variant="ghost" size="sm">
-                              Edit
+                              {t.common.edit}
                             </Button>
                           </Link>
                           <Button variant="ghost" size="icon" className="h-8 w-8">

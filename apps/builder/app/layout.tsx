@@ -7,6 +7,8 @@ import { Inter } from "next/font/google";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "next-themes";
+import { I18nProvider } from "@/lib/i18n";
+import { SkemyaThemeProvider } from "@/lib/theme";
 import { useState, useEffect } from "react";
 
 const inter = Inter({
@@ -32,9 +34,18 @@ export default function RootLayout({
       })
   );
 
-  // Set document title for E2E tests
+  // Set document title and lang attribute
   useEffect(() => {
-    document.title = "Form Builder - Forms Platform";
+    document.title = "Form Builder - Skemya Forms Platform";
+    
+    // Update lang attribute based on detected locale
+    const urlParams = new URLSearchParams(window.location.search);
+    const langParam = urlParams.get('lang');
+    if (langParam) {
+      document.documentElement.lang = langParam;
+    } else if (window.navigator.language.startsWith('fr')) {
+      document.documentElement.lang = 'fr';
+    }
   }, []);
 
   return (
@@ -58,19 +69,23 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
-            <Toaster
-              position="top-center"
-              toastOptions={{
-                className: "",
-                style: {
-                  borderRadius: "var(--radius)",
-                  background: "hsl(var(--card))",
-                  color: "hsl(var(--card-foreground))",
-                  border: "1px solid hsl(var(--border))",
-                },
-              }}
-            />
+            <SkemyaThemeProvider>
+              <I18nProvider>
+                {children}
+                <Toaster
+                  position="top-center"
+                  toastOptions={{
+                    className: "",
+                    style: {
+                      borderRadius: "var(--radius)",
+                      background: "hsl(var(--card))",
+                      color: "hsl(var(--card-foreground))",
+                      border: "1px solid hsl(var(--border))",
+                    },
+                  }}
+                />
+              </I18nProvider>
+            </SkemyaThemeProvider>
           </ThemeProvider>
         </QueryClientProvider>
       </body>

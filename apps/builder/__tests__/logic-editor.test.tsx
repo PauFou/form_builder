@@ -38,6 +38,8 @@ const mockStore = {
   addLogicRule: jest.fn(),
   updateLogicRule: jest.fn(),
   deleteLogicRule: jest.fn(),
+  validateFormData: jest.fn(),
+  validationErrors: [],
 };
 
 jest.mock("@/lib/stores/form-builder-store", () => ({

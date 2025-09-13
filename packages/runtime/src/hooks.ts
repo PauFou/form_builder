@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import mitt from "mitt";
 import type { FormSchema, FormState, RuntimeConfig, FormData } from "./types";
 import { OfflineService } from "./services/offline-service";
+import { PartialSaveService } from "./services/partial-save-service";
 import { AnalyticsService } from "./services/analytics-service";
 import { LogicEvaluator } from "./logic/evaluator";
 import { validateField, shouldShowBlock } from "./utils";
@@ -36,6 +37,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
   });
 
   const offlineServiceRef = useRef<OfflineService | null>(null);
+  const partialSaveServiceRef = useRef<PartialSaveService | null>(null);
   const analyticsRef = useRef<AnalyticsService | null>(null);
   const logicEvaluatorRef = useRef<LogicEvaluator | null>(null);
   const respondentKeyRef = useRef(config.respondentKey || `anon-${Date.now()}-${Math.random()}`);
@@ -45,12 +47,17 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
   const { validateAntiSpam, getCompletionTime } = useAntiSpam({
     enabled: config.enableAntiSpam ?? true,
     minCompletionTime: config.minCompletionTime ?? 3000,
+    formId: config.formId,
+    skipRateLimit: false,
   });
 
   // Get all blocks from all pages
   const allBlocks = useMemo(() => {
-    return schema.pages?.flatMap((page) => page.blocks || []) || [];
-  }, [schema.pages]);
+    if (schema.pages?.length) {
+      return schema.pages.flatMap((page) => page.blocks || []);
+    }
+    return schema.blocks || [];
+  }, [schema.pages, schema.blocks]);
 
   // Initialize services
   useEffect(() => {
@@ -75,15 +82,39 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
       analyticsRef.current.trackFormView(config.formId, respondentKeyRef.current);
     }
 
+    // Initialize partial save service
+    if (typeof window !== "undefined") {
+      partialSaveServiceRef.current = new PartialSaveService(config);
+
+      // Load saved partial data
+      const loadPartialData = async () => {
+        const savedData = await partialSaveServiceRef.current?.load();
+        if (savedData) {
+          setState((prev) => ({
+            ...prev,
+            values: savedData.values,
+            currentStep: savedData.currentStep || 0,
+          }));
+          respondentKeyRef.current = savedData.respondentKey;
+          if (savedData.startedAt) {
+            startTimeRef.current = savedData.startedAt;
+          }
+        }
+      };
+
+      loadPartialData();
+    }
+
     // Initialize offline service
     if (config.enableOffline && typeof window !== "undefined") {
       offlineServiceRef.current = new OfflineService(config);
 
-      // Load saved state with cleanup
+      // Load saved state with cleanup (if no partial data was loaded)
       const loadSavedState = async () => {
         if (!offlineServiceRef.current) return;
         const saved = await offlineServiceRef.current.getState();
-        if (saved) {
+        // Only load if we haven't already loaded from partial save service
+        if (saved && Object.keys(state.values).length === 0) {
           setState(saved.state);
           respondentKeyRef.current = saved.respondentKey;
           if (saved.data.startedAt) {
@@ -114,41 +145,19 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
     return () => {
       offlineServiceRef.current?.destroy();
+      partialSaveServiceRef.current?.destroy();
       analyticsRef.current?.destroy();
       logicEvaluatorRef.current?.reset();
     };
   }, [config, schema.logic?.length]);
 
-  // Auto-save logic
-  const saveOffline = useCallback(async () => {
-    if (!config.enableOffline || !offlineServiceRef.current) return;
-
-    const data: Partial<FormData> = {
-      formId: config.formId,
-      values: state.values,
-      startedAt: startTimeRef.current,
-      metadata: {
-        userAgent: navigator.userAgent,
-        viewport: {
-          width: window.innerWidth,
-          height: window.innerHeight,
-        },
-        locale: config.locale,
-        currentStep: state.currentStep,
-        progress: ((state.currentStep + 1) / allBlocks.length) * 100,
-      },
-    };
-
-    // Save to IndexedDB (throttled internally)
-    await offlineServiceRef.current.saveState(respondentKeyRef.current, state, data);
-
-    emitter.emit("form:save", { data });
-  }, [config, state, schema.pages, allBlocks]);
+  // Create a ref to hold the saveData function
+  const saveDataRef = useRef<() => Promise<void>>(async () => {});
 
   // Save on state change
   useEffect(() => {
-    saveOffline();
-  }, [state.values, state.currentStep, saveOffline]);
+    saveDataRef.current();
+  }, [state.values, state.currentStep]);
 
   // Evaluate logic rules on value changes
   useEffect(() => {
@@ -265,6 +274,69 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
   const currentBlock = visibleBlocks[state.currentStep];
   const progress = ((state.currentStep + 1) / visibleBlocks.length) * 100;
+
+  // Define the actual saveData function after visibleBlocks is available
+  const saveData = useCallback(async () => {
+    // Save to partial save service (includes localStorage and API)
+    if (partialSaveServiceRef.current) {
+      const progress = visibleBlocks.length > 0 
+        ? ((state.currentStep + 1) / visibleBlocks.length) * 100 
+        : 0;
+
+      await partialSaveServiceRef.current.save({
+        formId: config.formId,
+        respondentKey: respondentKeyRef.current,
+        values: state.values,
+        currentStep: state.currentStep,
+        progress,
+        startedAt: startTimeRef.current,
+        lastUpdatedAt: new Date().toISOString(),
+        metadata: {
+          userAgent: navigator.userAgent,
+          viewport: {
+            width: window.innerWidth,
+            height: window.innerHeight,
+          },
+          locale: config.locale,
+        },
+      });
+    }
+
+    // Also save to offline service if enabled
+    if (config.enableOffline && offlineServiceRef.current) {
+      const data: Partial<FormData> = {
+        formId: config.formId,
+        values: state.values,
+        startedAt: startTimeRef.current,
+        metadata: {
+          userAgent: navigator.userAgent,
+          viewport: {
+            width: window.innerWidth,
+            height: window.innerHeight,
+          },
+          locale: config.locale,
+          currentStep: state.currentStep,
+          progress: ((state.currentStep + 1) / visibleBlocks.length) * 100,
+        },
+      };
+
+      // Save to IndexedDB (throttled internally)
+      await offlineServiceRef.current.saveState(respondentKeyRef.current, state, data);
+    }
+
+    emitter.emit("form:save", { 
+      data: {
+        formId: config.formId,
+        values: state.values,
+        startedAt: startTimeRef.current,
+      }
+    });
+  }, [config, state, visibleBlocks]);
+
+  // Update the ref whenever saveData changes
+  useEffect(() => {
+    saveDataRef.current = saveData;
+  }, [saveData]);
 
   // Now define the actual functions that depend on visibleBlocks
   const canGoNext = useCallback((): boolean => {
@@ -467,11 +539,21 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     if (!validate()) return;
 
     // Anti-spam validation
-    const spamCheck = validateAntiSpam();
+    const spamCheck = await validateAntiSpam();
     if (!spamCheck.isValid) {
       console.warn(`Form submission blocked: ${spamCheck.reason}`);
       if (config.onSpamDetected) {
         config.onSpamDetected(spamCheck.reason!);
+      }
+      // Track spam attempt in analytics
+      if (analyticsRef.current) {
+        analyticsRef.current.trackFieldError(
+          config.formId,
+          respondentKeyRef.current,
+          "form_submission",
+          "spam_detected",
+          spamCheck.reason || "unknown"
+        );
       }
       return;
     }
@@ -537,9 +619,12 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
         );
       }
 
-      // Clear offline storage
+      // Clear offline storage and partial saves
       if (offlineServiceRef.current) {
         await offlineServiceRef.current.deleteState();
+      }
+      if (partialSaveServiceRef.current) {
+        await partialSaveServiceRef.current.clear();
       }
 
       emitter.emit("form:submit", { data });
@@ -647,6 +732,30 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     };
   }, [config.enableOffline]);
 
+  // Get resume URL
+  const getResumeUrl = useCallback(() => {
+    return partialSaveServiceRef.current?.getResumeUrl() || null;
+  }, []);
+
+  // Check if currently saving
+  const [isSaving, setIsSaving] = useState(false);
+  useEffect(() => {
+    if (!partialSaveServiceRef.current) return;
+
+    const handleSaveStart = () => setIsSaving(true);
+    const handleSaveEnd = () => setIsSaving(false);
+
+    partialSaveServiceRef.current.on("save:start", handleSaveStart);
+    partialSaveServiceRef.current.on("save:success", handleSaveEnd);
+    partialSaveServiceRef.current.on("save:error", handleSaveEnd);
+
+    return () => {
+      partialSaveServiceRef.current?.off("save:start", handleSaveStart);
+      partialSaveServiceRef.current?.off("save:success", handleSaveEnd);
+      partialSaveServiceRef.current?.off("save:error", handleSaveEnd);
+    };
+  }, []);
+
   return {
     // State
     state,
@@ -669,6 +778,8 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     canGoNext,
     hasUnsyncedData,
     isOnline,
+    isSaving,
+    getResumeUrl,
     on: emitter.on.bind(emitter),
     off: emitter.off.bind(emitter),
   };

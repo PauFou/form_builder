@@ -52,6 +52,23 @@ jest.mock("@dnd-kit/sortable", () => {
   };
 });
 
+// Mock delete field dialog
+jest.mock("../delete-field-dialog", () => ({
+  DeleteFieldDialog: ({ open, onConfirm, onOpenChange }: any) =>
+    open ? (
+      <div data-testid="delete-dialog">
+        <button
+          onClick={() => {
+            onConfirm(false);
+            onOpenChange(false);
+          }}
+        >
+          Confirm Delete
+        </button>
+      </div>
+    ) : null,
+}));
+
 jest.mock("@dnd-kit/utilities", () => ({
   CSS: {
     Transform: {
@@ -83,6 +100,8 @@ describe("BlockItem", () => {
       deleteBlock: mockDeleteBlock,
       duplicateBlock: mockDuplicateBlock,
       selectedBlockId: null,
+      checkFieldReferences: jest.fn(() => ({ hasReferences: false, referencedBy: [] })),
+      deleteBlockWithReferences: jest.fn(),
     });
   });
 
@@ -111,6 +130,8 @@ describe("BlockItem", () => {
       deleteBlock: mockDeleteBlock,
       duplicateBlock: mockDuplicateBlock,
       selectedBlockId: "test-block-1",
+      checkFieldReferences: jest.fn(() => ({ hasReferences: false, referencedBy: [] })),
+      deleteBlockWithReferences: jest.fn(),
     });
 
     const { container } = render(<BlockItem block={defaultBlock} pageId="page-1" index={0} />);
@@ -154,6 +175,10 @@ describe("BlockItem", () => {
       .find((btn) => btn.querySelector('[class*="MoreVertical"]'));
     await user.click(menuButton!);
     await user.click(screen.getByText("Delete"));
+
+    // Handle the confirmation dialog
+    const confirmButton = screen.getByText("Confirm Delete");
+    await user.click(confirmButton);
 
     expect(mockDeleteBlock).toHaveBeenCalledWith("test-block-1");
   });

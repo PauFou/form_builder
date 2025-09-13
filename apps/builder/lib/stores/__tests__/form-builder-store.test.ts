@@ -66,8 +66,8 @@ describe("useFormBuilderStore", () => {
     },
     version: 1,
     slug: "test-form",
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
 
   beforeEach(() => {

@@ -33,6 +33,8 @@ import {
   Trash2,
   Clock,
   Link,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 import type { Block } from "@forms/contracts";
@@ -62,6 +64,8 @@ const actionCommands = [
   { icon: Redo, action: "redo", label: "Redo", category: "actions" },
   { icon: Copy, action: "duplicate", label: "Duplicate Selected Block", category: "actions" },
   { icon: Trash2, action: "delete", label: "Delete Selected Block", category: "actions" },
+  { icon: ArrowUp, action: "move_up", label: "Move Block Up", category: "actions" },
+  { icon: ArrowDown, action: "move_down", label: "Move Block Down", category: "actions" },
 ];
 
 interface CommandPaletteProps {
@@ -81,10 +85,11 @@ export function CommandPalette({ onSave, onPreview, onPublish }: CommandPaletteP
     addLogicRule,
     duplicateBlock,
     deleteBlock,
+    moveBlock,
     undo,
     redo,
-    history,
-    historyIndex,
+    canUndo,
+    canRedo,
   } = useFormBuilderStore();
 
   useEffect(() => {
@@ -159,15 +164,55 @@ export function CommandPalette({ onSave, onPreview, onPublish }: CommandPaletteP
           deleteBlock(selectedBlockId);
         }
         break;
+      case "move_up":
+        if (selectedBlockId && selectedPageId && form) {
+          const currentPage = form.pages.find(p => p.id === selectedPageId);
+          if (currentPage) {
+            const blockIndex = currentPage.blocks.findIndex(b => b.id === selectedBlockId);
+            if (blockIndex > 0) {
+              moveBlock(selectedBlockId, selectedPageId, blockIndex - 1);
+            }
+          }
+        }
+        break;
+      case "move_down":
+        if (selectedBlockId && selectedPageId && form) {
+          const currentPage = form.pages.find(p => p.id === selectedPageId);
+          if (currentPage) {
+            const blockIndex = currentPage.blocks.findIndex(b => b.id === selectedBlockId);
+            if (blockIndex < currentPage.blocks.length - 1) {
+              moveBlock(selectedBlockId, selectedPageId, blockIndex + 1);
+            }
+          }
+        }
+        break;
     }
     setOpen(false);
   };
 
   const filteredActionCommands = actionCommands.filter((cmd) => {
-    if (cmd.action === "undo" && historyIndex <= 0) return false;
-    if (cmd.action === "redo" && historyIndex >= history.length - 1) return false;
+    if (cmd.action === "undo" && !canUndo()) return false;
+    if (cmd.action === "redo" && !canRedo()) return false;
     if ((cmd.action === "duplicate" || cmd.action === "delete") && !selectedBlockId) return false;
     if (cmd.action === "add_logic" && !selectedBlockId) return false;
+    
+    // Handle move actions
+    if ((cmd.action === "move_up" || cmd.action === "move_down") && !selectedBlockId) return false;
+    if (cmd.action === "move_up" && selectedBlockId && selectedPageId && form) {
+      const currentPage = form.pages.find(p => p.id === selectedPageId);
+      if (currentPage) {
+        const blockIndex = currentPage.blocks.findIndex(b => b.id === selectedBlockId);
+        if (blockIndex <= 0) return false;
+      }
+    }
+    if (cmd.action === "move_down" && selectedBlockId && selectedPageId && form) {
+      const currentPage = form.pages.find(p => p.id === selectedPageId);
+      if (currentPage) {
+        const blockIndex = currentPage.blocks.findIndex(b => b.id === selectedBlockId);
+        if (blockIndex >= currentPage.blocks.length - 1) return false;
+      }
+    }
+    
     return true;
   });
 
@@ -209,6 +254,18 @@ export function CommandPalette({ onSave, onPreview, onPublish }: CommandPaletteP
                 )}
                 {command.action === "redo" && (
                   <span className="ml-auto text-xs text-muted-foreground">⇧⌘Z</span>
+                )}
+                {command.action === "duplicate" && (
+                  <span className="ml-auto text-xs text-muted-foreground">⌘D</span>
+                )}
+                {command.action === "delete" && (
+                  <span className="ml-auto text-xs text-muted-foreground">Delete</span>
+                )}
+                {command.action === "move_up" && (
+                  <span className="ml-auto text-xs text-muted-foreground">↑</span>
+                )}
+                {command.action === "move_down" && (
+                  <span className="ml-auto text-xs text-muted-foreground">↓</span>
                 )}
               </CommandItem>
             );
