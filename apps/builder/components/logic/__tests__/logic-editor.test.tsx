@@ -14,6 +14,53 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
   disconnect: jest.fn(),
 }));
 
+// Mock UI components
+jest.mock("@/components/ui/button", () => ({
+  Button: ({ children, onClick, ...props }: any) => (
+    <button onClick={onClick} {...props}>
+      {children}
+    </button>
+  ),
+}));
+
+jest.mock("@/components/ui/card", () => ({
+  Card: ({ children }: any) => <div>{children}</div>,
+  CardContent: ({ children }: any) => <div>{children}</div>,
+  CardHeader: ({ children }: any) => <div>{children}</div>,
+  CardTitle: ({ children }: any) => <h3>{children}</h3>,
+  CardDescription: ({ children }: any) => <p>{children}</p>,
+}));
+
+jest.mock("@/components/ui/badge", () => ({
+  Badge: ({ children }: any) => <span>{children}</span>,
+}));
+
+jest.mock("@/components/ui/tabs", () => ({
+  Tabs: ({ children, defaultValue }: any) => <div>{children}</div>,
+  TabsContent: ({ children, value }: any) => <div data-tab-content={value}>{children}</div>,
+  TabsList: ({ children }: any) => <div>{children}</div>,
+  TabsTrigger: ({ children, value }: any) => <button data-tab-trigger={value}>{children}</button>,
+}));
+
+jest.mock("@/components/ui/scroll-area", () => ({
+  ScrollArea: ({ children }: any) => <div>{children}</div>,
+}));
+
+jest.mock("@/components/ui/alert", () => ({
+  Alert: ({ children }: any) => <div>{children}</div>,
+  AlertDescription: ({ children }: any) => <div>{children}</div>,
+}));
+
+// Mock useFormBlocks hook
+jest.mock("@/lib/hooks/use-form-blocks", () => ({
+  useFormBlocks: () => [],
+}));
+
+// Mock utils
+jest.mock("@/lib/utils", () => ({
+  cn: (...args: any[]) => args.filter(Boolean).join(" "),
+}));
+
 // Mock child components
 jest.mock("../rule-builder", () => ({
   RuleBuilder: ({ onSave, onCancel }: any) => (
@@ -26,6 +73,16 @@ jest.mock("../rule-builder", () => ({
 
 jest.mock("../logic-graph", () => ({
   LogicGraph: () => <div data-testid="logic-graph">Logic Graph</div>,
+}));
+
+jest.mock("../full-screen-logic-graph", () => ({
+  FullScreenLogicGraph: ({ isOpen, onClose }: any) =>
+    isOpen ? (
+      <div data-testid="full-screen-logic-graph">
+        <h3>Full Screen Logic Graph</h3>
+        <button onClick={onClose}>Close</button>
+      </div>
+    ) : null,
 }));
 
 describe("LogicEditor", () => {
@@ -104,14 +161,16 @@ describe("LogicEditor", () => {
     const user = userEvent.setup();
     render(<LogicEditor />);
 
-    // Click on the rule card first (rules are clickable)
-    await user.click(screen.getByText("Rule #1"));
+    // Find all buttons
+    const buttons = screen.getAllByRole("button");
 
-    // Find all icon buttons and click the first one (edit button)
-    const iconButtons = screen
-      .getAllByRole("button")
-      .filter((btn) => btn.classList.contains("h-9"));
-    await user.click(iconButtons[0]);
+    // The edit button is the first button after "Add Rule" button
+    // Filter out the tab triggers and find icon buttons
+    const iconButtons = buttons.filter((btn) => !btn.hasAttribute("data-tab-trigger"));
+
+    // Click the edit button for rule-1
+    // index 0: "Full-Screen Graph", index 1: "Add Rule", index 2: first edit button
+    await user.click(iconButtons[2]);
 
     // The RuleBuilder component should be shown
     expect(screen.getByText("Save Rule")).toBeInTheDocument();
@@ -122,12 +181,17 @@ describe("LogicEditor", () => {
     const user = userEvent.setup();
     render(<LogicEditor />);
 
-    // Find all icon buttons and click the third one (delete button is after edit and duplicate)
-    const iconButtons = screen
-      .getAllByRole("button")
-      .filter((btn) => btn.querySelector(".h-4.w-4"));
-    // Delete button should be at index 2 (0: edit, 1: duplicate, 2: delete)
-    await user.click(iconButtons[2]);
+    // Find all buttons
+    const buttons = screen.getAllByRole("button");
+
+    // Filter out the tab triggers and find icon buttons
+    const iconButtons = buttons.filter((btn) => !btn.hasAttribute("data-tab-trigger"));
+
+    // The UI has: Add Rule, Full-Screen Graph buttons, then for each rule: edit, duplicate, delete
+    // So for the first rule's delete button, we need to account for:
+    // index 0: "Full-Screen Graph", index 1: "Add Rule",
+    // index 2: edit for rule-1, index 3: duplicate for rule-1, index 4: delete for rule-1
+    await user.click(iconButtons[4]); // index 4 should be delete for rule-1
 
     expect(mockDeleteLogicRule).toHaveBeenCalledWith("rule-1");
   });
@@ -146,11 +210,14 @@ describe("LogicEditor", () => {
     const user = userEvent.setup();
     render(<LogicEditor />);
 
-    // Find and click the edit button (first icon button)
-    const iconButtons = screen
-      .getAllByRole("button")
-      .filter((btn) => btn.querySelector(".h-4.w-4"));
-    await user.click(iconButtons[0]);
+    // Find all buttons and filter out tab triggers
+    const buttons = screen.getAllByRole("button");
+    const iconButtons = buttons.filter((btn) => !btn.hasAttribute("data-tab-trigger"));
+
+    // Click the edit button for rule-1
+    await user.click(iconButtons[2]); // index 2 is edit for rule-1
+
+    // The RuleBuilder should be shown - click Save Rule
     await user.click(screen.getByText("Save Rule"));
 
     expect(mockUpdateLogicRule).toHaveBeenCalled();
@@ -177,8 +244,9 @@ describe("LogicEditor", () => {
 
   it("shows rule count badge", () => {
     render(<LogicEditor />);
-    // Check that rule conditions and actions are displayed
-    expect(screen.getByText(/0 conditions, 0 actions/)).toBeInTheDocument();
+    // Check that rule conditions and actions are displayed - there should be 2 rules
+    const badges = screen.getAllByText(/0 conditions, 0 actions/);
+    expect(badges).toHaveLength(2); // One for each rule
   });
 
   it("displays rule count", () => {

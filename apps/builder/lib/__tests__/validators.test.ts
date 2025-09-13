@@ -45,7 +45,7 @@ describe("validators", () => {
       const block = {
         id: "1",
         type: "short_text" as const,
-        title: "Test",
+        question: "Test",
         required: true,
       };
 
@@ -60,7 +60,7 @@ describe("validators", () => {
       const block = {
         id: "1",
         type: "email" as const,
-        title: "Email",
+        question: "Email",
         required: true,
       };
 
@@ -75,7 +75,7 @@ describe("validators", () => {
       const block = {
         id: "1",
         type: "select" as const,
-        title: "Select",
+        question: "Select",
         required: true,
         options: [
           { id: "opt1", value: "option1", label: "Option 1" },
@@ -94,7 +94,7 @@ describe("validators", () => {
       const block = {
         id: "1",
         type: "short_text" as const,
-        title: "Text",
+        question: "Text",
         validation: {
           minLength: 5,
           maxLength: 10,
@@ -116,7 +116,7 @@ describe("validators", () => {
       const block = {
         id: "1",
         type: "email" as const,
-        title: "Email",
+        question: "Email",
         required: false,
       };
 

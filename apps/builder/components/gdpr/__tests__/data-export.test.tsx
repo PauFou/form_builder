@@ -22,11 +22,19 @@ jest.mock("@forms/ui", () => ({
   ),
   Alert: ({ children }: any) => <div role="alert">{children}</div>,
   AlertDescription: ({ children }: any) => <div>{children}</div>,
-  Select: ({ children }: any) => <div>{children}</div>,
-  SelectContent: ({ children }: any) => <div>{children}</div>,
+  Select: ({ children, value, onValueChange }: any) => (
+    <select
+      value={value}
+      onChange={(e) => onValueChange(e.target.value)}
+      data-testid="format-select"
+    >
+      {children}
+    </select>
+  ),
+  SelectContent: ({ children }: any) => <>{children}</>,
   SelectItem: ({ children, value }: any) => <option value={value}>{children}</option>,
-  SelectTrigger: ({ children }: any) => <button>{children}</button>,
-  SelectValue: ({ placeholder }: any) => <span>{placeholder}</span>,
+  SelectTrigger: ({ children }: any) => <>{children}</>,
+  SelectValue: () => null,
   Progress: ({ value }: any) => (
     <div role="progressbar" aria-valuenow={value}>
       {value}%
@@ -113,11 +121,9 @@ describe("DataExport", () => {
     const user = userEvent.setup();
     render(<DataExport userId={mockUserId} />);
 
-    // Select CSV format
-    const formatSelect = screen.getByText("Select Format");
-    await user.click(formatSelect);
-    const csvOption = screen.getByText("CSV");
-    await user.click(csvOption);
+    // Select CSV format using the select element
+    const formatSelect = screen.getByTestId("format-select");
+    await user.selectOptions(formatSelect, "csv");
 
     const exportButton = screen.getByText("Export Data");
     await user.click(exportButton);
@@ -173,8 +179,7 @@ describe("DataExport", () => {
 
     render(<DataExport userId={mockUserId} />);
 
-    expect(screen.getByText(/Failed to export data/)).toBeInTheDocument();
-    expect(screen.getByText("Network error")).toBeInTheDocument();
+    expect(screen.getByText("Failed to export data. Network error")).toBeInTheDocument();
   });
 
   it("downloads file after successful export", async () => {
@@ -186,13 +191,23 @@ describe("DataExport", () => {
       format: "json",
     });
 
-    render(<DataExport userId={mockUserId} />);
+    const { rerender } = render(<DataExport userId={mockUserId} />);
 
     const exportButton = screen.getByText("Export Data");
     await user.click(exportButton);
 
-    // Wait for the export to complete
-    await screen.findByText(/Your data has been exported successfully/);
+    // Simulate the store updating status to success after export
+    (useGDPRStore as unknown as jest.Mock).mockReturnValue({
+      exportData: mockExportData,
+      exportStatus: "success",
+      exportProgress: 100,
+      exportError: null,
+    });
+
+    rerender(<DataExport userId={mockUserId} />);
+
+    // Now the success message should be visible
+    expect(screen.getByText("Your data has been exported successfully.")).toBeInTheDocument();
 
     // Check that download was triggered
     expect(global.URL.createObjectURL).toHaveBeenCalled();
@@ -205,12 +220,22 @@ describe("DataExport", () => {
       format: "json",
     });
 
-    render(<DataExport userId={mockUserId} />);
+    const { rerender } = render(<DataExport userId={mockUserId} />);
 
     const exportButton = screen.getByText("Export Data");
     await user.click(exportButton);
 
-    await screen.findByText(/Your data has been exported successfully/);
+    // Simulate the store updating status to success after export
+    (useGDPRStore as unknown as jest.Mock).mockReturnValue({
+      exportData: mockExportData,
+      exportStatus: "success",
+      exportProgress: 100,
+      exportError: null,
+    });
+
+    rerender(<DataExport userId={mockUserId} />);
+
+    expect(screen.getByText("Your data has been exported successfully.")).toBeInTheDocument();
     expect(mockExportData).toHaveBeenCalled();
   });
 });

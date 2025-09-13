@@ -40,8 +40,6 @@ export const authApi = {
     if (refreshToken) {
       await apiClient.post("/v1/auth/logout/", { refresh: refreshToken });
     }
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
   },
 
   // Get current user

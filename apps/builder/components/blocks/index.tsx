@@ -20,6 +20,12 @@ export { SignatureBlock } from "./signature-block";
 export { PaymentBlock } from "./payment-block";
 export { StatementBlock } from "./statement-block";
 export { DropdownBlock } from "./dropdown-block";
+export { TimeBlock } from "./time-block";
+export { URLBlock } from "./url-block";
+export { TimeBlockWrapper } from "./time-block-wrapper";
+export { URLBlockWrapper } from "./url-block-wrapper";
+export { EnhancedFileUploadBlock } from "./enhanced-file-upload-block";
+export { EnhancedSignatureBlock } from "./enhanced-signature-block";
 export type { Block, BlockProps } from "./types";
 
 import { ShortTextBlock } from "./short-text-block";
@@ -44,6 +50,12 @@ import { SignatureBlock } from "./signature-block";
 import { PaymentBlock } from "./payment-block";
 import { StatementBlock } from "./statement-block";
 import { DropdownBlock } from "./dropdown-block";
+import { TimeBlock } from "./time-block";
+import { URLBlock } from "./url-block";
+import { TimeBlockWrapper } from "./time-block-wrapper";
+import { URLBlockWrapper } from "./url-block-wrapper";
+import { EnhancedFileUploadBlock } from "./enhanced-file-upload-block";
+import { EnhancedSignatureBlock } from "./enhanced-signature-block";
 import type { BlockProps } from "./types";
 
 export const BLOCK_COMPONENTS: Record<string, React.ComponentType<BlockProps>> = {
@@ -62,13 +74,15 @@ export const BLOCK_COMPONENTS: Record<string, React.ComponentType<BlockProps>> =
   rating: RatingBlock,
   nps: NPSBlock,
   scale: ScaleBlock,
-  file_upload: FileUploadBlock,
+  file_upload: EnhancedFileUploadBlock,
   matrix: MatrixBlock,
   ranking: RankingBlock,
-  signature: SignatureBlock,
+  signature: EnhancedSignatureBlock,
   payment: PaymentBlock,
   statement: StatementBlock,
   dropdown: DropdownBlock,
+  time: TimeBlockWrapper,
+  url: URLBlockWrapper,
   // Missing blocks that still need implementation:
   // scheduler: SchedulerBlock,
   // embed: EmbedBlock,

@@ -113,17 +113,13 @@ describe("PropertiesPanel", () => {
       render(<PropertiesPanel />);
 
       const questionInput = screen.getByDisplayValue("What is your name?");
-      await user.clear(questionInput);
-      await user.type(questionInput, "What is your email?");
+
+      // Type a single character to test onChange
+      await user.type(questionInput, "!");
 
       // Check that updateBlock was called
       expect(mockUpdateBlock).toHaveBeenCalled();
-      // Check that at least one call has the correct value
-      const calls = mockUpdateBlock.mock.calls;
-      const hasCorrectCall = calls.some(
-        (call) => call[0] === "block-1" && call[1]?.question === "What is your email?"
-      );
-      expect(hasCorrectCall).toBe(true);
+      expect(mockUpdateBlock).toHaveBeenCalledWith("block-1", { question: "What is your name?!" });
     });
 
     it("updates description", async () => {
@@ -131,15 +127,14 @@ describe("PropertiesPanel", () => {
       render(<PropertiesPanel />);
 
       const descInput = screen.getByDisplayValue("Please enter your full name");
-      await user.clear(descInput);
-      await user.type(descInput, "Enter your email address");
+
+      // Type a single character to test onChange
+      await user.type(descInput, "!");
 
       expect(mockUpdateBlock).toHaveBeenCalled();
-      const calls = mockUpdateBlock.mock.calls;
-      const hasCorrectCall = calls.some(
-        (call) => call[0] === "block-1" && call[1]?.description === "Enter your email address"
-      );
-      expect(hasCorrectCall).toBe(true);
+      expect(mockUpdateBlock).toHaveBeenCalledWith("block-1", {
+        description: "Please enter your full name!",
+      });
     });
 
     it("toggles required field", async () => {
@@ -217,7 +212,8 @@ describe("PropertiesPanel", () => {
 
       render(<PropertiesPanel />);
 
-      expect(screen.getByText("Email")).toBeInTheDocument();
+      // The type is shown as lowercase in a span with muted-foreground class
+      expect(screen.getByText("email")).toBeInTheDocument();
     });
 
     it("shows number-specific properties", () => {
@@ -244,7 +240,8 @@ describe("PropertiesPanel", () => {
 
       render(<PropertiesPanel />);
 
-      expect(screen.getByText("Number")).toBeInTheDocument();
+      // The type is shown as lowercase in a span with muted-foreground class
+      expect(screen.getByText("number")).toBeInTheDocument();
     });
   });
 });

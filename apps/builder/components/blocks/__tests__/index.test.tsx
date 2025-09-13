@@ -72,7 +72,7 @@ describe("Block Components", () => {
 
   it("exports the correct number of block components", () => {
     const blockCount = Object.keys(BLOCK_COMPONENTS).length;
-    expect(blockCount).toBe(22);
+    expect(blockCount).toBe(24); // Updated: added Enhanced file upload and signature
   });
 
   it("does not contain undefined components", () => {

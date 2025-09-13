@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
@@ -30,8 +30,12 @@ import {
 import { BlockLibrary } from "../../../../components/builder/block-library";
 import { FormCanvas } from "../../../../components/builder/form-canvas";
 import { BlockSettings } from "../../../../components/builder/block-settings";
+import { AutosaveStatus } from "../../../../components/builder/autosave-status";
+import { CommandPalette } from "../../../../components/builder/command-palette";
+import { PublishDialog } from "../../../../components/publish/publish-dialog";
 import { formsApi } from "../../../../lib/api/forms";
 import { useFormBuilderStore } from "../../../../lib/stores/form-builder-store";
+import { useAutosave } from "../../../../lib/hooks/use-autosave";
 import { DEMO_FORMS } from "../../../../lib/demo-forms";
 
 export default function EditFormPage() {
@@ -40,6 +44,9 @@ export default function EditFormPage() {
 
   const { form, setForm, isDirty, undo, redo, history, historyIndex, markClean } =
     useFormBuilderStore();
+
+  const autosaveStatus = useAutosave(formId);
+  const [showPublishDialog, setShowPublishDialog] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["form", formId],
@@ -77,13 +84,8 @@ export default function EditFormPage() {
     }
   };
 
-  const handlePublish = async () => {
-    try {
-      await formsApi.publish(formId);
-      toast.success("Form published successfully");
-    } catch (error) {
-      toast.error("Failed to publish form");
-    }
+  const handlePublish = () => {
+    setShowPublishDialog(true);
   };
 
   if (isLoading) {
@@ -121,7 +123,11 @@ export default function EditFormPage() {
           </Link>
           <Separator orientation="vertical" className="h-6" />
           <h1 className="text-lg font-semibold">{form?.title || "Untitled Form"}</h1>
-          {isDirty && <span className="text-sm text-muted-foreground">(Unsaved changes)</span>}
+          <AutosaveStatus
+            isDirty={isDirty}
+            lastSaved={autosaveStatus.lastSaved || undefined}
+            isSaving={autosaveStatus.isSaving}
+          />
         </div>
 
         <div className="flex items-center gap-2">
@@ -195,6 +201,18 @@ export default function EditFormPage() {
           <BlockSettings />
         </aside>
       </div>
+
+      <CommandPalette
+        onSave={handleSave}
+        onPreview={() => window.open(`/forms/${formId}/preview`, "_blank")}
+        onPublish={handlePublish}
+      />
+
+      <PublishDialog
+        isOpen={showPublishDialog}
+        onClose={() => setShowPublishDialog(false)}
+        formId={formId}
+      />
     </div>
   );
 }

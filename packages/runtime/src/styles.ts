@@ -38,6 +38,21 @@ export function generateStyles(theme?: Theme): string {
     .fr-form {
       animation: fr-fade-in 0.3s ease;
     }
+    
+    .fr-step {
+      position: relative;
+      min-height: 200px;
+    }
+    
+    .fr-step-next {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    
+    .fr-step-prev {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
 
     .fr-field {
       margin-bottom: calc(var(--fr-spacing) * 1.5);
@@ -253,10 +268,58 @@ export function generateStyles(theme?: Theme): string {
       }
     }
 
+    /* Screen reader only content */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    
+    /* Error summary for accessibility */
+    .fr-error-summary {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-radius: var(--fr-radius);
+      padding: var(--fr-spacing);
+      margin-bottom: calc(var(--fr-spacing) * 2);
+    }
+    
+    .fr-error-summary h2 {
+      color: #dc2626;
+      font-size: 1.125rem;
+      margin-bottom: calc(var(--fr-spacing) * 0.5);
+    }
+    
+    .fr-error-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .fr-error-list li {
+      margin-bottom: calc(var(--fr-spacing) * 0.25);
+    }
+    
+    .fr-error-list a {
+      color: #dc2626;
+      text-decoration: underline;
+    }
+    
+    .fr-error-list a:hover {
+      text-decoration: none;
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .fr-form,
       .fr-progress-fill,
-      .fr-rating-star {
+      .fr-rating-star,
+      .fr-step {
         animation: none;
         transition: none;
       }

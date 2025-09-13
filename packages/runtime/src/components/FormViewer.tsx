@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FormField } from "./FormField";
 import { ProgressBar } from "./ProgressBar";
 import { useFormRuntime } from "../hooks";
@@ -27,23 +27,78 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
   } = useFormRuntime(schema, config);
 
   const formRef = useRef<HTMLFormElement>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionDirection, setTransitionDirection] = useState<"next" | "prev" | "none">("none");
+  const previousStepRef = useRef(state.currentStep);
 
-  // Focus management
+  // Handle step transitions with animations
   useEffect(() => {
-    if (currentBlock && formRef.current) {
-      const input = formRef.current.querySelector<HTMLElement>(
-        `#${currentBlock.id}, [name="${currentBlock.id}"]`
-      );
-      input?.focus();
-    }
-  }, [currentBlock]);
+    const currentStep = state.currentStep;
+    const previousStep = previousStepRef.current;
 
-  // Keyboard navigation
+    if (currentStep !== previousStep) {
+      setTransitionDirection(currentStep > previousStep ? "next" : "prev");
+      setIsTransitioning(true);
+
+      // Clear transition after animation
+      const timer = setTimeout(() => {
+        setIsTransitioning(false);
+        setTransitionDirection("none");
+      }, 150); // Brief-specified 150ms duration
+
+      previousStepRef.current = currentStep;
+      return () => clearTimeout(timer);
+    }
+  }, [state.currentStep]);
+
+  // Focus management with accessibility
+  useEffect(() => {
+    if (currentBlock && formRef.current && !isTransitioning) {
+      // Delay focus to allow transition to complete
+      const timer = setTimeout(
+        () => {
+          const input = formRef.current?.querySelector<HTMLElement>(
+            `#${currentBlock.id}, [name="${currentBlock.id}"]`
+          );
+          if (input) {
+            input.focus();
+            // Announce step change to screen readers
+            const announcement = `Step ${state.currentStep + 1} of ${visibleBlocks.length}. ${currentBlock.question}`;
+            const ariaLive = document.createElement("div");
+            ariaLive.setAttribute("aria-live", "polite");
+            ariaLive.setAttribute("aria-atomic", "true");
+            ariaLive.className = "sr-only";
+            ariaLive.textContent = announcement;
+            document.body.appendChild(ariaLive);
+            setTimeout(() => document.body.removeChild(ariaLive), 1000);
+          }
+        },
+        isTransitioning ? 150 : 0
+      );
+
+      return () => clearTimeout(timer);
+    }
+  }, [currentBlock, isTransitioning, state.currentStep, visibleBlocks.length]);
+
+  // Enhanced keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && e.ctrlKey && canGoNext()) {
-        e.preventDefault();
-        goNext();
+      // Enter = Next (as specified in brief)
+      if (e.key === "Enter" && !e.shiftKey && canGoNext()) {
+        const target = e.target as HTMLElement;
+        // Don't interfere with textarea line breaks or form submissions
+        if (target.tagName !== "TEXTAREA" && target.tagName !== "BUTTON") {
+          e.preventDefault();
+          goNext();
+        }
+      }
+      // Shift+Enter = line break for textarea (handled by textarea)
+      // Esc = cancel focus (as specified)
+      else if (e.key === "Escape") {
+        const activeElement = document.activeElement as HTMLElement;
+        if (activeElement) {
+          activeElement.blur();
+        }
       }
     };
 
@@ -87,7 +142,17 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
       {schema.settings?.showProgressBar && <ProgressBar progress={progress} />}
 
       <form ref={formRef} onSubmit={handleSubmit} className="fr-form">
-        <div className="fr-step" key={currentBlock.id}>
+        <div
+          className={`fr-step ${isTransitioning ? `fr-step-${transitionDirection}` : ""}`}
+          key={currentBlock.id}
+          style={{
+            opacity: isTransitioning ? 0 : 1,
+            transform: isTransitioning
+              ? `translateX(${transitionDirection === "next" ? "20px" : "-20px"})`
+              : "translateX(0)",
+            transition: "opacity 150ms ease-in-out, transform 150ms ease-in-out",
+          }}
+        >
           <FormField
             block={currentBlock}
             value={state.values[currentBlock.id]}

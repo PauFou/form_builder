@@ -136,15 +136,14 @@ describe("Canvas", () => {
 
     const nameInput = screen.getByDisplayValue("Test Form") as HTMLInputElement;
 
-    // Clear and type new value
-    await user.clear(nameInput);
-    await user.type(nameInput, "Updated Form");
-
-    // The input should have the new value
-    expect(nameInput.value).toBe("Updated Form");
+    // Type a character to trigger onChange
+    await user.type(nameInput, "x");
 
     // Check that updateForm was called
     expect(mockUpdateForm).toHaveBeenCalled();
+
+    // Should be called with the original value plus the new character
+    expect(mockUpdateForm).toHaveBeenCalledWith({ name: "Test Formx" });
   });
 
   it("updates form description", async () => {
@@ -154,13 +153,15 @@ describe("Canvas", () => {
     const descInput = screen.getByPlaceholderText(
       "Add a description for your form..."
     ) as HTMLTextAreaElement;
-    await user.type(descInput, "New description");
 
-    // The textarea should have the combined value
-    expect(descInput.value).toBe("Test form descriptionNew description");
+    // Type one character to trigger onChange
+    await user.type(descInput, "!");
 
     // Check that updateForm was called
     expect(mockUpdateForm).toHaveBeenCalled();
+
+    // Should append to existing description
+    expect(mockUpdateForm).toHaveBeenCalledWith({ description: "Test form description!" });
   });
 
   it("adds block from empty state", async () => {
@@ -182,7 +183,14 @@ describe("Canvas", () => {
     const addButton = screen.getByText("Add Block");
     await user.click(addButton);
 
-    expect(mockAddBlock).toHaveBeenCalledWith("short_text");
+    expect(mockAddBlock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "short_text",
+        question: "",
+        required: false,
+      }),
+      "page-1"
+    );
   });
 
   it("highlights when dragging over", () => {

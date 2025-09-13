@@ -19,7 +19,9 @@ export function builderToContractBlock(builderBlock: BuilderBlock): ContractBloc
   if (builderBlock.options) {
     contractBlock.options = builderBlock.options.map((opt) => ({
       id: opt.id,
-      text: opt.label, // Map label to text
+      value: opt.value,
+      label: opt.label,
+      text: opt.label, // Also add text for backward compatibility
     }));
   }
 
@@ -40,9 +42,9 @@ export function contractToBuilderBlock(contractBlock: ContractBlock): BuilderBlo
   // Convert options format
   if (contractBlock.options) {
     builderBlock.options = contractBlock.options.map((opt) => ({
-      id: opt.id,
-      label: opt.text || opt.label || "", // Map text to label
-      value: opt.id, // Use id as value
+      id: opt.id || opt.value,
+      label: opt.label, // Use label directly
+      value: opt.value, // Use value directly
     }));
   }
 

@@ -30,6 +30,8 @@ import {
   Image,
   GitBranch,
   Blocks,
+  Clock,
+  Link,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
@@ -37,13 +39,15 @@ import type { Block } from "@forms/contracts";
 import { LogicEditor } from "../logic/logic-editor";
 
 const blockTypes = [
-  { icon: Type, type: "text", label: "Short Text", category: "Text" },
+  { icon: Type, type: "short_text", label: "Short Text", category: "Text" },
   { icon: AlignLeft, type: "long_text", label: "Long Text", category: "Text" },
   { icon: Mail, type: "email", label: "Email", category: "Contact" },
   { icon: Phone, type: "phone", label: "Phone", category: "Contact" },
   { icon: Hash, type: "number", label: "Number", category: "Number" },
   { icon: CreditCard, type: "currency", label: "Currency", category: "Number" },
   { icon: Calendar, type: "date", label: "Date", category: "Date & Time" },
+  { icon: Clock, type: "time", label: "Time", category: "Date & Time" },
+  { icon: Link, type: "url", label: "URL", category: "Contact" },
   { icon: MapPin, type: "address", label: "Address", category: "Contact" },
   { icon: ChevronDown, type: "dropdown", label: "Dropdown", category: "Choice" },
   { icon: Circle, type: "single_select", label: "Single Select", category: "Choice" },

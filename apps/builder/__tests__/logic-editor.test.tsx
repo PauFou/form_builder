@@ -179,6 +179,17 @@ jest.mock("@/components/logic/logic-graph", () => ({
   ),
 }));
 
+// Mock FullScreenLogicGraph component
+jest.mock("@/components/logic/full-screen-logic-graph", () => ({
+  FullScreenLogicGraph: ({ isOpen, onClose }: any) =>
+    isOpen ? (
+      <div data-testid="full-screen-logic-graph">
+        <h3>Full Screen Logic Graph</h3>
+        <button onClick={onClose}>Close</button>
+      </div>
+    ) : null,
+}));
+
 describe("LogicEditor", () => {
   beforeEach(() => {
     jest.clearAllMocks();

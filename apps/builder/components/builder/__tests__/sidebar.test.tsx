@@ -57,6 +57,7 @@ describe("Sidebar", () => {
     jest.clearAllMocks();
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       addBlock: mockAddBlock,
+      selectedPageId: "page-1",
     });
   });
 
@@ -152,7 +153,14 @@ describe("Sidebar", () => {
     const emailBlock = screen.getByText("Email").closest('div[draggable="true"]');
     await user.click(emailBlock!);
 
-    expect(mockAddBlock).toHaveBeenCalledWith("email");
+    expect(mockAddBlock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "email",
+        question: "",
+        required: false,
+      }),
+      "page-1"
+    );
   });
 
   it("makes blocks draggable", () => {

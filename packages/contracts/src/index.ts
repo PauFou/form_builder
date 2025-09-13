@@ -5,16 +5,15 @@ export * from "./form.contract";
 export interface Block {
   id: string;
   type: string;
-  question?: string;
+  question: string;
   description?: string;
   placeholder?: string;
   required?: boolean;
   helpText?: string;
   options?: Array<{
     id: string;
-    text?: string;
-    label?: string;
-    value?: string;
+    label: string;
+    value: string;
   }>;
   [key: string]: any;
 }

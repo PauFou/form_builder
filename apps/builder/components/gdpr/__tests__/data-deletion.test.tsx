@@ -26,13 +26,33 @@ jest.mock("@forms/ui", () => ({
     </div>
   ),
   AlertDescription: ({ children }: any) => <div>{children}</div>,
-  Dialog: ({ children, open }: any) => (open ? <div role="dialog">{children}</div> : null),
-  DialogContent: ({ children }: any) => <div>{children}</div>,
+  Dialog: ({ children, open, onOpenChange }: any) => {
+    // Clone children and pass open state down
+    const childrenWithProps = React.Children.map(children, (child) => {
+      if (React.isValidElement(child)) {
+        return React.cloneElement(child as any, { open, onOpenChange });
+      }
+      return child;
+    });
+    return <>{childrenWithProps}</>;
+  },
+  DialogContent: ({ children, open }: any) => (open ? <div role="dialog">{children}</div> : null),
   DialogDescription: ({ children }: any) => <p>{children}</p>,
   DialogFooter: ({ children }: any) => <div>{children}</div>,
   DialogHeader: ({ children }: any) => <div>{children}</div>,
   DialogTitle: ({ children }: any) => <h3>{children}</h3>,
-  DialogTrigger: ({ children, asChild }: any) => <>{children}</>,
+  DialogTrigger: ({ children, asChild, onOpenChange }: any) => {
+    if (asChild && React.isValidElement(children)) {
+      const childElement = children as React.ReactElement<any>;
+      return React.cloneElement(childElement, {
+        onClick: (e: any) => {
+          childElement.props.onClick?.(e);
+          onOpenChange?.(true);
+        },
+      });
+    }
+    return <>{children}</>;
+  },
   Checkbox: ({ checked, onCheckedChange }: any) => (
     <input type="checkbox" checked={checked} onChange={(e) => onCheckedChange(e.target.checked)} />
   ),
@@ -196,8 +216,7 @@ describe("DataDeletion", () => {
 
     render(<DataDeletion userId={mockUserId} />);
 
-    expect(screen.getByText(/Failed to delete data/)).toBeInTheDocument();
-    expect(screen.getByText("Permission denied")).toBeInTheDocument();
+    expect(screen.getByText("Failed to delete data. Permission denied")).toBeInTheDocument();
   });
 
   it("resets state after successful deletion", async () => {

@@ -14,7 +14,7 @@ import { MultiSelectBlock } from "../../../components/blocks/multi-select-block"
 import { RatingBlock } from "../../../components/blocks/rating-block";
 import { NPSBlock } from "../../../components/blocks/nps-block";
 import { ScaleBlock } from "../../../components/blocks/scale-block";
-import { FileUploadBlock } from "../../../components/blocks/file-upload-block";
+import { EnhancedFileUploadBlock } from "../../../components/blocks/enhanced-file-upload-block";
 
 describe("Block Registry", () => {
   describe("BLOCK_COMPONENTS", () => {
@@ -78,8 +78,8 @@ describe("Block Registry", () => {
       expect(BLOCK_COMPONENTS.scale).toBe(ScaleBlock);
     });
 
-    it("should contain FileUploadBlock for file_upload type", () => {
-      expect(BLOCK_COMPONENTS.file_upload).toBe(FileUploadBlock);
+    it("should contain EnhancedFileUploadBlock for file_upload type", () => {
+      expect(BLOCK_COMPONENTS.file_upload).toBe(EnhancedFileUploadBlock);
     });
 
     it("should return undefined for unknown type", () => {
@@ -110,7 +110,7 @@ describe("Block Registry", () => {
 
     it("should have exactly 22 block types", () => {
       const blockTypes = Object.keys(BLOCK_COMPONENTS);
-      expect(blockTypes).toHaveLength(22);
+      expect(blockTypes).toHaveLength(24); // Updated: added Enhanced file upload and signature
     });
   });
 });

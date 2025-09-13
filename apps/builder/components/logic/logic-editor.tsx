@@ -25,6 +25,7 @@ import { useFormBlocks } from "@/lib/hooks/use-form-blocks";
 import type { LogicRule } from "@forms/contracts";
 import { RuleBuilder } from "./rule-builder";
 import { LogicGraph } from "./logic-graph";
+import { FullScreenLogicGraph } from "./full-screen-logic-graph";
 import { cn } from "@/lib/utils";
 
 export function LogicEditor() {
@@ -35,6 +36,7 @@ export function LogicEditor() {
   const [showRuleBuilder, setShowRuleBuilder] = useState(false);
   const [editingRule, setEditingRule] = useState<LogicRule | null>(null);
   const [activeView, setActiveView] = useState<"list" | "graph">("list");
+  const [showFullScreenGraph, setShowFullScreenGraph] = useState(false);
 
   const logic = form?.logic?.rules || [];
 
@@ -117,10 +119,16 @@ export function LogicEditor() {
           <h2 className="text-2xl font-bold">Form Logic</h2>
           <p className="text-muted-foreground">Create conditional rules to control form behavior</p>
         </div>
-        <Button onClick={handleAddRule}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Rule
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setShowFullScreenGraph(true)}>
+            <PlayCircle className="mr-2 h-4 w-4" />
+            Full-Screen Graph
+          </Button>
+          <Button onClick={handleAddRule}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Rule
+          </Button>
+        </div>
       </div>
 
       {logic.length === 0 ? (
@@ -262,6 +270,11 @@ export function LogicEditor() {
           are applied immediately. Use the graph view to visualize the flow of your form logic.
         </AlertDescription>
       </Alert>
+
+      <FullScreenLogicGraph
+        isOpen={showFullScreenGraph}
+        onClose={() => setShowFullScreenGraph(false)}
+      />
     </div>
   );
 }
