@@ -126,7 +126,7 @@ export function LogicGraph({ rules, onEditRule }: LogicGraphProps) {
     });
 
     return { nodes, edges };
-  }, [form, rules]);
+  }, [rules, blocks]);
 
   const getNodeIcon = (node: GraphNode) => {
     if (node.type === "condition") {

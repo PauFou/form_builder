@@ -44,7 +44,7 @@ export function GDPRDashboard() {
     if (organization) {
       loadComplianceStatus();
     }
-  }, [organization]);
+  }, [organization]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadComplianceStatus = async () => {
     try {

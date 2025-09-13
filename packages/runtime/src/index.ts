@@ -31,6 +31,7 @@ export type { AnalyticsEvent, AnalyticsConfig } from "./services/analytics-servi
 // Utility exports
 export { validateField, shouldShowBlock, formatValue } from "./utils";
 export { generateStyles, injectStyles } from "./styles";
+export { ExpressionEngine, evaluate, validateExpression } from "./expression-engine";
 
 // Store exports (for advanced usage)
 export { OfflineStore } from "./store";
