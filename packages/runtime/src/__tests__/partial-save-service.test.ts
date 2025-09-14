@@ -268,6 +268,7 @@ describe("PartialSaveService", () => {
     it("should load from API with resume token", async () => {
       // Clear localStorage to ensure API is used
       localStorageMock.clear();
+      localStorageMock.getItem.mockReturnValue(null);
       
       // Mock URL params - need to mock URLSearchParams as well
       const originalLocation = window.location;
@@ -285,8 +286,7 @@ describe("PartialSaveService", () => {
         toString: () => "https://example.com?resume=token-123",
       };
 
-      const apiService = new PartialSaveService(config);
-
+      // Mock fetch before creating service
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => ({
@@ -300,6 +300,7 @@ describe("PartialSaveService", () => {
         }),
       });
 
+      const apiService = new PartialSaveService(config);
       const loaded = await apiService.load();
 
       expect(fetch).toHaveBeenCalledWith(
@@ -337,6 +338,14 @@ describe("PartialSaveService", () => {
 
       // Ensure fetch is properly mocked for this test
       (fetch as jest.Mock).mockClear();
+      (fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          id: "partial-123",
+          resumeToken: "token-123",
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        }),
+      });
       
       const testService = new PartialSaveService({
         formId: "test-form",
