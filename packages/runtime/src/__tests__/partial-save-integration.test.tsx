@@ -370,9 +370,10 @@ describe("Partial Save Integration", () => {
       await new Promise((resolve) => setTimeout(resolve, 150));
     });
 
-    // Should show offline status
+    // Should show offline status in SaveStatus component
     await waitFor(() => {
-      expect(getByText("Offline - data saved locally")).toBeInTheDocument();
+      const saveStatus = getByText("Offline - data saved locally");
+      expect(saveStatus).toBeInTheDocument();
     });
 
     // Data should still be saved locally

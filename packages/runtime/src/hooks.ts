@@ -680,11 +680,23 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     if (!offlineServiceRef.current) return;
 
     let cancelled = false;
-    offlineServiceRef.current.hasUnsyncedData().then((hasUnsynced) => {
-      if (!cancelled) {
-        setHasUnsyncedData(hasUnsynced);
+    const checkUnsyncedData = async () => {
+      try {
+        if (offlineServiceRef.current) {
+          const hasUnsynced = await offlineServiceRef.current.hasUnsyncedData();
+          if (!cancelled) {
+            setHasUnsyncedData(hasUnsynced);
+          }
+        }
+      } catch (error) {
+        // Ignore errors during cleanup
+        if (!cancelled) {
+          console.error("Error checking unsynced data:", error);
+        }
       }
-    });
+    };
+
+    checkUnsyncedData();
 
     return () => {
       cancelled = true;
@@ -715,14 +727,6 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
       }
       setIsOnline(false);
     };
-
-    // For tests, poll the online state instead of relying on events
-    if (process.env.NODE_ENV === "test") {
-      const interval = setInterval(() => {
-        setIsOnline(offlineServiceRef.current?.online ?? true);
-      }, 100);
-      return () => clearInterval(interval);
-    }
 
     offlineServiceRef.current.on("online", handleOnline);
     offlineServiceRef.current.on("offline", handleOffline);

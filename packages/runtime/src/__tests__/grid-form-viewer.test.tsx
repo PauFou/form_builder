@@ -132,14 +132,27 @@ describe("GridFormViewer", () => {
     await user.type(screen.getByLabelText(/what is your email/i), "john@example.com");
     await user.click(screen.getByText("Next"));
 
-    // Wait for page 2 to be fully loaded
+    // Wait for page 2 to be fully loaded and ensure the field is ready
     await waitFor(() => {
+      expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
       expect(screen.getByLabelText(/what is your age/i)).toBeInTheDocument();
     });
 
-    // Fill page 2
-    await user.type(screen.getByLabelText(/what is your age/i), "30");
-    await user.type(screen.getByLabelText(/any feedback/i), "Great form!");
+    // Fill page 2 - use clear() first to ensure field is ready
+    const ageField = screen.getByLabelText(/what is your age/i) as HTMLInputElement;
+    const feedbackField = screen.getByLabelText(/any feedback/i) as HTMLTextAreaElement;
+
+    await user.clear(ageField);
+    await user.type(ageField, "30");
+
+    await user.clear(feedbackField);
+    await user.type(feedbackField, "Great form!");
+
+    // Verify values were entered
+    await waitFor(() => {
+      expect(ageField.value).toBe("30");
+      expect(feedbackField.value).toBe("Great form!");
+    });
 
     // Submit
     const submitButton = screen.getByText("Submit Form");

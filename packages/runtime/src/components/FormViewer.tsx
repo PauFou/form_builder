@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FormField } from "./FormField";
 import { ProgressBar } from "./ProgressBar";
 import { useFormRuntime } from "../hooks";
+import { createTimer, clearTimer } from "../utils/test-utils";
 import type { FormSchema, RuntimeConfig } from "../types";
 
 interface FormViewerProps {
@@ -41,13 +42,13 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
       setIsTransitioning(true);
 
       // Clear transition after animation
-      const timer = setTimeout(() => {
+      const timer = createTimer(() => {
         setIsTransitioning(false);
         setTransitionDirection("none");
       }, 150); // Brief-specified 150ms duration
 
       previousStepRef.current = currentStep;
-      return () => clearTimeout(timer);
+      return () => clearTimer(timer);
     }
   }, [state.currentStep]);
 
@@ -55,7 +56,7 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
   useEffect(() => {
     if (currentBlock && formRef.current && !isTransitioning) {
       // Delay focus to allow transition to complete
-      const timer = setTimeout(
+      const timer = createTimer(
         () => {
           const input = formRef.current?.querySelector<HTMLElement>(
             `#${currentBlock.id}, [name="${currentBlock.id}"]`
@@ -76,7 +77,7 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
         isTransitioning ? 150 : 0
       );
 
-      return () => clearTimeout(timer);
+      return () => clearTimer(timer);
     }
   }, [currentBlock, isTransitioning, state.currentStep, visibleBlocks.length]);
 

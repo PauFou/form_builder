@@ -56,7 +56,23 @@ fi
 echo ""
 echo "Running tests..."
 echo "Using DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE"
-python -m pytest -xvs --cov=. --cov-report=xml --cov-report=term
+
+# Debug environment
+python debug_env.py
+
+# Ensure all environment variables are exported for pytest
+export POSTGRES_HOST POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB POSTGRES_PORT
+export DJANGO_SETTINGS_MODULE DJANGO_SECRET_KEY ALLOWED_HOSTS DEBUG
+export REDIS_URL CELERY_BROKER_URL CELERY_RESULT_BACKEND
+
+# Run pytest with explicit env
+env POSTGRES_HOST=$POSTGRES_HOST \
+    POSTGRES_USER=$POSTGRES_USER \
+    POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
+    POSTGRES_DB=$POSTGRES_DB \
+    POSTGRES_PORT=$POSTGRES_PORT \
+    DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE \
+    python -m pytest -xvs --cov=. --cov-report=xml --cov-report=term
 
 TEST_RESULT=$?
 

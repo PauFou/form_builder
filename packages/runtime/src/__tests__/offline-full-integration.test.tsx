@@ -165,13 +165,17 @@ describe("FormViewer Offline Integration", () => {
     });
 
     // Wait for debounced autosave to complete (2 seconds)
-    await new Promise((resolve) => setTimeout(resolve, 2200));
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 2200));
+    });
 
     // Unmount (simulate page refresh)
     unmount();
 
     // Small delay to ensure IndexedDB operations complete
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    });
 
     // Re-render with same respondent key - should restore state
     render(<FormViewer schema={mockSchema} config={config} />);
@@ -233,7 +237,9 @@ describe("FormViewer Offline Integration", () => {
     });
 
     // Wait for any pending debounced saves to complete
-    await new Promise((resolve) => setTimeout(resolve, 2200));
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 2200));
+    });
 
     // Clear the mock to test offline behavior
     onPartialSave.mockClear();
@@ -246,7 +252,9 @@ describe("FormViewer Offline Integration", () => {
     window.dispatchEvent(new Event("offline"));
 
     // Wait a bit for offline status to update
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    });
 
     // Update form while offline
     const updatedNameInput = screen.getByRole("textbox", { name: /What's your name/ });
@@ -258,7 +266,9 @@ describe("FormViewer Offline Integration", () => {
     });
 
     // Partial save should not be called while offline
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    });
     expect(onPartialSave).not.toHaveBeenCalled();
 
     // Go back online

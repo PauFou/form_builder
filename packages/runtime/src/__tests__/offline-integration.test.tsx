@@ -84,11 +84,16 @@ describe("Offline Integration", () => {
     window.dispatchEvent(new Event("offline"));
 
     // Wait a bit for the event handler to process and component to re-render
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    });
 
     await waitFor(
       () => {
-        expect(screen.getByText("Working offline")).toBeInTheDocument();
+        // The FormViewer shows an offline badge when offline
+        const offlineBadge = screen.getByText("Offline");
+        expect(offlineBadge).toBeInTheDocument();
+        expect(offlineBadge.closest(".fr-offline-badge")).toBeInTheDocument();
       },
       { timeout: 3000 }
     );
