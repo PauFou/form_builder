@@ -132,8 +132,8 @@ describe("FormViewer Offline Integration", () => {
     const emailInput = screen.getByRole("textbox", { name: /What's your email/ });
     fireEvent.change(emailInput, { target: { value: "john@example.com" } });
 
-    // Wait for save again
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    // Wait for debounced save again
+    await new Promise((resolve) => setTimeout(resolve, 2200));
   });
 
   it("should restore form state from IndexedDB on reload", async () => {
@@ -163,8 +163,8 @@ describe("FormViewer Offline Integration", () => {
       expect(nameInput).toHaveValue("Jane Smith");
     });
 
-    // Wait for autosave to complete
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    // Wait for debounced autosave to complete (2 seconds)
+    await new Promise((resolve) => setTimeout(resolve, 2200));
 
     // Unmount (simulate page refresh)
     unmount();
@@ -233,8 +233,8 @@ describe("FormViewer Offline Integration", () => {
       expect(screen.getByText("What's your name?")).toBeInTheDocument();
     });
 
-    // Wait for any pending saves to complete
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    // Wait for any pending debounced saves to complete
+    await new Promise((resolve) => setTimeout(resolve, 2200));
 
     // Clear the mock to test offline behavior
     onPartialSave.mockClear();
@@ -341,8 +341,8 @@ describe("FormViewer Offline Integration", () => {
       expect(nameInput).toHaveValue("Complete User");
     });
 
-    // Wait for autosave to IndexedDB
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    // Wait for debounced autosave to IndexedDB
+    await new Promise((resolve) => setTimeout(resolve, 2200));
 
     // Unmount component
     unmount();

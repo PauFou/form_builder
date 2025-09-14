@@ -739,20 +739,26 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
   // Check if currently saving
   const [isSaving, setIsSaving] = useState(false);
+  const [lastSaveTime, setLastSaveTime] = useState<Date | undefined>();
+  
   useEffect(() => {
     if (!partialSaveServiceRef.current) return;
 
     const handleSaveStart = () => setIsSaving(true);
-    const handleSaveEnd = () => setIsSaving(false);
+    const handleSaveSuccess = () => {
+      setIsSaving(false);
+      setLastSaveTime(new Date());
+    };
+    const handleSaveError = () => setIsSaving(false);
 
     partialSaveServiceRef.current.on("save:start", handleSaveStart);
-    partialSaveServiceRef.current.on("save:success", handleSaveEnd);
-    partialSaveServiceRef.current.on("save:error", handleSaveEnd);
+    partialSaveServiceRef.current.on("save:success", handleSaveSuccess);
+    partialSaveServiceRef.current.on("save:error", handleSaveError);
 
     return () => {
       partialSaveServiceRef.current?.off("save:start", handleSaveStart);
-      partialSaveServiceRef.current?.off("save:success", handleSaveEnd);
-      partialSaveServiceRef.current?.off("save:error", handleSaveEnd);
+      partialSaveServiceRef.current?.off("save:success", handleSaveSuccess);
+      partialSaveServiceRef.current?.off("save:error", handleSaveError);
     };
   }, []);
 
@@ -779,6 +785,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     hasUnsyncedData,
     isOnline,
     isSaving,
+    lastSaveTime,
     getResumeUrl,
     on: emitter.on.bind(emitter),
     off: emitter.off.bind(emitter),

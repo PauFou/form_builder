@@ -19,6 +19,7 @@ function TestForm({ schema, config }: { schema: FormSchema; config: RuntimeConfi
     hasUnsyncedData,
     isOnline,
     isSaving,
+    lastSaveTime,
     getResumeUrl,
   } = useFormRuntime(schema, config);
 
@@ -62,6 +63,7 @@ function TestForm({ schema, config }: { schema: FormSchema; config: RuntimeConfi
         isSaving={isSaving}
         hasUnsyncedData={hasUnsyncedData}
         isOnline={isOnline}
+        lastSaveTime={lastSaveTime}
         resumeUrl={getResumeUrl()}
       />
 
@@ -139,6 +141,14 @@ describe("Partial Save Integration", () => {
   beforeEach(() => {
     localStorage.clear();
     jest.clearAllMocks();
+
+    // Mock navigator.clipboard
+    Object.defineProperty(navigator, "clipboard", {
+      value: {
+        writeText: jest.fn().mockResolvedValue(undefined),
+      },
+      writable: true,
+    });
 
     mockConfig = {
       formId: "test-form",
@@ -460,33 +470,23 @@ describe("Partial Save Integration", () => {
     await act(async () => {
       fireEvent.change(nameInput, { target: { value: "J" } });
     });
-    
-    await act(async () => {
-      jest.advanceTimersByTime(100);
-    });
+    jest.advanceTimersByTime(100);
     
     await act(async () => {
       fireEvent.change(nameInput, { target: { value: "Jo" } });
     });
-    
-    await act(async () => {
-      jest.advanceTimersByTime(100);
-    });
+    jest.advanceTimersByTime(100);
     
     await act(async () => {
       fireEvent.change(nameInput, { target: { value: "John" } });
     });
     
-    await act(async () => {
-      jest.advanceTimersByTime(100);
-    });
-
     // onPartialSave should not have been called yet (still within debounce period)
     expect(mockConfig.onPartialSave).not.toHaveBeenCalled();
 
     // Advance past debounce period (2000ms from LAST change)
     await act(async () => {
-      jest.advanceTimersByTime(2000); // 2000ms from last change
+      jest.advanceTimersByTime(2100);
     });
 
     // Should have been called once with the latest data

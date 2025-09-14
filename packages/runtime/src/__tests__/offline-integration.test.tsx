@@ -142,8 +142,8 @@ describe("Offline Integration", () => {
     const emailInput = screen.getByRole("textbox");
     fireEvent.change(emailInput, { target: { value: "john@example.com" } });
 
-    // Wait for save
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    // Wait for debounced save (2 seconds)
+    await new Promise((resolve) => setTimeout(resolve, 2200));
 
     // Unmount and remount
     unmount();
@@ -152,8 +152,12 @@ describe("Offline Integration", () => {
     // Should restore to the email step
     await waitFor(() => {
       expect(screen.getByText("What is your email?")).toBeInTheDocument();
+    }, { timeout: 5000 });
+    
+    // Check that the email value was restored
+    await waitFor(() => {
       expect(screen.getByDisplayValue("john@example.com")).toBeInTheDocument();
-    });
+    }, { timeout: 2000 });
   });
 
   it("should handle navigation with saved state", async () => {
@@ -175,7 +179,10 @@ describe("Offline Integration", () => {
     fireEvent.change(emailInput, { target: { value: "john@example.com" } });
 
     // Go back
-    fireEvent.click(screen.getByText("Previous"));
+    await waitFor(() => {
+      const prevButton = screen.getByRole("button", { name: /previous/i });
+      fireEvent.click(prevButton);
+    });
 
     await waitFor(() => {
       expect(screen.getByText("What is your name?")).toBeInTheDocument();
@@ -215,8 +222,9 @@ describe("Offline Integration", () => {
       expect(screen.getByText("What is your phone number?")).toBeInTheDocument();
     });
 
-    // Submit form
-    fireEvent.click(screen.getByText("Submit"));
+    // Phone number is optional, just submit
+    const submitButton = screen.getByRole("button", { name: /submit/i });
+    fireEvent.click(submitButton);
 
     await waitFor(() => {
       expect(screen.getByText("Thank you!")).toBeInTheDocument();
