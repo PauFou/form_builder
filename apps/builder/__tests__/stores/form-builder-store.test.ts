@@ -17,8 +17,8 @@ describe("FormBuilderStore", () => {
           { id: "page-1", title: "Page 1", blocks: [] },
           { id: "page-2", title: "Page 2", blocks: [] },
         ],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       useFormBuilderStore.getState().initializeForm(mockForm);
@@ -38,8 +38,8 @@ describe("FormBuilderStore", () => {
         id: "1",
         title: "Test Form",
         pages: [{ id: "page-1", title: "Page 1", blocks: [] }],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       useFormBuilderStore.getState().initializeForm(mockForm);
@@ -74,8 +74,8 @@ describe("FormBuilderStore", () => {
             ],
           },
         ],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       useFormBuilderStore.getState().initializeForm(mockForm);
@@ -106,8 +106,8 @@ describe("FormBuilderStore", () => {
             blocks: [{ id: "block-1", type: "short_text", question: "Original question" }],
           },
         ],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       useFormBuilderStore.getState().initializeForm(mockForm);
@@ -139,8 +139,8 @@ describe("FormBuilderStore", () => {
             ],
           },
         ],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       useFormBuilderStore.getState().initializeForm(mockForm);
@@ -171,8 +171,8 @@ describe("FormBuilderStore", () => {
             blocks: [],
           },
         ],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       useFormBuilderStore.getState().initializeForm(mockForm);
@@ -191,8 +191,8 @@ describe("FormBuilderStore", () => {
         id: "1",
         title: "Test Form",
         pages: [{ id: "page-1", title: "Page 1", blocks: [] }],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const store = useFormBuilderStore.getState();

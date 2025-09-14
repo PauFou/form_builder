@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { FormViewerWrapper } from "@form-builder/runtime";
-import type { FormSchema, RuntimeConfig } from "@form-builder/runtime";
+import { FormViewerWrapper } from "@forms/runtime";
+import type { FormSchema, RuntimeConfig } from "@forms/runtime";
 
 export default function GridModeDemo() {
   const demoSchema: FormSchema = {
@@ -98,16 +98,16 @@ export default function GridModeDemo() {
     apiUrl: "/api",
     enableOffline: true,
     enableAnalytics: true,
-    onSubmit: async (data) => {
+    onSubmit: async (data: any) => {
       console.log("Form submitted:", data);
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log("Submission successful!");
     },
-    onPartialSave: (data) => {
+    onPartialSave: (data: any) => {
       console.log("Partial save:", data);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Form error:", error);
       alert("There was an error submitting the form. Please try again.");
     },
