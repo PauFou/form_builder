@@ -1,5 +1,6 @@
 import { PartialSaveService } from "../services/partial-save-service";
 import type { RuntimeConfig } from "../types";
+import { act } from "@testing-library/react";
 
 // Mock fetch
 global.fetch = jest.fn();
@@ -260,20 +261,21 @@ describe("PartialSaveService", () => {
     });
 
     it("should load from API with resume token", async () => {
-      // Mock URL params
+      // Mock URL params - need to mock URLSearchParams as well
       const originalLocation = window.location;
+      const originalURLSearchParams = global.URLSearchParams;
+      
+      // Create a simple mock URLSearchParams
+      global.URLSearchParams = jest.fn().mockImplementation((search) => ({
+        get: (key: string) => key === 'resume' ? 'token-123' : null,
+      })) as any;
+      
       delete (window as any).location;
       (window as any).location = {
-        ...originalLocation,
         href: "https://example.com?resume=token-123",
         search: "?resume=token-123",
+        toString: () => "https://example.com?resume=token-123",
       };
-
-      // Create URLSearchParams mock
-      const mockURLSearchParams = {
-        get: jest.fn((key: string) => key === "resume" ? "token-123" : null),
-      };
-      (global as any).URLSearchParams = jest.fn(() => mockURLSearchParams);
 
       const apiService = new PartialSaveService(config);
 
@@ -300,27 +302,23 @@ describe("PartialSaveService", () => {
 
       apiService.destroy();
       
-      // Restore location
+      // Restore location and URLSearchParams
       (window as any).location = originalLocation;
+      global.URLSearchParams = originalURLSearchParams;
     });
   });
 
   describe("resume URL generation", () => {
     it("should generate resume URL with token", async () => {
+      jest.useFakeTimers();
+      
       const originalLocation = window.location;
       delete (window as any).location;
       (window as any).location = {
-        ...originalLocation,
         href: "https://example.com/form",
+        search: "",
+        toString: () => "https://example.com/form",
       };
-      
-      // Mock URL constructor
-      const mockURL = {
-        searchParams: new Map(),
-        toString: () => "https://example.com/form?resume=token-123",
-      };
-      mockURL.searchParams.set = jest.fn();
-      (global as any).URL = jest.fn(() => mockURL);
 
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
@@ -329,6 +327,11 @@ describe("PartialSaveService", () => {
           resumeToken: "token-123",
           expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         }),
+      });
+
+      const service = new PartialSaveService({
+        ...config,
+        apiUrl: "https://api.example.com",
       });
 
       const data = {
@@ -343,14 +346,20 @@ describe("PartialSaveService", () => {
 
       await service.save(data);
 
-      // Wait for throttled save
-      await new Promise((resolve) => setTimeout(resolve, 2100));
+      // Advance timers past throttle period
+      await act(async () => {
+        jest.advanceTimersByTime(2100);
+      });
+
+      // Wait for the API response to be processed
+      await new Promise(resolve => setTimeout(resolve, 0));
 
       const resumeUrl = service.getResumeUrl();
       expect(resumeUrl).toBe("https://example.com/form?resume=token-123");
       
       // Restore location
       (window as any).location = originalLocation;
+      jest.useRealTimers();
     });
 
     it("should return null if no resume token", () => {
@@ -368,16 +377,10 @@ describe("PartialSaveService", () => {
       const originalLocation = window.location;
       delete (window as any).location;
       (window as any).location = {
-        ...originalLocation,
         href: "https://example.com?resume=token-123",
         search: "?resume=token-123",
+        toString: () => "https://example.com?resume=token-123",
       };
-      
-      // Create URLSearchParams mock
-      const mockURLSearchParams = {
-        get: jest.fn((key: string) => key === "resume" ? "token-123" : null),
-      };
-      (global as any).URLSearchParams = jest.fn(() => mockURLSearchParams);
       
       const clearService = new PartialSaveService(config);
 
@@ -406,6 +409,8 @@ describe("PartialSaveService", () => {
 
   describe("event handling", () => {
     it("should emit save events", async () => {
+      jest.useFakeTimers();
+      
       const startHandler = jest.fn();
       const successHandler = jest.fn();
 
@@ -433,11 +438,18 @@ describe("PartialSaveService", () => {
 
       await service.save(data);
 
-      // Wait for throttled save
-      await new Promise((resolve) => setTimeout(resolve, 2100));
+      // Advance timers for throttled save
+      await act(async () => {
+        jest.advanceTimersByTime(2100);
+      });
+
+      // Wait for promises to resolve
+      await new Promise(resolve => setImmediate(resolve));
 
       expect(startHandler).toHaveBeenCalled();
       expect(successHandler).toHaveBeenCalled();
+      
+      jest.useRealTimers();
     });
 
     it("should handle throttled saves", async () => {

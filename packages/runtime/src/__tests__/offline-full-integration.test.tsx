@@ -137,11 +137,14 @@ describe("FormViewer Offline Integration", () => {
   });
 
   it("should restore form state from IndexedDB on reload", async () => {
+    // Use a specific respondent key so we can reload the same session
+    const respondentKey = "test-respondent-123";
     const config: RuntimeConfig = {
       formId: "test-form",
       apiUrl: "/api/v1",
       enableOffline: true,
       autoSaveInterval: 100, // Fast save for testing
+      respondentKey: respondentKey,
     };
 
     // First render - fill some data
@@ -169,7 +172,7 @@ describe("FormViewer Offline Integration", () => {
     // Small delay to ensure IndexedDB operations complete
     await new Promise((resolve) => setTimeout(resolve, 50));
 
-    // Re-render - should restore state
+    // Re-render with same respondent key - should restore state
     render(<FormViewer schema={mockSchema} config={config} />);
 
     // Wait for component to mount and restore state from IndexedDB

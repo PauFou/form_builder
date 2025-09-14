@@ -30,6 +30,7 @@ export function useResume(config: RuntimeConfig): ResumeState {
 
         if (savedState && !savedState.data.completedAt) {
           const resumeUrl = new URL(window.location.href);
+          resumeUrl.searchParams.set("form", config.formId);
           resumeUrl.searchParams.set("resume", savedState.respondentKey);
 
           setState({

@@ -48,17 +48,8 @@ Object.defineProperty(window, "location", {
   writable: true,
 });
 
-// Mock URL constructor
-(global as any).URL = jest.fn().mockImplementation((href) => ({
-  searchParams: new Map(),
-  toString: () => href,
-}));
-
-// Mock URLSearchParams
-(global as any).URLSearchParams = jest.fn().mockImplementation((search) => ({
-  get: jest.fn((key) => null),
-  set: jest.fn(),
-}));
+// Remove URL and URLSearchParams mocks to use native implementations
+// jsdom provides these natively
 
 // Mock fetch globally
 (global as any).fetch = jest.fn();

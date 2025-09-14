@@ -51,6 +51,7 @@ describe("Offline Integration", () => {
       autoSaveInterval: 100, // Fast for testing
       onPartialSave: jest.fn(),
       onSubmit: jest.fn(),
+      respondentKey: "test-respondent-offline", // Fixed respondent key for session persistence
     };
   });
 
@@ -232,25 +233,34 @@ describe("Offline Integration", () => {
   });
 
   it("should handle partial saves", async () => {
+    jest.useFakeTimers();
+    
     render(<FormViewer schema={mockSchema} config={mockConfig} />);
 
     // Fill in data
     const nameInput = screen.getByRole("textbox");
-    fireEvent.change(nameInput, { target: { value: "John Doe" } });
+    
+    await act(async () => {
+      fireEvent.change(nameInput, { target: { value: "John Doe" } });
+    });
 
-    // Wait for throttled save and partial save
-    await waitFor(
-      () => {
-        expect(mockConfig.onPartialSave).toHaveBeenCalledWith(
-          expect.objectContaining({
-            formId: "test-form",
-            values: { name: "John Doe" },
-          })
-        );
-      },
-      { timeout: 15000 }
-    );
-  }, 20000);
+    // Advance timers past the throttle period (2 seconds)
+    await act(async () => {
+      jest.advanceTimersByTime(2100);
+    });
+
+    // Wait for partial save to be called
+    await waitFor(() => {
+      expect(mockConfig.onPartialSave).toHaveBeenCalledWith(
+        expect.objectContaining({
+          formId: "test-form",
+          values: { name: "John Doe" },
+        })
+      );
+    });
+    
+    jest.useRealTimers();
+  });
 
   it("should show progress indicator", async () => {
     render(<FormViewer schema={mockSchema} config={mockConfig} />);

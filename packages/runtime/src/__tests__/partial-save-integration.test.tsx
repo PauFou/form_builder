@@ -263,45 +263,78 @@ describe("Partial Save Integration", () => {
   });
 
   it("should show save status indicator", async () => {
-    const { getByTestId, getByText } = render(<TestForm schema={mockSchema} config={mockConfig} />);
+    jest.useFakeTimers();
+    
+    // Use config without onPartialSave to trigger real saves
+    const apiConfig = { ...mockConfig };
+    delete apiConfig.onPartialSave;
+    
+    const { getByTestId, getByText } = render(<TestForm schema={mockSchema} config={apiConfig} />);
 
     const nameInput = getByTestId("input-name");
 
     // Initially should show "All changes saved"
     expect(getByText("All changes saved")).toBeInTheDocument();
 
+    // Make a change - this will trigger a save after the throttle period
     await act(async () => {
       fireEvent.change(nameInput, { target: { value: "John" } });
     });
 
-    // Should show saving status
-    await waitFor(() => {
-      expect(getByText(/Saving|Saved/)).toBeInTheDocument();
+    // The save status should change
+    await act(async () => {
+      jest.advanceTimersByTime(2100);
     });
+
+    // After save completes, should show "Saved" or have updated timestamp
+    await waitFor(() => {
+      // The SaveStatus component shows "Saved" for 5 seconds after a save
+      expect(getByText("Saved")).toBeInTheDocument();
+    });
+
+    jest.useRealTimers();
   });
 
   it("should generate and display resume link", async () => {
-    // Mock window.location
+    jest.useFakeTimers();
+    
+    // Mock window.location properly
     delete (window as any).location;
-    (window as any).location = new URL("https://example.com/form");
+    (window as any).location = {
+      href: "https://example.com/form",
+      search: "",
+      toString: () => "https://example.com/form",
+    };
 
-    const { getByTestId, getByText } = render(<TestForm schema={mockSchema} config={mockConfig} />);
+    // Use config without onPartialSave to trigger API calls
+    const apiConfig = { ...mockConfig };
+    delete apiConfig.onPartialSave;
+
+    const { getByTestId, getByText } = render(<TestForm schema={mockSchema} config={apiConfig} />);
 
     const nameInput = getByTestId("input-name");
 
     await act(async () => {
       fireEvent.change(nameInput, { target: { value: "John" } });
-      // Wait for save
-      await new Promise((resolve) => setTimeout(resolve, 2100));
+    });
+
+    // Advance timers to trigger save
+    await act(async () => {
+      jest.advanceTimersByTime(2100);
+    });
+
+    // Wait for the save to complete and resume link button to appear
+    await waitFor(() => {
+      expect(getByText("Resume link")).toBeInTheDocument();
     });
 
     // Click resume link button
     const resumeLinkButton = getByText("Resume link");
     fireEvent.click(resumeLinkButton);
 
-    // Should show resume link
+    // Should show resume link with the expected pattern
     await waitFor(() => {
-      const linkInput = screen.getByDisplayValue(/form\?resume=token-123/);
+      const linkInput = screen.getByDisplayValue(/resume=token-123/);
       expect(linkInput).toBeInTheDocument();
     });
 
@@ -312,18 +345,29 @@ describe("Partial Save Integration", () => {
     await waitFor(() => {
       expect(getByText("Copied!")).toBeInTheDocument();
     });
+
+    jest.useRealTimers();
   });
 
   it("should handle offline mode", async () => {
-    // Simulate offline
+    // Need to enable offline for this test
+    const offlineConfig = {
+      ...mockConfig,
+      enableOffline: true,
+    };
+    
+    const { getByTestId, getByText } = render(<TestForm schema={mockSchema} config={offlineConfig} />);
+
+    const nameInput = getByTestId("input-name");
+
+    // Simulate going offline
     Object.defineProperty(navigator, "onLine", {
       writable: true,
       value: false,
     });
-
-    const { getByTestId, getByText } = render(<TestForm schema={mockSchema} config={mockConfig} />);
-
-    const nameInput = getByTestId("input-name");
+    
+    // Trigger the offline event
+    window.dispatchEvent(new Event("offline"));
 
     await act(async () => {
       fireEvent.change(nameInput, { target: { value: "John" } });
@@ -331,13 +375,21 @@ describe("Partial Save Integration", () => {
     });
 
     // Should show offline status
-    expect(getByText(/Offline/)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByText("Offline - data saved locally")).toBeInTheDocument();
+    });
 
     // Data should still be saved locally
     const savedKeys = Object.keys(localStorage).filter((key) => 
       key.startsWith("form-partial-")
     );
     expect(savedKeys.length).toBeGreaterThan(0);
+    
+    // Restore online state
+    Object.defineProperty(navigator, "onLine", {
+      writable: true,
+      value: true,
+    });
   });
 
   it("should clear saved data on successful submission", async () => {
@@ -409,19 +461,34 @@ describe("Partial Save Integration", () => {
     // Make multiple changes quickly
     await act(async () => {
       fireEvent.change(nameInput, { target: { value: "J" } });
+    });
+    
+    await act(async () => {
       jest.advanceTimersByTime(100);
+    });
+    
+    await act(async () => {
       fireEvent.change(nameInput, { target: { value: "Jo" } });
+    });
+    
+    await act(async () => {
       jest.advanceTimersByTime(100);
+    });
+    
+    await act(async () => {
       fireEvent.change(nameInput, { target: { value: "John" } });
+    });
+    
+    await act(async () => {
       jest.advanceTimersByTime(100);
     });
 
-    // onPartialSave should not have been called yet
+    // onPartialSave should not have been called yet (still within debounce period)
     expect(mockConfig.onPartialSave).not.toHaveBeenCalled();
 
-    // Advance past throttle period
+    // Advance past debounce period (2000ms from LAST change)
     await act(async () => {
-      jest.advanceTimersByTime(2000);
+      jest.advanceTimersByTime(2000); // 2000ms from last change
     });
 
     // Should have been called once with the latest data
@@ -433,5 +500,7 @@ describe("Partial Save Integration", () => {
         })
       );
     });
+
+    jest.useRealTimers();
   });
 });

@@ -76,6 +76,7 @@ describe("useResume", () => {
 
     expect(result.current.hasResumableData).toBe(true);
     expect(result.current.resumeUrl).toContain("resume=user-123");
+    expect(result.current.resumeUrl).toContain("form=test-form");
     expect(result.current.lastUpdated).toEqual(new Date("2025-01-01T01:00:00Z"));
     expect(mockDestroy).toHaveBeenCalled();
   });
@@ -163,7 +164,11 @@ describe("createResumeLink", () => {
   beforeEach(() => {
     // Mock window.location
     delete (window as any).location;
-    (window as any).location = new URL("https://forms.example.com/form");
+    (window as any).location = {
+      href: "https://forms.example.com/form",
+      search: "",
+      toString: () => "https://forms.example.com/form",
+    };
   });
 
   it("should create a resume link with form and respondent", () => {
@@ -178,7 +183,11 @@ describe("createResumeLink", () => {
   });
 
   it("should preserve existing query parameters", () => {
-    (window as any).location = new URL("https://forms.example.com/form?utm_source=email");
+    (window as any).location = {
+      href: "https://forms.example.com/form?utm_source=email",
+      search: "?utm_source=email",
+      toString: () => "https://forms.example.com/form?utm_source=email",
+    };
 
     const link = createResumeLink("form-123", "user-456");
 
