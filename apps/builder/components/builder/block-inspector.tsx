@@ -43,10 +43,9 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
   // Check for duplicate key errors
   useEffect(() => {
     const duplicateError = validationErrors.find(
-      (error) => error.type === "duplicate_key" && 
-      error.details?.blockIds?.includes(blockId)
+      (error) => error.type === "duplicate_key" && error.details?.blockIds?.includes(blockId)
     );
-    
+
     if (duplicateError) {
       setKeyError("This key is already used by another field");
     } else {
@@ -65,8 +64,8 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
     }
 
     const existingKeys = getExistingKeys();
-    existingKeys.delete(block.key || block.id); // Remove current key from check
-    
+    existingKeys.delete(block?.key || block?.id); // Remove current key from check
+
     if (existingKeys.has(key)) {
       setKeyError("This key is already used by another field");
       return false;

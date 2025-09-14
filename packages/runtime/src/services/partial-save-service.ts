@@ -34,6 +34,7 @@ export class PartialSaveService {
   private saveInProgress: boolean = false;
   private readonly sessionKey: string;
   private resumeToken: string | null = null;
+  private latestData: PartialSaveData | null = null;
 
   constructor(config: RuntimeConfig) {
     this.config = config;
@@ -41,7 +42,12 @@ export class PartialSaveService {
     this.sessionKey = this.generateSessionKey();
 
     // Create throttled save function (2s minimum between API calls)
-    this.throttledSave = debounce(this._saveToApi.bind(this), 2000);
+    // Use a wrapper to always get the latest data
+    this.throttledSave = debounce(() => {
+      if (this.latestData) {
+        this._saveToApi(this.latestData);
+      }
+    }, 2000);
 
     // Check for resume token in URL on initialization
     this.checkForResumeToken();
@@ -76,9 +82,12 @@ export class PartialSaveService {
     // Always save to localStorage immediately
     this.saveToLocalStorage(data);
 
+    // Store the latest data for the throttled save
+    this.latestData = data;
+
     // Only save to API if partial saves are enabled
     if (this.config.onPartialSave || this.config.apiUrl) {
-      this.throttledSave(data);
+      this.throttledSave();
     }
   }
 
@@ -129,7 +138,7 @@ export class PartialSaveService {
       try {
         const data = JSON.parse(localStorage.getItem(key) || "{}");
         const savedAt = new Date(data.savedAt || 0).getTime();
-        
+
         if (now - savedAt > maxAge) {
           keysToRemove.push(key);
         }
@@ -139,7 +148,7 @@ export class PartialSaveService {
       }
     }
 
-    keysToRemove.forEach(key => localStorage.removeItem(key));
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
   }
 
   /**
@@ -158,7 +167,7 @@ export class PartialSaveService {
       // Use custom partial save handler if provided
       if (this.config.onPartialSave) {
         await this.config.onPartialSave(data);
-        
+
         // Create a mock response for consistency
         const response: PartialSaveResponse = {
           id: `partial-${Date.now()}`,
@@ -168,7 +177,7 @@ export class PartialSaveService {
 
         this.resumeToken = response.resumeToken;
         this.lastSaveTime = Date.now();
-        
+
         this.emitter.emit("save:success", { data, response });
       } else if (this.config.apiUrl) {
         // Default API endpoint
@@ -215,7 +224,7 @@ export class PartialSaveService {
     if (this.resumeToken && this.config.apiUrl) {
       try {
         const response = await fetch(`${this.config.apiUrl}/partials/${this.resumeToken}`);
-        
+
         if (response.ok) {
           const data = await response.json();
           return data;
@@ -239,7 +248,7 @@ export class PartialSaveService {
       if (!stored) return null;
 
       const data = JSON.parse(stored);
-      
+
       // Validate the data structure
       if (!data.formId || !data.values || !data.respondentKey) {
         console.warn("Invalid partial save data in localStorage");
@@ -249,7 +258,7 @@ export class PartialSaveService {
       // Check if data is too old (7 days)
       const savedAt = new Date(data.savedAt || 0).getTime();
       const maxAge = 7 * 24 * 60 * 60 * 1000;
-      
+
       if (Date.now() - savedAt > maxAge) {
         console.info("Partial save data is too old, removing");
         localStorage.removeItem(this.sessionKey);

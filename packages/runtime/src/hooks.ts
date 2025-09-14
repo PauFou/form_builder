@@ -154,9 +154,11 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
   // Create a ref to hold the saveData function
   const saveDataRef = useRef<() => Promise<void>>(async () => {});
 
-  // Save on state change
+  // Save on state change (skip if values are empty)
   useEffect(() => {
-    saveDataRef.current();
+    if (Object.keys(state.values).length > 0 || state.currentStep > 0) {
+      saveDataRef.current();
+    }
   }, [state.values, state.currentStep]);
 
   // Evaluate logic rules on value changes
@@ -279,9 +281,8 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
   const saveData = useCallback(async () => {
     // Save to partial save service (includes localStorage and API)
     if (partialSaveServiceRef.current) {
-      const progress = visibleBlocks.length > 0 
-        ? ((state.currentStep + 1) / visibleBlocks.length) * 100 
-        : 0;
+      const progress =
+        visibleBlocks.length > 0 ? ((state.currentStep + 1) / visibleBlocks.length) * 100 : 0;
 
       await partialSaveServiceRef.current.save({
         formId: config.formId,
@@ -324,12 +325,12 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
       await offlineServiceRef.current.saveState(respondentKeyRef.current, state, data);
     }
 
-    emitter.emit("form:save", { 
+    emitter.emit("form:save", {
       data: {
         formId: config.formId,
         values: state.values,
         startedAt: startTimeRef.current,
-      }
+      },
     });
   }, [config, state, visibleBlocks]);
 
@@ -740,7 +741,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
   // Check if currently saving
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaveTime, setLastSaveTime] = useState<Date | undefined>();
-  
+
   useEffect(() => {
     if (!partialSaveServiceRef.current) return;
 
