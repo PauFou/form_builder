@@ -1,91 +1,136 @@
 #!/bin/bash
 
-# Setup PostgreSQL for local development and testing
-# This script ensures we have the same database setup as GitHub Actions
+# Script to setup PostgreSQL for the forms platform
+# Works with both Docker and local PostgreSQL
 
-set -e
+echo "🐘 Setting up PostgreSQL for Forms Platform"
+echo "=========================================="
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-
-echo -e "${BLUE}🐘 Setting up PostgreSQL for local development...${NC}"
-
-# Check if PostgreSQL is running
-if ! pg_isready -h localhost -p 5432 >/dev/null 2>&1; then
-    echo -e "${RED}❌ PostgreSQL is not running!${NC}"
-    echo -e "${YELLOW}Please start PostgreSQL first:${NC}"
-    echo "  brew services start postgresql@14"
-    echo "  # or"
-    echo "  brew services start postgresql@15"
-    exit 1
+# Check if Docker is running
+if docker info >/dev/null 2>&1; then
+    echo "✓ Docker is running"
+    echo ""
+    echo "Starting PostgreSQL and Redis with Docker Compose..."
+    docker-compose up -d postgres redis
+    
+    # Wait for PostgreSQL to be ready
+    echo ""
+    echo "Waiting for PostgreSQL to be ready..."
+    for i in {1..30}; do
+        if docker-compose exec -T postgres pg_isready -U forms_user -d forms_db >/dev/null 2>&1; then
+            echo "✓ PostgreSQL is ready!"
+            break
+        fi
+        echo -n "."
+        sleep 1
+    done
+    echo ""
+    
+else
+    echo "⚠️  Docker is not running"
+    echo ""
+    echo "Checking for local PostgreSQL installation..."
+    
+    if command -v psql >/dev/null 2>&1; then
+        echo "✓ PostgreSQL is installed locally"
+        
+        # Check if PostgreSQL service is running
+        if pg_isready >/dev/null 2>&1; then
+            echo "✓ PostgreSQL service is running"
+        else
+            echo "Starting PostgreSQL service..."
+            # Try different methods based on OS
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+                # macOS
+                brew services start postgresql@16 2>/dev/null || brew services start postgresql 2>/dev/null
+            elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+                # Linux
+                sudo systemctl start postgresql 2>/dev/null || sudo service postgresql start 2>/dev/null
+            fi
+        fi
+        
+        # Create database and user
+        echo ""
+        echo "Creating database and user..."
+        
+        # Create user (ignore error if already exists)
+        createuser -U postgres forms_user 2>/dev/null || true
+        
+        # Create database (ignore error if already exists)
+        createdb -U postgres -O forms_user forms_db 2>/dev/null || true
+        createdb -U postgres -O forms_user forms_db_test 2>/dev/null || true
+        
+        # Set password
+        psql -U postgres -c "ALTER USER forms_user WITH PASSWORD 'forms_password';" 2>/dev/null || true
+        
+        echo "✓ Database setup complete"
+        
+    else
+        echo "❌ PostgreSQL is not installed"
+        echo ""
+        echo "Please install PostgreSQL first:"
+        echo "  macOS:  brew install postgresql@16"
+        echo "  Ubuntu: sudo apt-get install postgresql postgresql-contrib"
+        echo "  CentOS: sudo yum install postgresql-server postgresql-contrib"
+        exit 1
+    fi
 fi
 
-echo -e "${GREEN}✅ PostgreSQL is running${NC}"
+# Test connection
+echo ""
+echo "Testing database connection..."
 
-# Database names
-MAIN_DB="forms_dev"
-TEST_DB="test"
-TEST_USER="test"
-TEST_PASSWORD="test"
+# Create a temporary Python script to test the connection
+cat > /tmp/test_db_connection.py << 'EOF'
+import os
+import sys
+import psycopg2
 
-# Function to create database if it doesn't exist
-create_db_if_not_exists() {
-    local db_name=$1
-    if ! psql -d postgres -lqt | cut -d \| -f 1 | grep -qw "$db_name"; then
-        echo -e "${BLUE}Creating database: $db_name${NC}"
-        createdb "$db_name"
-        echo -e "${GREEN}✅ Database $db_name created${NC}"
-    else
-        echo -e "${YELLOW}Database $db_name already exists${NC}"
-    fi
-}
+try:
+    conn = psycopg2.connect(
+        host=os.environ.get('POSTGRES_HOST', 'localhost'),
+        port=os.environ.get('POSTGRES_PORT', 5432),
+        user=os.environ.get('POSTGRES_USER', 'forms_user'),
+        password=os.environ.get('POSTGRES_PASSWORD', 'forms_password'),
+        database=os.environ.get('POSTGRES_DB', 'forms_db')
+    )
+    conn.close()
+    print("✓ Successfully connected to PostgreSQL!")
+    sys.exit(0)
+except Exception as e:
+    print(f"❌ Failed to connect to PostgreSQL: {e}")
+    sys.exit(1)
+EOF
 
-# Function to create user if it doesn't exist
-create_user_if_not_exists() {
-    local username=$1
-    local password=$2
-    if ! psql -d postgres -t -c "SELECT 1 FROM pg_user WHERE usename = '$username'" | grep -q 1; then
-        echo -e "${BLUE}Creating user: $username${NC}"
-        psql -d postgres -c "CREATE USER $username WITH PASSWORD '$password';"
-        echo -e "${GREEN}✅ User $username created${NC}"
-    else
-        echo -e "${YELLOW}User $username already exists${NC}"
-    fi
-}
+# Load environment variables
+export $(grep -v '^#' .env | xargs) 2>/dev/null || true
 
-# Create databases
-create_db_if_not_exists "$MAIN_DB"
-create_db_if_not_exists "$TEST_DB"
+# Test connection
+cd services/api
+if [ -d ".venv" ]; then
+    source .venv/bin/activate
+    pip install -q psycopg2-binary
+    python /tmp/test_db_connection.py
+    deactivate
+else
+    echo "⚠️  Virtual environment not found. Run 'python -m venv .venv' first"
+fi
+cd ../..
 
-# Create test user
-create_user_if_not_exists "$TEST_USER" "$TEST_PASSWORD"
+# Cleanup
+rm -f /tmp/test_db_connection.py
 
-# Grant privileges
-echo -e "${BLUE}Setting up permissions...${NC}"
-
-# Grant privileges on main database
-psql -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE $MAIN_DB TO $TEST_USER;" 2>/dev/null || true
-
-# Grant privileges on test database
-psql -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE $TEST_DB TO $TEST_USER;" 2>/dev/null || true
-
-# Allow user to create databases (needed for Django tests)
-psql -d postgres -c "ALTER USER $TEST_USER CREATEDB;" 2>/dev/null || true
-
-# Make user a superuser for tests (Django needs this for some operations)
-psql -d postgres -c "ALTER USER $TEST_USER WITH SUPERUSER;" 2>/dev/null || true
-
-echo -e "${GREEN}✅ PostgreSQL setup complete!${NC}"
-echo
-echo -e "${BLUE}Connection details:${NC}"
-echo "  Main database:  postgresql://test:test@localhost:5432/$MAIN_DB"
-echo "  Test database:  postgresql://test:test@localhost:5432/$TEST_DB"
-echo
-echo -e "${BLUE}You can now run:${NC}"
-echo "  bash scripts/github-actions-exact.sh  # Full CI validation"
-echo "  bash scripts/ci-check-fixed.sh        # Quick validation"
-echo "  pnpm dev                               # Start development servers"
+echo ""
+echo "PostgreSQL setup complete! 🎉"
+echo ""
+echo "Connection details:"
+echo "  Host:     localhost"
+echo "  Port:     5432"
+echo "  User:     forms_user"
+echo "  Password: forms_password"
+echo "  Database: forms_db"
+echo ""
+echo "To run migrations:"
+echo "  cd services/api"
+echo "  source .venv/bin/activate"
+echo "  python manage.py migrate"

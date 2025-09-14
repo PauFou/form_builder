@@ -5,11 +5,18 @@ from .settings import *
 DEBUG = False
 TESTING = True
 
-# Use in-memory database for tests
+# Use PostgreSQL for tests (production-ready)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('POSTGRES_DB', default='forms_db_test'),
+        'USER': config('POSTGRES_USER', default='forms_user'),
+        'PASSWORD': config('POSTGRES_PASSWORD', default='forms_password'),
+        'HOST': config('POSTGRES_HOST', default='localhost'),
+        'PORT': config('POSTGRES_PORT', default=5432, cast=int),
+        'TEST': {
+            'NAME': 'forms_db_test',
+        }
     }
 }
 

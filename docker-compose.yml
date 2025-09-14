@@ -1,81 +1,63 @@
+version: '3.8'
+
 services:
   postgres:
     image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: forms
-      POSTGRES_USER: forms
-      POSTGRES_PASSWORD: forms_local_dev
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+    container_name: forms_postgres
     ports:
       - "5432:5432"
+    environment:
+      POSTGRES_USER: forms_user
+      POSTGRES_PASSWORD: forms_password
+      POSTGRES_DB: forms_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - forms_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U forms"]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready -U forms_user -d forms_db"]
+      interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7-alpine
-    command: redis-server --save 60 1 --loglevel warning
-    volumes:
-      - redis_data:/data
+    container_name: forms_redis
     ports:
       - "6379:6379"
+    networks:
+      - forms_network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-
-  clickhouse:
-    image: clickhouse/clickhouse-server:24-alpine
-    environment:
-      CLICKHOUSE_DB: forms_analytics
-      CLICKHOUSE_USER: default
-      CLICKHOUSE_PASSWORD: ""
-      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
-    volumes:
-      - clickhouse_data:/var/lib/clickhouse
-      - ./services/analytics/schema.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - "8123:8123"
-      - "9000:9000"
-    healthcheck:
-      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-
-  analytics:
-    build:
-      context: ./services/analytics
-      dockerfile: Dockerfile
-    environment:
-      CLICKHOUSE_HOST: clickhouse
-      CLICKHOUSE_PORT: 9000
-      CLICKHOUSE_DB: forms_analytics
-      CLICKHOUSE_USER: default
-      CLICKHOUSE_PASSWORD: ""
-      REDIS_URL: redis://redis:6379/1
-    ports:
-      - "8002:8002"
-    depends_on:
-      - clickhouse
-      - redis
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  mailhog:
-    image: mailhog/mailhog:latest
+  # ClickHouse for analytics (production-ready)
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: forms_clickhouse
     ports:
-      - "1025:1025"
-      - "8025:8025"
+      - "8123:8123"
+      - "9000:9000"
+    environment:
+      CLICKHOUSE_DB: forms_analytics
+      CLICKHOUSE_USER: forms_user
+      CLICKHOUSE_PASSWORD: forms_password
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    networks:
+      - forms_network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
-  redis_data:
   clickhouse_data:
+
+networks:
+  forms_network:
+    driver: bridge
