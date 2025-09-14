@@ -713,18 +713,9 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
     // Listen to online/offline events
     const handleOnline = () => {
-      // In tests, React expects state updates from events to be wrapped in act()
-      // but in production, this is handled automatically
-      if (process.env.NODE_ENV === "test") {
-        // State update will be handled by the effect hook instead
-        return;
-      }
       setIsOnline(true);
     };
     const handleOffline = () => {
-      if (process.env.NODE_ENV === "test") {
-        return;
-      }
       setIsOnline(false);
     };
 

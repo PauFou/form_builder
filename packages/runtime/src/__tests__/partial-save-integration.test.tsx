@@ -365,6 +365,11 @@ describe("Partial Save Integration", () => {
     // Trigger the offline event
     window.dispatchEvent(new Event("offline"));
 
+    // Wait for the offline status to be detected
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    });
+
     await act(async () => {
       fireEvent.change(nameInput, { target: { value: "John" } });
       await new Promise((resolve) => setTimeout(resolve, 150));

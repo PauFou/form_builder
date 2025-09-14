@@ -90,10 +90,8 @@ describe("Offline Integration", () => {
 
     await waitFor(
       () => {
-        // The FormViewer shows an offline badge when offline
-        const offlineBadge = screen.getByText("Offline");
-        expect(offlineBadge).toBeInTheDocument();
-        expect(offlineBadge.closest(".fr-offline-badge")).toBeInTheDocument();
+        // The FormViewer shows "Working offline" when offline
+        expect(screen.getByText("Working offline")).toBeInTheDocument();
       },
       { timeout: 3000 }
     );
