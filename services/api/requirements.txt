@@ -39,3 +39,9 @@ python-slugify==8.0.1
 python-decouple==3.8
 cryptography==41.0.7
 requests==2.31.0
+
+# Google API (for Google Forms importer)
+google-api-python-client==2.111.0
+google-auth==2.25.2
+google-auth-httplib2==0.2.0
+httplib2==0.22.0
