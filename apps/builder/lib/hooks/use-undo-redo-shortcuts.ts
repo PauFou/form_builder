@@ -13,9 +13,9 @@ export function useUndoRedoShortcuts(options?: UseUndoRedoShortcutsOptions) {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Check if user is typing in an input/textarea
       const target = e.target as HTMLElement;
-      const isTyping = 
-        target.tagName === "INPUT" || 
-        target.tagName === "TEXTAREA" || 
+      const isTyping =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
         target.contentEditable === "true";
 
       // Don't handle shortcuts while typing
@@ -33,10 +33,7 @@ export function useUndoRedoShortcuts(options?: UseUndoRedoShortcutsOptions) {
       }
 
       // Redo: Cmd/Ctrl + Shift + Z or Cmd/Ctrl + Y
-      if (
-        (modifierKey && e.shiftKey && e.key === "z") ||
-        (modifierKey && e.key === "y")
-      ) {
+      if ((modifierKey && e.shiftKey && e.key === "z") || (modifierKey && e.key === "y")) {
         e.preventDefault();
         if (canRedo()) {
           redo();

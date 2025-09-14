@@ -3,15 +3,15 @@ import { useEffect } from "react";
 import { useFormBuilderStore } from "../stores/form-builder-store";
 
 export function useKeyboardShortcuts() {
-  const { 
-    undo, 
-    redo, 
-    form, 
-    selectedBlockId, 
+  const {
+    undo,
+    redo,
+    form,
+    selectedBlockId,
     selectedPageId,
-    deleteBlock, 
+    deleteBlock,
     duplicateBlock,
-    moveBlock 
+    moveBlock,
   } = useFormBuilderStore();
 
   useEffect(() => {
@@ -40,9 +40,11 @@ export function useKeyboardShortcuts() {
         if (target.tagName !== "INPUT" && target.tagName !== "TEXTAREA") {
           e.preventDefault();
           deleteBlock(selectedBlockId);
-          window.dispatchEvent(new CustomEvent("keyboard-action", { 
-            detail: { type: "delete" } 
-          }));
+          window.dispatchEvent(
+            new CustomEvent("keyboard-action", {
+              detail: { type: "delete" },
+            })
+          );
         }
         return;
       }
@@ -51,9 +53,11 @@ export function useKeyboardShortcuts() {
       if (isCmd && e.key === "d" && selectedBlockId) {
         e.preventDefault();
         duplicateBlock(selectedBlockId);
-        window.dispatchEvent(new CustomEvent("keyboard-action", { 
-          detail: { type: "duplicate" } 
-        }));
+        window.dispatchEvent(
+          new CustomEvent("keyboard-action", {
+            detail: { type: "duplicate" },
+          })
+        );
         return;
       }
 
@@ -82,28 +86,37 @@ export function useKeyboardShortcuts() {
       }
 
       // Reorder blocks with arrow keys
-      if (selectedBlockId && selectedPageId && form && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+      if (
+        selectedBlockId &&
+        selectedPageId &&
+        form &&
+        (e.key === "ArrowUp" || e.key === "ArrowDown")
+      ) {
         // Only reorder if not focused on an input
         const target = e.target as HTMLElement;
         if (target.tagName !== "INPUT" && target.tagName !== "TEXTAREA") {
-          const currentPage = form.pages.find(p => p.id === selectedPageId);
+          const currentPage = form.pages.find((p) => p.id === selectedPageId);
           if (!currentPage) return;
 
-          const blockIndex = currentPage.blocks.findIndex(b => b.id === selectedBlockId);
+          const blockIndex = currentPage.blocks.findIndex((b) => b.id === selectedBlockId);
           if (blockIndex === -1) return;
 
           if (e.key === "ArrowUp" && blockIndex > 0) {
             e.preventDefault();
             moveBlock(selectedBlockId, selectedPageId, blockIndex - 1);
-            window.dispatchEvent(new CustomEvent("keyboard-action", { 
-              detail: { type: "move-up" } 
-            }));
+            window.dispatchEvent(
+              new CustomEvent("keyboard-action", {
+                detail: { type: "move-up" },
+              })
+            );
           } else if (e.key === "ArrowDown" && blockIndex < currentPage.blocks.length - 1) {
             e.preventDefault();
             moveBlock(selectedBlockId, selectedPageId, blockIndex + 1);
-            window.dispatchEvent(new CustomEvent("keyboard-action", { 
-              detail: { type: "move-down" } 
-            }));
+            window.dispatchEvent(
+              new CustomEvent("keyboard-action", {
+                detail: { type: "move-down" },
+              })
+            );
           }
         }
         return;

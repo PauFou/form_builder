@@ -12,7 +12,7 @@ import {
 describe("Form Validators", () => {
   describe("validateUniqueKeys", () => {
     it("should return no errors for unique keys", () => {
-      const form: Form = {
+      const form = {
         id: "form1",
         version: 1,
         title: "Test Form",
@@ -27,12 +27,12 @@ describe("Form Validators", () => {
         ],
       };
 
-      const errors = validateUniqueKeys(form);
+      const errors = validateUniqueKeys(form as unknown as Form);
       expect(errors).toHaveLength(0);
     });
 
     it("should detect duplicate keys", () => {
-      const form: Form = {
+      const form = {
         id: "form1",
         version: 1,
         title: "Test Form",
@@ -47,7 +47,7 @@ describe("Form Validators", () => {
         ],
       };
 
-      const errors = validateUniqueKeys(form);
+      const errors = validateUniqueKeys(form as unknown as Form);
       expect(errors).toHaveLength(1);
       expect(errors[0].type).toBe("duplicate_key");
       expect(errors[0].message).toContain("email");
@@ -55,7 +55,7 @@ describe("Form Validators", () => {
     });
 
     it("should use block ID as key when key is not provided", () => {
-      const form: Form = {
+      const form = {
         id: "form1",
         version: 1,
         title: "Test Form",
@@ -70,7 +70,7 @@ describe("Form Validators", () => {
         ],
       };
 
-      const errors = validateUniqueKeys(form);
+      const errors = validateUniqueKeys(form as unknown as Form);
       expect(errors).toHaveLength(1);
       expect(errors[0].details.key).toBe("field1");
     });
@@ -98,7 +98,7 @@ describe("Form Validators", () => {
 
   describe("detectLogicCycles", () => {
     it("should return no errors when there are no cycles", () => {
-      const form: Form = {
+      const form = {
         id: "form1",
         version: 1,
         title: "Test Form",
@@ -117,12 +117,12 @@ describe("Form Validators", () => {
         ],
       };
 
-      const errors = detectLogicCycles(form);
+      const errors = detectLogicCycles(form as unknown as Form);
       expect(errors).toHaveLength(0);
     });
 
     it("should detect a simple cycle", () => {
-      const form: Form = {
+      const form = {
         id: "form1",
         version: 1,
         title: "Test Form",
@@ -141,14 +141,14 @@ describe("Form Validators", () => {
         ],
       };
 
-      const errors = detectLogicCycles(form);
+      const errors = detectLogicCycles(form as unknown as Form);
       expect(errors).toHaveLength(1);
       expect(errors[0].type).toBe("logic_cycle");
       expect(errors[0].message).toContain("field1 → field2 → field1");
     });
 
     it("should detect a complex cycle", () => {
-      const form: Form = {
+      const form = {
         id: "form1",
         version: 1,
         title: "Test Form",
@@ -177,27 +177,27 @@ describe("Form Validators", () => {
         ],
       };
 
-      const errors = detectLogicCycles(form);
+      const errors = detectLogicCycles(form as unknown as Form);
       expect(errors).toHaveLength(1);
       expect(errors[0].message).toContain("B → C → D → B");
     });
 
     it("should handle forms with no logic", () => {
-      const form: Form = {
+      const form = {
         id: "form1",
         version: 1,
         title: "Test Form",
         pages: [],
       };
 
-      const errors = detectLogicCycles(form);
+      const errors = detectLogicCycles(form as unknown as Form);
       expect(errors).toHaveLength(0);
     });
   });
 
   describe("getFieldReferences", () => {
     it("should find references in conditions", () => {
-      const form: Form = {
+      const form = {
         id: "form1",
         version: 1,
         title: "Test Form",
@@ -211,14 +211,14 @@ describe("Form Validators", () => {
         ],
       };
 
-      const result = getFieldReferences("field1", form);
+      const result = getFieldReferences("field1", form as unknown as Form);
       expect(result.isReferenced).toBe(true);
       expect(result.rules).toHaveLength(1);
       expect(result.referenceTypes).toContain("condition");
     });
 
     it("should find references in actions", () => {
-      const form: Form = {
+      const form = {
         id: "form1",
         version: 1,
         title: "Test Form",
@@ -232,14 +232,14 @@ describe("Form Validators", () => {
         ],
       };
 
-      const result = getFieldReferences("field2", form);
+      const result = getFieldReferences("field2", form as unknown as Form);
       expect(result.isReferenced).toBe(true);
       expect(result.rules).toHaveLength(1);
       expect(result.referenceTypes).toContain("action");
     });
 
     it("should find multiple references", () => {
-      const form: Form = {
+      const form = {
         id: "form1",
         version: 1,
         title: "Test Form",
@@ -258,7 +258,7 @@ describe("Form Validators", () => {
         ],
       };
 
-      const result = getFieldReferences("field1", form);
+      const result = getFieldReferences("field1", form as unknown as Form);
       expect(result.isReferenced).toBe(true);
       expect(result.rules).toHaveLength(2);
       expect(result.referenceTypes).toContain("condition");
@@ -266,7 +266,7 @@ describe("Form Validators", () => {
     });
 
     it("should return false for unreferenced fields", () => {
-      const form: Form = {
+      const form = {
         id: "form1",
         version: 1,
         title: "Test Form",
@@ -280,7 +280,7 @@ describe("Form Validators", () => {
         ],
       };
 
-      const result = getFieldReferences("field3", form);
+      const result = getFieldReferences("field3", form as unknown as Form);
       expect(result.isReferenced).toBe(false);
       expect(result.rules).toHaveLength(0);
     });
@@ -288,7 +288,7 @@ describe("Form Validators", () => {
 
   describe("removeFieldReferences", () => {
     it("should remove field from conditions", () => {
-      const form: Form = {
+      const form = {
         id: "form1",
         version: 1,
         title: "Test Form",
@@ -305,14 +305,14 @@ describe("Form Validators", () => {
         ],
       };
 
-      const updated = removeFieldReferences("field1", form);
+      const updated = removeFieldReferences("field1", form as unknown as Form);
       expect(updated.logic?.rules).toHaveLength(1);
       expect(updated.logic?.rules[0].conditions).toHaveLength(1);
       expect(updated.logic?.rules[0].conditions[0].field).toBe("field2");
     });
 
     it("should remove field from actions", () => {
-      const form: Form = {
+      const form = {
         id: "form1",
         version: 1,
         title: "Test Form",
@@ -329,14 +329,14 @@ describe("Form Validators", () => {
         ],
       };
 
-      const updated = removeFieldReferences("field2", form);
+      const updated = removeFieldReferences("field2", form as unknown as Form);
       expect(updated.logic?.rules).toHaveLength(1);
       expect(updated.logic?.rules[0].actions).toHaveLength(1);
       expect(updated.logic?.rules[0].actions[0].target).toBe("field3");
     });
 
     it("should remove entire rule if no conditions or actions remain", () => {
-      const form: Form = {
+      const form = {
         id: "form1",
         version: 1,
         title: "Test Form",
@@ -355,7 +355,7 @@ describe("Form Validators", () => {
         ],
       };
 
-      const updated = removeFieldReferences("field1", form);
+      const updated = removeFieldReferences("field1", form as unknown as Form);
       expect(updated.logic?.rules).toHaveLength(1);
       expect(updated.logic?.rules[0].id).toBe("rule2");
     });
@@ -363,7 +363,7 @@ describe("Form Validators", () => {
 
   describe("validateForm", () => {
     it("should combine all validation errors", () => {
-      const form: Form = {
+      const form = {
         id: "form1",
         version: 1,
         title: "Test Form",
@@ -390,7 +390,7 @@ describe("Form Validators", () => {
         ],
       };
 
-      const errors = validateForm(form);
+      const errors = validateForm(form as unknown as Form);
       expect(errors.length).toBeGreaterThan(0);
       expect(errors.some((e) => e.type === "duplicate_key")).toBe(true);
       expect(errors.some((e) => e.type === "logic_cycle")).toBe(true);

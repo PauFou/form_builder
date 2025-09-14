@@ -129,9 +129,7 @@ export default function DashboardPage() {
                   {searchQuery ? t.errors.notFound : t.forms.noForms}
                 </p>
                 <p className="text-muted-foreground mb-4">
-                  {searchQuery
-                    ? t.common.search + "..."
-                    : t.forms.createFirstForm}
+                  {searchQuery ? t.common.search + "..." : t.forms.createFirstForm}
                 </p>
                 {!searchQuery && (
                   <Button onClick={handleCreateForm}>
@@ -155,7 +153,9 @@ export default function DashboardPage() {
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <CardTitle className="text-lg">{form.title}</CardTitle>
-                          <CardDescription>{form.description || t.builder.description}</CardDescription>
+                          <CardDescription>
+                            {form.description || t.builder.description}
+                          </CardDescription>
                         </div>
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Button variant="ghost" size="icon">
@@ -183,7 +183,7 @@ export default function DashboardPage() {
                           />
                           {form.status === "published" ? t.common.published : t.common.draft}
                         </span>
-                        <span>{formatDate(form.updatedAt, { dateStyle: 'medium' })}</span>
+                        <span>{formatDate(form.updatedAt, { dateStyle: "medium" })}</span>
                       </div>
                       <div className="flex gap-2">
                         <Link href="/" className="flex-1">
@@ -241,7 +241,7 @@ export default function DashboardPage() {
                         </span>
                       </td>
                       <td className="p-4 text-sm text-muted-foreground">
-                        {formatDate(form.updatedAt, { dateStyle: 'medium' })}
+                        {formatDate(form.updatedAt, { dateStyle: "medium" })}
                       </td>
                       <td className="p-4">
                         <div className="flex items-center gap-1">

@@ -31,7 +31,7 @@ export function ModeSwitcher({ currentMode, onModeChange, disabled = false }: Mo
         </svg>
         <span>One at a time</span>
       </button>
-      
+
       <button
         type="button"
         className={`fr-mode-btn ${currentMode === "grid" ? "fr-mode-btn-active" : ""}`}

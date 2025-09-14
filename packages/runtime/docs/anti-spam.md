@@ -123,7 +123,7 @@ function MyCustomForm() {
 
   const handleSubmit = async () => {
     const validation = await validateAntiSpam();
-    
+
     if (!validation.isValid) {
       console.log("Spam detected:", validation.reason);
       return;
@@ -144,15 +144,12 @@ While client-side protection is effective, always validate on the server too:
 // Example Express.js endpoint
 app.post("/api/submissions", async (req, res) => {
   const clientIP = req.headers["x-forwarded-for"] || req.ip;
-  
+
   // Validate using anti-spam service
-  const validation = await antiSpamService.validate(
-    req.body.sessionId,
-    {
-      ip: clientIP,
-      formId: req.body.formId,
-    }
-  );
+  const validation = await antiSpamService.validate(req.body.sessionId, {
+    ip: clientIP,
+    formId: req.body.formId,
+  });
 
   if (!validation.isValid) {
     return res.status(429).json({
@@ -204,12 +201,12 @@ The anti-spam measures are designed to be transparent to legitimate users:
 
 ## Spam Detection Reasons
 
-| Reason | Description | User Action |
-|--------|-------------|-------------|
-| `honeypot_filled` | Hidden field was filled | Likely a bot |
-| `too_fast` | Submitted too quickly | Ask user to review |
-| `rate_limit_ip` | Too many from one IP | Temporary block |
-| `rate_limit_form` | Form getting too many | High traffic warning |
+| Reason            | Description             | User Action          |
+| ----------------- | ----------------------- | -------------------- |
+| `honeypot_filled` | Hidden field was filled | Likely a bot         |
+| `too_fast`        | Submitted too quickly   | Ask user to review   |
+| `rate_limit_ip`   | Too many from one IP    | Temporary block      |
+| `rate_limit_form` | Form getting too many   | High traffic warning |
 
 ## Troubleshooting
 

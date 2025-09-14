@@ -31,15 +31,22 @@ import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 
 export function LogicEditor() {
-  const { form, updateForm, addLogicRule, updateLogicRule, deleteLogicRule, validateFormData, validationErrors } =
-    useFormBuilderStore();
+  const {
+    form,
+    updateForm,
+    addLogicRule,
+    updateLogicRule,
+    deleteLogicRule,
+    validateFormData,
+    validationErrors,
+  } = useFormBuilderStore();
   const blocks = useFormBlocks();
   const [selectedRule, setSelectedRule] = useState<string | null>(null);
   const [showRuleBuilder, setShowRuleBuilder] = useState(false);
   const [editingRule, setEditingRule] = useState<LogicRule | null>(null);
   const [activeView, setActiveView] = useState<"list" | "graph">("list");
   const [showFullScreenGraph, setShowFullScreenGraph] = useState(false);
-  
+
   // Check for logic cycles whenever rules change
   useEffect(() => {
     if (form?.logic?.rules && form.logic.rules.length > 0) {
@@ -48,7 +55,7 @@ export function LogicEditor() {
   }, [form?.logic?.rules, validateFormData]);
 
   const logic = form?.logic?.rules || [];
-  const logicCycles = validationErrors?.filter(e => e.type === "logic_cycle") || [];
+  const logicCycles = validationErrors?.filter((e) => e.type === "logic_cycle") || [];
 
   const handleAddRule = () => {
     setEditingRule(null);
@@ -145,7 +152,8 @@ export function LogicEditor() {
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            <strong>Logic cycles detected!</strong> Your logic rules contain circular references that could create infinite loops:
+            <strong>Logic cycles detected!</strong> Your logic rules contain circular references
+            that could create infinite loops:
             <ul className="mt-2 space-y-1">
               {logicCycles.map((error, index) => (
                 <li key={index} className="text-sm">

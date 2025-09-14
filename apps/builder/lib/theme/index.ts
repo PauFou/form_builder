@@ -1,2 +1,2 @@
-export * from './skemya-theme';
-export * from './theme-provider';
+export * from "./skemya-theme";
+export * from "./theme-provider";

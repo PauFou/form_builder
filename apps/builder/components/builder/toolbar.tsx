@@ -13,17 +13,11 @@ interface ToolbarProps {
 }
 
 export function Toolbar({ onSave, onPreview, onPublish, className }: ToolbarProps) {
-  const { 
-    canUndo, 
-    canRedo, 
-    undo, 
-    redo, 
-    getHistoryStatus,
-    isDirty 
-  } = useFormBuilderStore();
+  const { canUndo, canRedo, undo, redo, getHistoryStatus, isDirty } = useFormBuilderStore();
 
   const historyStatus = getHistoryStatus();
-  const isMac = typeof navigator !== "undefined" && navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+  const isMac =
+    typeof navigator !== "undefined" && navigator.platform.toUpperCase().indexOf("MAC") >= 0;
   const modifierKey = isMac ? "⌘" : "Ctrl";
 
   return (
@@ -51,7 +45,7 @@ export function Toolbar({ onSave, onPreview, onPublish, className }: ToolbarProp
           <Redo className="h-4 w-4" />
           <span className="hidden sm:inline">Redo</span>
         </Button>
-        
+
         {/* History indicator */}
         <div className="px-2 text-xs text-muted-foreground">
           {historyStatus.current}/{historyStatus.total}
@@ -82,12 +76,7 @@ export function Toolbar({ onSave, onPreview, onPublish, className }: ToolbarProp
           <Eye className="h-4 w-4" />
           <span className="hidden sm:inline">Preview</span>
         </Button>
-        <Button
-          variant="default"
-          size="sm"
-          onClick={onPublish}
-          className="gap-1"
-        >
+        <Button variant="default" size="sm" onClick={onPublish} className="gap-1">
           <Rocket className="h-4 w-4" />
           <span className="hidden sm:inline">Publish</span>
         </Button>

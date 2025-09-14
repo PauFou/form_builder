@@ -68,14 +68,18 @@ export function PublishDialog({ isOpen, onClose, formId }: PublishDialogProps) {
 
     // Use our validation system
     const formErrors = validateFormData();
-    
+
     // Convert our validation errors to the dialog format
     formErrors.forEach((error) => {
       issues.push({
         type: "error",
         message: error.message,
-        location: error.type === "duplicate_key" ? "Field Keys" : 
-                  error.type === "logic_cycle" ? "Logic Rules" : "Form Structure",
+        location:
+          error.type === "duplicate_key"
+            ? "Field Keys"
+            : error.type === "logic_cycle"
+              ? "Logic Rules"
+              : "Form Structure",
       });
     });
 
@@ -206,7 +210,7 @@ export function PublishDialog({ isOpen, onClose, formId }: PublishDialogProps) {
     // Run validation again to ensure we have latest errors
     const formErrors = validateFormData();
     const errors = validationIssues.filter((issue) => issue.type === "error");
-    
+
     if (formErrors.length > 0 || errors.length > 0) {
       setShowValidationErrors(true);
       return;
@@ -456,7 +460,7 @@ export function PublishDialog({ isOpen, onClose, formId }: PublishDialogProps) {
           </Button>
         </DialogFooter>
       </DialogContent>
-      
+
       <ValidationErrorsDialog
         open={showValidationErrors}
         onOpenChange={setShowValidationErrors}

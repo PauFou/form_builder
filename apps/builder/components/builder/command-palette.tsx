@@ -166,9 +166,9 @@ export function CommandPalette({ onSave, onPreview, onPublish }: CommandPaletteP
         break;
       case "move_up":
         if (selectedBlockId && selectedPageId && form) {
-          const currentPage = form.pages.find(p => p.id === selectedPageId);
+          const currentPage = form.pages.find((p) => p.id === selectedPageId);
           if (currentPage) {
-            const blockIndex = currentPage.blocks.findIndex(b => b.id === selectedBlockId);
+            const blockIndex = currentPage.blocks.findIndex((b) => b.id === selectedBlockId);
             if (blockIndex > 0) {
               moveBlock(selectedBlockId, selectedPageId, blockIndex - 1);
             }
@@ -177,9 +177,9 @@ export function CommandPalette({ onSave, onPreview, onPublish }: CommandPaletteP
         break;
       case "move_down":
         if (selectedBlockId && selectedPageId && form) {
-          const currentPage = form.pages.find(p => p.id === selectedPageId);
+          const currentPage = form.pages.find((p) => p.id === selectedPageId);
           if (currentPage) {
-            const blockIndex = currentPage.blocks.findIndex(b => b.id === selectedBlockId);
+            const blockIndex = currentPage.blocks.findIndex((b) => b.id === selectedBlockId);
             if (blockIndex < currentPage.blocks.length - 1) {
               moveBlock(selectedBlockId, selectedPageId, blockIndex + 1);
             }
@@ -195,24 +195,24 @@ export function CommandPalette({ onSave, onPreview, onPublish }: CommandPaletteP
     if (cmd.action === "redo" && !canRedo()) return false;
     if ((cmd.action === "duplicate" || cmd.action === "delete") && !selectedBlockId) return false;
     if (cmd.action === "add_logic" && !selectedBlockId) return false;
-    
+
     // Handle move actions
     if ((cmd.action === "move_up" || cmd.action === "move_down") && !selectedBlockId) return false;
     if (cmd.action === "move_up" && selectedBlockId && selectedPageId && form) {
-      const currentPage = form.pages.find(p => p.id === selectedPageId);
+      const currentPage = form.pages.find((p) => p.id === selectedPageId);
       if (currentPage) {
-        const blockIndex = currentPage.blocks.findIndex(b => b.id === selectedBlockId);
+        const blockIndex = currentPage.blocks.findIndex((b) => b.id === selectedBlockId);
         if (blockIndex <= 0) return false;
       }
     }
     if (cmd.action === "move_down" && selectedBlockId && selectedPageId && form) {
-      const currentPage = form.pages.find(p => p.id === selectedPageId);
+      const currentPage = form.pages.find((p) => p.id === selectedPageId);
       if (currentPage) {
-        const blockIndex = currentPage.blocks.findIndex(b => b.id === selectedBlockId);
+        const blockIndex = currentPage.blocks.findIndex((b) => b.id === selectedBlockId);
         if (blockIndex >= currentPage.blocks.length - 1) return false;
       }
     }
-    
+
     return true;
   });
 

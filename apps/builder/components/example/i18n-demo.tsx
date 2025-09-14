@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { useI18n } from '@/lib/i18n';
-import { useSkemyaTheme } from '@/lib/theme';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { LanguageSwitcher } from '@/components/ui/language-switcher';
-import { ThemeSwitcher } from '@/components/ui/theme-switcher';
-import { useState } from 'react';
-import { z } from 'zod';
-import { createI18nErrorMap, createValidationSchemas } from '@/lib/i18n/validation';
+import { useI18n } from "@/lib/i18n";
+import { useSkemyaTheme } from "@/lib/theme";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { ThemeSwitcher } from "@/components/ui/theme-switcher";
+import { useState } from "react";
+import { z } from "zod";
+import { createI18nErrorMap, createValidationSchemas } from "@/lib/i18n/validation";
 
 export function I18nDemo() {
   const { t, locale, formatDate, formatCurrency, formatNumber, formatRelativeTime } = useI18n();
   const { theme } = useSkemyaTheme();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
 
   // Set Zod error map with current translations
@@ -31,7 +31,7 @@ export function I18nDemo() {
       setErrors([]);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        setErrors(error.errors.map(e => e.message));
+        setErrors(error.errors.map((e) => e.message));
       }
     }
   };
@@ -55,7 +55,7 @@ export function I18nDemo() {
           <CardHeader>
             <CardTitle>{t.settings.language}</CardTitle>
             <CardDescription>
-              {locale === 'en' ? 'Current language: English' : 'Langue actuelle: Français'}
+              {locale === "en" ? "Current language: English" : "Langue actuelle: Français"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -87,9 +87,7 @@ export function I18nDemo() {
               <Button onClick={handleValidate} size="sm">
                 {t.common.submit}
               </Button>
-              {errors.length > 0 && (
-                <p className="text-sm text-destructive">{errors[0]}</p>
-              )}
+              {errors.length > 0 && <p className="text-sm text-destructive">{errors[0]}</p>}
             </div>
           </CardContent>
         </Card>
@@ -97,35 +95,37 @@ export function I18nDemo() {
         {/* Number Formatting Demo */}
         <Card>
           <CardHeader>
-            <CardTitle>{t.common.info}: {t.settings.dateFormat}</CardTitle>
+            <CardTitle>
+              {t.common.info}: {t.settings.dateFormat}
+            </CardTitle>
             <CardDescription>
-              {locale === 'en' ? 'Localized formatting examples' : 'Exemples de formatage localisé'}
+              {locale === "en" ? "Localized formatting examples" : "Exemples de formatage localisé"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <p className="text-sm">
-                <span className="font-semibold">{t.analytics.dateRange}:</span>{' '}
-                {formatDate(now, { dateStyle: 'full' })}
+                <span className="font-semibold">{t.analytics.dateRange}:</span>{" "}
+                {formatDate(now, { dateStyle: "full" })}
               </p>
               <p className="text-sm">
-                <span className="font-semibold">{t.time.days_ago.replace('{count}', '7')}:</span>{' '}
+                <span className="font-semibold">{t.time.days_ago.replace("{count}", "7")}:</span>{" "}
                 {formatRelativeTime(pastDate)}
               </p>
             </div>
 
             <div className="space-y-2">
               <p className="text-sm">
-                <span className="font-semibold">{t.blocks.number}:</span>{' '}
+                <span className="font-semibold">{t.blocks.number}:</span>{" "}
                 {formatNumber(123456.789, { minimumFractionDigits: 2 })}
               </p>
               <p className="text-sm">
-                <span className="font-semibold">{t.blocks.currency}:</span>{' '}
-                {formatCurrency(1234.56, 'EUR')}
+                <span className="font-semibold">{t.blocks.currency}:</span>{" "}
+                {formatCurrency(1234.56, "EUR")}
               </p>
               <p className="text-sm">
-                <span className="font-semibold">{t.analytics.conversionRate}:</span>{' '}
-                {formatNumber(0.8542, { style: 'percent', minimumFractionDigits: 1 })}
+                <span className="font-semibold">{t.analytics.conversionRate}:</span>{" "}
+                {formatNumber(0.8542, { style: "percent", minimumFractionDigits: 1 })}
               </p>
             </div>
           </CardContent>
@@ -135,9 +135,7 @@ export function I18nDemo() {
         <Card>
           <CardHeader>
             <CardTitle>Skemya Theme</CardTitle>
-            <CardDescription>
-              Current theme: {theme.name}
-            </CardDescription>
+            <CardDescription>Current theme: {theme.name}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -176,9 +174,7 @@ export function I18nDemo() {
         <Card>
           <CardHeader>
             <CardTitle>{t.builder.typography}</CardTitle>
-            <CardDescription>
-              Skemya typography scale
-            </CardDescription>
+            <CardDescription>Skemya typography scale</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -190,16 +186,14 @@ export function I18nDemo() {
               </div>
               <div className="space-y-2">
                 <p className="text-base">
-                  {locale === 'en' 
-                    ? 'This is a paragraph with normal text size. The Skemya theme provides a clean, professional aesthetic.'
-                    : 'Ceci est un paragraphe avec une taille de texte normale. Le thème Skemya offre une esthétique propre et professionnelle.'
-                  }
+                  {locale === "en"
+                    ? "This is a paragraph with normal text size. The Skemya theme provides a clean, professional aesthetic."
+                    : "Ceci est un paragraphe avec une taille de texte normale. Le thème Skemya offre une esthétique propre et professionnelle."}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {locale === 'en'
-                    ? 'Small text for secondary information'
-                    : 'Petit texte pour les informations secondaires'
-                  }
+                  {locale === "en"
+                    ? "Small text for secondary information"
+                    : "Petit texte pour les informations secondaires"}
                 </p>
               </div>
             </div>

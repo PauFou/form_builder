@@ -40,7 +40,7 @@ describe("Undo/Redo functionality", () => {
 
   test("should initialize with empty history", () => {
     const { result } = renderHook(() => useFormBuilderStore());
-    
+
     expect(result.current.history).toHaveLength(0);
     expect(result.current.historyIndex).toBe(-1);
     expect(result.current.canUndo()).toBe(false);

@@ -61,7 +61,13 @@ export default function GridModeDemo() {
             type: "checkboxGroup",
             question: "What features do you like?",
             properties: {
-              options: ["Grid Mode", "One Question Mode", "Progress Bar", "Auto-save", "Offline Support"],
+              options: [
+                "Grid Mode",
+                "One Question Mode",
+                "Progress Bar",
+                "Auto-save",
+                "Offline Support",
+              ],
             },
             required: false,
           },
@@ -82,7 +88,8 @@ export default function GridModeDemo() {
     settings: {
       showProgressBar: true,
       submitText: "Submit Feedback",
-      thankYouMessage: "<h2>Thank you for your feedback!</h2><p>We appreciate your time and input. Your responses have been recorded successfully.</p>",
+      thankYouMessage:
+        "<h2>Thank you for your feedback!</h2><p>We appreciate your time and input. Your responses have been recorded successfully.</p>",
       displayMode: "grid",
       allowModeSwitch: true,
     },
@@ -119,7 +126,8 @@ export default function GridModeDemo() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Grid Mode Demo</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Experience the new Grid mode that shows multiple fields on one page. Switch between Grid and One-Question modes using the toggle below.
+            Experience the new Grid mode that shows multiple fields on one page. Switch between Grid
+            and One-Question modes using the toggle below.
           </p>
         </div>
 

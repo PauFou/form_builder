@@ -7,12 +7,15 @@ The form builder implements a robust undo/redo system with a 50-step history tha
 ## Features
 
 ### 50-Step History
+
 - Maintains up to 50 states in the history buffer
 - Automatically removes oldest states when the limit is exceeded
 - Each state is a complete snapshot of the form
 
 ### Tracked Operations
+
 All form modifications are tracked, including:
+
 - Form property changes (title, description, settings)
 - Block operations (add, update, delete, move, duplicate)
 - Page operations (add, update, delete, move)
@@ -20,30 +23,38 @@ All form modifications are tracked, including:
 - Theme modifications
 
 ### Keyboard Shortcuts
+
 - **Undo**: `⌘Z` (Mac) / `Ctrl+Z` (Windows/Linux)
 - **Redo**: `⇧⌘Z` (Mac) / `Ctrl+Shift+Z` (Windows/Linux)
 - Alternative redo: `⌘Y` (Mac) / `Ctrl+Y` (Windows/Linux)
 
 Additional shortcuts:
+
 - **Save**: `⌘S` (Mac) / `Ctrl+S` (Windows/Linux)
 - **Preview**: `⌘P` (Mac) / `Ctrl+P` (Windows/Linux)
 
 ### UI Components
 
 #### Toolbar
+
 The toolbar displays undo/redo buttons with:
+
 - Visual enabled/disabled states
 - Tooltips showing keyboard shortcuts
 - History status indicator (current position/total states)
 
 #### Toast Notifications
+
 Visual feedback appears when undo/redo is performed:
+
 - Shows "Undo" or "Redo" with appropriate icon
 - Auto-dismisses after 2 seconds
 - Positioned at bottom center of screen
 
 #### Command Palette
+
 Undo/redo actions are available in the command palette (`⌘K`):
+
 - Only shows enabled actions
 - Displays keyboard shortcuts
 
@@ -55,11 +66,11 @@ The undo/redo system is implemented in the Zustand store with:
 
 ```typescript
 interface FormBuilderState {
-  history: Form[];           // Array of form snapshots
-  historyIndex: number;      // Current position in history
-  isUndoing: boolean;        // Flag to prevent history save during undo/redo
+  history: Form[]; // Array of form snapshots
+  historyIndex: number; // Current position in history
+  isUndoing: boolean; // Flag to prevent history save during undo/redo
   lastSavedTimestamp: number; // For debouncing history saves
-  
+
   // Methods
   undo: () => void;
   redo: () => void;
@@ -97,7 +108,7 @@ import { useFormBuilderStore } from "@/lib/stores/form-builder-store";
 
 function MyComponent() {
   const { undo, redo, canUndo, canRedo, getHistoryStatus } = useFormBuilderStore();
-  
+
   return (
     <div>
       <button onClick={undo} disabled={!canUndo()}>
@@ -117,6 +128,7 @@ function MyComponent() {
 ## Testing
 
 The undo/redo system includes comprehensive tests covering:
+
 - History initialization
 - History limits
 - Undo/redo operations

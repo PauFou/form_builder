@@ -56,7 +56,6 @@ describe("Block Registry", () => {
       expect(BLOCK_COMPONENTS.address).toBe(AddressBlock);
     });
 
-
     it("should contain RatingBlock for rating type", () => {
       expect(BLOCK_COMPONENTS.rating).toBe(RatingBlock);
     });

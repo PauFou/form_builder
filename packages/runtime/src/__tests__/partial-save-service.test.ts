@@ -59,8 +59,8 @@ describe("PartialSaveService", () => {
     };
 
     // Mock Date.now and Math.random for consistent sessionKey generation
-    jest.spyOn(Date, 'now').mockReturnValue(1234567890);
-    jest.spyOn(Math, 'random').mockReturnValue(0.5);
+    jest.spyOn(Date, "now").mockReturnValue(1234567890);
+    jest.spyOn(Math, "random").mockReturnValue(0.5);
 
     service = new PartialSaveService(config);
   });
@@ -91,9 +91,7 @@ describe("PartialSaveService", () => {
 
       // Check localStorage was called
       expect(localStorageMock.setItem).toHaveBeenCalled();
-      const savedData = JSON.parse(
-        localStorageMock.setItem.mock.calls[0][1]
-      );
+      const savedData = JSON.parse(localStorageMock.setItem.mock.calls[0][1]);
       expect(savedData.values).toEqual(data.values);
       expect(savedData.currentStep).toBe(2);
       expect(savedData.progress).toBe(50);
@@ -134,12 +132,12 @@ describe("PartialSaveService", () => {
       const oldData = {
         savedAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(), // 40 days old
       };
-      
+
       // Store existing data and override localStorage methods
       const store: Record<string, string> = {
         [oldKey]: JSON.stringify(oldData),
       };
-      
+
       let setItemCallCount = 0;
       localStorageMock.setItem.mockImplementation((key: string, value: string) => {
         setItemCallCount++;
@@ -151,7 +149,7 @@ describe("PartialSaveService", () => {
         // Second call should succeed
         store[key] = value;
       });
-      
+
       localStorageMock.getItem.mockImplementation((key: string) => store[key] || null);
       localStorageMock.removeItem.mockImplementation((key: string) => delete store[key]);
       localStorageMock.key.mockImplementation((index: number) => Object.keys(store)[index] || null);
@@ -269,16 +267,16 @@ describe("PartialSaveService", () => {
       // Clear localStorage to ensure API is used
       localStorageMock.clear();
       localStorageMock.getItem.mockReturnValue(null);
-      
+
       // Mock URL params - need to mock URLSearchParams as well
       const originalLocation = window.location;
       const originalURLSearchParams = global.URLSearchParams;
-      
+
       // Create a simple mock URLSearchParams
       global.URLSearchParams = jest.fn().mockImplementation(() => ({
-        get: (key: string) => key === 'resume' ? 'token-123' : null,
+        get: (key: string) => (key === "resume" ? "token-123" : null),
       })) as any;
-      
+
       delete (window as any).location;
       (window as any).location = {
         href: "https://example.com?resume=token-123",
@@ -303,14 +301,12 @@ describe("PartialSaveService", () => {
       const apiService = new PartialSaveService(config);
       const loaded = await apiService.load();
 
-      expect(fetch).toHaveBeenCalledWith(
-        "https://api.example.com/partials/token-123"
-      );
+      expect(fetch).toHaveBeenCalledWith("https://api.example.com/partials/token-123");
       expect(loaded?.values).toEqual({ name: "John", email: "john@example.com" });
       expect(loaded?.currentStep).toBe(3);
 
       apiService.destroy();
-      
+
       // Restore location and URLSearchParams
       (window as any).location = originalLocation;
       global.URLSearchParams = originalURLSearchParams;
@@ -346,7 +342,7 @@ describe("PartialSaveService", () => {
           expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         }),
       });
-      
+
       const testService = new PartialSaveService({
         formId: "test-form",
         respondentKey: "test-respondent",
@@ -372,16 +368,19 @@ describe("PartialSaveService", () => {
       await testService.save(data);
 
       // Wait for throttled save to complete
-      await new Promise(resolve => setTimeout(resolve, 2100));
+      await new Promise((resolve) => setTimeout(resolve, 2100));
 
       // Wait for save to be completed
-      await waitFor(() => {
-        expect(saveCompleted).toBe(true);
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(saveCompleted).toBe(true);
+        },
+        { timeout: 5000 }
+      );
 
       const resumeUrl = testService.getResumeUrl();
       expect(resumeUrl).toBe("https://example.com/form?resume=token-123");
-      
+
       testService.destroy();
       // Restore location
       (window as any).location = originalLocation;
@@ -391,12 +390,12 @@ describe("PartialSaveService", () => {
       // Ensure location is clean
       const originalLocation = window.location;
       const originalURLSearchParams = global.URLSearchParams;
-      
+
       // Mock URLSearchParams to return null for 'resume'
       global.URLSearchParams = jest.fn().mockImplementation(() => ({
         get: () => null,
       })) as any;
-      
+
       delete (window as any).location;
       (window as any).location = {
         href: "https://example.com/form",
@@ -404,13 +403,13 @@ describe("PartialSaveService", () => {
         toString: () => "https://example.com/form",
         _isMock: true,
       };
-      
+
       // Create a fresh service with no resume token
       const freshService = new PartialSaveService(config);
       const resumeUrl = freshService.getResumeUrl();
       expect(resumeUrl).toBeNull();
       freshService.destroy();
-      
+
       // Restore location and URLSearchParams
       (window as any).location = originalLocation;
       global.URLSearchParams = originalURLSearchParams;
@@ -427,7 +426,7 @@ describe("PartialSaveService", () => {
         search: "?resume=token-123",
         toString: () => "https://example.com?resume=token-123",
       };
-      
+
       const clearService = new PartialSaveService(config);
 
       (fetch as jest.Mock).mockResolvedValueOnce({
@@ -441,13 +440,12 @@ describe("PartialSaveService", () => {
       await clearService.clear();
 
       expect(localStorageMock.removeItem).toHaveBeenCalledWith(sessionKey);
-      expect(fetch).toHaveBeenCalledWith(
-        "https://api.example.com/partials/token-123",
-        { method: "DELETE" }
-      );
+      expect(fetch).toHaveBeenCalledWith("https://api.example.com/partials/token-123", {
+        method: "DELETE",
+      });
 
       clearService.destroy();
-      
+
       // Restore location
       (window as any).location = originalLocation;
     });
@@ -474,7 +472,7 @@ describe("PartialSaveService", () => {
       await service.save(data);
 
       // Wait for throttled save to complete (2 seconds)
-      await new Promise(resolve => setTimeout(resolve, 2100));
+      await new Promise((resolve) => setTimeout(resolve, 2100));
 
       expect(startHandler).toHaveBeenCalled();
       expect(successHandler).toHaveBeenCalled();

@@ -110,7 +110,9 @@ export function PartialSaveExample() {
     const checkForSavedData = async () => {
       // This would be handled by the partial save service
       // Just simulating the check here
-      const hasSaved = localStorage.getItem(`form-partial-${config.formId}-${config.respondentKey || "anon"}`);
+      const hasSaved = localStorage.getItem(
+        `form-partial-${config.formId}-${config.respondentKey || "anon"}`
+      );
       if (hasSaved) {
         setShowResumeBanner(true);
         setSavedData(JSON.parse(hasSaved));
@@ -208,13 +210,9 @@ export function PartialSaveExample() {
         {/* Current block */}
         {currentBlock && (
           <div style={{ marginBottom: "2rem" }}>
-            <h2 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>
-              {currentBlock.question}
-            </h2>
+            <h2 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>{currentBlock.question}</h2>
             {currentBlock.description && (
-              <p style={{ color: "#6B7280", marginBottom: "1rem" }}>
-                {currentBlock.description}
-              </p>
+              <p style={{ color: "#6B7280", marginBottom: "1rem" }}>{currentBlock.description}</p>
             )}
 
             {/* Render appropriate input based on block type */}
@@ -264,18 +262,9 @@ export function PartialSaveExample() {
                       height: "3rem",
                       borderRadius: "0.375rem",
                       border: "1px solid",
-                      borderColor:
-                        state.values[currentBlock.id] === rating
-                          ? "#4F46E5"
-                          : "#D1D5DB",
-                      background:
-                        state.values[currentBlock.id] === rating
-                          ? "#4F46E5"
-                          : "white",
-                      color:
-                        state.values[currentBlock.id] === rating
-                          ? "white"
-                          : "#374151",
+                      borderColor: state.values[currentBlock.id] === rating ? "#4F46E5" : "#D1D5DB",
+                      background: state.values[currentBlock.id] === rating ? "#4F46E5" : "white",
+                      color: state.values[currentBlock.id] === rating ? "white" : "#374151",
                       fontSize: "1.125rem",
                       cursor: "pointer",
                       transition: "all 0.2s ease",
@@ -357,13 +346,11 @@ export function PartialSaveExample() {
               disabled={state.isSubmitting || !canGoNext()}
               style={{
                 padding: "0.75rem 1.5rem",
-                background:
-                  state.isSubmitting || !canGoNext() ? "#E5E7EB" : "#10B981",
+                background: state.isSubmitting || !canGoNext() ? "#E5E7EB" : "#10B981",
                 color: state.isSubmitting || !canGoNext() ? "#9CA3AF" : "white",
                 border: "none",
                 borderRadius: "0.375rem",
-                cursor:
-                  state.isSubmitting || !canGoNext() ? "not-allowed" : "pointer",
+                cursor: state.isSubmitting || !canGoNext() ? "not-allowed" : "pointer",
                 transition: "all 0.2s ease",
               }}
             >

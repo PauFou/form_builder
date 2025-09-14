@@ -61,7 +61,7 @@ interface FormBuilderState {
   // Utils
   reset: () => void;
   markClean: () => void;
-  
+
   // Validation
   validateFormData: () => ValidationError[];
   getExistingKeys: () => Set<string>;
@@ -136,7 +136,7 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
                 block.key = get().generateUniqueFieldKey(block.key);
               }
             }
-            
+
             if (index !== undefined) {
               page.blocks.splice(index, 0, block);
             } else {
@@ -165,7 +165,7 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
                   updates.key = generateUniqueKey(updates.key, existingKeys);
                 }
               }
-              
+
               Object.assign(block, updates);
               state.isDirty = true;
               break;
@@ -378,19 +378,19 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
           state.historyIndex--;
           state.form = JSON.parse(JSON.stringify(state.history[state.historyIndex]));
           state.isDirty = true;
-          
+
           // Restore selection if possible
           if (state.form && state.selectedPageId) {
-            const pageExists = state.form.pages.some(p => p.id === state.selectedPageId);
+            const pageExists = state.form.pages.some((p) => p.id === state.selectedPageId);
             if (!pageExists && state.form.pages.length > 0) {
               state.selectedPageId = state.form.pages[0].id;
             }
           }
-          
+
           // Clear block selection if block doesn't exist
           if (state.form && state.selectedBlockId) {
-            const blockExists = state.form.pages.some(p => 
-              p.blocks.some(b => b.id === state.selectedBlockId)
+            const blockExists = state.form.pages.some((p) =>
+              p.blocks.some((b) => b.id === state.selectedBlockId)
             );
             if (!blockExists) {
               state.selectedBlockId = null;
@@ -398,9 +398,9 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
           }
         }
       });
-      
+
       // Reset the undoing flag after state update
-      if (process.env.NODE_ENV === 'test') {
+      if (process.env.NODE_ENV === "test") {
         // In tests, reset immediately
         set((state) => {
           state.isUndoing = false;
@@ -422,19 +422,19 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
           state.historyIndex++;
           state.form = JSON.parse(JSON.stringify(state.history[state.historyIndex]));
           state.isDirty = true;
-          
+
           // Restore selection if possible
           if (state.form && state.selectedPageId) {
-            const pageExists = state.form.pages.some(p => p.id === state.selectedPageId);
+            const pageExists = state.form.pages.some((p) => p.id === state.selectedPageId);
             if (!pageExists && state.form.pages.length > 0) {
               state.selectedPageId = state.form.pages[0].id;
             }
           }
-          
+
           // Clear block selection if block doesn't exist
           if (state.form && state.selectedBlockId) {
-            const blockExists = state.form.pages.some(p => 
-              p.blocks.some(b => b.id === state.selectedBlockId)
+            const blockExists = state.form.pages.some((p) =>
+              p.blocks.some((b) => b.id === state.selectedBlockId)
             );
             if (!blockExists) {
               state.selectedBlockId = null;
@@ -442,9 +442,9 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
           }
         }
       });
-      
+
       // Reset the undoing flag after state update
-      if (process.env.NODE_ENV === 'test') {
+      if (process.env.NODE_ENV === "test") {
         // In tests, reset immediately
         set((state) => {
           state.isUndoing = false;
@@ -461,15 +461,15 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
 
     saveHistory: () => {
       const state = get();
-      
+
       // Don't save history during undo/redo operations
       if (state.isUndoing) return;
-      
+
       // Debounce history saves (100ms) - but allow override for tests
       const now = Date.now();
-      const isTestEnvironment = process.env.NODE_ENV === 'test';
+      const isTestEnvironment = process.env.NODE_ENV === "test";
       if (!isTestEnvironment && now - state.lastSavedTimestamp < 100) return;
-      
+
       set((state) => {
         if (state.form) {
           // Remove future history if we're not at the end
@@ -489,22 +489,22 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
         }
       });
     },
-    
+
     canUndo: () => {
       const state = get();
       return state.historyIndex > 0;
     },
-    
+
     canRedo: () => {
       const state = get();
       return state.historyIndex < state.history.length - 1;
     },
-    
+
     getHistoryStatus: () => {
       const state = get();
       return {
         current: state.historyIndex + 1,
-        total: state.history.length
+        total: state.history.length,
       };
     },
 
@@ -531,26 +531,26 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
     validateFormData: () => {
       const state = get();
       if (!state.form) return [];
-      
+
       const errors = validateForm(state.form);
       set((state) => {
         state.validationErrors = errors;
       });
-      
+
       return errors;
     },
 
     getExistingKeys: () => {
       const state = get();
       if (!state.form) return new Set<string>();
-      
+
       const keys = new Set<string>();
       state.form.pages.forEach((page) => {
         page.blocks.forEach((block) => {
           keys.add(block.key || block.id);
         });
       });
-      
+
       return keys;
     },
 
@@ -564,7 +564,7 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
       if (!state.form) {
         return { isReferenced: false, rules: [], referenceTypes: [] };
       }
-      
+
       return getFieldReferences(fieldId, state.form);
     },
 
@@ -575,7 +575,7 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
           if (removeReferences) {
             state.form = removeFieldReferences(blockId, state.form);
           }
-          
+
           // Then delete the block
           for (const page of state.form.pages) {
             const index = page.blocks.findIndex((b) => b.id === blockId);

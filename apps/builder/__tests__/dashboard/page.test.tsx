@@ -7,24 +7,30 @@ import { useRouter } from "next/navigation";
 // Mock I18n with Proxy to handle any key
 jest.mock("@/lib/i18n", () => ({
   useI18n: () => ({
-    t: new Proxy({}, {
-      get: (target, prop) => {
-        return new Proxy({}, {
-          get: (target2, prop2) => {
-            // Return sensible defaults based on key
-            const key = String(prop2);
-            if (key === 'forms') return 'My Forms';
-            if (key === 'createForm') return 'Create form';
-            if (key === 'noForms') return 'No forms yet';
-            if (key === 'createFirstForm') return 'Create your first form to get started';
-            if (key === 'published') return 'Published';
-            if (key === 'draft') return 'Draft';
-            if (key === 'searchForms') return 'Search forms...';
-            return `${String(prop)}.${String(prop2)}`;
-          }
-        });
+    t: new Proxy(
+      {},
+      {
+        get: (target, prop) => {
+          return new Proxy(
+            {},
+            {
+              get: (target2, prop2) => {
+                // Return sensible defaults based on key
+                const key = String(prop2);
+                if (key === "forms") return "My Forms";
+                if (key === "createForm") return "Create form";
+                if (key === "noForms") return "No forms yet";
+                if (key === "createFirstForm") return "Create your first form to get started";
+                if (key === "published") return "Published";
+                if (key === "draft") return "Draft";
+                if (key === "searchForms") return "Search forms...";
+                return `${String(prop)}.${String(prop2)}`;
+              },
+            }
+          );
+        },
       }
-    }),
+    ),
     locale: "en",
     setLocale: jest.fn(),
     formatDate: (date: any) => new Date(date).toLocaleDateString(),

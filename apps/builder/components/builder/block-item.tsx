@@ -27,16 +27,16 @@ interface BlockItemProps {
 }
 
 export function BlockItem({ block, pageId, index }: BlockItemProps) {
-  const { 
-    selectBlock, 
-    updateBlock, 
-    deleteBlock, 
+  const {
+    selectBlock,
+    updateBlock,
+    deleteBlock,
     deleteBlockWithReferences,
-    duplicateBlock, 
+    duplicateBlock,
     selectedBlockId,
-    checkFieldReferences 
+    checkFieldReferences,
   } = useFormBuilderStore();
-  
+
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -130,7 +130,7 @@ export function BlockItem({ block, pageId, index }: BlockItemProps) {
           </div>
         </div>
       </Card>
-      
+
       <DeleteFieldDialog
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}

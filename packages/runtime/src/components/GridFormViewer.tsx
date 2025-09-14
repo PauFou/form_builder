@@ -30,7 +30,7 @@ export function GridFormViewer({ schema, config, className = "" }: GridFormViewe
   const pages = schema.pages || [{ id: "default", blocks: visibleBlocks }];
   const currentPageData = pages[currentPage];
   const currentPageBlocks = currentPageData?.blocks || [];
-  
+
   // Calculate total pages considering visible blocks
   const totalPages = pages.length;
   const isLastPage = currentPage === totalPages - 1;
@@ -93,7 +93,7 @@ export function GridFormViewer({ schema, config, className = "" }: GridFormViewe
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateCurrentPage()) {
       currentPageBlocks.forEach((block) => {
         setTouched(block.id);
@@ -204,14 +204,8 @@ export function GridFormViewer({ schema, config, className = "" }: GridFormViewe
               Next
             </button>
           ) : (
-            <button
-              type="submit"
-              className="fr-btn fr-btn-primary"
-              disabled={state.isSubmitting}
-            >
-              {state.isSubmitting
-                ? "Submitting..."
-                : schema.settings?.submitText || "Submit"}
+            <button type="submit" className="fr-btn fr-btn-primary" disabled={state.isSubmitting}>
+              {state.isSubmitting ? "Submitting..." : schema.settings?.submitText || "Submit"}
             </button>
           )}
         </div>
@@ -224,11 +218,14 @@ export function GridFormViewer({ schema, config, className = "" }: GridFormViewe
               {Object.entries(pageErrors).map(([fieldId, error]) => {
                 return (
                   <li key={fieldId}>
-                    <a href={`#${fieldId}`} onClick={(e) => {
-                      e.preventDefault();
-                      const element = document.getElementById(fieldId);
-                      element?.focus();
-                    }}>
+                    <a
+                      href={`#${fieldId}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const element = document.getElementById(fieldId);
+                        element?.focus();
+                      }}
+                    >
                       {error}
                     </a>
                   </li>

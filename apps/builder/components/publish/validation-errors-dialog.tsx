@@ -25,13 +25,16 @@ export function ValidationErrorsDialog({
   errors,
   onFix,
 }: ValidationErrorsDialogProps) {
-  const groupedErrors = errors.reduce((acc, error) => {
-    if (!acc[error.type]) {
-      acc[error.type] = [];
-    }
-    acc[error.type].push(error);
-    return acc;
-  }, {} as Record<string, ValidationError[]>);
+  const groupedErrors = errors.reduce(
+    (acc, error) => {
+      if (!acc[error.type]) {
+        acc[error.type] = [];
+      }
+      acc[error.type].push(error);
+      return acc;
+    },
+    {} as Record<string, ValidationError[]>
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -45,7 +48,7 @@ export function ValidationErrorsDialog({
             Please fix the following errors before publishing your form:
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="flex-1 overflow-y-auto space-y-4 py-4">
           {groupedErrors.duplicate_key && (
             <div className="space-y-3">
@@ -110,11 +113,7 @@ export function ValidationErrorsDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          {onFix && (
-            <Button onClick={onFix}>
-              Go to Form Builder
-            </Button>
-          )}
+          {onFix && <Button onClick={onFix}>Go to Form Builder</Button>}
         </DialogFooter>
       </DialogContent>
     </Dialog>

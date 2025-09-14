@@ -2,21 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@forms/ui";
-import { 
-  Undo, 
-  Redo, 
-  Copy, 
-  Trash2, 
-  ArrowUp, 
-  ArrowDown,
-  Save,
-  Eye,
-  Command
-} from "lucide-react";
+import { Undo, Redo, Copy, Trash2, ArrowUp, ArrowDown, Save, Eye, Command } from "lucide-react";
 
 export interface ActionMessage {
   id: string;
-  type: "undo" | "redo" | "duplicate" | "delete" | "move-up" | "move-down" | "save" | "preview" | "command-palette";
+  type:
+    | "undo"
+    | "redo"
+    | "duplicate"
+    | "delete"
+    | "move-up"
+    | "move-down"
+    | "save"
+    | "preview"
+    | "command-palette";
   message?: string;
   timestamp: number;
 }
@@ -29,48 +28,48 @@ const actionConfig = {
   undo: {
     icon: Undo,
     text: "Undo",
-    className: "bg-gray-900"
+    className: "bg-gray-900",
   },
   redo: {
     icon: Redo,
     text: "Redo",
-    className: "bg-gray-900"
+    className: "bg-gray-900",
   },
   duplicate: {
     icon: Copy,
     text: "Block duplicated",
-    className: "bg-blue-600"
+    className: "bg-blue-600",
   },
   delete: {
     icon: Trash2,
     text: "Block deleted",
-    className: "bg-red-600"
+    className: "bg-red-600",
   },
   "move-up": {
     icon: ArrowUp,
     text: "Block moved up",
-    className: "bg-purple-600"
+    className: "bg-purple-600",
   },
   "move-down": {
     icon: ArrowDown,
     text: "Block moved down",
-    className: "bg-purple-600"
+    className: "bg-purple-600",
   },
   save: {
     icon: Save,
     text: "Form saved",
-    className: "bg-green-600"
+    className: "bg-green-600",
   },
   preview: {
     icon: Eye,
     text: "Preview toggled",
-    className: "bg-indigo-600"
+    className: "bg-indigo-600",
   },
   "command-palette": {
     icon: Command,
     text: "Command palette",
-    className: "bg-gray-900"
-  }
+    className: "bg-gray-900",
+  },
 };
 
 export function ActionToast({ message }: ActionToastProps) {
@@ -101,9 +100,7 @@ export function ActionToast({ message }: ActionToastProps) {
         )}
       >
         <Icon className="h-4 w-4" />
-        <span className="text-sm font-medium">
-          {message.message || config.text}
-        </span>
+        <span className="text-sm font-medium">{message.message || config.text}</span>
       </div>
     </div>
   );

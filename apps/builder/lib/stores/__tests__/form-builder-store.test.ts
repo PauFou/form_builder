@@ -66,8 +66,8 @@ describe("useFormBuilderStore", () => {
     },
     version: 1,
     slug: "test-form",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
   beforeEach(() => {
@@ -106,7 +106,14 @@ describe("useFormBuilderStore", () => {
       expect(result.current.form).toEqual(mockForm);
       expect(result.current.selectedPageId).toBe("page-1");
       expect(result.current.isDirty).toBe(false);
-      expect(result.current.history).toEqual([mockForm]);
+      // History serializes dates to strings
+      expect(result.current.history).toEqual([
+        {
+          ...mockForm,
+          createdAt: mockForm.createdAt.toISOString(),
+          updatedAt: mockForm.updatedAt.toISOString(),
+        },
+      ]);
       expect(result.current.historyIndex).toBe(0);
     });
 
@@ -132,7 +139,14 @@ describe("useFormBuilderStore", () => {
 
       expect(result.current.form).toEqual(mockForm);
       expect(result.current.isDirty).toBe(false);
-      expect(result.current.history).toEqual([mockForm]);
+      // History serializes dates to strings
+      expect(result.current.history).toEqual([
+        {
+          ...mockForm,
+          createdAt: mockForm.createdAt.toISOString(),
+          updatedAt: mockForm.updatedAt.toISOString(),
+        },
+      ]);
       expect(result.current.historyIndex).toBe(0);
     });
   });

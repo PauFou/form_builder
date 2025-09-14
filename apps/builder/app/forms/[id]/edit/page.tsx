@@ -50,7 +50,7 @@ export default function EditFormPage() {
 
   const autosaveStatus = useAutosave(formId);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
-  
+
   // Enable keyboard shortcuts
   useKeyboardShortcuts();
   const { message } = useKeyboardActionListener();
@@ -220,7 +220,7 @@ export default function EditFormPage() {
         onClose={() => setShowPublishDialog(false)}
         formId={formId}
       />
-      
+
       <ActionToast message={message} />
     </div>
   );

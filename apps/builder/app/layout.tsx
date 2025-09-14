@@ -37,14 +37,14 @@ export default function RootLayout({
   // Set document title and lang attribute
   useEffect(() => {
     document.title = "Form Builder - Skemya Forms Platform";
-    
+
     // Update lang attribute based on detected locale
     const urlParams = new URLSearchParams(window.location.search);
-    const langParam = urlParams.get('lang');
+    const langParam = urlParams.get("lang");
     if (langParam) {
       document.documentElement.lang = langParam;
-    } else if (window.navigator.language.startsWith('fr')) {
-      document.documentElement.lang = 'fr';
+    } else if (window.navigator.language.startsWith("fr")) {
+      document.documentElement.lang = "fr";
     }
   }, []);
 

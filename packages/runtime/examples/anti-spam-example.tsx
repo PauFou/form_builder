@@ -159,18 +159,14 @@ export async function validateSubmissionOnServer(
   formData: any
 ): Promise<{ isValid: boolean; reason?: string }> {
   // Extract client IP (example for Express/Node.js environment)
-  const clientIP = request.headers.get("x-forwarded-for") || 
-                   request.headers.get("x-real-ip") || 
-                   "unknown";
+  const clientIP =
+    request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
 
   // Validate using the anti-spam service
-  const validation = await antiSpamService.validate(
-    formData.sessionId || "server-validation",
-    {
-      ip: clientIP,
-      formId: formData.formId,
-    }
-  );
+  const validation = await antiSpamService.validate(formData.sessionId || "server-validation", {
+    ip: clientIP,
+    formId: formData.formId,
+  });
 
   // Additional server-side checks
   if (validation.isValid) {
@@ -189,9 +185,7 @@ export async function validateSubmissionOnServer(
     // Check for spam keywords (basic example)
     const spamKeywords = ["viagra", "casino", "lottery", "pills"];
     const message = (formData.values.message || "").toLowerCase();
-    const hasSpamKeywords = spamKeywords.some((keyword) =>
-      message.includes(keyword)
-    );
+    const hasSpamKeywords = spamKeywords.some((keyword) => message.includes(keyword));
     if (hasSpamKeywords) {
       return { isValid: false, reason: "spam_keywords" };
     }
@@ -202,9 +196,9 @@ export async function validateSubmissionOnServer(
 
 // Example 5: Testing Anti-Spam in Development
 export function TestAntiSpamForm() {
-  const [testMode, setTestMode] = React.useState<
-    "normal" | "bot" | "fast" | "rate_limit"
-  >("normal");
+  const [testMode, setTestMode] = React.useState<"normal" | "bot" | "fast" | "rate_limit">(
+    "normal"
+  );
 
   const config: RuntimeConfig = {
     formId: "test-form",
@@ -227,9 +221,7 @@ export function TestAntiSpamForm() {
     switch (testMode) {
       case "bot": {
         // Simulate bot filling honeypot
-        const honeypot = form.querySelector(
-          'input[name="_website_url"]'
-        ) as HTMLInputElement;
+        const honeypot = form.querySelector('input[name="_website_url"]') as HTMLInputElement;
         if (honeypot) {
           honeypot.value = "http://spam-site.com";
         }
@@ -271,9 +263,7 @@ export function TestAntiSpamForm() {
           Test Mode:
           <select
             value={testMode}
-            onChange={(e) =>
-              setTestMode(e.target.value as typeof testMode)
-            }
+            onChange={(e) => setTestMode(e.target.value as typeof testMode)}
             style={{ marginLeft: "0.5rem" }}
           >
             <option value="normal">Normal User</option>

@@ -11,9 +11,9 @@ describe("useKeyboardShortcuts", () => {
   const mockDeleteBlock = jest.fn();
   const mockDuplicateBlock = jest.fn();
   const mockMoveBlock = jest.fn();
-  const mockForm = { 
-    id: "test-form", 
-    title: "Test", 
+  const mockForm = {
+    id: "test-form",
+    title: "Test",
     pages: [
       {
         id: "page-1",
@@ -21,10 +21,10 @@ describe("useKeyboardShortcuts", () => {
         blocks: [
           { id: "block-1", type: "short_text", question: "Question 1" },
           { id: "block-2", type: "short_text", question: "Question 2" },
-          { id: "block-3", type: "short_text", question: "Question 3" }
-        ]
-      }
-    ] 
+          { id: "block-3", type: "short_text", question: "Question 3" },
+        ],
+      },
+    ],
   };
 
   let addEventListenerSpy: jest.SpyInstance;

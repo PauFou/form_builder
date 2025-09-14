@@ -5,6 +5,7 @@ This document describes the implementation of the Skemya theme and international
 ## Overview
 
 The implementation includes:
+
 - **Skemya Theme**: A professional, tech-focused design system with light/dark mode support
 - **Internationalization (i18n)**: Full support for English and French with auto-detection and URL parameter override
 
@@ -43,16 +44,14 @@ The Skemya theme provides comprehensive design tokens:
 ### Usage
 
 ```tsx
-import { useSkemyaTheme } from '@/lib/theme';
+import { useSkemyaTheme } from "@/lib/theme";
 
 function MyComponent() {
   const { theme, mode, toggleMode } = useSkemyaTheme();
-  
+
   return (
     <div>
-      <button onClick={toggleMode}>
-        Switch to {mode === 'light' ? 'dark' : 'light'} mode
-      </button>
+      <button onClick={toggleMode}>Switch to {mode === "light" ? "dark" : "light"} mode</button>
     </div>
   );
 }
@@ -61,9 +60,9 @@ function MyComponent() {
 ### Theme Switcher Component
 
 ```tsx
-import { ThemeSwitcher } from '@/components/ui/theme-switcher';
+import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 
-<ThemeSwitcher variant="ghost" size="icon" />
+<ThemeSwitcher variant="ghost" size="icon" />;
 ```
 
 ## Internationalization (i18n)
@@ -71,6 +70,7 @@ import { ThemeSwitcher } from '@/components/ui/theme-switcher';
 ### Language Detection
 
 The system automatically detects the user's language using the following priority:
+
 1. URL parameter: `?lang=fr`
 2. LocalStorage preference
 3. Browser language (navigator.language)
@@ -84,6 +84,7 @@ The system automatically detects the user's language using the following priorit
 ### Translation Structure
 
 Translations are organized by domain:
+
 - `common`: Common UI elements
 - `navigation`: Navigation items
 - `auth`: Authentication related
@@ -105,26 +106,24 @@ Translations are organized by domain:
 ### Usage
 
 ```tsx
-import { useI18n } from '@/lib/i18n';
+import { useI18n } from "@/lib/i18n";
 
 function MyComponent() {
   const { t, locale, setLocale, formatDate, formatCurrency } = useI18n();
-  
+
   return (
     <div>
       <h1>{t.navigation.dashboard}</h1>
       <p>{t.forms.createForm}</p>
-      
+
       {/* Formatted date */}
-      <p>{formatDate(new Date(), { dateStyle: 'full' })}</p>
-      
+      <p>{formatDate(new Date(), { dateStyle: "full" })}</p>
+
       {/* Formatted currency */}
-      <p>{formatCurrency(1234.56, 'EUR')}</p>
-      
+      <p>{formatCurrency(1234.56, "EUR")}</p>
+
       {/* Switch language */}
-      <button onClick={() => setLocale('fr')}>
-        Français
-      </button>
+      <button onClick={() => setLocale("fr")}>Français</button>
     </div>
   );
 }
@@ -133,9 +132,9 @@ function MyComponent() {
 ### Language Switcher Component
 
 ```tsx
-import { LanguageSwitcher } from '@/components/ui/language-switcher';
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 
-<LanguageSwitcher variant="ghost" size="icon" />
+<LanguageSwitcher variant="ghost" size="icon" />;
 ```
 
 ### Validation with i18n
@@ -143,19 +142,19 @@ import { LanguageSwitcher } from '@/components/ui/language-switcher';
 The system provides localized validation messages for Zod schemas:
 
 ```tsx
-import { z } from 'zod';
-import { createI18nErrorMap, createValidationSchemas } from '@/lib/i18n/validation';
-import { useI18n } from '@/lib/i18n';
+import { z } from "zod";
+import { createI18nErrorMap, createValidationSchemas } from "@/lib/i18n/validation";
+import { useI18n } from "@/lib/i18n";
 
 function MyForm() {
   const { t } = useI18n();
-  
+
   // Set global error map
   z.setErrorMap(createI18nErrorMap(t));
-  
+
   // Use predefined schemas
   const schemas = createValidationSchemas(t);
-  
+
   const formSchema = z.object({
     email: schemas.email,
     phone: schemas.phone,
@@ -172,16 +171,16 @@ The i18n system provides several formatting utilities:
 const { formatMessage, formatNumber, formatDate, formatCurrency, formatRelativeTime } = useI18n();
 
 // Format message with placeholders
-formatMessage('validation.minLength', { min: 5 }); // "Must be at least 5 characters"
+formatMessage("validation.minLength", { min: 5 }); // "Must be at least 5 characters"
 
 // Format numbers
 formatNumber(1234.56); // "1,234.56" (en) or "1 234,56" (fr)
 
 // Format dates
-formatDate(new Date(), { dateStyle: 'full' }); // "Monday, January 15, 2024"
+formatDate(new Date(), { dateStyle: "full" }); // "Monday, January 15, 2024"
 
 // Format currency
-formatCurrency(99.99, 'EUR'); // "$99.99" (en) or "99,99 €" (fr)
+formatCurrency(99.99, "EUR"); // "$99.99" (en) or "99,99 €" (fr)
 
 // Format relative time
 formatRelativeTime(pastDate); // "2 days ago" or "Il y a 2 jours"

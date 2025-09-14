@@ -109,7 +109,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="non-existent" />);
@@ -122,7 +122,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -146,7 +146,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -165,7 +165,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -184,7 +184,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -203,7 +203,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -221,7 +221,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-2" />);
@@ -238,7 +238,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-2" />);
@@ -260,7 +260,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-2" />);
@@ -286,7 +286,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-3" />);
@@ -301,7 +301,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -322,7 +322,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -342,7 +342,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -360,7 +360,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -382,7 +382,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -401,7 +401,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -433,7 +433,7 @@ describe("BlockInspector", () => {
       form: mockForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-1" />);
@@ -458,7 +458,7 @@ describe("BlockInspector", () => {
       form: formWithBlock,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-no-key" />);
@@ -488,7 +488,7 @@ describe("BlockInspector", () => {
       form: multiPageForm,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     // Should find block on page 2
@@ -502,7 +502,7 @@ describe("BlockInspector", () => {
       form: null,
       updateBlock: mockUpdateBlock,
       validationErrors: [],
-      getExistingKeys: jest.fn(() => new Set(['existing_key'])),
+      getExistingKeys: jest.fn(() => new Set(["existing_key"])),
     });
 
     render(<BlockInspector blockId="block-1" />);

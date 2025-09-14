@@ -52,12 +52,8 @@ export function FormBuilder({ onSave, onPreview, onPublish }: FormBuilderProps) 
       onDragEnd={handleDragEnd}
     >
       <div className="h-screen overflow-hidden flex flex-col">
-        <Toolbar 
-          onSave={onSave}
-          onPreview={onPreview}
-          onPublish={onPublish}
-        />
-        
+        <Toolbar onSave={onSave} onPreview={onPreview} onPublish={onPublish} />
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
           <div className="border-b px-4 py-2">
             <TabsList>

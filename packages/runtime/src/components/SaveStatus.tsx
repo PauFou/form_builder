@@ -93,7 +93,7 @@ export function SaveStatus({
             transition: "background-color 0.3s ease",
           }}
         />
-        
+
         {/* Status text */}
         <span>{getStatusText()}</span>
 

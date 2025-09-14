@@ -60,11 +60,7 @@ export default function UndoRedoDemo() {
 
   return (
     <div className="h-screen">
-      <FormBuilder
-        onSave={handleSave}
-        onPreview={handlePreview}
-        onPublish={handlePublish}
-      />
+      <FormBuilder onSave={handleSave} onPreview={handlePreview} onPublish={handlePublish} />
     </div>
   );
 }

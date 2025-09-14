@@ -184,9 +184,7 @@ export default function ValidationDemoPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">
-              Checking references for field1 (Name):
-            </p>
+            <p className="text-sm text-muted-foreground">Checking references for field1 (Name):</p>
             {field1References.isReferenced ? (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />

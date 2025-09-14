@@ -19,13 +19,13 @@ import { useFormRuntime, SaveStatus, ResumeBanner } from "@forms/runtime";
 const config = {
   formId: "my-form",
   apiUrl: "https://api.example.com",
-  
+
   // Enable partial saves to API (optional)
   onPartialSave: async (data) => {
     // Custom save logic
     await saveToServer(data);
   },
-  
+
   // Or use default API endpoint
   // POST /partials endpoint will be called automatically
 };
@@ -49,7 +49,7 @@ function MyForm() {
         isOnline={isOnline}
         resumeUrl={getResumeUrl()}
       />
-      
+
       {/* Form fields */}
     </div>
   );
@@ -75,7 +75,7 @@ import { ResumeBanner } from "@forms/runtime";
 
 function FormWithResume() {
   const [showResumeBanner, setShowResumeBanner] = useState(false);
-  
+
   useEffect(() => {
     // Check if saved data exists
     const hasSavedData = checkForSavedData();
@@ -99,7 +99,7 @@ function FormWithResume() {
       />
     );
   }
-  
+
   // Regular form rendering
 }
 ```
@@ -152,7 +152,7 @@ const config = {
       method: "POST",
       body: JSON.stringify(data),
     });
-    
+
     // Return resume token if needed
     const { token } = await response.json();
     return token;
@@ -172,19 +172,19 @@ const config = {
 interface RuntimeConfig {
   // Form identifier
   formId: string;
-  
+
   // API base URL
   apiUrl?: string;
-  
+
   // Custom partial save handler
   onPartialSave?: (data: PartialSaveData) => Promise<void>;
-  
+
   // Auto-save interval for offline service (ms)
   autoSaveInterval?: number;
-  
+
   // Enable offline support
   enableOffline?: boolean;
-  
+
   // Initial respondent key
   respondentKey?: string;
 }
@@ -196,16 +196,17 @@ The `SaveStatus` component provides visual feedback:
 
 ```tsx
 <SaveStatus
-  isSaving={isSaving}           // Currently saving
+  isSaving={isSaving} // Currently saving
   hasUnsyncedData={hasUnsynced} // Has local changes not synced
-  isOnline={isOnline}           // Online/offline status
-  resumeUrl={resumeUrl}         // Generated resume URL
-  lastSaveTime={lastSave}       // Optional: show time since save
-  className="my-custom-class"   // Optional: custom styling
+  isOnline={isOnline} // Online/offline status
+  resumeUrl={resumeUrl} // Generated resume URL
+  lastSaveTime={lastSave} // Optional: show time since save
+  className="my-custom-class" // Optional: custom styling
 />
 ```
 
 Status indicators:
+
 - 🟢 Green: All changes saved
 - 🟡 Amber: Changes saved locally / Offline
 - 🔵 Gray: Currently saving
@@ -250,16 +251,11 @@ interface PartialSaveData {
 
 ```tsx
 import React, { useState, useEffect } from "react";
-import {
-  useFormRuntime,
-  SaveStatus,
-  ResumeBanner,
-  FormViewer,
-} from "@forms/runtime";
+import { useFormRuntime, SaveStatus, ResumeBanner, FormViewer } from "@forms/runtime";
 
 export function FormWithPartialSave({ schema }) {
   const [showResume, setShowResume] = useState(false);
-  
+
   const config = {
     formId: schema.id,
     apiUrl: process.env.REACT_APP_API_URL,
@@ -310,10 +306,7 @@ export function FormWithPartialSave({ schema }) {
       )}
 
       {/* Form content */}
-      <FormViewer
-        schema={schema}
-        config={config}
-      />
+      <FormViewer schema={schema} config={config} />
     </div>
   );
 }

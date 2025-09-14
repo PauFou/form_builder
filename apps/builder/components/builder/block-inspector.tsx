@@ -64,7 +64,10 @@ export function BlockInspector({ blockId }: BlockInspectorProps) {
     }
 
     const existingKeys = getExistingKeys();
-    existingKeys.delete(block?.key || block?.id); // Remove current key from check
+    const keyToDelete = block?.key || block?.id;
+    if (keyToDelete) {
+      existingKeys.delete(keyToDelete); // Remove current key from check
+    }
 
     if (existingKeys.has(key)) {
       setKeyError("This key is already used by another field");

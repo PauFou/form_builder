@@ -75,7 +75,7 @@ export function DeleteFieldDialog({
               The field "{fieldName}" is referenced in {references.rules.length} logic{" "}
               {references.rules.length === 1 ? "rule" : "rules"}.
             </p>
-            
+
             <div className="rounded-md bg-muted p-3 space-y-2">
               <p className="text-sm font-medium">Referenced in:</p>
               <ul className="text-sm space-y-1">
@@ -95,7 +95,7 @@ export function DeleteFieldDialog({
             <p className="font-medium">How would you like to proceed?</p>
           </DialogDescription>
         </DialogHeader>
-        
+
         <DialogFooter className="flex-col sm:flex-col gap-2">
           <Button
             variant="outline"
@@ -124,7 +124,7 @@ function describeRule(rule: LogicRule): string {
   const conditions = rule.conditions
     .map((c) => `${c.field} ${c.operator.replace("_", " ")} ${c.value}`)
     .join(" AND ");
-  
+
   const actions = rule.actions
     .map((a) => {
       switch (a.type) {
