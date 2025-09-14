@@ -7,7 +7,9 @@ from django.conf import settings
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Configure Django settings before importing anything else
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "api.settings")
+# Don't override if already set (e.g., by pytest.ini or CI)
+if "DJANGO_SETTINGS_MODULE" not in os.environ:
+    os.environ["DJANGO_SETTINGS_MODULE"] = "api.settings"
 
 # Setup Django
 django.setup()

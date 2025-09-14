@@ -132,6 +132,11 @@ describe("GridFormViewer", () => {
     await user.type(screen.getByLabelText(/what is your email/i), "john@example.com");
     await user.click(screen.getByText("Next"));
 
+    // Wait for page 2 to be fully loaded
+    await waitFor(() => {
+      expect(screen.getByLabelText(/what is your age/i)).toBeInTheDocument();
+    });
+
     // Fill page 2
     await user.type(screen.getByLabelText(/what is your age/i), "30");
     await user.type(screen.getByLabelText(/any feedback/i), "Great form!");

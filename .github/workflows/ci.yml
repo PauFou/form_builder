@@ -137,7 +137,7 @@ jobs:
           CELERY_RESULT_BACKEND: redis://localhost:6379/0
         run: |
           python manage.py migrate
-          pytest -v --cov=. --cov-report=xml --cov-report=term
+          python -m pytest -xvs --cov=. --cov-report=xml --cov-report=term
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

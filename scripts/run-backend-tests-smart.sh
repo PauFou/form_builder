@@ -55,7 +55,8 @@ fi
 # Run tests
 echo ""
 echo "Running tests..."
-pytest -v --cov=. --cov-report=xml --cov-report=term
+echo "Using DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE"
+python -m pytest -xvs --cov=. --cov-report=xml --cov-report=term
 
 TEST_RESULT=$?
 
