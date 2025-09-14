@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  FormViewer,
   SaveStatus,
   ResumeBanner,
   useFormRuntime,
@@ -119,7 +118,7 @@ export function PartialSaveExample() {
     };
 
     checkForSavedData();
-  }, []);
+  }, [config.formId, config.respondentKey]);
 
   // Handle resume
   const handleResume = () => {

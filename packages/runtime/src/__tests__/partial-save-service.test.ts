@@ -1,6 +1,6 @@
 import { PartialSaveService } from "../services/partial-save-service";
 import type { RuntimeConfig } from "../types";
-import { act } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 
 // Mock fetch
 global.fetch = jest.fn();
@@ -68,6 +68,11 @@ describe("PartialSaveService", () => {
   afterEach(() => {
     service.destroy();
     jest.restoreAllMocks();
+    // Reset window.location if it was mocked
+    if ((window as any).location && (window as any).location._isMock) {
+      delete (window as any).location;
+      (window as any).location = window.location;
+    }
   });
 
   describe("localStorage operations", () => {
@@ -131,7 +136,7 @@ describe("PartialSaveService", () => {
       };
       
       // Store existing data and override localStorage methods
-      let store: Record<string, string> = {
+      const store: Record<string, string> = {
         [oldKey]: JSON.stringify(oldData),
       };
       
@@ -261,12 +266,15 @@ describe("PartialSaveService", () => {
     });
 
     it("should load from API with resume token", async () => {
+      // Clear localStorage to ensure API is used
+      localStorageMock.clear();
+      
       // Mock URL params - need to mock URLSearchParams as well
       const originalLocation = window.location;
       const originalURLSearchParams = global.URLSearchParams;
       
       // Create a simple mock URLSearchParams
-      global.URLSearchParams = jest.fn().mockImplementation((search) => ({
+      global.URLSearchParams = jest.fn().mockImplementation(() => ({
         get: (key: string) => key === 'resume' ? 'token-123' : null,
       })) as any;
       
@@ -310,8 +318,6 @@ describe("PartialSaveService", () => {
 
   describe("resume URL generation", () => {
     it("should generate resume URL with token", async () => {
-      jest.useFakeTimers();
-      
       const originalLocation = window.location;
       delete (window as any).location;
       (window as any).location = {
@@ -329,9 +335,19 @@ describe("PartialSaveService", () => {
         }),
       });
 
-      const service = new PartialSaveService({
-        ...config,
+      // Ensure fetch is properly mocked for this test
+      (fetch as jest.Mock).mockClear();
+      
+      const testService = new PartialSaveService({
+        formId: "test-form",
+        respondentKey: "test-respondent",
         apiUrl: "https://api.example.com",
+      });
+
+      // Listen for save success event
+      let saveCompleted = false;
+      testService.on("save:success", () => {
+        saveCompleted = true;
       });
 
       const data = {
@@ -344,30 +360,51 @@ describe("PartialSaveService", () => {
         lastUpdatedAt: new Date().toISOString(),
       };
 
-      await service.save(data);
+      await testService.save(data);
 
-      // Advance timers past throttle period
-      await act(async () => {
-        jest.advanceTimersByTime(2100);
-      });
+      // Wait for throttled save to complete
+      await new Promise(resolve => setTimeout(resolve, 2100));
 
-      // Wait for the API response to be processed
-      await new Promise(resolve => setTimeout(resolve, 0));
+      // Wait for save to be completed
+      await waitFor(() => {
+        expect(saveCompleted).toBe(true);
+      }, { timeout: 5000 });
 
-      const resumeUrl = service.getResumeUrl();
+      const resumeUrl = testService.getResumeUrl();
       expect(resumeUrl).toBe("https://example.com/form?resume=token-123");
       
+      testService.destroy();
       // Restore location
       (window as any).location = originalLocation;
-      jest.useRealTimers();
     });
 
     it("should return null if no resume token", () => {
+      // Ensure location is clean
+      const originalLocation = window.location;
+      const originalURLSearchParams = global.URLSearchParams;
+      
+      // Mock URLSearchParams to return null for 'resume'
+      global.URLSearchParams = jest.fn().mockImplementation(() => ({
+        get: () => null,
+      })) as any;
+      
+      delete (window as any).location;
+      (window as any).location = {
+        href: "https://example.com/form",
+        search: "",
+        toString: () => "https://example.com/form",
+        _isMock: true,
+      };
+      
       // Create a fresh service with no resume token
       const freshService = new PartialSaveService(config);
       const resumeUrl = freshService.getResumeUrl();
       expect(resumeUrl).toBeNull();
       freshService.destroy();
+      
+      // Restore location and URLSearchParams
+      (window as any).location = originalLocation;
+      global.URLSearchParams = originalURLSearchParams;
     });
   });
 
@@ -409,22 +446,11 @@ describe("PartialSaveService", () => {
 
   describe("event handling", () => {
     it("should emit save events", async () => {
-      jest.useFakeTimers();
-      
       const startHandler = jest.fn();
       const successHandler = jest.fn();
 
       service.on("save:start", startHandler);
       service.on("save:success", successHandler);
-
-      (fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          id: "partial-123",
-          resumeToken: "token-123",
-          expiresAt: new Date().toISOString(),
-        }),
-      });
 
       const data = {
         formId: "test-form",
@@ -438,18 +464,11 @@ describe("PartialSaveService", () => {
 
       await service.save(data);
 
-      // Advance timers for throttled save
-      await act(async () => {
-        jest.advanceTimersByTime(2100);
-      });
-
-      // Wait for promises to resolve
-      await new Promise(resolve => setImmediate(resolve));
+      // Wait for throttled save to complete (2 seconds)
+      await new Promise(resolve => setTimeout(resolve, 2100));
 
       expect(startHandler).toHaveBeenCalled();
       expect(successHandler).toHaveBeenCalled();
-      
-      jest.useRealTimers();
     });
 
     it("should handle throttled saves", async () => {

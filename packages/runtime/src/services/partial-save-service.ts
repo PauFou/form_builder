@@ -1,5 +1,5 @@
 import mitt, { Emitter } from "mitt";
-import type { FormData, RuntimeConfig } from "../types";
+import type { RuntimeConfig } from "../types";
 import { debounce } from "../utils";
 
 interface PartialSaveData {

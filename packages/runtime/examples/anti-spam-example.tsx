@@ -225,7 +225,7 @@ export function TestAntiSpamForm() {
     if (!form) return;
 
     switch (testMode) {
-      case "bot":
+      case "bot": {
         // Simulate bot filling honeypot
         const honeypot = form.querySelector(
           'input[name="_website_url"]'
@@ -234,13 +234,15 @@ export function TestAntiSpamForm() {
           honeypot.value = "http://spam-site.com";
         }
         break;
+      }
 
-      case "fast":
+      case "fast": {
         // Simulate fast submission (handled by the form logic)
         console.log("Fast mode: Try submitting within 2 seconds");
         break;
+      }
 
-      case "rate_limit":
+      case "rate_limit": {
         // Update config for aggressive rate limiting
         antiSpamService.updateConfig({
           rateLimit: {
@@ -257,6 +259,7 @@ export function TestAntiSpamForm() {
         });
         console.log("Rate limit mode: Try submitting more than 2 times");
         break;
+      }
     }
   }, [testMode]);
 

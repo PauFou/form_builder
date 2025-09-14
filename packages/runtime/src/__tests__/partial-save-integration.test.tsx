@@ -1,6 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { act } from "react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { useFormRuntime } from "../hooks";
 import { SaveStatus } from "../components/SaveStatus";
 import { ResumeBanner } from "../components/ResumeBanner";
@@ -27,7 +26,6 @@ function TestForm({ schema, config }: { schema: FormSchema; config: RuntimeConfi
 
   React.useEffect(() => {
     // Check if we have saved data - use the generated session key format
-    const sessionKey = `form-partial-${config.formId}-${config.respondentKey || "anon"}`;
     const keys = Object.keys(localStorage).filter(key => key.startsWith("form-partial-"));
     const savedData = keys.length > 0 ? localStorage.getItem(keys[0]) : null;
     
@@ -393,7 +391,7 @@ describe("Partial Save Integration", () => {
   });
 
   it("should clear saved data on successful submission", async () => {
-    const { getByTestId, getByText } = render(<TestForm schema={mockSchema} config={mockConfig} />);
+    const { getByTestId } = render(<TestForm schema={mockSchema} config={mockConfig} />);
 
     // Fill out form
     const nameInput = getByTestId("input-name");
