@@ -110,8 +110,8 @@ describe("useFormBuilderStore", () => {
       expect(result.current.history).toEqual([
         {
           ...mockForm,
-          createdAt: mockForm.createdAt.toISOString(),
-          updatedAt: mockForm.updatedAt.toISOString(),
+          createdAt: mockForm.createdAt?.toISOString(),
+          updatedAt: mockForm.updatedAt?.toISOString(),
         },
       ]);
       expect(result.current.historyIndex).toBe(0);
@@ -143,8 +143,8 @@ describe("useFormBuilderStore", () => {
       expect(result.current.history).toEqual([
         {
           ...mockForm,
-          createdAt: mockForm.createdAt.toISOString(),
-          updatedAt: mockForm.updatedAt.toISOString(),
+          createdAt: mockForm.createdAt?.toISOString(),
+          updatedAt: mockForm.updatedAt?.toISOString(),
         },
       ]);
       expect(result.current.historyIndex).toBe(0);
