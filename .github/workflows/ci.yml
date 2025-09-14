@@ -130,7 +130,7 @@ jobs:
           POSTGRES_PORT: 5432
           REDIS_URL: redis://localhost:6379
           DJANGO_SECRET_KEY: test-secret-key
-          DJANGO_SETTINGS_MODULE: api.settings
+          DJANGO_SETTINGS_MODULE: api.settings_test
           ALLOWED_HOSTS: localhost,127.0.0.1
           DEBUG: "False"
           CELERY_BROKER_URL: redis://localhost:6379/0

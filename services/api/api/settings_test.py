@@ -6,12 +6,13 @@ DEBUG = False
 TESTING = True
 
 # Use PostgreSQL for tests (production-ready)
+# In CI, these are set to test/test/test
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('POSTGRES_DB', default='forms_db_test'),
-        'USER': config('POSTGRES_USER', default='forms_user'),
-        'PASSWORD': config('POSTGRES_PASSWORD', default='forms_password'),
+        'NAME': config('POSTGRES_DB', default='test'),
+        'USER': config('POSTGRES_USER', default='test'),
+        'PASSWORD': config('POSTGRES_PASSWORD', default='test'),
         'HOST': config('POSTGRES_HOST', default='localhost'),
         'PORT': config('POSTGRES_PORT', default=5432, cast=int),
         'TEST': {
