@@ -209,7 +209,9 @@ describe("FormViewer Offline Integration", () => {
     });
 
     // Go to next step to set more initial data
-    fireEvent.click(screen.getByText("Next"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("Next"));
+    });
     await waitFor(() => {
       expect(screen.getByText("What's your email?")).toBeInTheDocument();
     });
@@ -223,7 +225,9 @@ describe("FormViewer Offline Integration", () => {
     });
 
     // Now go back to first step
-    fireEvent.click(screen.getByText("Previous"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("Previous"));
+    });
     await waitFor(() => {
       expect(screen.getByText("What's your name?")).toBeInTheDocument();
     });
@@ -369,14 +373,18 @@ describe("FormViewer Offline Integration", () => {
     fireEvent.change(emailInput, { target: { value: "complete@example.com" } });
 
     // Go to last step
-    fireEvent.click(screen.getByText("Next"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("Next"));
+    });
 
     await waitFor(() => {
       expect(screen.getByText("Any feedback?")).toBeInTheDocument();
     });
 
     // Submit the form
-    fireEvent.click(screen.getByText("Submit"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("Submit"));
+    });
 
     // Wait for submission to complete
     await waitFor(() => {

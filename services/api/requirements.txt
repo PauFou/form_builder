@@ -37,3 +37,4 @@ isort==5.13.2
 # Utilities
 python-slugify==8.0.1
 python-decouple==3.8
+cryptography==41.0.7
