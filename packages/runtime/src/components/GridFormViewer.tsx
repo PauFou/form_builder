@@ -14,11 +14,8 @@ export function GridFormViewer({ schema, config, className = "" }: GridFormViewe
   const {
     state,
     visibleBlocks,
-    progress,
     setValue,
     setTouched,
-    goNext,
-    goPrev,
     submit,
     validate,
     hasUnsyncedData,
@@ -225,7 +222,6 @@ export function GridFormViewer({ schema, config, className = "" }: GridFormViewe
             <h3>Please fix the following errors:</h3>
             <ul>
               {Object.entries(pageErrors).map(([fieldId, error]) => {
-                const block = currentPageBlocks.find((b) => b.id === fieldId);
                 return (
                   <li key={fieldId}>
                     <a href={`#${fieldId}`} onClick={(e) => {
