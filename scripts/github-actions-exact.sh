@@ -89,55 +89,9 @@ check_result "frontend tests" || true
 # 3. BACKEND TESTS JOB (lines 83-141)
 run_job "test-backend" "Backend Tests"
 
-# Check if PostgreSQL is available
-if ! command -v psql &> /dev/null; then
-    echo -e "${YELLOW}⚠ PostgreSQL not available locally${NC}"
-    echo "GitHub Actions uses PostgreSQL service container"
-    echo "To match exactly, you need PostgreSQL running with:"
-    echo "  User: test"
-    echo "  Password: test"
-    echo "  Database: test"
-    echo ""
-    echo "Run: bash scripts/setup-test-db.sh"
-else
-    cd services/api
-    
-    # Install Python dependencies
-    if [ ! -d ".venv" ]; then
-        python3 -m venv .venv
-    fi
-    source .venv/bin/activate
-    
-    echo "→ Install dependencies"
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
-    pip install pytest pytest-cov pytest-django
-    
-    # Set EXACT environment variables from GitHub Actions
-    export POSTGRES_HOST=localhost
-    export POSTGRES_USER=test
-    export POSTGRES_PASSWORD=test
-    export POSTGRES_DB=test
-    export POSTGRES_PORT=5432
-    export REDIS_URL=redis://localhost:6379
-    export DJANGO_SECRET_KEY=test-secret-key
-    export DJANGO_SETTINGS_MODULE=api.settings
-    export ALLOWED_HOSTS=localhost,127.0.0.1
-    export DEBUG="False"
-    export CELERY_BROKER_URL=redis://localhost:6379/0
-    export CELERY_RESULT_BACKEND=redis://localhost:6379/0
-    
-    echo "→ Run migrations"
-    python manage.py migrate
-    check_result "migrations" || true
-    
-    echo "→ Run tests with coverage"
-    pytest -v --cov=. --cov-report=xml --cov-report=term
-    check_result "backend tests" || true
-    
-    deactivate
-    cd ../..
-fi
+echo "→ Run backend tests"
+bash scripts/run-backend-tests-smart.sh
+check_result "backend tests" || true
 
 # 4. E2E TESTS JOB (lines 153-178)
 run_job "test-e2e" "E2E Tests"

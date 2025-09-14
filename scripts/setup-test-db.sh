@@ -1,34 +1,47 @@
 #!/bin/bash
 
-# Script to set up test database for CI compatibility
-# This creates a PostgreSQL user and database matching GitHub Actions setup
+# Script to set up test database for CI validation
 
-echo "Setting up test database for CI compatibility..."
+echo "🗄️  Setting up test database..."
+echo "=============================="
 
-# Check if PostgreSQL is running
+# Colors
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+# Check if PostgreSQL is installed
 if ! command -v psql &> /dev/null; then
-    echo "Error: PostgreSQL is not installed or not in PATH"
-    echo "Please install PostgreSQL first"
+    echo -e "${RED}PostgreSQL is not installed${NC}"
+    echo "Please install PostgreSQL or use Docker:"
+    echo "  docker-compose up -d postgres"
     exit 1
 fi
 
-# Create test user if it doesn't exist
-echo "Creating test user..."
-psql -U postgres -c "CREATE USER test WITH PASSWORD 'test';" 2>/dev/null || echo "User 'test' already exists"
-
-# Create test database if it doesn't exist
+# Create test database and user
 echo "Creating test database..."
-psql -U postgres -c "CREATE DATABASE test OWNER test;" 2>/dev/null || echo "Database 'test' already exists"
+sudo -u postgres psql << EOF
+-- Create test user
+CREATE USER test WITH PASSWORD 'test';
 
-# Grant all privileges
-echo "Granting privileges..."
-psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE test TO test;"
+-- Create test database
+CREATE DATABASE test OWNER test;
 
-echo "Test database setup complete!"
-echo ""
-echo "Connection details:"
-echo "  User: test"
-echo "  Password: test"
-echo "  Database: test"
-echo "  Host: localhost"
-echo "  Port: 5432"
+-- Grant all privileges
+GRANT ALL PRIVILEGES ON DATABASE test TO test;
+EOF
+
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓ Test database created successfully${NC}"
+    echo ""
+    echo "Database details:"
+    echo "  Host: localhost"
+    echo "  Port: 5432"
+    echo "  Database: test"
+    echo "  User: test"
+    echo "  Password: test"
+else
+    echo -e "${RED}✗ Failed to create test database${NC}"
+    exit 1
+fi
