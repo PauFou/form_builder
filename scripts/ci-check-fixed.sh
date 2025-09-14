@@ -31,7 +31,15 @@ run_check() {
     fi
 }
 
+# 0. DEPENDENCY CHECKS
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "0️⃣  DEPENDENCY CHECKS"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+run_check "Backend dependencies" "bash scripts/check-backend-deps.sh"
+
 # 1. CODE QUALITY CHECKS
+echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "1️⃣  CODE QUALITY CHECKS"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

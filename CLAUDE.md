@@ -299,21 +299,40 @@ POST   /v1/webhook-deliveries/:id/redrive
 
 ## 🚨 MANDATORY CI/CD SYNCHRONIZATION (CRITICAL FOR CLAUDE)
 
-### Two-Stage Validation Process
+### Pre-Push Validation Process
 
-Claude MUST follow this exact process before EVERY push:
+Claude MUST ensure ALL tests pass before ANY push. The project includes multiple validation scripts:
 
-#### Stage 1: Quick Development Check
+#### Quick Checks (for development iteration)
 
 ```bash
 bash scripts/ci-check-fixed.sh  # Fast local validation
 ```
 
-#### Stage 2: EXACT GitHub Actions Reproduction (REQUIRED)
+#### Complete Validation (before pushing)
 
 ```bash
-bash scripts/github-actions-exact.sh  # MUST PASS before push
+bash scripts/pre-push-complete.sh  # Full validation suite
 ```
+
+#### EXACT GitHub Actions Reproduction (automatic on git push)
+
+```bash
+bash scripts/github-actions-exact.sh  # Runs automatically via git hook
+```
+
+### Critical Dependency Checks
+
+1. **Backend Dependencies**: The project requires `python-decouple` for Django settings
+
+   ```bash
+   bash scripts/check-backend-deps.sh  # Verify Python dependencies
+   ```
+
+2. **E2E Readiness**: All pages must have proper accessibility landmarks
+   ```bash
+   bash scripts/check-e2e-ready.sh  # Verify E2E will pass
+   ```
 
 ### Why This Matters
 
