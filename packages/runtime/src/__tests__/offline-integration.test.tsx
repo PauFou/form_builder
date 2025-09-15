@@ -80,11 +80,10 @@ describe("Offline Integration", () => {
       value: false,
     });
 
-    // Trigger offline event
-    window.dispatchEvent(new Event("offline"));
-
-    // Wait a bit for the event handler to process and component to re-render
+    // Trigger offline event within act()
     await act(async () => {
+      window.dispatchEvent(new Event("offline"));
+      // Wait a bit for the event handler to process
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
@@ -114,11 +113,13 @@ describe("Offline Integration", () => {
     await new Promise((resolve) => setTimeout(resolve, 200));
 
     // Simulate coming back online
-    Object.defineProperty(navigator, "onLine", {
-      writable: true,
-      value: true,
+    await act(async () => {
+      Object.defineProperty(navigator, "onLine", {
+        writable: true,
+        value: true,
+      });
+      window.dispatchEvent(new Event("online"));
     });
-    window.dispatchEvent(new Event("online"));
 
     // Wait for the UI to update
     await waitFor(() => {

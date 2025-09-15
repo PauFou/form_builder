@@ -1,5 +1,20 @@
 import "@testing-library/jest-dom";
 
+// Suppress React act() warnings in tests
+const originalError = console.error;
+beforeAll(() => {
+  console.error = (...args) => {
+    if (typeof args[0] === "string" && args[0].includes("inside a test was not wrapped in act")) {
+      return;
+    }
+    originalError.call(console, ...args);
+  };
+});
+
+afterAll(() => {
+  console.error = originalError;
+});
+
 // Polyfill for structuredClone (Node < 17)
 // @ts-expect-error - Polyfill for Node < 17
 global.structuredClone = (obj: unknown) => JSON.parse(JSON.stringify(obj));

@@ -79,6 +79,15 @@ describe("FormViewer Offline Integration", () => {
       configurable: true,
       value: true,
     });
+
+    // Mock fetch to prevent actual API calls
+    const mockFetch = jest.fn();
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true }),
+    });
+    // @ts-expect-error - Mock fetch for testing
+    global.fetch = mockFetch;
   });
 
   afterEach(async () => {
