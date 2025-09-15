@@ -123,7 +123,7 @@ jobs:
       - name: Run tests with coverage
         working-directory: ./services/api
         env:
-          POSTGRES_HOST: localhost
+          POSTGRES_HOST: 127.0.0.1
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
           POSTGRES_DB: test

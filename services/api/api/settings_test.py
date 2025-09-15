@@ -13,7 +13,7 @@ DATABASES = {
         'NAME': config('POSTGRES_DB', default='test'),
         'USER': config('POSTGRES_USER', default='test'),
         'PASSWORD': config('POSTGRES_PASSWORD', default='test'),
-        'HOST': config('POSTGRES_HOST', default='localhost'),
+        'HOST': config('POSTGRES_HOST', default='127.0.0.1'),
         'PORT': config('POSTGRES_PORT', default=5432, cast=int),
         'TEST': {
             'NAME': 'forms_db_test',
