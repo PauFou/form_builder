@@ -90,6 +90,7 @@ jobs:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
           POSTGRES_DB: test
+          POSTGRES_HOST_AUTH_METHOD: trust
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -119,6 +120,31 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pytest-cov pytest-django
+
+      - name: Wait for PostgreSQL
+        working-directory: ./services/api
+        env:
+          POSTGRES_HOST: 127.0.0.1
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+          POSTGRES_PORT: 5432
+        run: |
+          python wait-for-postgres.py
+
+      - name: Test database connection
+        working-directory: ./services/api
+        env:
+          POSTGRES_HOST: 127.0.0.1
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+          POSTGRES_PORT: 5432
+          DJANGO_SECRET_KEY: test-secret-key
+          DJANGO_SETTINGS_MODULE: api.settings_test
+        run: |
+          python -c "import os; print('DB Settings:', os.environ.get('POSTGRES_HOST'), os.environ.get('POSTGRES_USER'), os.environ.get('POSTGRES_PASSWORD'))"
+          python manage.py dbshell -c "SELECT version();" || true
 
       - name: Run tests with coverage
         working-directory: ./services/api
