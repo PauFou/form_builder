@@ -28,15 +28,16 @@ CACHES = {
     }
 }
 
-# Disable migrations for faster tests
-class DisableMigrations:
-    def __contains__(self, item):
-        return True
-
-    def __getitem__(self, item):
-        return None
-
-MIGRATION_MODULES = DisableMigrations()
+# Keep migrations enabled for CI to ensure proper database setup
+# Only disable in local development if needed
+# class DisableMigrations:
+#     def __contains__(self, item):
+#         return True
+#
+#     def __getitem__(self, item):
+#         return None
+#
+# MIGRATION_MODULES = DisableMigrations()
 
 # Simplify password hasher for tests
 PASSWORD_HASHERS = [
