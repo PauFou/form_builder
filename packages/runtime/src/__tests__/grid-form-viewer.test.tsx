@@ -126,11 +126,8 @@ describe("GridFormViewer", () => {
   it("submits form when all fields are valid", async () => {
     const user = userEvent.setup();
 
-    // Add console.log to onSubmit to debug
-    const onSubmitSpy = jest.fn((data) => {
-      console.log("onSubmit called with:", data);
-      return Promise.resolve();
-    });
+    // Mock onSubmit handler
+    const onSubmitSpy = jest.fn(() => Promise.resolve());
     const testConfig = { ...mockConfig, onSubmit: onSubmitSpy };
 
     render(<GridFormViewer schema={mockSchema} config={testConfig} />);
@@ -166,34 +163,26 @@ describe("GridFormViewer", () => {
     const submitButton = screen.getByText("Submit Form");
     await user.click(submitButton);
 
-    // Wait for completion or onSubmit call
+    // Wait for completion message to appear
     await waitFor(
       () => {
-        // Either the form shows completion or onSubmit was called
-        const isComplete = screen.queryByText(/thank you/i);
-        if (!isComplete) {
-          expect(onSubmitSpy).toHaveBeenCalled();
-        }
+        expect(screen.getByText(/thank you/i)).toBeInTheDocument();
       },
       { timeout: 3000 }
     );
 
-    if (onSubmitSpy.mock.calls.length > 0) {
-      expect(onSubmitSpy).toHaveBeenCalledWith(
-        expect.objectContaining({
-          formId: "test-form",
-          values: {
-            name: "John Doe",
-            email: "john@example.com",
-            age: "30",
-            feedback: "Great form!",
-          },
-        })
-      );
-    } else {
-      // If onSubmit wasn't called, check for completion screen
-      expect(screen.getByText(/thank you/i)).toBeInTheDocument();
-    }
+    // Also verify onSubmit was called with correct data
+    expect(onSubmitSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        formId: "test-form",
+        values: {
+          name: "John Doe",
+          email: "john@example.com",
+          age: "30",
+          feedback: "Great form!",
+        },
+      })
+    );
   });
 
   it("shows error summary when validation fails", async () => {
