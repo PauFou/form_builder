@@ -23,9 +23,18 @@ def get_database_config():
     }
     
     # Add test database name for test settings
+    # In CI, use 'test' database directly without creating a new one
     if is_test:
-        db_config['TEST'] = {
-            'NAME': 'forms_db_test',
-        }
+        if os.environ.get('CI') == 'true':
+            # In CI, use the existing 'test' database
+            db_config['TEST'] = {
+                'NAME': 'test',
+                'SERIALIZE': False,  # Don't serialize test database for parallel tests
+            }
+        else:
+            # In local dev, create a test database
+            db_config['TEST'] = {
+                'NAME': 'forms_db_test',
+            }
     
     return {'default': db_config}

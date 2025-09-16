@@ -133,8 +133,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y postgresql-client
 
-          echo "Running PostgreSQL CI initialization..."
-          bash init_postgres_ci.sh
+          echo "Running PostgreSQL CI setup..."
+          python setup_postgres_ci.py
 
       - name: Wait for PostgreSQL
         working-directory: ./services/api
@@ -148,7 +148,7 @@ jobs:
         run: |
           python wait-for-postgres.py
 
-      - name: Debug PostgreSQL Authentication
+      - name: Verify PostgreSQL Setup
         working-directory: ./services/api
         env:
           CI: "true"
@@ -157,19 +157,11 @@ jobs:
           POSTGRES_PASSWORD: test
           POSTGRES_DB: test
           POSTGRES_PORT: 5432
-          DJANGO_SECRET_KEY: test-secret-key
-          DJANGO_SETTINGS_MODULE: api.settings_test
           PGPASSWORD: test
         run: |
-          echo "Testing PostgreSQL connection with password authentication..."
-          # Test with password via PGPASSWORD env var (already set above)
+          echo "Verifying PostgreSQL connection..."
           psql -h 127.0.0.1 -U test -d test -c "SELECT current_user, current_database();"
-
-          echo "Running CI connection test..."
-          python ci_test_connection.py
-
-          echo "Running original debug script..."
-          python debug_postgres_auth.py || echo "Debug script completed"
+          echo "PostgreSQL setup verified."
 
       - name: Run tests with coverage
         working-directory: ./services/api
@@ -189,7 +181,7 @@ jobs:
           CELERY_RESULT_BACKEND: redis://localhost:6379/0
         run: |
           python manage.py migrate
-          python -m pytest -xvs --cov=. --cov-report=xml --cov-report=term
+          python -m pytest -xvs --reuse-db --cov=. --cov-report=xml --cov-report=term
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

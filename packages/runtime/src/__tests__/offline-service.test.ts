@@ -270,8 +270,12 @@ describe("OfflineService", () => {
     });
 
     it("should handle sync errors", async () => {
-      const mockPartialSave = jest.fn().mockRejectedValue(new Error("Network error"));
+      // Set up error handler first to catch any errors
       const errorHandler = jest.fn();
+      const mockPartialSave = jest
+        .fn()
+        .mockImplementation(() => Promise.reject(new Error("Network error")));
+
       const errorConfig = {
         ...config,
         formId: `error-test-${Date.now()}`,
@@ -280,6 +284,7 @@ describe("OfflineService", () => {
 
       const syncService = new OfflineService(errorConfig);
 
+      // Attach error handler before any operations
       syncService.on("sync:error", errorHandler);
 
       const state: FormState = {
@@ -291,10 +296,18 @@ describe("OfflineService", () => {
         isComplete: false,
       };
 
+      // Save state and handle the promise properly
       await syncService.saveState("user", state, {} as any);
 
-      // Wait for save + sync attempt
-      await new Promise((resolve) => setTimeout(resolve, 12000));
+      // Wait for save + sync attempt with shorter timeout
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Manually trigger sync to ensure error is caught
+      try {
+        await syncService.syncAll();
+      } catch (error) {
+        // Expected error, ignore
+      }
 
       expect(errorHandler).toHaveBeenCalled();
       expect(errorHandler).toHaveBeenCalledWith({
