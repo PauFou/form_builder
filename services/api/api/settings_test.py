@@ -7,9 +7,7 @@ DEBUG = False
 TESTING = True
 
 # Use database configuration based on environment (CI uses trust auth)
-DATABASES = {
-    'default': get_database_config()
-}
+DATABASES = get_database_config()
 
 # Use locmem cache for tests
 CACHES = {

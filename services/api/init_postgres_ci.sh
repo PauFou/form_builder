@@ -1,53 +1,54 @@
 #!/bin/bash
-# PostgreSQL initialization script for CI environment
-set -e
+# Initialize PostgreSQL for CI with trust authentication
+
+set -e  # Exit on error
 
 echo "=== PostgreSQL CI Initialization ==="
-echo "Host: ${POSTGRES_HOST:-127.0.0.1}"
-echo "Port: ${POSTGRES_PORT:-5432}"
+echo "Setting up PostgreSQL with trust authentication..."
 
-# Use empty PGPASSWORD to force trust authentication
+# No password needed with trust auth
 export PGPASSWORD=""
 
-# Test superuser connection
-echo -e "\n1. Testing superuser connection..."
-psql -h "${POSTGRES_HOST:-127.0.0.1}" -p "${POSTGRES_PORT:-5432}" -U postgres -c "SELECT version();" || {
-    echo "ERROR: Cannot connect as postgres user"
-    echo "Make sure PostgreSQL is configured with POSTGRES_HOST_AUTH_METHOD=trust"
-    exit 1
-}
+# Test connection to postgres
+echo "Testing connection to PostgreSQL..."
+psql -h 127.0.0.1 -U postgres -c "SELECT version();"
 
-# Drop and create test database/user
-echo -e "\n2. Setting up test database and user..."
-psql -h "${POSTGRES_HOST:-127.0.0.1}" -p "${POSTGRES_PORT:-5432}" -U postgres <<EOF
--- Drop existing objects
-DROP DATABASE IF EXISTS test;
-DROP DATABASE IF EXISTS forms_db_test;
-DROP USER IF EXISTS test;
+# Drop existing test database and user if they exist
+echo "Cleaning up existing test database and user..."
+psql -h 127.0.0.1 -U postgres -c "DROP DATABASE IF EXISTS test;" || true
+psql -h 127.0.0.1 -U postgres -c "DROP USER IF EXISTS test;" || true
 
--- Create test user (no password)
-CREATE USER test WITH CREATEDB;
+# Create test user without password (trust auth doesn't need it)
+echo "Creating test user..."
+psql -h 127.0.0.1 -U postgres -c "CREATE USER test;"
 
--- Create test database
-CREATE DATABASE test OWNER test;
+# Grant necessary permissions
+echo "Granting permissions to test user..."
+psql -h 127.0.0.1 -U postgres -c "ALTER USER test CREATEDB;"
 
--- Grant permissions
-GRANT ALL PRIVILEGES ON DATABASE test TO test;
-EOF
+# Create test database owned by test user
+echo "Creating test database..."
+psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE test OWNER test;"
 
-# Set up schema permissions
-echo -e "\n3. Setting up schema permissions..."
-psql -h "${POSTGRES_HOST:-127.0.0.1}" -p "${POSTGRES_PORT:-5432}" -U postgres -d test <<EOF
--- Grant schema permissions (PostgreSQL 15+)
-GRANT ALL ON SCHEMA public TO test;
-GRANT CREATE ON SCHEMA public TO test;
-EOF
+# Connect to test database and setup permissions
+echo "Setting up database permissions..."
+psql -h 127.0.0.1 -U postgres -d test -c "GRANT ALL ON SCHEMA public TO test;"
+psql -h 127.0.0.1 -U postgres -d test -c "GRANT CREATE ON SCHEMA public TO test;"
+psql -h 127.0.0.1 -U postgres -d test -c "ALTER SCHEMA public OWNER TO test;"
 
-# Test connection as test user
-echo -e "\n4. Testing test user connection..."
-psql -h "${POSTGRES_HOST:-127.0.0.1}" -p "${POSTGRES_PORT:-5432}" -U test -d test -c "SELECT current_user, current_database();" || {
-    echo "ERROR: Cannot connect as test user"
-    exit 1
-}
+# Additional permissions
+psql -h 127.0.0.1 -U postgres -c "GRANT CREATE ON DATABASE test TO test;"
 
-echo -e "\n✅ PostgreSQL CI setup completed successfully!"
+# List users and databases to verify
+echo "Verifying setup..."
+echo "PostgreSQL users:"
+psql -h 127.0.0.1 -U postgres -c "\du"
+
+echo "Databases:"
+psql -h 127.0.0.1 -U postgres -c "\l"
+
+# Test connection as test user (no password needed with trust auth)
+echo "Testing connection as test user..."
+psql -h 127.0.0.1 -U test -d test -c "SELECT current_user, current_database();"
+
+echo "=== PostgreSQL CI setup completed successfully! ==="

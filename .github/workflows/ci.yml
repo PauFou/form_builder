@@ -134,7 +134,7 @@ jobs:
           set -e  # Exit on error
           sudo apt-get update
           sudo apt-get install -y postgresql-client
-          
+
           echo "Running PostgreSQL CI initialization..."
           bash init_postgres_ci.sh
 
@@ -163,7 +163,7 @@ jobs:
         run: |
           echo "Testing PostgreSQL connection (trust authentication mode)..."
           PGPASSWORD="" psql -h 127.0.0.1 -U test -d test -c "SELECT current_user, current_database();"
-          
+
           echo "Running original debug script..."
           python debug_postgres_auth.py || echo "Debug script completed"
 
