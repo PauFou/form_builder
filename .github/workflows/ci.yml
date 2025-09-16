@@ -128,23 +128,45 @@ jobs:
         env:
           PGPASSWORD: postgres
         run: |
+          set -e  # Exit on error
           sudo apt-get update
           sudo apt-get install -y postgresql-client
+          
+          # Drop existing test user and database if they exist
+          psql -h 127.0.0.1 -U postgres -c "DROP DATABASE IF EXISTS test;" || true
+          psql -h 127.0.0.1 -U postgres -c "DROP USER IF EXISTS test;" || true
+          
           # Create test user with proper permissions
+          echo "Creating test user..."
           psql -h 127.0.0.1 -U postgres -c "CREATE USER test WITH PASSWORD 'test' CREATEDB;"
+          
           # Create test database with test user as owner
+          echo "Creating test database..."
           psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE test OWNER test;"
+          
           # Grant all privileges on the database to test user
+          echo "Granting database privileges..."
           psql -h 127.0.0.1 -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE test TO test;"
-          # Also grant schema permissions (needed for PostgreSQL 15+)
+          
+          # Connect to test database and grant schema permissions (needed for PostgreSQL 15+)
+          echo "Granting schema permissions..."
           psql -h 127.0.0.1 -U postgres -d test -c "GRANT ALL ON SCHEMA public TO test;"
           psql -h 127.0.0.1 -U postgres -d test -c "GRANT CREATE ON SCHEMA public TO test;"
-          # Make test user owner of public schema (for PostgreSQL 15+)
           psql -h 127.0.0.1 -U postgres -d test -c "ALTER SCHEMA public OWNER TO test;"
+          
+          # List users and their attributes to debug
+          echo "Listing PostgreSQL users:"
+          psql -h 127.0.0.1 -U postgres -c "\du"
+          
+          # List databases
+          echo "Listing databases:"
+          psql -h 127.0.0.1 -U postgres -c "\l"
+          
           # Verify the user can connect
+          echo "Testing connection with test user..."
           PGPASSWORD=test psql -h 127.0.0.1 -U test -d test -c "SELECT version();"
-          # Give PostgreSQL a moment to settle after permission changes
-          sleep 2
+          
+          echo "PostgreSQL setup completed successfully!"
 
       - name: Wait for PostgreSQL
         working-directory: ./services/api
@@ -157,7 +179,7 @@ jobs:
         run: |
           python wait-for-postgres.py
 
-      - name: Test database connection
+      - name: Debug PostgreSQL Authentication
         working-directory: ./services/api
         env:
           POSTGRES_HOST: 127.0.0.1
@@ -169,13 +191,12 @@ jobs:
           DJANGO_SETTINGS_MODULE: api.settings_test
           PGPASSWORD: test
         run: |
-          python -c "import os; print('DB Settings:', os.environ.get('POSTGRES_HOST'), os.environ.get('POSTGRES_USER'), os.environ.get('POSTGRES_PASSWORD'))"
+          echo "Running PostgreSQL authentication debug..."
+          python debug_postgres_auth.py || echo "Debug script failed"
+          
           # Test direct psql connection
+          echo "Testing direct PostgreSQL connection with psql..."
           psql -h 127.0.0.1 -U test -d test -c "SELECT current_user, current_database();"
-          # Run comprehensive connection test
-          python test_db_connection.py
-          # Test Django database connection
-          python manage.py dbshell -c "SELECT version();" || true
 
       - name: Run tests with coverage
         working-directory: ./services/api

@@ -14,6 +14,13 @@ def wait_for_postgres(max_retries=30, delay=1):
     password = os.environ.get('POSTGRES_PASSWORD', 'test')
     database = os.environ.get('POSTGRES_DB', 'test')
     
+    print(f"Attempting to connect to PostgreSQL:")
+    print(f"  Host: {host}")
+    print(f"  Port: {port}")
+    print(f"  User: {user}")
+    print(f"  Database: {database}")
+    print(f"  Password: {'*' * len(password) if password else 'None'}")
+    
     for i in range(max_retries):
         try:
             conn = psycopg2.connect(
@@ -29,6 +36,9 @@ def wait_for_postgres(max_retries=30, delay=1):
         except OperationalError as e:
             print(f"Waiting for PostgreSQL... (attempt {i + 1}/{max_retries})")
             print(f"Error: {e}")
+            if "password authentication failed" in str(e):
+                print("CRITICAL: Password authentication is failing!")
+                print("This suggests the user was not created properly or the password is incorrect.")
             time.sleep(delay)
     
     print("Failed to connect to PostgreSQL")
