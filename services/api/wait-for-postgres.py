@@ -22,49 +22,46 @@ def wait_for_postgres(max_retries=30, delay=1):
     print(f"  Database: {database}")
     print(f"  CI Environment: {is_ci}")
     
-    # In CI with trust auth, we don't need password
+    # In CI with trust auth, use connection string without password
     if is_ci:
-        print(f"  Using trust authentication (no password required)")
-        password = ''
+        print(f"  Using trust authentication (no password parameter)")
+        conn_string = f"host={host} port={port} user={user} dbname={database}"
     else:
         print(f"  Password: {'*' * len(password) if password else 'None'}")
+        conn_string = None
     
     for i in range(max_retries):
         try:
-            conn_params = {
-                'host': host,
-                'port': port,
-                'user': user,
-                'database': database
-            }
-            # Only add password if not in CI
-            if password and not is_ci:
-                conn_params['password'] = password
-                
-            conn = psycopg2.connect(**conn_params)
+            if is_ci:
+                # For trust auth, use connection string
+                conn = psycopg2.connect(conn_string)
+            else:
+                # For password auth, use parameters
+                conn = psycopg2.connect(
+                    host=host,
+                    port=port,
+                    user=user,
+                    password=password,
+                    database=database
+                )
             conn.close()
             print(f"PostgreSQL is ready! (attempt {i + 1})")
             return True
         except OperationalError as e:
             print(f"Waiting for PostgreSQL... (attempt {i + 1}/{max_retries})")
             print(f"Error: {e}")
-            if "password authentication failed" in str(e) and is_ci:
-                print("CRITICAL: Password authentication failed in CI!")
-                print("This should not happen with trust authentication.")
-                print("Trying without password...")
-                # Try once more without password
-                try:
-                    conn = psycopg2.connect(
-                        host=host,
-                        port=port,
-                        user=user,
-                        database=database
-                    )
-                    conn.close()
-                    print("SUCCESS: Connected without password!")
-                    return True
-                except Exception as e2:
-                    print(f"Still failed without password: {e2}")
+            
+            # If we get authentication errors in CI, something is wrong with the setup
+            if is_ci and ("password authentication failed" in str(e) or 
+                         "no password supplied" in str(e)):
+                print("\nCRITICAL ERROR: Authentication failed in CI environment!")
+                print("PostgreSQL should be configured with POSTGRES_HOST_AUTH_METHOD=trust")
+                print("This means NO password should be required.")
+                print("\nDebugging info:")
+                print(f"- Connection string used: {conn_string}")
+                print(f"- Error details: {str(e)}")
+                # Don't retry on auth errors in CI
+                return False
             time.sleep(delay)
     
     print("Failed to connect to PostgreSQL")

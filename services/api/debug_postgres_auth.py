@@ -42,16 +42,30 @@ except Exception as e:
 print("\nTrying direct psycopg2 connection...")
 try:
     import psycopg2
-    conn_params = {
-        'host': os.environ.get('POSTGRES_HOST', '127.0.0.1'),
-        'port': os.environ.get('POSTGRES_PORT', '5432'),
-        'user': os.environ.get('POSTGRES_USER', 'test'),
-        'password': os.environ.get('POSTGRES_PASSWORD', 'test'),
-        'database': os.environ.get('POSTGRES_DB', 'test')
-    }
-    print(f"  Connection parameters: {conn_params['host']}:{conn_params['port']} user={conn_params['user']} db={conn_params['database']}")
     
-    conn = psycopg2.connect(**conn_params)
+    is_ci = os.environ.get('CI') == 'true'
+    host = os.environ.get('POSTGRES_HOST', '127.0.0.1')
+    port = os.environ.get('POSTGRES_PORT', '5432')
+    user = os.environ.get('POSTGRES_USER', 'test')
+    database = os.environ.get('POSTGRES_DB', 'test')
+    
+    if is_ci:
+        print("  CI environment detected - using trust authentication")
+        conn_string = f"host={host} port={port} user={user} dbname={database}"
+        print(f"  Connection string: {conn_string}")
+        conn = psycopg2.connect(conn_string)
+    else:
+        password = os.environ.get('POSTGRES_PASSWORD', 'test')
+        conn_params = {
+            'host': host,
+            'port': port,
+            'user': user,
+            'password': password,
+            'database': database
+        }
+        print(f"  Connection parameters: {conn_params['host']}:{conn_params['port']} user={conn_params['user']} db={conn_params['database']}")
+        conn = psycopg2.connect(**conn_params)
+    
     with conn.cursor() as cursor:
         cursor.execute("SELECT current_user, current_database(), version();")
         result = cursor.fetchone()
@@ -61,5 +75,27 @@ try:
 except Exception as e:
     print(f"  ERROR: {e}")
     print(f"  Error type: {type(e).__name__}")
+    
+    # If we get auth error in CI, try alternative approaches
+    if is_ci and ("password authentication failed" in str(e) or "no password supplied" in str(e)):
+        print("\n  Trying alternative connection methods for CI...")
+        
+        # Try with empty password in params
+        print("  Method 1: Empty password parameter")
+        try:
+            conn = psycopg2.connect(host=host, port=port, user=user, password='', database=database)
+            print("  SUCCESS with empty password!")
+            conn.close()
+        except Exception as e1:
+            print(f"  Failed: {e1}")
+        
+        # Try with no password parameter at all
+        print("  Method 2: No password parameter")
+        try:
+            conn = psycopg2.connect(host=host, port=port, user=user, database=database)
+            print("  SUCCESS with no password!")
+            conn.close()
+        except Exception as e2:
+            print(f"  Failed: {e2}")
 
 print("\n=== End Debug ===")

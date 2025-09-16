@@ -1,32 +1,15 @@
 """Test settings for Django API."""
 from .settings import *
+from .database import get_database_config
 
 # Override settings for testing
 DEBUG = False
 TESTING = True
 
-# Use PostgreSQL for tests (production-ready)
-# In CI, these are set to test/test/test
-# CI uses trust authentication, so password is not required
-import os
-
+# Use database configuration based on environment (CI uses trust auth)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('POSTGRES_DB', default='test'),
-        'USER': config('POSTGRES_USER', default='test'),
-        'PASSWORD': config('POSTGRES_PASSWORD', default='test'),
-        'HOST': config('POSTGRES_HOST', default='127.0.0.1'),
-        'PORT': config('POSTGRES_PORT', default=5432, cast=int),
-        'TEST': {
-            'NAME': 'forms_db_test',
-        }
-    }
+    'default': get_database_config()
 }
-
-# In CI environment with trust auth, we don't need password
-if os.environ.get('CI') == 'true':
-    DATABASES['default']['PASSWORD'] = ''
 
 # Use locmem cache for tests
 CACHES = {

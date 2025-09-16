@@ -74,15 +74,9 @@ TEMPLATES = [
 WSGI_APPLICATION = "api.wsgi.application"
 
 # Database
+from .database import get_database_config
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("POSTGRES_DB", default="forms"),
-        "USER": config("POSTGRES_USER", default="forms"),
-        "PASSWORD": config("POSTGRES_PASSWORD", default="forms_local_dev"),
-        "HOST": config("POSTGRES_HOST", default="localhost"),
-        "PORT": config("POSTGRES_PORT", default=5432, cast=int),
-    }
+    "default": get_database_config()
 }
 
 # Password validation

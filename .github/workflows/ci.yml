@@ -88,12 +88,13 @@ jobs:
         image: postgres:16-alpine
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
           POSTGRES_DB: postgres
-          # Use trust authentication for CI - safe in isolated test environment
+          # Force trust authentication method
           POSTGRES_HOST_AUTH_METHOD: trust
+          # Additional env to ensure no password is required
+          POSTGRES_INITDB_ARGS: "--auth-host=trust --auth-local=trust"
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U postgres"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -126,40 +127,16 @@ jobs:
 
       - name: Setup PostgreSQL
         working-directory: ./services/api
+        env:
+          POSTGRES_HOST: 127.0.0.1
+          POSTGRES_PORT: 5432
         run: |
           set -e  # Exit on error
           sudo apt-get update
           sudo apt-get install -y postgresql-client
-
-          # With trust authentication, no password needed
-          echo "Setting up PostgreSQL with trust authentication..."
-
-          # Drop existing test user and database if they exist
-          psql -h 127.0.0.1 -U postgres -c "DROP DATABASE IF EXISTS test;" || true
-          psql -h 127.0.0.1 -U postgres -c "DROP USER IF EXISTS test;" || true
-
-          # Create test user (password not needed with trust auth but set for app compatibility)
-          echo "Creating test user..."
-          psql -h 127.0.0.1 -U postgres -c "CREATE USER test WITH PASSWORD 'test' CREATEDB;"
-
-          # Create test database with test user as owner
-          echo "Creating test database..."
-          psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE test OWNER test;"
-
-          # Grant all privileges on the database to test user
-          echo "Granting database privileges..."
-          psql -h 127.0.0.1 -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE test TO test;"
-
-          # Connect to test database and grant schema permissions (needed for PostgreSQL 15+)
-          echo "Granting schema permissions..."
-          psql -h 127.0.0.1 -U postgres -d test -c "GRANT ALL ON SCHEMA public TO test;"
-          psql -h 127.0.0.1 -U postgres -d test -c "GRANT CREATE ON SCHEMA public TO test;"
-
-          # Verify the user can connect
-          echo "Testing connection with test user..."
-          psql -h 127.0.0.1 -U test -d test -c "SELECT current_user, current_database();"
-
-          echo "PostgreSQL setup completed successfully!"
+          
+          echo "Running PostgreSQL CI initialization..."
+          bash init_postgres_ci.sh
 
       - name: Wait for PostgreSQL
         working-directory: ./services/api
@@ -185,7 +162,7 @@ jobs:
           DJANGO_SETTINGS_MODULE: api.settings_test
         run: |
           echo "Testing PostgreSQL connection (trust authentication mode)..."
-          psql -h 127.0.0.1 -U test -d test -c "SELECT current_user, current_database();"
+          PGPASSWORD="" psql -h 127.0.0.1 -U test -d test -c "SELECT current_user, current_database();"
           
           echo "Running original debug script..."
           python debug_postgres_auth.py || echo "Debug script completed"
