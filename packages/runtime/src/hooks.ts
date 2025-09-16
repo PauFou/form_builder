@@ -127,11 +127,15 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
 
       // Listen to online/offline events
       const handleOnline = () => {
-        console.log("Form is back online, syncing data...");
+        if (typeof process === "undefined" || process.env.NODE_ENV !== "test") {
+          console.log("Form is back online, syncing data...");
+        }
       };
 
       const handleOffline = () => {
-        console.log("Form is offline, data will be saved locally");
+        if (typeof process === "undefined" || process.env.NODE_ENV !== "test") {
+          console.log("Form is offline, data will be saved locally");
+        }
       };
 
       offlineServiceRef.current.on("online", handleOnline);
@@ -542,7 +546,9 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
     // Anti-spam validation
     const spamCheck = await validateAntiSpam();
     if (!spamCheck.isValid) {
-      console.warn(`Form submission blocked: ${spamCheck.reason}`);
+      if (typeof process === "undefined" || process.env.NODE_ENV !== "test") {
+        console.warn(`Form submission blocked: ${spamCheck.reason}`);
+      }
       if (config.onSpamDetected) {
         config.onSpamDetected(spamCheck.reason!);
       }
@@ -690,7 +696,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
         }
       } catch (error) {
         // Ignore errors during cleanup
-        if (!cancelled) {
+        if (!cancelled && (typeof process === "undefined" || process.env.NODE_ENV !== "test")) {
           console.error("Error checking unsynced data:", error);
         }
       }

@@ -13,3 +13,9 @@ htmlcov/
 db.sqlite3
 staticfiles/
 mediafiles/
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.*.example

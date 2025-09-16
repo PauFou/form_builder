@@ -87,10 +87,10 @@ jobs:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: test
-          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_HOST_AUTH_METHOD: md5
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -120,6 +120,31 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pytest-cov pytest-django
+          # Ensure no .env file interferes with CI environment variables
+          rm -f .env .env.* || true
+
+      - name: Setup PostgreSQL
+        working-directory: ./services/api
+        env:
+          PGPASSWORD: postgres
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          # Create test user with proper permissions
+          psql -h 127.0.0.1 -U postgres -c "CREATE USER test WITH PASSWORD 'test' CREATEDB;"
+          # Create test database with test user as owner
+          psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE test OWNER test;"
+          # Grant all privileges on the database to test user
+          psql -h 127.0.0.1 -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE test TO test;"
+          # Also grant schema permissions (needed for PostgreSQL 15+)
+          psql -h 127.0.0.1 -U postgres -d test -c "GRANT ALL ON SCHEMA public TO test;"
+          psql -h 127.0.0.1 -U postgres -d test -c "GRANT CREATE ON SCHEMA public TO test;"
+          # Make test user owner of public schema (for PostgreSQL 15+)
+          psql -h 127.0.0.1 -U postgres -d test -c "ALTER SCHEMA public OWNER TO test;"
+          # Verify the user can connect
+          PGPASSWORD=test psql -h 127.0.0.1 -U test -d test -c "SELECT version();"
+          # Give PostgreSQL a moment to settle after permission changes
+          sleep 2
 
       - name: Wait for PostgreSQL
         working-directory: ./services/api
@@ -142,8 +167,14 @@ jobs:
           POSTGRES_PORT: 5432
           DJANGO_SECRET_KEY: test-secret-key
           DJANGO_SETTINGS_MODULE: api.settings_test
+          PGPASSWORD: test
         run: |
           python -c "import os; print('DB Settings:', os.environ.get('POSTGRES_HOST'), os.environ.get('POSTGRES_USER'), os.environ.get('POSTGRES_PASSWORD'))"
+          # Test direct psql connection
+          psql -h 127.0.0.1 -U test -d test -c "SELECT current_user, current_database();"
+          # Run comprehensive connection test
+          python test_db_connection.py
+          # Test Django database connection
           python manage.py dbshell -c "SELECT version();" || true
 
       - name: Run tests with coverage
