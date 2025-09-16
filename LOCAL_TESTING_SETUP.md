@@ -26,9 +26,12 @@ bash scripts/migrate-from-github-actions.sh
 
 - ✅ Tous les tests frontend
 - ✅ Tous les tests backend (Django/Python)
+- ✅ Tests de contrats API/Frontend
+- ✅ Tests d'accessibilité WCAG AA
 - ✅ Vérification des builds
-- ✅ Vérification de la taille des bundles (< 30KB)
+- ✅ Vérification de la taille des bundles (runtime < 30KB, analytics < 15KB)
 - ✅ Couverture de code (> 80%)
+- ✅ Scan de sécurité (NPM + Python)
 - ⏱️ Durée : 2-5 minutes
 
 ## Commandes Utiles
@@ -51,6 +54,44 @@ pnpm quality:check
 
 # Corriger automatiquement les problèmes
 pnpm quality:fix
+```
+
+## Tests Spécifiques Inclus
+
+### 🔒 Tests de Sécurité
+```bash
+# Audit NPM
+pnpm audit --audit-level=high
+
+# Scan Python
+cd services/api && safety check
+
+# Scan des secrets
+gitleaks detect
+```
+
+### ♿️ Tests d'Accessibilité (WCAG AA)
+```bash
+# Lance automatiquement les services et teste
+node scripts/test-a11y.js
+```
+
+### 📦 Tests de Performance
+```bash
+# Vérifie les tailles de bundles
+node scripts/check-bundle-size.js
+```
+
+### 🤝 Tests de Contrats
+```bash
+# Vérifie la synchronisation API/Frontend
+pnpm test:contracts
+```
+
+### 🐳 Tests Docker (mode full)
+```bash
+# Valide les builds Docker
+docker build -f services/api/Dockerfile services/api
 ```
 
 ## Structure des Tests
@@ -79,17 +120,23 @@ scripts/
 
 ### 🟡 **Standard** (2-5m)
 
-- Tous les tests unitaires
+- Tous les tests unitaires frontend + backend
+- Tests de contrats API/Frontend
+- Vérifications TypeScript complètes
 - Builds complets
-- Vérification des performances
-- Couverture de code
+- Vérification des tailles de bundles (runtime < 30KB, analytics < 15KB)
+- Couverture de code (minimum 80%)
+- Audit de sécurité NPM (niveau high)
+- Scan de vulnérabilités Python (safety check)
 
 ### 🔴 **Full** (10-15m)
 
 - Tests standard +
-- Tests E2E
-- Audit de sécurité complet
-- Tests de performance
+- Tests E2E avec démarrage automatique des services
+- Tests d'accessibilité WCAG AA complets
+- Validation des builds Docker
+- Audit de sécurité approfondi
+- Scan des secrets (gitleaks)
 
 ## Configuration
 
