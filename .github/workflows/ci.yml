@@ -88,11 +88,10 @@ jobs:
         image: postgres:16-alpine
         env:
           POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
           POSTGRES_DB: postgres
-          # Force trust authentication method
-          POSTGRES_HOST_AUTH_METHOD: trust
-          # Additional env to ensure no password is required
-          POSTGRES_INITDB_ARGS: "--auth-host=trust --auth-local=trust"
+          # Use default md5 authentication
+          POSTGRES_HOST_AUTH_METHOD: md5
         options: >-
           --health-cmd "pg_isready -U postgres"
           --health-interval 10s
@@ -128,21 +127,12 @@ jobs:
       - name: Setup PostgreSQL
         working-directory: ./services/api
         env:
-          POSTGRES_HOST: 127.0.0.1
-          POSTGRES_PORT: 5432
-          PGPASSWORD: ""
+          PGPASSWORD: postgres
         run: |
           set -e  # Exit on error
           sudo apt-get update
           sudo apt-get install -y postgresql-client
 
-          # First, let's see what PostgreSQL authentication is actually configured
-          echo "Checking PostgreSQL authentication configuration..."
-          psql -h 127.0.0.1 -U postgres -c "SHOW hba_file;" || echo "Could not show hba_file"
-          
-          # Try to connect and see the actual pg_hba.conf
-          psql -h 127.0.0.1 -U postgres -c "SELECT pg_read_file('pg_hba.conf');" || echo "Could not read pg_hba.conf"
-          
           echo "Running PostgreSQL CI initialization..."
           bash init_postgres_ci.sh
 
@@ -152,6 +142,7 @@ jobs:
           CI: "true"
           POSTGRES_HOST: 127.0.0.1
           POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
           POSTGRES_DB: test
           POSTGRES_PORT: 5432
         run: |
@@ -163,20 +154,20 @@ jobs:
           CI: "true"
           POSTGRES_HOST: 127.0.0.1
           POSTGRES_USER: test
-          POSTGRES_PASSWORD: ""
+          POSTGRES_PASSWORD: test
           POSTGRES_DB: test
           POSTGRES_PORT: 5432
           DJANGO_SECRET_KEY: test-secret-key
           DJANGO_SETTINGS_MODULE: api.settings_test
-          PGPASSWORD: ""
+          PGPASSWORD: test
         run: |
           echo "Testing PostgreSQL connection (trust authentication mode)..."
           # Test without any password
           psql -h 127.0.0.1 -U test -d test -c "SELECT current_user, current_database();"
-          
+
           echo "Running CI connection test..."
           python ci_test_connection.py
-          
+
           echo "Running original debug script..."
           python debug_postgres_auth.py || echo "Debug script completed"
 
@@ -186,6 +177,7 @@ jobs:
           CI: "true"
           POSTGRES_HOST: 127.0.0.1
           POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
           POSTGRES_DB: test
           POSTGRES_PORT: 5432
           REDIS_URL: redis://localhost:6379

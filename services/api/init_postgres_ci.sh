@@ -1,13 +1,13 @@
 #!/bin/bash
-# Initialize PostgreSQL for CI with trust authentication
+# Initialize PostgreSQL for CI
 
 set -e  # Exit on error
 
 echo "=== PostgreSQL CI Initialization ==="
-echo "Setting up PostgreSQL with trust authentication..."
+echo "Setting up PostgreSQL for CI..."
 
-# No password needed with trust auth
-export PGPASSWORD=""
+# Use postgres password for admin tasks
+export PGPASSWORD="postgres"
 
 # Test connection to postgres
 echo "Testing connection to PostgreSQL..."
@@ -18,13 +18,9 @@ echo "Cleaning up existing test database and user..."
 psql -h 127.0.0.1 -U postgres -c "DROP DATABASE IF EXISTS test;" || true
 psql -h 127.0.0.1 -U postgres -c "DROP USER IF EXISTS test;" || true
 
-# Create test user without password (trust auth doesn't need it)
-echo "Creating test user..."
-psql -h 127.0.0.1 -U postgres -c "CREATE USER test;"
-
-# Grant necessary permissions
-echo "Granting permissions to test user..."
-psql -h 127.0.0.1 -U postgres -c "ALTER USER test CREATEDB;"
+# Create test user with password 'test'
+echo "Creating test user with password..."
+psql -h 127.0.0.1 -U postgres -c "CREATE USER test WITH PASSWORD 'test' CREATEDB;"
 
 # Create test database owned by test user
 echo "Creating test database..."
@@ -47,8 +43,8 @@ psql -h 127.0.0.1 -U postgres -c "\du"
 echo "Databases:"
 psql -h 127.0.0.1 -U postgres -c "\l"
 
-# Test connection as test user (no password needed with trust auth)
+# Test connection as test user with password
 echo "Testing connection as test user..."
-psql -h 127.0.0.1 -U test -d test -c "SELECT current_user, current_database();"
+PGPASSWORD="test" psql -h 127.0.0.1 -U test -d test -c "SELECT current_user, current_database();"
 
 echo "=== PostgreSQL CI setup completed successfully! ==="
