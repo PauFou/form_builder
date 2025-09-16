@@ -58,3 +58,6 @@ postgres_data/
 redis_data/
 clickhouse_data/
 minio_data/
+# Local test configuration
+.testconfig
+.push-test-results.log

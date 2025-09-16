@@ -97,7 +97,7 @@ The platform will be available at:
 
 - **Docker** - Containerization
 - **Turborepo** - Monorepo management
-- **GitHub Actions** - CI/CD
+- **Local Testing** - Comprehensive quality gates with Git hooks
 - **Cloudflare** - CDN & edge functions
 
 ## 📦 Project Structure
@@ -122,6 +122,26 @@ The platform will be available at:
 
 ## 🔧 Development
 
+### Local Testing System
+
+This project uses a comprehensive local testing system with mandatory Git hooks to ensure code quality:
+
+```bash
+# Initial setup (one-time)
+bash scripts/setup-local-testing.sh
+
+# Quick tests during development
+./test-quick.sh
+
+# Full test suite before major changes
+./test-all.sh
+```
+
+**Git Hooks** (automatic):
+
+- **Pre-commit**: Formatting, linting, type checks
+- **Pre-push**: Full test suite, builds, performance validation
+
 ### Running Tests
 
 ```bash
@@ -139,6 +159,11 @@ pnpm test:contracts
 
 # Performance tests
 pnpm test:perf
+
+# Local test suite
+pnpm test:local        # Standard tests
+pnpm test:local:quick  # Quick checks only
+pnpm test:local:all    # Everything including E2E
 ```
 
 ### Code Quality
@@ -146,13 +171,17 @@ pnpm test:perf
 ```bash
 # Linting
 pnpm lint
+pnpm lint:fix    # Auto-fix issues
 
 # Type checking
 pnpm typecheck
 
 # Format code
 pnpm format
+pnpm format:check  # Check only
 ```
+
+See `docs/LOCAL_TESTING.md` for detailed documentation on the local testing system.
 
 ### Building
 

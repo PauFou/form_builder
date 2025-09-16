@@ -26,7 +26,11 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky",
-    "ci": "pnpm lint && pnpm typecheck && pnpm test:ci && pnpm test:contracts"
+    "ci": "pnpm lint && pnpm typecheck && pnpm test:ci && pnpm test:contracts",
+    "test:local": "bash scripts/local-test-suite.sh standard",
+    "test:local:quick": "bash scripts/local-test-suite.sh quick",
+    "test:local:all": "bash scripts/local-test-suite.sh all",
+    "setup:local": "bash scripts/setup-local-testing.sh"
   },
   "lint-staged": {
     "**/*.{ts,tsx,js,jsx,json,md}": [
