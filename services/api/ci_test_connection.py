@@ -7,28 +7,29 @@ print("=== CI PostgreSQL Connection Test ===")
 print(f"CI environment: {os.environ.get('CI')}")
 print(f"Django settings module: {os.environ.get('DJANGO_SETTINGS_MODULE')}")
 
-# Test 1: Direct psycopg2 connection without any password
-print("\n1. Testing direct psycopg2 connection (no password)...")
+# Test 1: Direct psycopg2 connection with password
+print("\n1. Testing direct psycopg2 connection (with password)...")
 try:
     import psycopg2
-    # Connect without password parameter at all
+    # Connect with password parameter
     conn = psycopg2.connect(
         host='127.0.0.1',
         port='5432',
         user='test',
+        password='test',
         database='test'
     )
-    print("✓ SUCCESS: Connected without password!")
+    print("✓ SUCCESS: Connected with password!")
     conn.close()
 except Exception as e:
     print(f"✗ FAILED: {e}")
 
-# Test 2: Connection string method
-print("\n2. Testing connection string method...")
+# Test 2: Connection string method with password
+print("\n2. Testing connection string method with password...")
 try:
     import psycopg2
-    # Use connection string without password
-    conn_string = "host=127.0.0.1 port=5432 user=test dbname=test"
+    # Use connection string with password
+    conn_string = "host=127.0.0.1 port=5432 user=test password=test dbname=test"
     conn = psycopg2.connect(conn_string)
     print("✓ SUCCESS: Connected with connection string!")
     conn.close()

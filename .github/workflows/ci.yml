@@ -161,8 +161,8 @@ jobs:
           DJANGO_SETTINGS_MODULE: api.settings_test
           PGPASSWORD: test
         run: |
-          echo "Testing PostgreSQL connection (trust authentication mode)..."
-          # Test without any password
+          echo "Testing PostgreSQL connection with password authentication..."
+          # Test with password via PGPASSWORD env var (already set above)
           psql -h 127.0.0.1 -U test -d test -c "SELECT current_user, current_database();"
 
           echo "Running CI connection test..."
