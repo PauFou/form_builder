@@ -130,11 +130,19 @@ jobs:
         env:
           POSTGRES_HOST: 127.0.0.1
           POSTGRES_PORT: 5432
+          PGPASSWORD: ""
         run: |
           set -e  # Exit on error
           sudo apt-get update
           sudo apt-get install -y postgresql-client
 
+          # First, let's see what PostgreSQL authentication is actually configured
+          echo "Checking PostgreSQL authentication configuration..."
+          psql -h 127.0.0.1 -U postgres -c "SHOW hba_file;" || echo "Could not show hba_file"
+          
+          # Try to connect and see the actual pg_hba.conf
+          psql -h 127.0.0.1 -U postgres -c "SELECT pg_read_file('pg_hba.conf');" || echo "Could not read pg_hba.conf"
+          
           echo "Running PostgreSQL CI initialization..."
           bash init_postgres_ci.sh
 
@@ -144,7 +152,6 @@ jobs:
           CI: "true"
           POSTGRES_HOST: 127.0.0.1
           POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
           POSTGRES_DB: test
           POSTGRES_PORT: 5432
         run: |
@@ -153,17 +160,23 @@ jobs:
       - name: Debug PostgreSQL Authentication
         working-directory: ./services/api
         env:
+          CI: "true"
           POSTGRES_HOST: 127.0.0.1
           POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
+          POSTGRES_PASSWORD: ""
           POSTGRES_DB: test
           POSTGRES_PORT: 5432
           DJANGO_SECRET_KEY: test-secret-key
           DJANGO_SETTINGS_MODULE: api.settings_test
+          PGPASSWORD: ""
         run: |
           echo "Testing PostgreSQL connection (trust authentication mode)..."
-          PGPASSWORD="" psql -h 127.0.0.1 -U test -d test -c "SELECT current_user, current_database();"
-
+          # Test without any password
+          psql -h 127.0.0.1 -U test -d test -c "SELECT current_user, current_database();"
+          
+          echo "Running CI connection test..."
+          python ci_test_connection.py
+          
           echo "Running original debug script..."
           python debug_postgres_auth.py || echo "Debug script completed"
 
@@ -173,7 +186,6 @@ jobs:
           CI: "true"
           POSTGRES_HOST: 127.0.0.1
           POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
           POSTGRES_DB: test
           POSTGRES_PORT: 5432
           REDIS_URL: redis://localhost:6379
