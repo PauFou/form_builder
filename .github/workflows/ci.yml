@@ -164,6 +164,7 @@ jobs:
       - name: Wait for PostgreSQL
         working-directory: ./services/api
         env:
+          CI: "true"
           POSTGRES_HOST: 127.0.0.1
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
@@ -192,6 +193,7 @@ jobs:
       - name: Run tests with coverage
         working-directory: ./services/api
         env:
+          CI: "true"
           POSTGRES_HOST: 127.0.0.1
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test

@@ -7,6 +7,9 @@ TESTING = True
 
 # Use PostgreSQL for tests (production-ready)
 # In CI, these are set to test/test/test
+# CI uses trust authentication, so password is not required
+import os
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -20,6 +23,10 @@ DATABASES = {
         }
     }
 }
+
+# In CI environment with trust auth, we don't need password
+if os.environ.get('CI') == 'true':
+    DATABASES['default']['PASSWORD'] = ''
 
 # Use locmem cache for tests
 CACHES = {
