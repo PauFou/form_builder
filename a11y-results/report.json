@@ -2,19 +2,19 @@
   {
     "page": "marketing-home",
     "url": "http://localhost:3000",
-    "violations": [],
-    "timestamp": "2025-09-11T16:57:35.633Z"
+    "error": "Server not ready",
+    "timestamp": "2025-09-21T19:39:43.276Z"
   },
   {
     "page": "builder-home",
     "url": "http://localhost:3001",
-    "error": "Server not ready",
-    "timestamp": "2025-09-11T16:57:35.636Z"
+    "violations": [],
+    "timestamp": "2025-09-21T19:39:45.511Z"
   },
   {
     "page": "dashboard",
     "url": "http://localhost:3001/dashboard",
-    "error": "Server not ready",
-    "timestamp": "2025-09-11T16:57:35.636Z"
+    "violations": [],
+    "timestamp": "2025-09-21T19:39:47.670Z"
   }
 ]

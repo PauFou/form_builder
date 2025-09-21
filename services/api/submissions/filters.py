@@ -56,8 +56,9 @@ class SubmissionFilter(django_filters.FilterSet):
         """
         Filter submissions that have a specific tag.
         """
+        # Use icontains for SQLite compatibility instead of JSON contains
         return queryset.filter(
-            metadata_json__tags__contains=[value]
+            metadata_json__icontains=f'"{value}"'
         )
 
     def filter_full_text_search(self, queryset, name, value):

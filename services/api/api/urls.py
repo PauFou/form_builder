@@ -15,7 +15,7 @@ urlpatterns = [
     path("v1/", include("core.urls")),
     path("v1/", include("webhooks.urls")),
     path("v1/", include("forms.urls")),
-    path("v1/", include("submissions.urls")),
+    path("v1/submissions/", include("submissions.urls")),
     path("v1/", include("integrations.urls")),
     path("v1/", include("accounts.urls")),
     path("v1/gdpr/", include("gdpr.urls")),

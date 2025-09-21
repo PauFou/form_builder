@@ -33,7 +33,8 @@ class SubmissionViewSet(viewsets.ModelViewSet):
         """
         Filter submissions by form and user's organization access.
         """
-        form_id = self.kwargs.get('form_pk')
+        # Check for form_pk in URL kwargs first, then query params
+        form_id = self.kwargs.get('form_pk') or self.request.query_params.get('form_pk')
         if form_id:
             # Get form and check permissions
             form = get_object_or_404(Form, id=form_id)
@@ -44,10 +45,15 @@ class SubmissionViewSet(viewsets.ModelViewSet):
             ).select_related('form').prefetch_related('answers')
         
         # If no form_id, show submissions from user's organization forms
-        user_org = self.request.user.organization
-        return Submission.objects.filter(
-            form__organization=user_org
-        ).select_related('form').prefetch_related('answers')
+        # Get user's organization through membership
+        try:
+            user_org = self.request.user.memberships.first().organization
+            return Submission.objects.filter(
+                form__organization=user_org
+            ).select_related('form').prefetch_related('answers')
+        except AttributeError:
+            # Return empty queryset if user has no organization
+            return Submission.objects.none()
 
     def get_serializer_class(self):
         """

@@ -136,6 +136,15 @@ async def get_redis() -> redis.Redis:
     return redis_client
 
 # HMAC validation
+def generate_hmac_signature(payload: bytes, secret: str) -> str:
+    """Generate HMAC signature for payload"""
+    signature = hmac.new(
+        secret.encode("utf-8"),
+        payload,
+        hashlib.sha256
+    ).hexdigest()
+    return f"sha256={signature}"
+
 def validate_hmac_signature(payload: bytes, signature: str, secret: str) -> bool:
     """Validate HMAC signature for request authenticity"""
     if not signature.startswith("sha256="):
