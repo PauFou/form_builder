@@ -3,7 +3,6 @@ from typing import Dict, Any, List, Optional
 import uuid
 from urllib.parse import urlparse
 import re
-import json
 
 from .base import BaseImporter
 
@@ -405,7 +404,7 @@ class TallyImporter(BaseImporter):
             # Check if all conditions are supported
             unsupported = [c for c in conditions if c.get("operator") == "unsupported"]
             if unsupported:
-                self.add_warning(f"Some logic conditions may not be fully supported")
+                self.add_warning("Some logic conditions may not be fully supported")
         
         return {"rules": rules}
     

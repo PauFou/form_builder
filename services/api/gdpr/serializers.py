@@ -7,8 +7,6 @@ from .models import (
     ConsentRecord, DataProcessingAgreement, DataDeletionRequest,
     DataExportRequest
 )
-from core.models import Organization
-from forms.models import Form
 
 
 class DataResidencyConfigSerializer(serializers.ModelSerializer):

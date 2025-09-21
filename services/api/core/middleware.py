@@ -4,9 +4,7 @@ Middleware for HMAC validation and rate limiting
 
 import hashlib
 import hmac
-import json
 import time
-from typing import Dict, Any
 
 from django.conf import settings
 from django.core.cache import cache

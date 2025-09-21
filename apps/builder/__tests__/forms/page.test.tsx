@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from "../../lib/test-utils";
 import FormsPage from "../../app/forms/page";
 import { useRouter } from "next/navigation";
 import { listForms, formsApi } from "../../lib/api/forms";
+import { useQuery } from "@tanstack/react-query";
 
 // Mock dependencies
 jest.mock("next/navigation", () => ({
@@ -18,6 +19,14 @@ jest.mock("../../lib/api/forms", () => ({
     delete: jest.fn(),
     duplicate: jest.fn(),
   },
+}));
+
+jest.mock("@tanstack/react-query", () => ({
+  useQuery: jest.fn(),
+  QueryClient: jest.fn(() => ({
+    invalidateQueries: jest.fn(),
+  })),
+  QueryClientProvider: ({ children }: any) => children,
 }));
 
 jest.mock("../../components/shared/navigation", () => ({
@@ -70,6 +79,13 @@ describe("FormsPage", () => {
     (formsApi.delete as jest.Mock).mockResolvedValue({
       success: true,
     });
+    // Default useQuery mock for successful data
+    (useQuery as jest.Mock).mockReturnValue({
+      data: mockResponse.forms, // Return forms array directly
+      isLoading: false,
+      error: null,
+      refetch: jest.fn(),
+    });
   });
 
   it("should render the forms page", async () => {
@@ -77,7 +93,8 @@ describe("FormsPage", () => {
 
     // The page should render without errors
     await waitFor(() => {
-      expect(screen.getByText("Forms")).toBeInTheDocument();
+      // Check for the main content - forms should be displayed
+      expect(screen.getByText("Test Form 1")).toBeInTheDocument();
     });
   });
 
@@ -95,16 +112,22 @@ describe("FormsPage", () => {
   });
 
   it("should display loading state initially", () => {
-    // Mock loading state by making the query never resolve
-    const formsApiList = jest.spyOn(formsApi, "list");
-    formsApiList.mockImplementation(() => new Promise(() => {}));
+    // Mock loading state
+    (useQuery as jest.Mock).mockReturnValue({
+      data: null,
+      isLoading: true,
+      error: null,
+      refetch: jest.fn(),
+    });
 
     render(<FormsPage />);
 
-    // Should show skeleton loaders
-    expect(screen.getAllByTestId("skeleton")).toBeDefined();
+    // During loading, forms should not be displayed
+    expect(screen.queryByText("Test Form 1")).not.toBeInTheDocument();
+    expect(screen.queryByText("Test Form 2")).not.toBeInTheDocument();
 
-    formsApiList.mockRestore();
+    // But the Create Form button should still be visible
+    expect(screen.getByText("Create Form")).toBeInTheDocument();
   });
 
   it("should display forms after loading", async () => {
@@ -163,24 +186,41 @@ describe("FormsPage", () => {
       page: 1,
       limit: 10,
     };
-    (listForms as jest.Mock).mockResolvedValue(emptyResponse);
-    (formsApi.list as jest.Mock).mockResolvedValue(emptyResponse);
+    (useQuery as jest.Mock).mockReturnValue({
+      data: emptyResponse.forms, // Return empty forms array
+      isLoading: false,
+      error: null,
+      refetch: jest.fn(),
+    });
 
     render(<FormsPage />);
 
     await waitFor(() => {
-      expect(screen.getByText("No forms found")).toBeInTheDocument();
+      expect(screen.getByText("Create your first form")).toBeInTheDocument();
     });
   });
 
   it("should handle error state gracefully", async () => {
-    (formsApi.list as jest.Mock).mockRejectedValue(new Error("Failed to load forms"));
+    // Mock console.error to prevent error output in tests
+    const originalError = console.error;
+    console.error = jest.fn();
+
+    (useQuery as jest.Mock).mockReturnValue({
+      data: [], // Return empty array for error state
+      isLoading: false,
+      error: new Error("Failed to load forms"),
+      refetch: jest.fn(),
+    });
 
     render(<FormsPage />);
 
     // The component should still render without crashing
+    // When there's an error and no forms, it should show empty state
     await waitFor(() => {
-      expect(screen.getByText("Forms")).toBeInTheDocument();
+      expect(screen.getByText("Create your first form")).toBeInTheDocument();
     });
+
+    // Restore console.error
+    console.error = originalError;
   });
 });

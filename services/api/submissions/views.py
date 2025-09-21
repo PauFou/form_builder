@@ -1,6 +1,5 @@
 from django.shortcuts import get_object_or_404
-from django.db.models import Q, Count
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse
 from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -10,7 +9,7 @@ import csv
 import io
 from datetime import datetime
 
-from core.models import Submission, Answer
+from core.models import Submission
 from core.permissions import IsOrganizationMember
 from forms.models import Form
 from .serializers import SubmissionSerializer, SubmissionCreateSerializer

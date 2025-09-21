@@ -7,6 +7,14 @@ import { formsApi } from "../../../../lib/api/forms";
 // Mock next/navigation
 jest.mock("next/navigation", () => ({
   useParams: jest.fn(),
+  useRouter: jest.fn(() => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+    forward: jest.fn(),
+    refresh: jest.fn(),
+    prefetch: jest.fn(),
+  })),
 }));
 
 // Mock tanstack/react-query hooks
@@ -40,6 +48,13 @@ jest.mock("../../../../lib/demo-forms", () => ({
   DEMO_FORMS: {},
 }));
 
+jest.mock("../../../../lib/stores/auth-store", () => ({
+  useAuthStore: jest.fn(() => ({
+    user: { id: "1", email: "test@example.com" },
+    isAuthenticated: true,
+  })),
+}));
+
 jest.mock("../../../../components/builder/form-canvas", () => ({
   FormCanvas: () => <div data-testid="form-canvas">Form Canvas</div>,
 }));
@@ -54,6 +69,17 @@ jest.mock("../../../../components/builder/block-inspector", () => ({
 
 jest.mock("../../../../components/builder/block-settings", () => ({
   BlockSettings: () => <div data-testid="block-settings">Block Settings</div>,
+}));
+
+jest.mock("../../../../components/builder/modern-form-builder-enhanced", () => ({
+  ModernFormBuilderEnhanced: ({ form }: any) => (
+    <div data-testid="modern-form-builder">
+      <div>Form: {form?.title}</div>
+      <div data-testid="form-canvas">Form Canvas</div>
+      <div data-testid="block-library">Block Library</div>
+      <div data-testid="block-inspector">Block Inspector</div>
+    </div>
+  ),
 }));
 
 // Import mocked modules
@@ -121,7 +147,7 @@ describe("FormEditPage", () => {
 
     expect(screen.getByTestId("form-canvas")).toBeInTheDocument();
     expect(screen.getByTestId("block-library")).toBeInTheDocument();
-    expect(screen.getByTestId("block-settings")).toBeInTheDocument();
+    expect(screen.getByTestId("block-inspector")).toBeInTheDocument();
   });
 
   it("should display loading state initially", () => {

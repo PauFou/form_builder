@@ -2,12 +2,20 @@
 Typeform importer with high parity support
 """
 
-import json
 from typing import Dict, List, Any, Optional, Tuple
 from datetime import datetime
 import uuid
 
 from forms.models import Form
+
+# DEPRECATED - These models no longer exist in the new JSON-based structure
+class FormPage:
+    """Deprecated FormPage model placeholder"""
+    objects = None
+
+class FormBlock:
+    """Deprecated FormBlock model placeholder"""
+    objects = None
 
 
 class TypeformImporter:

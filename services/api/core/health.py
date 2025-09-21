@@ -1,6 +1,5 @@
 from django.http import JsonResponse
 from django.db import connection
-from django.core.cache import cache
 import redis
 from django.conf import settings
 import time

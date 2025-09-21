@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from core.models import Organization, Membership, Form, FormVersion
-import json
 
 User = get_user_model()
 
@@ -55,7 +54,7 @@ class Command(BaseCommand):
                 email=f'user{i}@forms.example',
                 username=f'user{i}',
                 password='password123',
-                first_name=f'User',
+                first_name='User',
                 last_name=f'{i}'
             )
             users.append(user)

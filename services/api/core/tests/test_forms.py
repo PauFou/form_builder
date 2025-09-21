@@ -4,7 +4,6 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from core.models import Organization, Membership
 from forms.models import Form, FormVersion
-import uuid
 
 User = get_user_model()
 

@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import TokenRefreshView, TokenBlacklistView
+from rest_framework_simplejwt.views import TokenRefreshView
 from .views import OrganizationViewSet, SubmissionViewSet, download_file
 from .auth_views import RegisterView, check_email, current_user, logout_view, password_reset_request, password_reset_confirm, verify_email, resend_verification_email
 from .jwt_views import CustomTokenObtainPairView

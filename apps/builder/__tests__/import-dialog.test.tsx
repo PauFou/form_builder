@@ -107,12 +107,21 @@ jest.mock("@skemya/ui", () => ({
   Tabs: ({ children, value, onValueChange }: any) => {
     const [activeTab, setActiveTab] = React.useState(value || "typeform");
     React.useEffect(() => {
-      if (onValueChange) onValueChange(activeTab);
-    }, [activeTab, onValueChange]);
+      if (value && value !== activeTab) {
+        setActiveTab(value);
+      }
+    }, [value, activeTab]);
 
     const enhancedChildren = React.Children.map(children, (child) => {
       if (React.isValidElement(child)) {
-        return React.cloneElement(child as React.ReactElement<any>, { activeTab, setActiveTab });
+        const handleSetActiveTab = (newTab: string) => {
+          setActiveTab(newTab);
+          if (onValueChange) onValueChange(newTab);
+        };
+        return React.cloneElement(child as React.ReactElement<any>, {
+          activeTab,
+          setActiveTab: handleSetActiveTab,
+        });
       }
       return child;
     });
@@ -142,6 +151,13 @@ jest.mock("@skemya/ui", () => ({
   Skeleton: () => <div data-testid="skeleton" />,
 }));
 
+// Mock ParityReport component
+jest.mock("@/components/import/parity-report", () => ({
+  ParityReport: ({ report }: any) => (
+    <div data-testid="parity-report">Parity Report: {JSON.stringify(report)}</div>
+  ),
+}));
+
 // Mock Lucide icons
 jest.mock("lucide-react", () => ({
   AlertCircle: () => <div data-testid="alert-circle-icon" />,
@@ -152,6 +168,7 @@ jest.mock("lucide-react", () => ({
   FileType: () => <div data-testid="file-type-icon" />,
   Import: () => <div data-testid="import-icon" />,
   Loader2: () => <div data-testid="loader2-icon" />,
+  Table: () => <div data-testid="table-icon" />,
 }));
 
 describe("ImportDialog", () => {
@@ -168,7 +185,7 @@ describe("ImportDialog", () => {
     expect(screen.getByTestId("dialog")).toBeInTheDocument();
     expect(screen.getByText("Import Form")).toBeInTheDocument();
     expect(
-      screen.getByText("Import your existing forms from Typeform or Google Forms")
+      screen.getByText("Import your existing forms from Typeform, Google Forms, or Tally")
     ).toBeInTheDocument();
   });
 

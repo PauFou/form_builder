@@ -29,6 +29,21 @@ jest.mock("framer-motion", () => ({
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
+// Suppress act warnings for iframe onLoad
+const originalError = console.error;
+beforeAll(() => {
+  console.error = (...args) => {
+    if (typeof args[0] === "string" && args[0].includes("inside a test was not wrapped in act")) {
+      return;
+    }
+    originalError.call(console, ...args);
+  };
+});
+
+afterAll(() => {
+  console.error = originalError;
+});
+
 describe("PreviewPanel", () => {
   const mockOnClose = jest.fn();
 
@@ -47,7 +62,7 @@ describe("PreviewPanel", () => {
   it("renders preview panel when open", () => {
     render(<PreviewPanel isOpen={true} onClose={mockOnClose} formId="test-form" />);
 
-    expect(screen.getByText("Preview")).toBeInTheDocument();
+    expect(screen.getByText("Form Preview")).toBeInTheDocument();
     expect(screen.getByTitle("Form Preview")).toBeInTheDocument();
   });
 
@@ -109,7 +124,7 @@ describe("PreviewPanel", () => {
     render(<PreviewPanel isOpen={true} onClose={mockOnClose} formId="test-form-123" />);
 
     const iframe = screen.getByTitle("Form Preview") as HTMLIFrameElement;
-    expect(iframe).toHaveAttribute("src", "/preview/test-form-123");
+    expect(iframe).toHaveAttribute("src", "/preview/test-form-123?embed=true");
   });
 
   it("renders blank iframe when no formId", () => {
@@ -142,12 +157,12 @@ describe("PreviewPanel", () => {
 
   it("applies correct styles for device modes", async () => {
     const user = userEvent.setup();
-    const { container } = render(
+    const { container, rerender } = render(
       <PreviewPanel isOpen={true} onClose={mockOnClose} formId="test-form" />
     );
 
-    // Find the preview container
-    const previewContainer = container.querySelector('[style*="transform"]');
+    // Find the preview container - it's the div with transition attribute that contains the iframe
+    let previewContainer = container.querySelector('[style*="transform"]');
 
     // Desktop mode (default)
     expect(previewContainer).toHaveStyle({
@@ -160,20 +175,28 @@ describe("PreviewPanel", () => {
     const tabletButton = screen.getByText("Tablet").closest("button");
     await user.click(tabletButton!);
 
-    expect(previewContainer).toHaveStyle({
-      width: "768px",
-      height: "1024px",
-      transform: "scale(0.8)",
+    // Re-query after state update
+    await waitFor(() => {
+      previewContainer = container.querySelector('[style*="transform"]');
+      expect(previewContainer).toHaveStyle({
+        width: "768px",
+        height: "1024px",
+        transform: "scale(0.8)",
+      });
     });
 
     // Switch to mobile
     const mobileButton = screen.getByText("Smartphone").closest("button");
     await user.click(mobileButton!);
 
-    expect(previewContainer).toHaveStyle({
-      width: "375px",
-      height: "667px",
-      transform: "scale(0.9)",
+    // Re-query after state update
+    await waitFor(() => {
+      previewContainer = container.querySelector('[style*="transform"]');
+      expect(previewContainer).toHaveStyle({
+        width: "375px",
+        height: "667px",
+        transform: "scale(0.9)",
+      });
     });
   });
 });

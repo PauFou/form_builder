@@ -1,7 +1,5 @@
-import json
 import requests
-from typing import Dict, Any, List
-from django.conf import settings
+from typing import Dict, Any
 
 from .base import BaseProvider
 

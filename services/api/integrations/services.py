@@ -1,12 +1,6 @@
-import json
-import requests
-from typing import Dict, Any, Optional, List
-from django.conf import settings
+from typing import Dict, Any
 from django.utils import timezone
 from datetime import timedelta
-import hmac
-import hashlib
-import base64
 
 from .models import Integration, IntegrationConnection, IntegrationLog
 from .providers import (
@@ -213,7 +207,7 @@ class IntegrationService:
         # Get integration fields
         try:
             integration_fields = provider.get_available_fields(connection.integration)
-        except:
+        except Exception:
             integration_fields = []
         
         # Generate suggestions

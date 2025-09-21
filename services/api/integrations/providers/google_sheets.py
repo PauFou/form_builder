@@ -1,4 +1,3 @@
-import json
 from typing import Dict, Any, List
 from django.conf import settings
 from google.oauth2.credentials import Credentials
@@ -85,7 +84,7 @@ class GoogleSheetsProvider(BaseProvider):
                 {'id': header, 'name': header, 'type': 'string'}
                 for header in headers if header
             ]
-        except:
+        except Exception:
             return []
     
     def get_oauth_url(self, integration) -> str:
@@ -152,7 +151,7 @@ class GoogleSheetsProvider(BaseProvider):
                 
                 integration.settings['available_sheets'] = sheets
                 integration.save()
-            except:
+            except Exception:
                 pass
     
     def _get_sheets_service(self, integration):

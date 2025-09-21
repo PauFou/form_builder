@@ -26,7 +26,8 @@ class AuthenticationTestCase(TestCase):
         response = self.client.post('/v1/auth/signup/', data)
         
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertIn('tokens', response.data)
+        self.assertIn('access', response.data)
+        self.assertIn('refresh', response.data)
         self.assertIn('user', response.data)
         self.assertIn('organization', response.data)
         
@@ -62,7 +63,7 @@ class AuthenticationTestCase(TestCase):
     
     def test_login(self):
         """Test JWT login"""
-        user = User.objects.create_user(
+        User.objects.create_user(
             email='test@example.com',
             username='testuser',
             password='TestPass123!'

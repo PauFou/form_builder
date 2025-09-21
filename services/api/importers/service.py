@@ -5,8 +5,7 @@ from django.db import transaction
 from .typeform import TypeformImporter
 from .google_forms import GoogleFormsImporter
 from .tally import TallyImporter
-from .base import ImportResult, ImportStatus
-from forms.models import Form
+from .base import ImportStatus
 from forms.serializers import FormSerializer
 
 logger = logging.getLogger(__name__)

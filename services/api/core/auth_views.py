@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes, force_str
@@ -391,10 +392,6 @@ def password_reset_confirm(request):
 
 
 # Rate limited login view
-from rest_framework_simplejwt.views import TokenObtainPairView
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
-
 @method_decorator(ratelimit(key='ip', rate='5/m', method='POST'), name='dispatch')
 @method_decorator(ratelimit(key='post:email', rate='10/h', method='POST'), name='dispatch')
 class RateLimitedLoginView(TokenObtainPairView):

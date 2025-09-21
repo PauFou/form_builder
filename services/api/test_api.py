@@ -32,7 +32,7 @@ try:
     if response.status_code == 200:
         print(f"Success! Response: {response.json()}")
     else:
-        print(f"Error response:")
+        print("Error response:")
         print(response.text[:500] if len(response.text) > 500 else response.text)
         
 except requests.exceptions.RequestException as e:

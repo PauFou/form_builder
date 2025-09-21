@@ -2,7 +2,6 @@
 Analytics API views - Proxy to ClickHouse analytics service
 """
 import httpx
-from datetime import datetime, timedelta
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from rest_framework import status

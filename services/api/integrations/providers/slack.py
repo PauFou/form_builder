@@ -1,4 +1,3 @@
-import json
 import requests
 from typing import Dict, Any, List
 from django.conf import settings
@@ -14,7 +13,6 @@ class SlackProvider(BaseProvider):
     
     def test_connection(self, integration, sample_data: Dict[str, Any]) -> Dict[str, Any]:
         """Test Slack connection"""
-        config = integration.config
         
         if not integration.access_token:
             raise ValueError("Slack access token is required")
@@ -87,7 +85,7 @@ class SlackProvider(BaseProvider):
                     }
                     for channel in data.get('channels', [])
                 ]
-        except:
+        except Exception:
             pass
         
         return []

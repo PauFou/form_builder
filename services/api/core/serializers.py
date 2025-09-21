@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Optional
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from .models import User, Organization, Submission, Answer, Membership, AuditLog

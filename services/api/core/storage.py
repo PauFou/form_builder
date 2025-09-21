@@ -6,11 +6,9 @@ import os
 import uuid
 import hashlib
 from datetime import datetime, timedelta
-from typing import Optional, Tuple
+from typing import Tuple
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from django.utils.crypto import get_random_string
-from django.urls import reverse
 
 
 class SecureLocalStorage(FileSystemStorage):

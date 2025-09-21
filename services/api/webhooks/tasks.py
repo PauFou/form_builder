@@ -1,9 +1,9 @@
-from celery import shared_task, group, chord
+from celery import shared_task, group
 from celery.utils.log import get_task_logger
-from celery.exceptions import MaxRetriesExceededError, SoftTimeLimitExceeded
+from celery.exceptions import SoftTimeLimitExceeded
 from django.utils import timezone
 from django.db import transaction
-from django.db.models import Q, F
+from django.db.models import F
 from django.core.cache import cache
 from datetime import timedelta
 import requests
@@ -11,7 +11,6 @@ import hmac
 import hashlib
 import json
 import time
-from urllib.parse import urlparse
 from .models import Webhook, Delivery, DeadLetterQueue, WebhookLog
 from core.models import Submission, Partial
 from api.celery import CallbackTask
@@ -530,7 +529,7 @@ def process_incoming_webhook(webhook_id, event_type, payload, headers, source_ip
         
         # Store incoming webhook data
         from .models import IncomingWebhook
-        incoming = IncomingWebhook.objects.create(
+        IncomingWebhook.objects.create(
             webhook=webhook,
             event_type=event_type,
             payload_json=payload,

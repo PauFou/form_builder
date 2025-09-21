@@ -1,17 +1,14 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from django.utils import timezone
 from rest_framework.test import APIClient
 from rest_framework import status
 from unittest.mock import patch
-import json
 
 from core.models import Organization, Membership
 from forms.models import Form
 from .models import (
     DataResidencyConfig, DataRetentionPolicy, PIIFieldConfig,
-    ConsentRecord, DataProcessingAgreement, DataDeletionRequest,
-    DataExportRequest, PIIEncryption
+    PIIEncryption
 )
 
 User = get_user_model()

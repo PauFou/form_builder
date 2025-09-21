@@ -2,9 +2,8 @@
 Tests for email verification functionality.
 """
 
-import json
 from datetime import timedelta
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from django.test import TestCase
 from django.urls import reverse
@@ -14,7 +13,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 import pytest
 
-from core.models import Organization, Membership, EmailVerificationToken
+from core.models import EmailVerificationToken
 
 User = get_user_model()
 
@@ -218,7 +217,7 @@ class EmailVerificationTestCase(TestCase):
     
     def test_resend_verification_email_already_verified(self):
         """Test resending verification email for already verified user."""
-        user = User.objects.create_user(
+        User.objects.create_user(
             username='testuser',
             email='test@example.com',
             password='StrongPass123!',

@@ -1,4 +1,3 @@
-import json
 import requests
 from typing import Dict, Any, List
 from django.conf import settings
@@ -114,7 +113,7 @@ class NotionProvider(BaseProvider):
                     })
                 
                 return fields
-        except:
+        except Exception:
             pass
         
         return []
@@ -194,7 +193,7 @@ class NotionProvider(BaseProvider):
                 
                 integration.settings['available_databases'] = databases
                 integration.save()
-        except:
+        except Exception:
             pass
     
     def _get_basic_auth(self) -> str:

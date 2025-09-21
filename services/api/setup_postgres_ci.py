@@ -5,7 +5,7 @@ import sys
 import time
 import subprocess
 import psycopg2
-from psycopg2 import sql, OperationalError
+from psycopg2 import OperationalError
 
 def run_psql_command(command, user='postgres', password='postgres', database='postgres', host='127.0.0.1', port='5432'):
     """Run a psql command and return success status."""

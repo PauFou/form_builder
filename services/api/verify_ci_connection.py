@@ -9,8 +9,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings_test')
 import django
 django.setup()
 
-from django.db import connection
-from django.core.management import execute_from_command_line
+from django.db import connection  # noqa: E402
+from django.core.management import execute_from_command_line  # noqa: E402
 
 print("=== Testing Django Database Connection ===")
 print(f"CI Environment: {os.environ.get('CI', 'false')}")
@@ -21,7 +21,7 @@ try:
     with connection.cursor() as cursor:
         cursor.execute("SELECT current_user, current_database(), version();")
         user, db, version = cursor.fetchone()
-        print(f"\n✅ SUCCESS: Connected to Django database")
+        print("\n✅ SUCCESS: Connected to Django database")
         print(f"   User: {user}")
         print(f"   Database: {db}")
         print(f"   PostgreSQL: {version.split(',')[0]}")

@@ -2,12 +2,20 @@
 Google Forms importer with native support
 """
 
-import json
 from typing import Dict, List, Any, Optional, Tuple
 from datetime import datetime
 import uuid
 
 from forms.models import Form
+
+# DEPRECATED - These models no longer exist in the new JSON-based structure
+class FormPage:
+    """Deprecated FormPage model placeholder"""
+    objects = None
+
+class FormBlock:
+    """Deprecated FormBlock model placeholder"""
+    objects = None
 
 
 class GoogleFormsImporter:
@@ -256,7 +264,7 @@ class GoogleFormsImporter:
     def _import_settings(self, gforms_data: Dict, form: Form) -> None:
         """Import Google Forms settings"""
         settings = gforms_data.get("settings", {})
-        info = gforms_data.get("info", {})
+        gforms_data.get("info", {})
         
         form.data["settings"] = {
             "submitText": settings.get("submitText", "Submit"),

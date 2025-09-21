@@ -1,7 +1,5 @@
 import pytest
-from unittest.mock import Mock, patch, MagicMock
-import uuid
-from datetime import datetime
+from unittest.mock import Mock, patch
 
 from importers.tally import TallyImporter
 from importers.base import ImportStatus
@@ -145,7 +143,7 @@ class TestTallyImporter:
         
         assert result["title"] == "Customer Feedback"
         assert result["description"] == "Tell us what you think"
-        assert result["settings"]["show_progress_bar"] == True
+        assert result["settings"]["show_progress_bar"]
         assert result["settings"]["redirect_after_submit_url"] == "https://example.com/thanks"
         assert result["theme"]["primary_color"] == "#FF0000"
         assert result["theme"]["font_family"] == "Arial"
@@ -158,7 +156,7 @@ class TestTallyImporter:
         block1 = result["pages"][0]["blocks"][0]
         assert block1["type"] == "text"
         assert block1["question"] == "Your Name"
-        assert block1["required"] == True
+        assert block1["required"]
         
         # Check second block
         block2 = result["pages"][0]["blocks"][1]
@@ -236,7 +234,7 @@ class TestTallyImporter:
         assert block["type"] == "matrix"
         assert len(block["rows"]) == 3
         assert len(block["columns"]) == 4
-        assert block["multiple_selection"] == False
+        assert not block["multiple_selection"]
     
     def test_transform_conditional_logic(self):
         """Test conditional logic transformation"""
@@ -330,7 +328,7 @@ class TestTallyImporter:
         
         result = self.importer.import_form("ABC123", {"api_key": "test-key"})
         
-        assert result.success == True
+        assert result.success
         assert result.status == ImportStatus.SUCCESS
         assert result.form_data["title"] == "Test Form"
         assert len(result.mapping_report["field_mappings"]) > 0

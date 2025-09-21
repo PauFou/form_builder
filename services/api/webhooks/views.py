@@ -1,9 +1,9 @@
-from rest_framework import viewsets, status, generics
+from rest_framework import viewsets, status
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from django.db.models import Count, Q, Avg, Sum
+from django.db.models import Avg
 from django.utils import timezone
 from datetime import timedelta
 from django_filters.rest_framework import DjangoFilterBackend
@@ -11,7 +11,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from core.models import Organization
 from core.permissions import IsOrganizationAdmin
 from core.pagination import StandardResultsSetPagination
-from .models import Webhook, Delivery, DeadLetterQueue, WebhookLog
+from .models import Webhook, Delivery, DeadLetterQueue
 from .serializers import (
     WebhookSerializer, DeliverySerializer, DeadLetterQueueSerializer,
     WebhookLogSerializer, WebhookStatsSerializer, BulkRedriveSerializer
@@ -171,7 +171,7 @@ class DeadLetterQueueViewSet(viewsets.ReadOnlyModelViewSet):
         
         # Verify webhook ownership if specified
         if webhook_id:
-            webhook = get_object_or_404(
+            get_object_or_404(
                 Webhook,
                 id=webhook_id,
                 organization__memberships__user=request.user,

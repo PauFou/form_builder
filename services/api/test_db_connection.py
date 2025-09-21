@@ -45,7 +45,6 @@ def test_django_connection():
     print("\n=== Testing Django Connection ===")
     try:
         import django
-        from django.conf import settings
         from django.db import connection
         
         print(f"Django settings module: {os.environ.get('DJANGO_SETTINGS_MODULE')}")

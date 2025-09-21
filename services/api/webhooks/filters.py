@@ -1,5 +1,5 @@
 from django_filters import rest_framework as filters
-from .models import Delivery, DeadLetterQueue
+from .models import Delivery
 
 
 class DeliveryFilter(filters.FilterSet):

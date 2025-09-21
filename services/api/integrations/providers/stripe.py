@@ -13,7 +13,6 @@ class StripeProvider(BaseProvider):
     
     def test_connection(self, integration, sample_data: Dict[str, Any]) -> Dict[str, Any]:
         """Test Stripe connection"""
-        config = integration.config
         
         try:
             # Test API key by fetching account info
@@ -30,7 +29,6 @@ class StripeProvider(BaseProvider):
     
     def send_data(self, integration, data: Dict[str, Any], settings: Dict[str, Any]) -> Dict[str, Any]:
         """Process payment through Stripe"""
-        config = integration.config
         
         # This is a simplified example - in production, you'd handle this differently
         # typically through Stripe Elements or Payment Links

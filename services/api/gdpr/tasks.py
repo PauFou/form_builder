@@ -6,7 +6,6 @@ from datetime import timedelta
 import json
 import csv
 import io
-import uuid
 from typing import Dict, List
 
 from .models import (
@@ -604,5 +603,5 @@ def generate_gdpr_report(organization_id: str):
         
         return report
         
-    except Exception as e:
+    except Exception:
         raise

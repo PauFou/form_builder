@@ -2,11 +2,8 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.db import transaction
 from django.utils import timezone
-from django.shortcuts import get_object_or_404
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
 
 from .models import Integration, IntegrationConnection, IntegrationLog
 from .serializers import (
@@ -18,7 +15,6 @@ from .serializers import (
 )
 from .services import IntegrationService
 from core.permissions import IsOwner
-from forms.models import Form
 
 
 class IntegrationViewSet(viewsets.ModelViewSet):

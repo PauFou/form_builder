@@ -5,7 +5,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
 django.setup()
 
-from core.models import User, Organization, Membership
+from core.models import User, Organization, Membership  # noqa: E402
 
 # Create test organization
 org, created = Organization.objects.get_or_create(
@@ -40,5 +40,5 @@ print(f"Membership: {membership.role} ({'created' if created else 'exists'})")
 
 print("\nTest credentials:")
 print(f"Email: {user.email}")
-print(f"Password: password123")
+print("Password: password123")
 print(f"Organization: {org.slug}")

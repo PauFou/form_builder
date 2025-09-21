@@ -1,6 +1,6 @@
 import time
-from datetime import datetime, timedelta
-from unittest.mock import patch, MagicMock
+from datetime import timedelta
+from unittest.mock import patch
 
 from django.test import TestCase, TransactionTestCase
 from django.contrib.auth import get_user_model
@@ -14,8 +14,7 @@ from forms.models import Form
 from core.models import Submission, Answer
 from .models import (
     DataResidencyConfig, PIIFieldConfig, DataRetentionPolicy,
-    ConsentRecord, DataDeletionRequest, DataExportRequest,
-    DataProcessingAgreement
+    ConsentRecord, DataDeletionRequest, DataExportRequest
 )
 from .tasks import cleanup_expired_data, process_deletion_request, generate_data_export
 
@@ -106,7 +105,7 @@ class GDPRIntegrationTests(TransactionTestCase):
         """Test deletion request with email verification flow"""
         
         # Create some test data
-        submission = Submission.objects.create(
+        Submission.objects.create(
             form=self.form,
             respondent_email='user@example.com',
             completed_at=timezone.now()
@@ -270,7 +269,7 @@ class GDPRIntegrationTests(TransactionTestCase):
         )
         
         # Attempt to configure non-EU webhook
-        response = self.client.post('/api/v1/webhooks/', {
+        self.client.post('/api/v1/webhooks/', {
             'organization': self.org.id,
             'url': 'https://us-webhook.example.com/webhook',
             'events': ['submission.created']

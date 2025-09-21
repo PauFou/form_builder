@@ -1,12 +1,10 @@
-import json
 import re
-from typing import Dict, Any, List, Optional, Tuple
-from urllib.parse import urlparse, parse_qs
+from typing import Dict, Any, List, Optional
+from urllib.parse import urlparse
 import uuid
 
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from google.auth.transport.requests import Request
 
 from .base import BaseImporter
 
@@ -130,7 +128,7 @@ class GoogleFormsImporter(BaseImporter):
         current_page = None
         
         for item in items:
-            item_id = item.get("itemId", str(uuid.uuid4()))
+            item.get("itemId", str(uuid.uuid4()))
             
             # Check if this is a page break
             if item.get("pageBreakItem"):
@@ -287,8 +285,7 @@ class GoogleFormsImporter(BaseImporter):
         
         # Handle validation (limited in API)
         if question.get("textQuestion"):
-            text_q = question["textQuestion"]
-            validations = []
+            question["textQuestion"]
             
             # Note: Google Forms API doesn't expose all validation rules
             self.add_warning(f"Text validation for '{item.get('title')}' may not be fully imported")

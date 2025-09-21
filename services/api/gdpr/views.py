@@ -6,14 +6,11 @@ from django.utils import timezone
 from datetime import timedelta
 from django.core.mail import send_mail
 from django.conf import settings
-import json
-import csv
-import io
 
 from .models import (
     DataResidencyConfig, DataRetentionPolicy, PIIFieldConfig,
     ConsentRecord, DataProcessingAgreement, DataDeletionRequest,
-    DataExportRequest, PIIEncryption
+    DataExportRequest
 )
 from .serializers import (
     DataResidencyConfigSerializer, DataRetentionPolicySerializer,
@@ -24,10 +21,9 @@ from .serializers import (
     DPATemplateSerializer
 )
 from .tasks import (
-    process_deletion_request, process_export_request,
-    cleanup_expired_data
+    process_deletion_request, process_export_request
 )
-from core.models import Organization, Submission, Partial, AuditLog
+from core.models import Organization, AuditLog
 from core.permissions import IsOrganizationMember
 from forms.models import Form
 
@@ -133,7 +129,7 @@ class PIIFieldConfigViewSet(viewsets.ModelViewSet):
             for block in page.get('blocks', []):
                 field_id = block.get('id')
                 field_label = block.get('label', '').lower()
-                field_type = block.get('type')
+                block.get('type')
                 
                 # Check if field matches any PII pattern
                 for pii_type, patterns in pii_patterns.items():

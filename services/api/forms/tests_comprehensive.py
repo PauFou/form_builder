@@ -2,9 +2,8 @@
 Comprehensive tests for Form Management API.
 """
 
-import json
 from datetime import timedelta
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from django.test import TestCase
 from django.urls import reverse
@@ -66,7 +65,7 @@ class FormManagementTestCase(TestCase):
     def test_list_forms(self):
         """Test listing forms."""
         # Create test forms
-        form1 = Form.objects.create(
+        Form.objects.create(
             organization=self.org,
             title='Form 1',
             slug='form-1',
@@ -74,7 +73,7 @@ class FormManagementTestCase(TestCase):
             created_by=self.user
         )
         
-        form2 = Form.objects.create(
+        Form.objects.create(
             organization=self.org,
             title='Form 2',
             slug='form-2',
@@ -332,7 +331,7 @@ class FormManagementTestCase(TestCase):
     
     def test_ordering_forms(self):
         """Test ordering forms."""
-        form1 = Form.objects.create(
+        Form.objects.create(
             organization=self.org,
             title='A Form',
             slug='a-form',
@@ -340,7 +339,7 @@ class FormManagementTestCase(TestCase):
             created_at=timezone.now() - timedelta(days=2)
         )
         
-        form2 = Form.objects.create(
+        Form.objects.create(
             organization=self.org,
             title='B Form',
             slug='b-form',
@@ -348,7 +347,7 @@ class FormManagementTestCase(TestCase):
             created_at=timezone.now() - timedelta(days=1)
         )
         
-        form3 = Form.objects.create(
+        Form.objects.create(
             organization=self.org,
             title='C Form',
             slug='c-form',
@@ -446,7 +445,7 @@ class FormManagementTestCase(TestCase):
         )
         
         # Create initial version
-        v1 = FormVersion.objects.create(
+        FormVersion.objects.create(
             form=form,
             version=1,
             schema={'blocks': [{'type': 'text', 'label': 'V1'}]}

@@ -1,10 +1,8 @@
 from django.db import models
-from django.utils import timezone
 # from django.contrib.postgres.fields import ArrayField  # Not needed with JSONField
 from cryptography.fernet import Fernet
 from django.conf import settings
 import uuid
-import json
 
 from core.models import BaseModel, Organization, User
 

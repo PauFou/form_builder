@@ -2,9 +2,7 @@
 """Setup and verify PostgreSQL for CI environment."""
 import os
 import sys
-import time
 import psycopg2
-from psycopg2 import sql
 
 
 def setup_postgres_for_ci():

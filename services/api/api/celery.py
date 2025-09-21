@@ -1,7 +1,6 @@
 import os
 from celery import Celery, Task
-from celery.signals import task_failure, task_retry, task_success
-from django.conf import settings
+from celery.signals import task_failure, task_retry
 import logging
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "api.settings")

@@ -1,12 +1,13 @@
 import React from "react";
 import { render, screen, waitFor } from "../lib/test-utils";
 import { AnalyticsDashboard } from "../components/analytics/analytics-dashboard";
-import { api } from "@/lib/api";
+import { analyticsApi } from "@/lib/api/analytics";
 
-// Mock the API
-jest.mock("@/lib/api", () => ({
-  api: {
-    get: jest.fn(),
+// Mock the analytics API
+jest.mock("@/lib/api/analytics", () => ({
+  analyticsApi: {
+    getFormAnalytics: jest.fn(),
+    getFunnelAnalytics: jest.fn(),
   },
 }));
 
@@ -46,6 +47,14 @@ jest.mock("lucide-react", () => ({
   RefreshCw: () => <div data-testid="refresh-icon" />,
   Download: () => <div data-testid="download-icon" />,
   Eye: () => <div data-testid="eye-icon" />,
+}));
+
+// Mock toast
+jest.mock("react-hot-toast", () => ({
+  toast: {
+    error: jest.fn(),
+    success: jest.fn(),
+  },
 }));
 
 // Mock UI components
@@ -145,21 +154,15 @@ describe("AnalyticsDashboard", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Mock the three API calls
-    (api.get as jest.Mock).mockImplementation((url) => {
-      if (url.includes("/analytics/forms/test-form/questions/")) {
-        return Promise.resolve({ data: mockQuestionData });
-      } else if (url.includes("/analytics/forms/test-form/funnel/")) {
-        return Promise.resolve({ data: mockFunnelData });
-      } else if (url.includes("/analytics/forms/test-form/")) {
-        return Promise.resolve({ data: mockAnalyticsData });
-      }
-      return Promise.reject(new Error("Unknown URL"));
-    });
+    // Mock the analytics API calls
+    (analyticsApi.getFormAnalytics as jest.Mock).mockResolvedValue(mockAnalyticsData);
+    (analyticsApi.getFunnelAnalytics as jest.Mock).mockResolvedValue(mockFunnelData);
   });
 
   it("renders loading state initially", () => {
-    (api.get as jest.Mock).mockImplementation(() => new Promise(() => {})); // Never resolves
+    // Make the API calls never resolve to keep loading state
+    (analyticsApi.getFormAnalytics as jest.Mock).mockImplementation(() => new Promise(() => {}));
+    (analyticsApi.getFunnelAnalytics as jest.Mock).mockImplementation(() => new Promise(() => {}));
 
     render(<AnalyticsDashboard formId="test-form" />);
 
@@ -219,18 +222,29 @@ describe("AnalyticsDashboard", () => {
 
     await waitFor(() => {
       // Check that API was called
-      expect(api.get).toHaveBeenCalled();
+      expect(analyticsApi.getFormAnalytics).toHaveBeenCalled();
+      expect(analyticsApi.getFunnelAnalytics).toHaveBeenCalled();
 
-      // Verify it was called with the form ID
-      const calls = (api.get as jest.Mock).mock.calls;
-      const formCalls = calls.filter((call) => call[0].includes("test-form"));
-      expect(formCalls.length).toBeGreaterThan(0);
+      // Verify they were called with the form ID
+      expect(analyticsApi.getFormAnalytics).toHaveBeenCalledWith(
+        "test-form",
+        expect.any(String),
+        expect.any(String),
+        expect.any(String)
+      );
+      expect(analyticsApi.getFunnelAnalytics).toHaveBeenCalledWith(
+        "test-form",
+        expect.any(String),
+        expect.any(String),
+        expect.any(String)
+      );
     });
   });
 
   it("handles API errors gracefully", async () => {
     const consoleSpy = jest.spyOn(console, "error").mockImplementation();
-    (api.get as jest.Mock).mockRejectedValue(new Error("API Error"));
+    (analyticsApi.getFormAnalytics as jest.Mock).mockRejectedValue(new Error("API Error"));
+    (analyticsApi.getFunnelAnalytics as jest.Mock).mockRejectedValue(new Error("API Error"));
 
     render(<AnalyticsDashboard formId="test-form" />);
 
@@ -254,15 +268,8 @@ describe("AnalyticsDashboard", () => {
       views_over_time: [],
     };
 
-    (api.get as jest.Mock).mockImplementation((url) => {
-      if (url.includes("/questions/")) {
-        return Promise.resolve({ data: { questions: [] } });
-      } else if (url.includes("/funnel/")) {
-        return Promise.resolve({ data: { funnel: [] } });
-      } else {
-        return Promise.resolve({ data: emptyData });
-      }
-    });
+    (analyticsApi.getFormAnalytics as jest.Mock).mockResolvedValue(emptyData);
+    (analyticsApi.getFunnelAnalytics as jest.Mock).mockResolvedValue({ funnel: [] });
 
     render(<AnalyticsDashboard formId="test-form" />);
 
@@ -286,15 +293,8 @@ describe("AnalyticsDashboard", () => {
       views_over_time: [],
     };
 
-    (api.get as jest.Mock).mockImplementation((url) => {
-      if (url.includes("/questions/")) {
-        return Promise.resolve({ data: mockQuestionData });
-      } else if (url.includes("/funnel/")) {
-        return Promise.resolve({ data: mockFunnelData });
-      } else {
-        return Promise.resolve({ data: largeNumberData });
-      }
-    });
+    (analyticsApi.getFormAnalytics as jest.Mock).mockResolvedValue(largeNumberData);
+    (analyticsApi.getFunnelAnalytics as jest.Mock).mockResolvedValue(mockFunnelData);
 
     render(<AnalyticsDashboard formId="test-form" />);
 

@@ -1,5 +1,5 @@
 """Test settings for Django API."""
-from .settings import *
+from .settings import *  # noqa: F403, F401
 from .database import get_database_config
 
 # Override settings for testing

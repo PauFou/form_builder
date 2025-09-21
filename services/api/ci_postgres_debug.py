@@ -3,7 +3,6 @@
 import os
 import sys
 import subprocess
-import time
 
 def run_command(cmd, env=None):
     """Run a command and return its output."""
@@ -79,7 +78,7 @@ def debug_postgres_auth():
     cmd = f'psql -h {host} -p {port} -U {user} -d {database} -c "SELECT version();"'
     rc, out, err = run_command(cmd, env=env)
     if rc == 0:
-        print(f"    SUCCESS: Connected to PostgreSQL")
+        print("    SUCCESS: Connected to PostgreSQL")
     else:
         print(f"    FAILED: {err.strip()}")
     

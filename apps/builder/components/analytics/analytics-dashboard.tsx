@@ -105,7 +105,7 @@ export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
         dateRange?.from?.toISOString(),
         dateRange?.to?.toISOString()
       );
-      setFunnelData(funnelResponse.funnel);
+      setFunnelData(funnelResponse?.funnel || []);
 
       // For now, we'll use mock data for question stats until we implement field-level analytics
       setQuestionStats([]);
@@ -372,7 +372,7 @@ export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
               <CardDescription>User progression through your form</CardDescription>
             </CardHeader>
             <CardContent>
-              {funnelData.length > 0 ? (
+              {funnelData && funnelData.length > 0 ? (
                 <div className="h-96">
                   <ResponsiveContainer width="100%" height="100%">
                     <FunnelChart>

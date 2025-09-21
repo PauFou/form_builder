@@ -4,8 +4,7 @@ from datetime import timedelta
 
 from core.models import Organization
 from gdpr.models import (
-    DataResidencyConfig, DataRetentionPolicy, 
-    PIIFieldConfig, DataProcessingAgreement
+    DataResidencyConfig, PIIFieldConfig
 )
 
 

@@ -2,8 +2,7 @@ import json
 import requests
 import hmac
 import hashlib
-from typing import Dict, Any, List
-from django.conf import settings
+from typing import Dict, Any
 from django.utils import timezone
 
 from .base import BaseProvider

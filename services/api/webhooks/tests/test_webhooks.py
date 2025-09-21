@@ -4,13 +4,11 @@ from django.utils import timezone
 from rest_framework.test import APIClient
 from rest_framework import status
 from unittest.mock import patch, Mock
-from celery import states
 from core.models import Organization, Membership, Submission
 from forms.models import Form
 from webhooks.models import Webhook, Delivery, DeadLetterQueue
 from webhooks.tasks import deliver_webhook, process_submission_webhooks
 import responses
-import json
 
 User = get_user_model()
 
@@ -178,7 +176,7 @@ class WebhookDeliveryTestCase(TestCase):
             partial=None
         )
         
-        result = deliver_webhook(delivery.id)
+        deliver_webhook(delivery.id)
         
         delivery.refresh_from_db()
         self.assertEqual(delivery.status, 'success')
@@ -206,7 +204,7 @@ class WebhookDeliveryTestCase(TestCase):
             partial=None
         )
         
-        with self.assertRaises(Exception) as context:
+        with self.assertRaises(Exception):
             deliver_webhook(delivery.id)
         
         delivery.refresh_from_db()

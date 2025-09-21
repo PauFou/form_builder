@@ -8,10 +8,9 @@ import time
 import hmac
 import hashlib
 from datetime import datetime, timedelta
-from decimal import Decimal
 from unittest.mock import patch, MagicMock
 
-from django.test import TestCase, TransactionTestCase, override_settings
+from django.test import TestCase, TransactionTestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -20,9 +19,8 @@ from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from core.models import Organization, Submission, Answer, Partial
-from forms.models import Form, FormVersion
+from forms.models import Form
 from webhooks.models import Webhook, Delivery as WebhookDelivery
-from integrations.models import Integration
 
 User = get_user_model()
 
@@ -175,7 +173,7 @@ class FullIntegrationTestCase(TransactionTestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        webhook_id = response.data['id']
+        response.data['id']
         
         # Step 3: Publish the form
         response = self.client.post(
@@ -325,7 +323,7 @@ class FullIntegrationTestCase(TransactionTestCase):
         )
         
         # Create webhook
-        webhook = Webhook.objects.create(
+        Webhook.objects.create(
             organization=self.organization,
             url="https://example.com/webhook",
             secret="test-secret",
@@ -425,7 +423,7 @@ class FullIntegrationTestCase(TransactionTestCase):
         )
         
         # Mock analytics API
-        with patch('analytics.api.track_event') as mock_track:
+        with patch('analytics.api.track_event'):
             # View form
             response = self.client.get(
                 reverse('form-detail', kwargs={'pk': form.id})
@@ -677,7 +675,7 @@ class WebhookIntegrationTest(TransactionTestCase):
         
         # Trigger webhook delivery
         from webhooks.tasks import send_webhook
-        result = send_webhook(
+        send_webhook(
             webhook.id,
             webhook.url,
             webhook.secret,

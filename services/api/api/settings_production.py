@@ -3,7 +3,7 @@ Production settings for Forms API
 CRITICAL: This file contains security-critical settings for production deployment
 """
 
-from .settings import *
+from .settings import *  # noqa: F403, F401
 import os
 
 # SECURITY WARNING: don't run with debug turned on in production!

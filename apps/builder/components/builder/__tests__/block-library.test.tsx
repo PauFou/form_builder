@@ -7,6 +7,33 @@ import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 // Mock the store
 jest.mock("../../../lib/stores/form-builder-store");
 
+// Mock dnd-kit
+jest.mock("@dnd-kit/core", () => ({
+  useDraggable: () => ({
+    attributes: {},
+    listeners: {},
+    setNodeRef: jest.fn(),
+    transform: null,
+    isDragging: false,
+  }),
+}));
+
+// Mock framer-motion
+jest.mock("framer-motion", () => ({
+  motion: {
+    div: ({ children, className, ...props }: any) => (
+      <div className={className} {...props}>
+        {children}
+      </div>
+    ),
+  },
+}));
+
+// Mock LogicEditor
+jest.mock("../../logic/logic-editor", () => ({
+  LogicEditor: () => <div>Logic Editor</div>,
+}));
+
 // Mock UI components
 jest.mock("@skemya/ui", () => ({
   Card: ({ children, className }: any) => <div className={className}>{children}</div>,
@@ -50,6 +77,7 @@ jest.mock("lucide-react", () => ({
   Blocks: () => <span>Blocks</span>,
   Clock: () => <span>Clock</span>,
   Link: () => <span>Link</span>,
+  GripVertical: () => <span>GripVertical</span>,
 }));
 
 // Mock framer-motion
@@ -112,18 +140,18 @@ describe("BlockLibrary", () => {
     const buttons = screen.getAllByRole("button");
     const buttonLabels = buttons.map((b) => b.textContent);
 
-    // Text blocks
-    expect(buttonLabels).toContain("TypeShort Text");
-    expect(buttonLabels).toContain("AlignLeftLong Text");
+    // Text blocks - buttons include GripVertical icon text
+    expect(buttonLabels).toContain("GripVerticalTypeShort Text");
+    expect(buttonLabels).toContain("GripVerticalAlignLeftLong Text");
 
     // Contact blocks
-    expect(buttonLabels).toContain("MailEmail");
-    expect(buttonLabels).toContain("PhonePhone");
-    expect(buttonLabels).toContain("MapPinAddress");
+    expect(buttonLabels).toContain("GripVerticalMailEmail");
+    expect(buttonLabels).toContain("GripVerticalPhonePhone");
+    expect(buttonLabels).toContain("GripVerticalMapPinAddress");
 
     // Number blocks
-    expect(buttonLabels).toContain("HashNumber");
-    expect(buttonLabels).toContain("CreditCardCurrency");
+    expect(buttonLabels).toContain("GripVerticalHashNumber");
+    expect(buttonLabels).toContain("GripVerticalCreditCardCurrency");
   });
 
   it("adds block when clicking a block button", async () => {

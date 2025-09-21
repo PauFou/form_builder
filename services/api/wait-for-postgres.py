@@ -14,7 +14,7 @@ def wait_for_postgres(max_retries=30, delay=1):
     password = os.environ.get('POSTGRES_PASSWORD', 'test')
     database = os.environ.get('POSTGRES_DB', 'test')
     
-    print(f"Attempting to connect to PostgreSQL:")
+    print("Attempting to connect to PostgreSQL:")
     print(f"  Host: {host}")
     print(f"  Port: {port}")
     print(f"  User: {user}")

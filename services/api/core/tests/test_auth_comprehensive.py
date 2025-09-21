@@ -3,15 +3,12 @@ Comprehensive authentication tests for the Forms Platform API.
 Tests all auth endpoints with >80% coverage goal.
 """
 
-import json
-from datetime import timedelta
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from django.test import TestCase, TransactionTestCase
 import pytest
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.utils import timezone
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -244,7 +241,7 @@ class AuthenticationTestCase(TestCase):
     @patch('core.auth_views.send_mail')
     def test_password_reset_request(self, mock_send_mail):
         """Test password reset request."""
-        user = User.objects.create_user(
+        User.objects.create_user(
             username='testuser',
             email='test@example.com',
             password='StrongPass123!'

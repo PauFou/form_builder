@@ -2,6 +2,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 from decouple import config
+from .database import get_database_config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -77,7 +78,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "api.wsgi.application"
 
 # Database
-from .database import get_database_config
 DATABASES = get_database_config()
 
 # Password validation
