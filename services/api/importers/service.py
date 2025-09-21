@@ -4,6 +4,7 @@ from django.db import transaction
 
 from .typeform import TypeformImporter
 from .google_forms import GoogleFormsImporter
+from .tally import TallyImporter
 from .base import ImportResult, ImportStatus
 from forms.models import Form
 from forms.serializers import FormSerializer
@@ -17,6 +18,7 @@ class ImportService:
     IMPORTERS = {
         'typeform': TypeformImporter,
         'google_forms': GoogleFormsImporter,
+        'tally': TallyImporter,
     }
     
     def get_importer(self, source_type: str):
@@ -102,6 +104,13 @@ class ImportService:
                     'form_id': form_id,
                     'message': f'Valid Google Forms ID: {form_id}'
                 }
+            elif source_type == 'tally':
+                form_id = importer._extract_form_id(source)
+                return {
+                    'valid': True,
+                    'form_id': form_id,
+                    'message': f'Valid Tally Form ID: {form_id}'
+                }
         except ValueError as e:
             return {
                 'valid': False,
@@ -158,6 +167,37 @@ class ImportService:
                     'Quiz scoring not imported',
                     'Collaborator permissions not imported',
                     'Response data is not imported'
+                ]
+            },
+            'tally': {
+                'credentials_required': True,
+                'credential_fields': [
+                    {
+                        'name': 'api_key',
+                        'label': 'Tally API Key',
+                        'type': 'password',
+                        'required': True,
+                        'help_text': 'Get your API key from Tally account settings → API & Webhooks'
+                    }
+                ],
+                'supported_features': [
+                    'All field types (text, choice, matrix, etc.)',
+                    'Conditional logic and branching',
+                    'Page breaks and sections',
+                    'Field validation rules',
+                    'Payment fields (Stripe)',
+                    'File uploads',
+                    'Signature fields',
+                    'Calculated fields',
+                    'NPS and rating scales',
+                    'Theme customization'
+                ],
+                'limitations': [
+                    'Response data is not imported',
+                    'Webhooks need to be reconfigured',
+                    'Calculated field formulas may need adjustment',
+                    'Complex conditional logic may need review',
+                    'Integrations need to be reconnected'
                 ]
             }
         }

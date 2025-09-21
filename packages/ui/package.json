@@ -1,5 +1,5 @@
 {
-  "name": "@forms/ui",
+  "name": "@skemya/ui",
   "version": "1.0.0",
   "private": true,
   "main": "./src/index.ts",
@@ -19,7 +19,7 @@
     "react-hook-form": "^7.52.0"
   },
   "devDependencies": {
-    "@forms/config": "workspace:*",
+    "@skemya/config": "workspace:*",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^14.2.1",
     "@types/jest": "^29.5.12",

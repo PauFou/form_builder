@@ -1,3 +1,3 @@
 "use client";
 
-export { Label, type LabelProps } from "@forms/ui";
+export { Label, type LabelProps } from "@skemya/ui";

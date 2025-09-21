@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button } from "@forms/ui";
+import { Button } from "@skemya/ui";
 import { AlertTriangle } from "lucide-react";
 
 interface ErrorBoundaryState {

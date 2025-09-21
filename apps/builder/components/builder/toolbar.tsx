@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@forms/ui";
+import { Button } from "@skemya/ui";
 import { Undo, Redo, Save, Eye, Rocket } from "lucide-react";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
-import { cn } from "@forms/ui";
+import { cn } from "@skemya/ui";
 
 interface ToolbarProps {
   onSave?: () => void;

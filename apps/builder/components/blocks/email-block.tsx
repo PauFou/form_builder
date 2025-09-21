@@ -1,6 +1,6 @@
 "use client";
 
-import { Input, Label } from "@forms/ui";
+import { Input, Label } from "@skemya/ui";
 import { Mail } from "lucide-react";
 import { BlockProps } from "./types";
 import { useState } from "react";

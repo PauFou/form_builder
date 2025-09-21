@@ -1,1 +1,1 @@
-export { ScrollArea, ScrollBar } from "@forms/ui";
+export { ScrollArea, ScrollBar } from "@skemya/ui";

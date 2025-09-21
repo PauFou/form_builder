@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { FormViewerWrapper } from "@forms/runtime";
-import type { FormSchema, RuntimeConfig } from "@forms/runtime";
+import { FormViewerWrapper } from "@skemya/runtime";
+import type { FormSchema, RuntimeConfig } from "@skemya/runtime";
 
 export default function GridModeDemo() {
   const demoSchema: FormSchema = {

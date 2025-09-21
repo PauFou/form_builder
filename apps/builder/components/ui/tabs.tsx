@@ -1,1 +1,1 @@
-export { Tabs, TabsContent, TabsList, TabsTrigger } from "@forms/ui";
+export { Tabs, TabsContent, TabsList, TabsTrigger } from "@skemya/ui";

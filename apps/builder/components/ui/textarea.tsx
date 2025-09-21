@@ -1,3 +1,3 @@
 "use client";
 
-export { Textarea, type TextareaProps } from "@forms/ui";
+export { Textarea, type TextareaProps } from "@skemya/ui";

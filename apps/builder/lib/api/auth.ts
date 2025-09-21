@@ -1,6 +1,6 @@
 import { apiClient } from "./axios-client";
 
-import type { User, Organization } from "@forms/contracts";
+import type { User, Organization } from "@skemya/contracts";
 
 export interface LoginCredentials {
   email: string;

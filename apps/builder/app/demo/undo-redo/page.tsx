@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { FormBuilder } from "../../../components/builder/form-builder";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
-import type { Form } from "@forms/contracts";
+import type { Form } from "@skemya/contracts";
 
 const demoForm: Form = {
   id: "demo-form",

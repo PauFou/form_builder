@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@forms/ui";
+import { Button } from "@skemya/ui";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -40,7 +40,7 @@ export default function HomePage() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 backdrop-blur-sm border border-border/50 text-sm mb-8"
             >
               <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-muted-foreground">EU-hosted • GDPR compliant</span>
+              <span className="text-muted-foreground">EU-hosted | GDPR compliant</span>
             </motion.div>
 
             {/* Main Heading */}
@@ -74,13 +74,17 @@ export default function HomePage() {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
-              <Button size="lg" className="group">
-                Get started
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Button>
-              <Button size="lg" variant="outline">
-                See templates
-              </Button>
+              <Link href="http://localhost:3001/auth/signup">
+                <Button size="lg" className="group">
+                  Get started
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </Link>
+              <Link href="http://localhost:3001">
+                <Button size="lg" variant="outline">
+                  See templates
+                </Button>
+              </Link>
             </motion.div>
 
             {/* Demo Video/Image */}
@@ -637,7 +641,7 @@ export default function HomePage() {
                   team collaboration, and more!
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link href="http://localhost:3001">
+                  <Link href="http://localhost:3001/auth/signup">
                     <Button size="lg">Get started free</Button>
                   </Link>
                   <Link href="/pricing">
@@ -692,17 +696,21 @@ export default function HomePage() {
                 required.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" variant="secondary" className="group">
-                  Get started free
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="ghost"
-                  className="text-white hover:text-white/90 hover:bg-white/20"
-                >
-                  Book a demo
-                </Button>
+                <Link href="http://localhost:3001/auth/signup">
+                  <Button size="lg" variant="secondary" className="group">
+                    Get started free
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </Link>
+                <Link href="mailto:contact@skemya.com">
+                  <Button
+                    size="lg"
+                    variant="ghost"
+                    className="text-white hover:text-white/90 hover:bg-white/20"
+                  >
+                    Book a demo
+                  </Button>
+                </Link>
               </div>
             </div>
           </motion.div>
@@ -867,7 +875,7 @@ export default function HomePage() {
               <div className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-primary" />
                 <span className="text-sm text-muted-foreground">
-                  © 2025 Forms Platform. All rights reserved.
+                  © 2025 Skemya. All rights reserved.
                 </span>
               </div>
               <div className="flex items-center gap-6">

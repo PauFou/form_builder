@@ -14,7 +14,7 @@ import {
   detectLogicCycles,
   getFieldReferences,
 } from "@/lib/validators/form-validators";
-import type { Form } from "@forms/contracts";
+import type { Form } from "@skemya/contracts";
 
 export default function ValidationDemoPage() {
   const [demoForm, setDemoForm] = useState<Form>({

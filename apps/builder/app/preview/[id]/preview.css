@@ -1,0 +1,71 @@
+/* Preview page specific styles */
+
+/* Remove default body margins for full-screen experience */
+html,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+/* Remove any potential margins from Next.js */
+body > div:first-child,
+#__next {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Ensure Typeform takes full viewport */
+.typeform-container {
+  width: 100vw;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Prevent horizontal scroll on mobile */
+@media (max-width: 768px) {
+  html,
+  body {
+    overflow-x: hidden !important;
+  }
+
+  .typeform-container {
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+}
+
+/* Fix for iOS safe areas */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .typeform-container {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .typeform-navigation {
+    bottom: calc(1rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* Tailwind utility classes for preview page */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Remove focus outline on body click (Typeform style) */
+body:not(.keyboard-nav) *:focus {
+  outline: none;
+}
+
+/* Show outline when using keyboard navigation */
+body.keyboard-nav *:focus {
+  outline: 2px solid #262627;
+  outline-offset: 2px;
+}

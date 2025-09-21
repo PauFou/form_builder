@@ -59,6 +59,7 @@ pnpm quality:fix
 ## Tests Spécifiques Inclus
 
 ### 🔒 Tests de Sécurité
+
 ```bash
 # Audit NPM
 pnpm audit --audit-level=high
@@ -71,24 +72,28 @@ gitleaks detect
 ```
 
 ### ♿️ Tests d'Accessibilité (WCAG AA)
+
 ```bash
 # Lance automatiquement les services et teste
 node scripts/test-a11y.js
 ```
 
 ### 📦 Tests de Performance
+
 ```bash
 # Vérifie les tailles de bundles
 node scripts/check-bundle-size.js
 ```
 
 ### 🤝 Tests de Contrats
+
 ```bash
 # Vérifie la synchronisation API/Frontend
 pnpm test:contracts
 ```
 
 ### 🐳 Tests Docker (mode full)
+
 ```bash
 # Valide les builds Docker
 docker build -f services/api/Dockerfile services/api

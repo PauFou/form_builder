@@ -1,0 +1,26 @@
+/* Form Runtime Styles */
+
+/* Base styles */
+@import "./base.css";
+
+/* Component styles */
+@import "./typeform.css";
+@import "./typeform-fields.css";
+
+/* Ensure smooth font rendering */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Base resets for form runtime */
+.typeform-container *,
+.typeform-container *::before,
+.typeform-container *::after {
+  box-sizing: border-box;
+}
+
+.typeform-container {
+  margin: 0;
+  padding: 0;
+}

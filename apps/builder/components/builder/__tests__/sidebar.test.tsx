@@ -8,8 +8,8 @@ import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 jest.mock("../../../lib/stores/form-builder-store");
 
 // Mock UI components
-jest.mock("@forms/ui", () => ({
-  ...jest.requireActual("@forms/ui"),
+jest.mock("@skemya/ui", () => ({
+  ...jest.requireActual("@skemya/ui"),
   Card: ({ children }: any) => <div>{children}</div>,
   CardContent: ({ children }: any) => <div>{children}</div>,
   CardHeader: ({ children }: any) => <div>{children}</div>,

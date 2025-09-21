@@ -1,5 +1,5 @@
 import { apiClient } from "./axios-client";
-import type { Integration } from "@forms/contracts";
+import type { Integration } from "@skemya/contracts";
 
 export const integrationsApi = {
   // List available integrations

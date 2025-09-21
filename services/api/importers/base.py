@@ -193,3 +193,29 @@ class BaseImporter(ABC):
         )
         self.field_mappings.append(mapping)
         return mapping
+    
+    def generate_parity_report(self) -> Dict[str, Any]:
+        """Generate a detailed parity report"""
+        total_fields = len(self.field_mappings)
+        supported_fields = len([m for m in self.field_mappings if not m.conversion_notes])
+        partially_supported = len([m for m in self.field_mappings if m.conversion_notes and "unsupported" not in m.conversion_notes.lower()])
+        unsupported_fields = len([m for m in self.field_mappings if m.conversion_notes and "unsupported" in m.conversion_notes.lower()])
+        
+        return {
+            "total_fields": total_fields,
+            "supported_fields": supported_fields,
+            "partially_supported_fields": partially_supported,
+            "unsupported_fields": unsupported_fields,
+            "field_mappings": [
+                {
+                    "source_type": m.source_type,
+                    "source_id": m.source_id,
+                    "target_type": m.target_type,
+                    "target_id": m.target_id,
+                    "notes": m.conversion_notes
+                }
+                for m in self.field_mappings
+            ],
+            "warnings": self.warnings,
+            "errors": self.errors
+        }

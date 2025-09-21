@@ -1,1 +1,1 @@
-export { cn } from "@forms/ui";
+export { cn } from "@skemya/ui";

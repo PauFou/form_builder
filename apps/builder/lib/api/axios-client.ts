@@ -1,8 +1,8 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
-import { toast } from "@forms/ui";
+import { toast } from "react-hot-toast";
 
 // Get API URL from environment variable or use default
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 // Create axios instance
 const axiosInstance: AxiosInstance = axios.create({
@@ -76,11 +76,7 @@ axiosInstance.interceptors.response.use(
 
     // Handle other errors
     if (error.response?.status === 500) {
-      toast({
-        title: "Server Error",
-        description: "Something went wrong. Please try again later.",
-        variant: "destructive",
-      });
+      toast.error("Server Error: Something went wrong. Please try again later.");
     }
 
     return Promise.reject(error);

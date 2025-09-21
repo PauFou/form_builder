@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@forms/ui";
+import { Button } from "@skemya/ui";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 

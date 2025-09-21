@@ -1,1 +1,1 @@
-export { Button } from "@forms/ui";
+export { Button } from "@skemya/ui";

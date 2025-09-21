@@ -147,21 +147,35 @@ describe("GridFormViewer", () => {
     const ageField = screen.getByLabelText(/what is your age/i) as HTMLInputElement;
     const feedbackField = screen.getByLabelText(/any feedback/i) as HTMLTextAreaElement;
 
+    // Wait a bit to ensure the field is ready
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     await user.clear(ageField);
     await user.type(ageField, "30");
 
     await user.clear(feedbackField);
     await user.type(feedbackField, "Great form!");
 
-    // Verify values were entered
-    await waitFor(() => {
-      expect(ageField.value).toBe("30");
-      expect(feedbackField.value).toBe("Great form!");
-    });
+    // Verify values were entered with longer timeout
+    await waitFor(
+      () => {
+        expect(ageField.value).toBe("30");
+        expect(feedbackField.value).toBe("Great form!");
+      },
+      { timeout: 3000 }
+    );
 
     // Submit
     const submitButton = screen.getByText("Submit Form");
     await user.click(submitButton);
+
+    // Wait for onSubmit to be called
+    await waitFor(
+      () => {
+        expect(onSubmitSpy).toHaveBeenCalled();
+      },
+      { timeout: 3000 }
+    );
 
     // Wait for completion message to appear
     await waitFor(

@@ -12,9 +12,9 @@ import {
   CardContent,
   Input,
   Label,
-} from "@forms/ui";
+} from "@skemya/ui";
 import { Plus, Trash2, ArrowRight } from "lucide-react";
-import type { Form, LogicRule, LogicCondition, LogicAction } from "@forms/contracts";
+import type { Form, LogicRule, LogicCondition, LogicAction } from "@skemya/contracts";
 
 interface LogicEditorProps {
   form: Form | null;

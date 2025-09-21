@@ -28,7 +28,7 @@ import {
   Input,
   Label,
   Skeleton,
-} from "@forms/ui";
+} from "@skemya/ui";
 import {
   AlertCircle,
   CheckCircle,
@@ -49,7 +49,7 @@ import {
 
 import { integrationsApi } from "../../lib/api/integrations";
 
-import type { Integration } from "@forms/contracts";
+import type { Integration } from "@skemya/contracts";
 
 const integrationIcons: Record<string, any> = {
   google_sheets: Sheet,

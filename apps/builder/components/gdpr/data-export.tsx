@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
   Progress,
-} from "@forms/ui";
+} from "@skemya/ui";
 import { Download, AlertCircle, CheckCircle } from "lucide-react";
 import { useGDPRStore } from "../../lib/stores/gdpr-store";
 

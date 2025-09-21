@@ -13,7 +13,7 @@ import {
   TabsTrigger,
   Input,
   Button,
-} from "@forms/ui";
+} from "@skemya/ui";
 import {
   Type,
   Mail,

@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, Button, ScrollArea, Input } from "@forms/ui";
+import { Card, CardContent, Button, ScrollArea, Input } from "@skemya/ui";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Plus } from "lucide-react";

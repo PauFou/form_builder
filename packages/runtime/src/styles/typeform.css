@@ -1,0 +1,737 @@
+/* Typeform-style Form Viewer */
+
+.typeform-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+  color: #3e3e3e;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header */
+.typeform-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.95) 80%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.typeform-brand-small {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.typeform-logo-small {
+  width: 24px;
+  height: 24px;
+}
+
+/* Progress bar */
+.typeform-progress {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.typeform-progress-bar {
+  height: 100%;
+  background: #262627;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Welcome screen */
+.typeform-welcome {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.typeform-brand {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.typeform-logo {
+  width: 32px;
+  height: 32px;
+}
+
+.typeform-brand-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #262627;
+}
+
+.typeform-welcome-content {
+  max-width: 640px;
+  width: 100%;
+  text-align: left;
+}
+
+.typeform-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  color: #262627;
+  letter-spacing: -0.02em;
+}
+
+.typeform-description {
+  font-size: 1.25rem;
+  line-height: 1.5;
+  color: #3e3e3e;
+  margin-bottom: 3rem;
+}
+
+.typeform-start-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 2rem;
+  background: #262627;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.typeform-start-button:hover {
+  background: #000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.typeform-button-arrow {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+
+.typeform-start-button:hover .typeform-button-arrow {
+  transform: translateX(3px);
+}
+
+/* Main form */
+.typeform-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.typeform-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 2rem 4rem;
+}
+
+.typeform-question {
+  max-width: 720px;
+  width: 100%;
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.typeform-transition-next {
+  opacity: 0;
+  transform: translateX(-40px);
+}
+
+.typeform-transition-prev {
+  opacity: 0;
+  transform: translateX(40px);
+}
+
+.typeform-question-number {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #191919;
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+}
+
+.typeform-arrow-right {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+}
+
+.typeform-question-text {
+  font-size: 1.75rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #191919;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.typeform-required {
+  color: #ff4f4f;
+  margin-left: 0.25rem;
+}
+
+.typeform-question-description {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #595959;
+  margin-bottom: 2.5rem;
+}
+
+/* Field wrapper */
+.typeform-field-wrapper {
+  margin-bottom: 3rem;
+}
+
+.typeform-field-wrapper input[type="text"],
+.typeform-field-wrapper input[type="email"],
+.typeform-field-wrapper input[type="tel"],
+.typeform-field-wrapper input[type="number"],
+.typeform-field-wrapper input[type="url"],
+.typeform-field-wrapper input[type="date"],
+.typeform-field-wrapper input[type="time"],
+.typeform-field-wrapper textarea {
+  width: 100%;
+  padding: 0;
+  padding-bottom: 0.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: #191919;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.typeform-field-wrapper input:focus,
+.typeform-field-wrapper textarea:focus {
+  border-bottom-color: #191919;
+}
+
+.typeform-field-wrapper textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* Error state */
+.typeform-error {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #ff4f4f;
+}
+
+/* Actions */
+.typeform-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.typeform-submit-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  background: #262627;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.typeform-submit-button:hover:not(:disabled) {
+  background: #000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.typeform-submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.typeform-button-check {
+  width: 18px;
+  height: 18px;
+}
+
+.typeform-key-hint {
+  font-size: 0.8125rem;
+  color: #999;
+}
+
+.typeform-key-hint strong {
+  font-weight: 600;
+  color: #666;
+}
+
+/* Navigation */
+.typeform-navigation {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.typeform-nav-button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.typeform-nav-button:hover:not(:disabled) {
+  border-color: #262627;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.typeform-nav-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.typeform-nav-button svg {
+  width: 20px;
+  height: 20px;
+  color: #262627;
+}
+
+/* Complete screen */
+.typeform-complete {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.typeform-checkmark {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 2rem;
+  animation: typeform-checkmark-scale 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes typeform-checkmark-scale {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.typeform-checkmark svg {
+  width: 100%;
+  height: 100%;
+}
+
+.typeform-checkmark circle {
+  animation: typeform-checkmark-circle 0.5s ease-out;
+}
+
+.typeform-checkmark path {
+  animation: typeform-checkmark-path 0.3s ease-out 0.2s;
+  animation-fill-mode: both;
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+}
+
+@keyframes typeform-checkmark-circle {
+  from {
+    stroke-dasharray: 0 160;
+  }
+  to {
+    stroke-dasharray: 160 160;
+  }
+}
+
+@keyframes typeform-checkmark-path {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.typeform-thank-you-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #262627;
+  margin-bottom: 1rem;
+}
+
+.typeform-thank-you-subtitle {
+  font-size: 1.25rem;
+  color: #595959;
+  line-height: 1.5;
+}
+
+.typeform-thank-you-content {
+  max-width: 600px;
+}
+
+.typeform-thank-you-content h1,
+.typeform-thank-you-content h2 {
+  color: #262627;
+  margin-bottom: 1rem;
+}
+
+.typeform-thank-you-content p {
+  color: #595959;
+  line-height: 1.6;
+}
+
+/* Footer */
+.typeform-footer {
+  position: absolute;
+  bottom: 2rem;
+  left: 2rem;
+}
+
+/* Offline indicator */
+.typeform-offline {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f5f5f5;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.typeform-offline-icon {
+  font-size: 1rem;
+}
+
+/* Tablet (iPad) responsive */
+@media (max-width: 1024px) {
+  .typeform-content {
+    padding: 5rem 3rem 3rem;
+  }
+
+  .typeform-welcome-content {
+    max-width: 540px;
+  }
+
+  .typeform-question {
+    max-width: 620px;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  /* Header adjustments */
+  .typeform-header {
+    padding: 1rem 1.5rem;
+  }
+
+  /* Welcome screen */
+  .typeform-brand {
+    top: 1.5rem;
+    left: 1.5rem;
+  }
+
+  .typeform-logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  .typeform-brand-name {
+    font-size: 1.125rem;
+  }
+
+  .typeform-title {
+    font-size: 2rem;
+  }
+
+  .typeform-description {
+    font-size: 1.125rem;
+    margin-bottom: 2rem;
+  }
+
+  .typeform-start-button {
+    padding: 0.75rem 1.75rem;
+    font-size: 0.9375rem;
+  }
+
+  /* Questions */
+  .typeform-question-number {
+    font-size: 0.8125rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .typeform-question-text {
+    font-size: 1.375rem;
+    line-height: 1.3;
+  }
+
+  .typeform-question-description {
+    font-size: 0.9375rem;
+  }
+
+  /* Form fields */
+  .typeform-field-wrapper {
+    margin-bottom: 2rem;
+  }
+
+  .typeform-field-wrapper input,
+  .typeform-field-wrapper textarea {
+    font-size: 1.25rem;
+  }
+
+  /* Actions */
+  .typeform-actions {
+    gap: 1rem;
+  }
+
+  .typeform-submit-button {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+  }
+
+  .typeform-key-hint {
+    font-size: 0.75rem;
+  }
+
+  /* Content padding */
+  .typeform-content {
+    padding: 4rem 1.5rem 3rem;
+  }
+
+  /* Navigation buttons */
+  .typeform-navigation {
+    bottom: 1rem;
+    right: 1rem;
+    gap: 0.5rem;
+  }
+
+  .typeform-nav-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .typeform-nav-button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Thank you screen */
+  .typeform-checkmark {
+    width: 64px;
+    height: 64px;
+  }
+
+  .typeform-thank-you-title {
+    font-size: 2rem;
+  }
+
+  .typeform-thank-you-subtitle {
+    font-size: 1.125rem;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .typeform-welcome {
+    padding: 1.5rem;
+  }
+
+  .typeform-title {
+    font-size: 1.75rem;
+  }
+
+  .typeform-description {
+    font-size: 1rem;
+  }
+
+  .typeform-question-text {
+    font-size: 1.25rem;
+  }
+
+  .typeform-field-wrapper input,
+  .typeform-field-wrapper textarea {
+    font-size: 1.125rem;
+  }
+
+  .typeform-content {
+    padding: 3.5rem 1.25rem 3rem;
+  }
+
+  /* Hide keyboard hint on very small screens */
+  @media (max-height: 600px) {
+    .typeform-key-hint {
+      display: none;
+    }
+
+    .typeform-footer {
+      display: none;
+    }
+  }
+}
+
+/* Landscape mobile adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+  .typeform-content {
+    padding: 3rem 2rem 2rem;
+  }
+
+  .typeform-question-text {
+    font-size: 1.25rem;
+  }
+
+  .typeform-field-wrapper {
+    margin-bottom: 1.5rem;
+  }
+
+  .typeform-navigation {
+    display: none;
+  }
+
+  .typeform-key-hint {
+    display: none;
+  }
+}
+
+/* Large desktop */
+@media (min-width: 1440px) {
+  .typeform-welcome-content {
+    max-width: 720px;
+  }
+
+  .typeform-question {
+    max-width: 840px;
+  }
+
+  .typeform-title {
+    font-size: 3rem;
+  }
+
+  .typeform-description {
+    font-size: 1.375rem;
+  }
+
+  .typeform-question-text {
+    font-size: 2rem;
+  }
+
+  .typeform-field-wrapper input,
+  .typeform-field-wrapper textarea {
+    font-size: 1.75rem;
+  }
+}
+
+/* Dark theme support */
+[data-theme="dark"] .typeform-container {
+  background: #191919;
+  color: #f5f5f5;
+}
+
+[data-theme="dark"] .typeform-header {
+  background: linear-gradient(
+    to bottom,
+    rgba(25, 25, 25, 1) 0%,
+    rgba(25, 25, 25, 0.95) 80%,
+    rgba(25, 25, 25, 0) 100%
+  );
+}
+
+[data-theme="dark"] .typeform-progress {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .typeform-progress-bar {
+  background: #f5f5f5;
+}
+
+[data-theme="dark"] .typeform-brand-name,
+[data-theme="dark"] .typeform-title,
+[data-theme="dark"] .typeform-question-text,
+[data-theme="dark"] .typeform-question-number {
+  color: #f5f5f5;
+}
+
+[data-theme="dark"] .typeform-description,
+[data-theme="dark"] .typeform-question-description {
+  color: #b8b8b8;
+}
+
+[data-theme="dark"] .typeform-field-wrapper input,
+[data-theme="dark"] .typeform-field-wrapper textarea {
+  color: #f5f5f5;
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .typeform-field-wrapper input:focus,
+[data-theme="dark"] .typeform-field-wrapper textarea:focus {
+  border-bottom-color: #f5f5f5;
+}
+
+[data-theme="dark"] .typeform-nav-button {
+  background: #262627;
+  border-color: #404040;
+}
+
+[data-theme="dark"] .typeform-nav-button:hover:not(:disabled) {
+  background: #333;
+  border-color: #666;
+}
+
+[data-theme="dark"] .typeform-nav-button svg {
+  color: #f5f5f5;
+}

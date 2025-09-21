@@ -12,10 +12,10 @@ import {
   SelectValue,
   Button,
   Textarea,
-} from "@forms/ui";
+} from "@skemya/ui";
 import { Plus, AlertCircle } from "lucide-react";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
-import { Block } from "@forms/contracts";
+import { Block } from "@skemya/contracts";
 import { useState, useEffect } from "react";
 
 interface BlockInspectorProps {

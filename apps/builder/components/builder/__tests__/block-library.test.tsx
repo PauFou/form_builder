@@ -8,7 +8,7 @@ import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 jest.mock("../../../lib/stores/form-builder-store");
 
 // Mock UI components
-jest.mock("@forms/ui", () => ({
+jest.mock("@skemya/ui", () => ({
   Card: ({ children, className }: any) => <div className={className}>{children}</div>,
   Button: ({ children, onClick, variant, className }: any) => (
     <button onClick={onClick} className={className} data-variant={variant}>

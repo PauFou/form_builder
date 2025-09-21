@@ -1,59 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 
-import {
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  Separator,
-} from "@forms/ui";
-import {
-  ArrowLeft,
-  Download,
-  Eye,
-  MoreVertical,
-  Play,
-  Redo,
-  Save,
-  Settings,
-  Undo,
-} from "lucide-react";
-
-import { BlockLibrary } from "../../../../components/builder/block-library";
-import { FormCanvas } from "../../../../components/builder/form-canvas";
-import { BlockSettings } from "../../../../components/builder/block-settings";
-import { AutosaveStatus } from "../../../../components/builder/autosave-status";
-import { CommandPalette } from "../../../../components/builder/command-palette";
+import { ModernFormBuilderEnhanced } from "../../../../components/builder/modern-form-builder-enhanced";
 import { PublishDialog } from "../../../../components/publish/publish-dialog";
 import { formsApi } from "../../../../lib/api/forms";
 import { useFormBuilderStore } from "../../../../lib/stores/form-builder-store";
-import { useAutosave } from "../../../../lib/hooks/use-autosave";
-import { useKeyboardShortcuts } from "../../../../lib/hooks/use-keyboard-shortcuts";
-import { useKeyboardActionListener } from "../../../../lib/hooks/use-keyboard-action-listener";
-import { ActionToast } from "../../../../components/ui/action-toast";
 import { DEMO_FORMS } from "../../../../lib/demo-forms";
 
 export default function EditFormPage() {
   const params = useParams();
   const formId = params.id as string;
 
-  const { form, setForm, isDirty, undo, redo, history, historyIndex, markClean } =
-    useFormBuilderStore();
-
-  const autosaveStatus = useAutosave(formId);
+  const { form, setForm, markClean } = useFormBuilderStore();
   const [showPublishDialog, setShowPublishDialog] = useState(false);
-
-  // Enable keyboard shortcuts
-  useKeyboardShortcuts();
-  const { message } = useKeyboardActionListener();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["form", formId],
@@ -68,12 +31,13 @@ export default function EditFormPage() {
 
   useEffect(() => {
     if (data) {
+      console.log("EditFormPage: Raw API data:", data);
       setForm(data);
     }
   }, [data, setForm]);
 
   const handleSave = async () => {
-    if (!form || !isDirty) return;
+    if (!form) return;
 
     try {
       await formsApi.update(formId, {
@@ -118,110 +82,14 @@ export default function EditFormPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
-      {/* Header */}
-      <header className="flex items-center justify-between px-4 py-2 border-b bg-background">
-        <div className="flex items-center gap-4">
-          <Link href="/forms">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-          </Link>
-          <Separator orientation="vertical" className="h-6" />
-          <h1 className="text-lg font-semibold">{form?.title || "Untitled Form"}</h1>
-          <AutosaveStatus
-            isDirty={isDirty}
-            lastSaved={autosaveStatus.lastSaved || undefined}
-            isSaving={autosaveStatus.isSaving}
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={undo} disabled={historyIndex <= 0}>
-            <Undo className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={redo}
-            disabled={historyIndex >= history.length - 1}
-          >
-            <Redo className="h-4 w-4" />
-          </Button>
-
-          <Separator orientation="vertical" className="h-6" />
-
-          <Button variant="outline" size="sm" asChild>
-            <Link href={`/forms/${formId}/preview`} target="_blank">
-              <Eye className="h-4 w-4 mr-2" />
-              Preview
-            </Link>
-          </Button>
-
-          <Button size="sm" onClick={handleSave} disabled={!isDirty}>
-            <Save className="h-4 w-4 mr-2" />
-            Save
-          </Button>
-
-          <Button size="sm" variant="default" onClick={handlePublish}>
-            <Play className="h-4 w-4 mr-2" />
-            Publish
-          </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings className="h-4 w-4 mr-2" />
-                Form Settings
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">Delete Form</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </header>
-
-      {/* Builder Layout */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar - Block Library */}
-        <aside className="w-80 border-r bg-muted/50 p-4 overflow-y-auto">
-          <BlockLibrary />
-        </aside>
-
-        {/* Main Canvas */}
-        <main className="flex-1 p-4 overflow-hidden">
-          <FormCanvas />
-        </main>
-
-        {/* Right Sidebar - Block Settings */}
-        <aside className="w-96 border-l bg-muted/50 p-4 overflow-y-auto">
-          <BlockSettings />
-        </aside>
-      </div>
-
-      <CommandPalette
-        onSave={handleSave}
-        onPreview={() => window.open(`/forms/${formId}/preview`, "_blank")}
-        onPublish={handlePublish}
-      />
+    <>
+      <ModernFormBuilderEnhanced formId={formId} onSave={handleSave} onPublish={handlePublish} />
 
       <PublishDialog
         isOpen={showPublishDialog}
         onClose={() => setShowPublishDialog(false)}
         formId={formId}
       />
-
-      <ActionToast message={message} />
-    </div>
+    </>
   );
 }

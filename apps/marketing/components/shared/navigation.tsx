@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@forms/ui";
-import { Sparkles, LogIn } from "lucide-react";
+import { Button } from "@skemya/ui";
+import { LogIn } from "lucide-react";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 export function Navigation() {
   const pathname = usePathname();
@@ -13,8 +14,8 @@ export function Navigation() {
     <nav className="fixed top-0 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
       <div className="container flex h-16 items-center px-4">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <Sparkles className="h-6 w-6 text-primary" />
-          Forms
+          <Image src="/favicon.svg" alt="Skemya" width={24} height={24} className="h-6 w-6" />
+          Skemya
         </Link>
 
         <div className="ml-auto flex items-center gap-4">

@@ -8,8 +8,8 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Loader2 } from "lucide-react";
 
-import { Button } from "@forms/ui";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@forms/ui";
+import { Button } from "@skemya/ui";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@skemya/ui";
 import {
   Form,
   FormControl,
@@ -18,9 +18,9 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from "@forms/ui";
-import { Input } from "@forms/ui";
-import { useToast } from "@forms/ui";
+} from "@skemya/ui";
+import { Input } from "@skemya/ui";
+import { useToast } from "@skemya/ui";
 import { useAuthStore } from "../../../lib/stores/auth-store";
 
 const signupSchema = z.object({
@@ -32,7 +32,7 @@ const signupSchema = z.object({
     .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
     .regex(/[a-z]/, "Password must contain at least one lowercase letter")
     .regex(/[0-9]/, "Password must contain at least one number"),
-  organizationName: z.string().min(2, "Organization name must be at least 2 characters"),
+  organizationName: z.string().optional(),
 });
 
 type SignupFormData = z.infer<typeof signupSchema>;
@@ -56,14 +56,17 @@ export default function SignupPage() {
   const onSubmit = async (data: SignupFormData) => {
     try {
       setError(null);
-      await signup(data.email, data.password, data.name, data.organizationName);
+      await signup(data.email, data.password, data.name, data.organizationName || "");
       toast({
         title: "Account created",
         description: "Your account has been created successfully. Welcome!",
       });
       router.push("/dashboard");
-    } catch (error: any) {
-      const message = error.response?.data?.error || error.message || "Failed to create account";
+    } catch (error) {
+      const message =
+        (error as any).response?.data?.error ||
+        (error as Error).message ||
+        "Failed to create account";
       setError(message);
       toast({
         title: "Signup failed",
@@ -88,7 +91,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="name"
-                render={({ field }: any) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
@@ -101,7 +104,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="email"
-                render={({ field }: any) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
@@ -119,7 +122,7 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="password"
-                render={({ field }: any) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
@@ -140,13 +143,15 @@ export default function SignupPage() {
               <FormField
                 control={form.control}
                 name="organizationName"
-                render={({ field }: any) => (
+                render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Organization Name</FormLabel>
+                    <FormLabel>
+                      Organization Name <span className="text-muted-foreground">(optional)</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="Acme Inc." autoComplete="organization" {...field} />
                     </FormControl>
-                    <FormDescription>This will be your workspace name</FormDescription>
+                    <FormDescription>Leave empty to use your personal workspace</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

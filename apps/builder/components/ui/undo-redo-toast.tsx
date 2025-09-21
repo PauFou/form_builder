@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
-import { cn } from "@forms/ui";
+import { cn } from "@skemya/ui";
 import { Undo, Redo } from "lucide-react";
 
 interface ToastMessage {

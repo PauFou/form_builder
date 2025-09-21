@@ -58,7 +58,7 @@ export default defineConfig({
 
   webServer: [
     {
-      command: "pnpm --filter @forms/builder dev",
+      command: "pnpm --filter @skemya/builder dev",
       port: 3001,
       reuseExistingServer: !process.env.CI,
       timeout: 120000,

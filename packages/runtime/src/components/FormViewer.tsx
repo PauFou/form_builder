@@ -31,6 +31,7 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<"next" | "prev" | "none">("none");
   const previousStepRef = useRef(state.currentStep);
+  const [announcement, setAnnouncement] = useState<string>("");
 
   // Handle step transitions with animations
   useEffect(() => {
@@ -64,14 +65,9 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
           if (input) {
             input.focus();
             // Announce step change to screen readers
-            const announcement = `Step ${state.currentStep + 1} of ${visibleBlocks.length}. ${currentBlock.question}`;
-            const ariaLive = document.createElement("div");
-            ariaLive.setAttribute("aria-live", "polite");
-            ariaLive.setAttribute("aria-atomic", "true");
-            ariaLive.className = "sr-only";
-            ariaLive.textContent = announcement;
-            document.body.appendChild(ariaLive);
-            setTimeout(() => document.body.removeChild(ariaLive), 1000);
+            setAnnouncement(
+              `Step ${state.currentStep + 1} of ${visibleBlocks.length}. ${currentBlock.question}`
+            );
           }
         },
         isTransitioning ? 150 : 0
@@ -205,6 +201,13 @@ export function FormViewer({ schema, config, className = "" }: FormViewerProps) 
             </div>
           )}
           <p className="fr-offline-notice">Your progress is automatically saved</p>
+        </div>
+      )}
+
+      {/* Accessibility announcements */}
+      {announcement && (
+        <div aria-live="polite" aria-atomic="true" className="sr-only">
+          {announcement}
         </div>
       )}
     </div>

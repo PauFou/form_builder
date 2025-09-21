@@ -1,21 +1,21 @@
 {
   "packages": [
     {
-      "name": "@forms/runtime (main)",
+      "name": "@skemya/runtime (main)",
       "size": "37.85KB",
       "gzipped": "10.56KB",
       "status": "pass",
       "budget": "30.00KB"
     },
     {
-      "name": "@forms/runtime (ESM)",
+      "name": "@skemya/runtime (ESM)",
       "size": "37.08KB",
       "gzipped": "10.56KB",
       "status": "pass",
       "budget": "30.00KB"
     },
     {
-      "name": "@forms/runtime (embed)",
+      "name": "@skemya/runtime (embed)",
       "size": "5.74KB",
       "gzipped": "1.74KB",
       "status": "pass",

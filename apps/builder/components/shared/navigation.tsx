@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@forms/ui";
+import { Button } from "@skemya/ui";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,10 +10,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@forms/ui";
-import { Sparkles, LogIn, User, LogOut, Settings } from "lucide-react";
+} from "@skemya/ui";
+import { LogIn, User, LogOut, Settings } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "../../lib/stores/auth-store";
+import { cn } from "../../lib/utils";
 
 export function Navigation() {
   const pathname = usePathname();
@@ -26,41 +27,72 @@ export function Navigation() {
   };
 
   return (
-    <nav className="fixed top-0 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
-      <div className="container flex h-16 items-center px-4">
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <Sparkles className="h-6 w-6 text-primary" />
-          Forms
+    <nav className="fixed top-0 w-full border-b border-border/50 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 z-50">
+      <div className="container flex h-16 items-center px-6">
+        <Link href="/" className="flex items-center gap-2 font-bold text-lg group">
+          <img
+            src="/favicon.svg"
+            alt="Skemya"
+            className="h-6 w-6 group-hover:scale-110 transition-transform"
+          />
+          <span className="text-foreground group-hover:text-primary transition-colors">Skemya</span>
         </Link>
 
-        <div className="ml-auto flex items-center gap-4">
+        <div className="ml-auto flex items-center gap-2">
           {isAuthenticated ? (
             <>
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm">
-                  Dashboard
-                </Button>
-              </Link>
               <Link href="/forms">
-                <Button variant="ghost" size="sm">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "hover:bg-transparent hover:text-primary transition-colors",
+                    pathname === "/forms"
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
                   My Forms
                 </Button>
               </Link>
               <Link href="/integrations">
-                <Button variant="ghost" size="sm">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "hover:bg-transparent hover:text-primary transition-colors",
+                    pathname === "/integrations"
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
                   Integrations
                 </Button>
               </Link>
               <Link href="/demo/grid-mode">
-                <Button variant="ghost" size="sm">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "hover:bg-transparent hover:text-primary transition-colors",
+                    pathname?.startsWith("/demo")
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
                   Grid Demo
                 </Button>
               </Link>
+              <div className="h-6 w-px bg-border mx-2" />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="gap-2">
-                    <User className="h-4 w-4" />
-                    {user?.name || user?.email}
+                  <Button variant="ghost" size="sm" className="gap-2 hover:bg-transparent group">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                      <User className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="max-w-[150px] truncate text-muted-foreground group-hover:text-foreground transition-colors">
+                      {user?.email}
+                    </span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -82,13 +114,22 @@ export function Navigation() {
           ) : (
             <>
               <Link href="/auth/login">
-                <Button variant="ghost" size="sm">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground hover:bg-transparent transition-colors"
+                >
                   <LogIn className="h-4 w-4 mr-2" />
                   Sign in
                 </Button>
               </Link>
               <Link href="/auth/signup">
-                <Button size="sm">Get started</Button>
+                <Button
+                  size="sm"
+                  className="bg-primary text-white hover:bg-primary/90 shadow-md hover:shadow-lg transition-all"
+                >
+                  Get started
+                </Button>
               </Link>
             </>
           )}

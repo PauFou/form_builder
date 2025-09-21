@@ -19,7 +19,7 @@ jest.mock("@dnd-kit/utilities", () => ({
 }));
 
 // Mock UI utilities
-jest.mock("@forms/ui", () => ({
+jest.mock("@skemya/ui", () => ({
   cn: (...args: any[]) => args.filter(Boolean).join(" "),
 }));
 

@@ -56,8 +56,8 @@ jest.mock("@/lib/utils", () => ({
   cn: (...args: any[]) => args.filter((arg) => typeof arg === "string").join(" "),
 }));
 
-// Mock UI components from @forms/ui package
-jest.mock("@forms/ui", () => {
+// Mock UI components from @skemya/ui package
+jest.mock("@skemya/ui", () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const React = require("react");
   return {

@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# Pre-push hook that ensures all tests pass before pushing
-# This is the final gate - if this passes, the code is ready
+# Hook pre-push - S'assure que tous les tests passent avant le push
+# C'est la porte finale - si ça passe, le code est prêt
 
 # Colors
 RED='\033[0;31m'
@@ -20,8 +20,8 @@ echo ""
 
 # Check if we should skip tests
 if [ "$SKIP_TESTS" == "true" ] || [ "$FORCE_PUSH" == "true" ]; then
-    echo -e "${YELLOW}⚠️  Tests skipped (SKIP_TESTS or FORCE_PUSH is set)${NC}"
-    echo "Use with caution!"
+    echo -e "${YELLOW}⚠️  Tests contournés (SKIP_TESTS ou FORCE_PUSH activé)${NC}"
+    echo "Utiliser avec précaution!"
     exit 0
 fi
 
@@ -39,14 +39,14 @@ CURRENT_STEP=0
 
 # Step 1: Check for uncommitted changes
 CURRENT_STEP=$((CURRENT_STEP + 1))
-echo -e "\n${BLUE}[$CURRENT_STEP/$TOTAL_STEPS] Checking for uncommitted changes...${NC}"
+echo -e "\n${BLUE}[$CURRENT_STEP/$TOTAL_STEPS] Vérification des changements non commités...${NC}"
 if ! git diff --quiet || ! git diff --staged --quiet; then
-    echo -e "${RED}❌ Uncommitted changes detected!${NC}"
-    echo "Please commit or stash your changes before pushing"
+    echo -e "${RED}❌ Changements non commités détectés!${NC}"
+    echo "Veuillez commiter ou stash vos changements avant de pousser"
     git status --short
     exit 1
 fi
-echo -e "${GREEN}✓ Working directory clean${NC}"
+echo -e "${GREEN}✓ Répertoire de travail propre${NC}"
 
 # Step 2: Quick syntax checks
 CURRENT_STEP=$((CURRENT_STEP + 1))
@@ -163,29 +163,27 @@ if [ -f "scripts/local-test-suite.sh" ]; then
     fi
     rm -f .push-test-results.log
 else
-    # Fallback to github-actions-exact.sh if available
-    if [ -f "scripts/github-actions-exact.sh" ]; then
-        echo "Running exact CI reproduction..."
-        if bash scripts/github-actions-exact.sh; then
-            echo -e "${GREEN}✓ CI validation passed${NC}"
-        else
-            echo -e "${RED}❌ CI validation failed!${NC}"
-            exit 1
-        fi
+    # Fallback aux tests de base
+    echo "Exécution des tests de base..."
+    if pnpm test:ci && pnpm build; then
+        echo -e "${GREEN}✓ Validation de base passée${NC}"
+    else
+        echo -e "${RED}❌ Validation de base échouée!${NC}"
+        exit 1
     fi
 fi
 
 # Summary
 echo ""
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}✅ ALL CHECKS PASSED!${NC}"
+echo -e "${GREEN}✅ TOUS LES TESTS SONT PASSÉS!${NC}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo "Your code is ready to be pushed! 🚀"
+echo "Votre code est prêt à être poussé! 🚀"
 echo ""
 
-# Optional: Show what will be pushed
-echo "You're about to push:"
+# Optionnel: Montrer ce qui sera poussé
+echo "Vous allez pousser:"
 git log --oneline @{upstream}..HEAD | head -5
 echo ""
 

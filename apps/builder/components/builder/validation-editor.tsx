@@ -12,7 +12,7 @@ import {
   SelectValue,
   Card,
   CardContent,
-} from "@forms/ui";
+} from "@skemya/ui";
 import { Plus, Trash2, AlertCircle } from "lucide-react";
 import {
   ValidationRule,
@@ -20,7 +20,7 @@ import {
   COMMON_PATTERNS,
   DEFAULT_VALIDATION_MESSAGES,
 } from "../../lib/types/validation";
-import type { Block } from "@forms/contracts";
+import type { Block } from "@skemya/contracts";
 
 interface ValidationEditorProps {
   block: Block;

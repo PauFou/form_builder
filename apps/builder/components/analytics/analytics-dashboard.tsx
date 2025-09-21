@@ -9,7 +9,6 @@ import {
   CardTitle,
   Progress,
   Alert,
-  AlertTitle,
   AlertDescription,
   Badge,
   Button,
@@ -17,8 +16,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-  DatePickerWithRange,
-} from "@forms/ui";
+} from "@skemya/ui";
 import {
   BarChart3,
   Users,
@@ -31,8 +29,14 @@ import {
 } from "lucide-react";
 import { format, formatDistanceToNow, subDays } from "date-fns";
 import { DateRange } from "react-day-picker";
-import { api } from "@/lib/api";
-import { useToast } from "@forms/ui";
+import { apiClient } from "../../lib/api/axios-client";
+import {
+  analyticsApi,
+  type FormAnalytics,
+  type FunnelStep,
+  type RealtimeStats,
+} from "../../lib/api/analytics";
+import { toast } from "react-hot-toast";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -50,24 +54,7 @@ interface AnalyticsDashboardProps {
   formId: string;
 }
 
-interface FormAnalytics {
-  form_id: string;
-  period: string;
-  views: number;
-  starts: number;
-  completions: number;
-  completion_rate: number;
-  avg_completion_time_seconds: number;
-  drop_off_rate: number;
-  error_rate: number;
-  device_breakdown: Record<string, number>;
-  top_drop_off_points: Array<{
-    step_id: string;
-    started: number;
-    completed: number;
-    drop_rate: number;
-  }>;
-}
+// Using FormAnalytics from analytics API
 
 interface QuestionStats {
   question_id: string;
@@ -80,11 +67,7 @@ interface QuestionStats {
   avg_time_seconds: number;
 }
 
-interface FunnelStep {
-  step_name: string;
-  count: number;
-  conversion_rate: number;
-}
+// Using FunnelStep from analytics API
 
 export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
   const [loading, setLoading] = useState(true);
@@ -97,46 +80,38 @@ export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
     to: new Date(),
   });
   const [activeTab, setActiveTab] = useState("overview");
-  const { toast } = useToast();
 
   const fetchAnalytics = async (showLoading = true) => {
     try {
       if (showLoading) setLoading(true);
       else setRefreshing(true);
 
-      // Fetch form analytics
-      const analyticsResponse = await api.get(`/analytics/forms/${formId}/`, {
-        params: {
-          start_date: dateRange?.from?.toISOString(),
-          end_date: dateRange?.to?.toISOString(),
-        },
-      });
-      setAnalytics(analyticsResponse.data as unknown as FormAnalytics);
+      // TODO: Get organization ID from auth context
+      const organizationId = "placeholder-org-id";
 
-      // Fetch question performance
-      const questionsResponse = await api.get(`/analytics/forms/${formId}/questions/`, {
-        params: {
-          start_date: dateRange?.from?.toISOString(),
-          end_date: dateRange?.to?.toISOString(),
-        },
-      });
-      setQuestionStats((questionsResponse.data as any)?.questions || []);
+      // Fetch form analytics from ClickHouse analytics service
+      const analyticsData = await analyticsApi.getFormAnalytics(
+        formId,
+        organizationId,
+        dateRange?.from?.toISOString(),
+        dateRange?.to?.toISOString()
+      );
+      setAnalytics(analyticsData);
 
-      // Fetch funnel data
-      const funnelResponse = await api.get(`/analytics/forms/${formId}/funnel/`, {
-        params: {
-          start_date: dateRange?.from?.toISOString(),
-          end_date: dateRange?.to?.toISOString(),
-        },
-      });
-      setFunnelData((funnelResponse.data as any)?.funnel || []);
+      // Fetch funnel data from ClickHouse analytics service
+      const funnelResponse = await analyticsApi.getFunnelAnalytics(
+        formId,
+        organizationId,
+        dateRange?.from?.toISOString(),
+        dateRange?.to?.toISOString()
+      );
+      setFunnelData(funnelResponse.funnel);
+
+      // For now, we'll use mock data for question stats until we implement field-level analytics
+      setQuestionStats([]);
     } catch (error) {
       console.error("Failed to fetch analytics:", error);
-      toast({
-        title: "Failed to load analytics",
-        description: "Please try again later",
-        variant: "destructive",
-      });
+      toast.error("Failed to load analytics");
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -189,7 +164,12 @@ export function AnalyticsDashboard({ formId }: AnalyticsDashboardProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <DatePickerWithRange date={dateRange} onDateChange={setDateRange} className="w-[300px]" />
+          {/* Date Range Selector - TODO: Implement proper date picker */}
+          <div className="text-sm text-muted-foreground">
+            {dateRange?.from && dateRange?.to
+              ? `${format(dateRange.from, "MMM d, yyyy")} - ${format(dateRange.to, "MMM d, yyyy")}`
+              : "Last 30 days"}
+          </div>
           <Button
             variant="outline"
             size="sm"

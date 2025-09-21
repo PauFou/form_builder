@@ -10,7 +10,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@forms/ui";
+} from "@skemya/ui";
 import {
   Type,
   AlignLeft,
@@ -37,7 +37,7 @@ import {
   ArrowDown,
 } from "lucide-react";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
-import type { Block } from "@forms/contracts";
+import type { Block } from "@skemya/contracts";
 
 const blockCommands = [
   { icon: Type, type: "short_text", label: "Add Short Text", category: "blocks" },

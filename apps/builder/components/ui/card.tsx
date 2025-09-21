@@ -1,1 +1,1 @@
-export { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@forms/ui";
+export { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@skemya/ui";

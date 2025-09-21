@@ -1,0 +1,48 @@
+/* Base styles for form runtime */
+
+.fr-container {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Form fields base styling */
+.fr-field input,
+.fr-field textarea,
+.fr-field select {
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Loading states */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}

@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { PreviewPanel } from "../preview-panel";
 
 // Mock UI components
-jest.mock("@forms/ui", () => ({
+jest.mock("@skemya/ui", () => ({
   Button: ({ children, onClick, variant, size }: any) => (
     <button onClick={onClick} data-variant={variant} data-size={size}>
       {children}

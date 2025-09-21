@@ -1,4 +1,4 @@
-import type { Form } from "@forms/contracts";
+import type { Form } from "@skemya/contracts";
 
 export const DEMO_FORMS: Record<string, Form> = {
   "logic-demo": {

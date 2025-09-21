@@ -1,1 +1,1 @@
-export { Alert, AlertDescription } from "@forms/ui";
+export { Alert, AlertDescription } from "@skemya/ui";

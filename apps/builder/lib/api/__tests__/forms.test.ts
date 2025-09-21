@@ -27,7 +27,18 @@ describe("formsApi", () => {
       const result = await formsApi.list();
 
       expect(apiClient.get).toHaveBeenCalledWith("/v1/forms/", { params: undefined });
-      expect(result).toEqual(mockResponse.data);
+      expect(result.forms).toHaveLength(2);
+      expect(result.total).toBe(2);
+      expect(result.page).toBe(1);
+      expect(result.limit).toBe(10);
+      expect(result.forms[0].id).toBe("1");
+      expect(result.forms[0].title).toBe("Form 1");
+      expect(result.forms[0].description).toBe("Desc 1");
+      expect(result.forms[0]).toHaveProperty("logic");
+      expect(result.forms[0]).toHaveProperty("theme");
+      expect(result.forms[0]).toHaveProperty("settings");
+      expect(result.forms[0]).toHaveProperty("createdAt");
+      expect(result.forms[0]).toHaveProperty("updatedAt");
     });
 
     it("fetches forms with query params", async () => {
@@ -45,7 +56,15 @@ describe("formsApi", () => {
       const result = await formsApi.list(params);
 
       expect(apiClient.get).toHaveBeenCalledWith("/v1/forms/", { params });
-      expect(result).toEqual(mockResponse.data);
+      expect(result.forms).toHaveLength(1);
+      expect(result.total).toBe(1);
+      expect(result.page).toBe(2);
+      expect(result.limit).toBe(5);
+      expect(result.forms[0].id).toBe("1");
+      expect(result.forms[0].title).toBe("Test Form");
+      expect(result.forms[0]).toHaveProperty("description");
+      expect(result.forms[0]).toHaveProperty("logic");
+      expect(result.forms[0]).toHaveProperty("theme");
     });
 
     it("handles empty response", async () => {
@@ -80,8 +99,19 @@ describe("formsApi", () => {
 
       const result = await formsApi.list();
 
-      expect(result.forms[0]).toHaveProperty("pages", []);
-      expect(result.forms[1]).toHaveProperty("pages", []);
+      // Check that pages are properly initialized with default structure
+      expect(result.forms[0].pages).toHaveLength(1);
+      expect(result.forms[0].pages[0]).toMatchObject({
+        id: "page-1",
+        title: "Page 1",
+        blocks: [],
+      });
+      expect(result.forms[1].pages).toHaveLength(1);
+      expect(result.forms[1].pages[0]).toMatchObject({
+        id: "page-1",
+        title: "Page 1",
+        blocks: [],
+      });
     });
   });
 
@@ -98,23 +128,34 @@ describe("formsApi", () => {
       const result = await formsApi.get("123");
 
       expect(apiClient.get).toHaveBeenCalledWith("/v1/forms/123/");
-      expect(result).toEqual(mockForm);
+      expect(result.id).toBe("123");
+      expect(result.title).toBe("Test Form");
+      expect(result.description).toBe("Test Description");
+      expect(result.pages).toHaveLength(1);
+      expect(result.pages[0]).toMatchObject({
+        id: "page-1",
+        title: "Page 1",
+        blocks: [],
+      });
+      expect(result).toHaveProperty("logic");
+      expect(result).toHaveProperty("theme");
+      expect(result).toHaveProperty("settings");
+      expect(result).toHaveProperty("createdAt");
+      expect(result).toHaveProperty("updatedAt");
     });
 
     it("handles empty response", async () => {
       (apiClient.get as jest.Mock).mockResolvedValue({ data: null });
 
-      const result = await formsApi.get("123");
-
-      expect(result).toEqual({ id: "123", title: "", pages: [] });
+      // Should throw an error when form is not found
+      await expect(formsApi.get("123")).rejects.toThrow("Form not found");
     });
 
     it("handles array response", async () => {
       (apiClient.get as jest.Mock).mockResolvedValue({ data: [] });
 
-      const result = await formsApi.get("123");
-
-      expect(result).toEqual({ id: "123", title: "", pages: [] });
+      // Should throw an error when form is not found
+      await expect(formsApi.get("123")).rejects.toThrow("Form not found");
     });
 
     it("ensures form has pages array", async () => {
@@ -128,7 +169,12 @@ describe("formsApi", () => {
 
       const result = await formsApi.get("123");
 
-      expect(result).toHaveProperty("pages", []);
+      expect(result.pages).toHaveLength(1);
+      expect(result.pages[0]).toMatchObject({
+        id: "page-1",
+        title: "Page 1",
+        blocks: [],
+      });
     });
   });
 
@@ -141,7 +187,15 @@ describe("formsApi", () => {
       const result = await formsApi.create(newForm);
 
       expect(apiClient.post).toHaveBeenCalledWith("/v1/forms/", newForm);
-      expect(result).toEqual(createdForm);
+      expect(result.id).toBe("456");
+      expect(result.title).toBe("New Form");
+      expect(result.description).toBe("New Description");
+      expect(result).toHaveProperty("pages");
+      expect(result).toHaveProperty("logic");
+      expect(result).toHaveProperty("theme");
+      expect(result).toHaveProperty("settings");
+      expect(result).toHaveProperty("createdAt");
+      expect(result).toHaveProperty("updatedAt");
     });
   });
 
@@ -154,7 +208,14 @@ describe("formsApi", () => {
       const result = await formsApi.update("123", updates);
 
       expect(apiClient.put).toHaveBeenCalledWith("/v1/forms/123/", updates);
-      expect(result).toEqual(updatedForm);
+      expect(result.id).toBe("123");
+      expect(result.title).toBe("Updated Form");
+      expect(result).toHaveProperty("pages");
+      expect(result).toHaveProperty("logic");
+      expect(result).toHaveProperty("theme");
+      expect(result).toHaveProperty("settings");
+      expect(result).toHaveProperty("createdAt");
+      expect(result).toHaveProperty("updatedAt");
     });
   });
 

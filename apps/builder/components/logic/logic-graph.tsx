@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useFormBuilderStore } from "@/lib/stores/form-builder-store";
 import { useFormBlocks } from "@/lib/hooks/use-form-blocks";
-import type { LogicRule } from "@forms/contracts";
+import type { LogicRule } from "@skemya/contracts";
 
 interface LogicGraphProps {
   rules: LogicRule[];

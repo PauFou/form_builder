@@ -1,6 +1,6 @@
 import { renderHook, act } from "@testing-library/react";
 import { useFormBuilderStore } from "../form-builder-store";
-import type { Form, Block, LogicRule, Theme } from "@forms/contracts";
+import type { Form, Block, LogicRule, Theme } from "@skemya/contracts";
 
 describe("useFormBuilderStore", () => {
   const mockForm: Form = {

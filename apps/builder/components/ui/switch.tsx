@@ -1,3 +1,3 @@
 "use client";
 
-export { Switch, type SwitchProps } from "@forms/ui";
+export { Switch, type SwitchProps } from "@skemya/ui";

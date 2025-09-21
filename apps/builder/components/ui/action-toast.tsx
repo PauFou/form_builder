@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { cn } from "@forms/ui";
+import { cn } from "@skemya/ui";
 import { Undo, Redo, Copy, Trash2, ArrowUp, ArrowDown, Save, Eye, Command } from "lucide-react";
 
 export interface ActionMessage {

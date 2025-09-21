@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Button } from "@forms/ui";
-import { Badge } from "@forms/ui";
-import { Input } from "@forms/ui";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@forms/ui";
+import { Button } from "@skemya/ui";
+import { Badge } from "@skemya/ui";
+import { Input } from "@skemya/ui";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@skemya/ui";
 import {
   X,
   Plus,
@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 import { CommandPalette } from "../builder/command-palette";
-import type { LogicRule, LogicCondition, LogicAction } from "@forms/contracts";
+import type { LogicRule, LogicCondition, LogicAction } from "@skemya/contracts";
 import { cn } from "../../lib/utils";
 
 interface Node {

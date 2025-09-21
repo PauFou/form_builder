@@ -1,0 +1,574 @@
+/* Typeform Field Styles */
+
+/* Field wrapper */
+.typeform-field {
+  position: relative;
+  width: 100%;
+}
+
+/* Text inputs */
+.typeform-input,
+.typeform-textarea {
+  width: 100%;
+  padding: 0;
+  padding-bottom: 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: #191919;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.typeform-input::placeholder,
+.typeform-textarea::placeholder {
+  color: #b8b8b8;
+  font-weight: 300;
+}
+
+.typeform-input:focus,
+.typeform-textarea:focus {
+  border-bottom-color: #191919;
+  border-bottom-width: 2px;
+  padding-bottom: 7px;
+}
+
+.typeform-textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.5;
+}
+
+/* Select/Dropdown */
+.typeform-select-wrapper {
+  position: relative;
+  display: inline-block;
+  min-width: 200px;
+}
+
+.typeform-select {
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 8px 32px 8px 0;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: #191919;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.typeform-select:focus {
+  border-bottom-color: #191919;
+  border-bottom-width: 2px;
+  padding-bottom: 7px;
+}
+
+.typeform-select-arrow {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  color: #666;
+}
+
+/* Radio Group */
+.typeform-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.typeform-radio-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.typeform-radio-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.typeform-radio-custom {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1.125rem;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.typeform-radio-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e0e0e0;
+  border-radius: 50%;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.typeform-radio-label:hover .typeform-radio-custom {
+  border-color: #666;
+  background: #fafafa;
+}
+
+.typeform-radio-input:checked ~ .typeform-radio-custom {
+  border-color: #262627;
+  background: #f8f8f8;
+}
+
+.typeform-radio-input:checked ~ .typeform-radio-custom .typeform-radio-letter {
+  background: #262627;
+  color: white;
+  border-color: #262627;
+}
+
+/* Checkbox Group */
+.typeform-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.typeform-checkbox-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.typeform-checkbox-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.typeform-checkbox-custom {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1.125rem;
+  transition: all 0.2s ease;
+  width: 100%;
+  position: relative;
+}
+
+.typeform-checkbox-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.typeform-checkbox-check {
+  position: absolute;
+  right: 1.5rem;
+  width: 24px;
+  height: 24px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.2s ease;
+  color: #27ae60;
+}
+
+.typeform-checkbox-label:hover .typeform-checkbox-custom {
+  border-color: #666;
+  background: #fafafa;
+}
+
+.typeform-checkbox-input:checked ~ .typeform-checkbox-custom {
+  border-color: #27ae60;
+  background: #f0f9ff;
+}
+
+.typeform-checkbox-input:checked ~ .typeform-checkbox-custom .typeform-checkbox-letter {
+  background: #27ae60;
+  color: white;
+  border-color: #27ae60;
+}
+
+.typeform-checkbox-input:checked ~ .typeform-checkbox-custom .typeform-checkbox-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Boolean/Toggle */
+.typeform-boolean {
+  display: inline-block;
+}
+
+.typeform-toggle {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.typeform-toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.typeform-toggle-track {
+  position: relative;
+  width: 60px;
+  height: 32px;
+  background: #e0e0e0;
+  border-radius: 16px;
+  transition: background 0.3s ease;
+}
+
+.typeform-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 28px;
+  height: 28px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.typeform-toggle-label {
+  font-size: 1.25rem;
+  font-weight: 300;
+  color: #191919;
+}
+
+.typeform-toggle-input:checked ~ .typeform-toggle-track {
+  background: #27ae60;
+}
+
+.typeform-toggle-input:checked ~ .typeform-toggle-track .typeform-toggle-thumb {
+  transform: translateX(28px);
+}
+
+/* Rating */
+.typeform-rating {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.typeform-rating-star {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #e0e0e0;
+  transition: all 0.2s ease;
+}
+
+.typeform-rating-star:hover {
+  color: #ffd700;
+  transform: scale(1.1);
+}
+
+.typeform-rating-star.active {
+  color: #ffd700;
+}
+
+.typeform-rating-star svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Scale */
+.typeform-scale {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.typeform-scale-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.typeform-scale-options {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.typeform-scale-option {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #191919;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.typeform-scale-option:hover {
+  border-color: #666;
+  background: #fafafa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.typeform-scale-option.active {
+  background: #262627;
+  color: white;
+  border-color: #262627;
+}
+
+/* Date & Time inputs */
+.typeform-date-input,
+.typeform-time-input {
+  font-size: 1.25rem;
+  padding: 0.5rem 0;
+}
+
+.typeform-date-input::-webkit-calendar-picker-indicator,
+.typeform-time-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  font-size: 1.25rem;
+}
+
+/* Dark theme overrides */
+[data-theme="dark"] .typeform-input,
+[data-theme="dark"] .typeform-textarea,
+[data-theme="dark"] .typeform-select {
+  color: #f5f5f5;
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .typeform-input:focus,
+[data-theme="dark"] .typeform-textarea:focus,
+[data-theme="dark"] .typeform-select:focus {
+  border-bottom-color: #f5f5f5;
+}
+
+[data-theme="dark"] .typeform-radio-custom,
+[data-theme="dark"] .typeform-checkbox-custom {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #f5f5f5;
+}
+
+[data-theme="dark"] .typeform-radio-custom:hover,
+[data-theme="dark"] .typeform-checkbox-custom:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .typeform-radio-input:checked ~ .typeform-radio-custom,
+[data-theme="dark"] .typeform-checkbox-input:checked ~ .typeform-checkbox-custom {
+  border-color: #f5f5f5;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Tablet adjustments */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .typeform-radio-custom,
+  .typeform-checkbox-custom {
+    padding: 1rem 1.25rem;
+  }
+
+  .typeform-scale-option {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .typeform-input,
+  .typeform-textarea,
+  .typeform-select {
+    font-size: 1.125rem;
+    padding-bottom: 6px;
+  }
+
+  .typeform-select-wrapper {
+    min-width: 160px;
+  }
+
+  .typeform-select {
+    padding: 6px 28px 6px 0;
+    font-size: 1.125rem;
+  }
+
+  .typeform-radio-group,
+  .typeform-checkbox-group {
+    gap: 0.75rem;
+  }
+
+  .typeform-radio-custom,
+  .typeform-checkbox-custom {
+    font-size: 0.9375rem;
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .typeform-radio-letter,
+  .typeform-checkbox-letter {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8125rem;
+  }
+
+  .typeform-checkbox-check {
+    width: 20px;
+    height: 20px;
+    right: 1rem;
+  }
+
+  .typeform-rating {
+    gap: 0.375rem;
+  }
+
+  .typeform-rating-star {
+    width: 36px;
+    height: 36px;
+  }
+
+  .typeform-scale-options {
+    gap: 0.375rem;
+  }
+
+  .typeform-scale-option {
+    width: 36px;
+    height: 36px;
+    font-size: 0.8125rem;
+  }
+
+  .typeform-toggle-track {
+    width: 52px;
+    height: 28px;
+  }
+
+  .typeform-toggle-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  .typeform-toggle-input:checked ~ .typeform-toggle-track .typeform-toggle-thumb {
+    transform: translateX(24px);
+  }
+
+  .typeform-toggle-label {
+    font-size: 1.125rem;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .typeform-input,
+  .typeform-textarea,
+  .typeform-select {
+    font-size: 1rem;
+  }
+
+  .typeform-radio-custom,
+  .typeform-checkbox-custom {
+    font-size: 0.875rem;
+    padding: 0.625rem 0.875rem;
+  }
+
+  .typeform-radio-letter,
+  .typeform-checkbox-letter {
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+  }
+
+  .typeform-rating-star {
+    width: 32px;
+    height: 32px;
+  }
+
+  .typeform-scale-option {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+  }
+
+  /* Stack scale options on very small screens */
+  @media (max-width: 360px) {
+    .typeform-scale-options {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+    }
+  }
+}
+
+/* Large screens */
+@media (min-width: 1440px) {
+  .typeform-input,
+  .typeform-textarea {
+    font-size: 1.75rem;
+  }
+
+  .typeform-select {
+    font-size: 1.75rem;
+  }
+
+  .typeform-radio-custom,
+  .typeform-checkbox-custom {
+    font-size: 1.25rem;
+    padding: 1.25rem 2rem;
+  }
+
+  .typeform-radio-letter,
+  .typeform-checkbox-letter {
+    width: 36px;
+    height: 36px;
+  }
+
+  .typeform-rating-star {
+    width: 56px;
+    height: 56px;
+  }
+
+  .typeform-scale-option {
+    width: 56px;
+    height: 56px;
+    font-size: 1.125rem;
+  }
+}

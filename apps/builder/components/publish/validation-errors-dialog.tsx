@@ -7,8 +7,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@forms/ui";
-import { Button } from "@forms/ui";
+} from "@skemya/ui";
+import { Button } from "@skemya/ui";
 import { AlertTriangle, AlertCircle, Key, RefreshCw } from "lucide-react";
 import type { ValidationError } from "../../lib/validators/form-validators";
 

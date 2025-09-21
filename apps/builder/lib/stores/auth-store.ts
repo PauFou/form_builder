@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 
 import { authApi } from "../api/auth";
 
-import type { User, Organization } from "@forms/contracts";
+import type { User, Organization } from "@skemya/contracts";
 
 interface AuthState {
   user: User | null;
@@ -30,7 +30,7 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       organization: null,
       isAuthenticated: false,
-      isLoading: true,
+      isLoading: false,
 
       login: async (email, password) => {
         try {
@@ -104,6 +104,7 @@ export const useAuthStore = create<AuthState>()(
 
       checkAuth: async () => {
         try {
+          set({ isLoading: true });
           const token = localStorage.getItem("access_token");
           if (!token) {
             set({ isAuthenticated: false, isLoading: false });
@@ -141,6 +142,13 @@ export const useAuthStore = create<AuthState>()(
         organization: state.organization,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          console.error("Failed to rehydrate auth store:", error);
+          // Clear corrupted storage
+          localStorage.removeItem("auth-storage");
+        }
+      },
     }
   )
 );

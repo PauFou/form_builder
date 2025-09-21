@@ -25,8 +25,8 @@ jest.mock("../../components/shared/navigation", () => ({
 }));
 
 // Mock UI components
-jest.mock("@forms/ui", () => ({
-  ...jest.requireActual("@forms/ui"),
+jest.mock("@skemya/ui", () => ({
+  ...jest.requireActual("@skemya/ui"),
   Skeleton: () => <div data-testid="skeleton" />,
 }));
 

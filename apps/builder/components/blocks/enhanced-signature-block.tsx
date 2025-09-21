@@ -2,8 +2,8 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { PenTool, RotateCcw, Download, Check } from "lucide-react";
-import { Button } from "@forms/ui";
-import { Alert, AlertDescription } from "@forms/ui";
+import { Button } from "@skemya/ui";
+import { Alert, AlertDescription } from "@skemya/ui";
 import type { BlockProps } from "./types";
 import { cn } from "../../lib/utils";
 

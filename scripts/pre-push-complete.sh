@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Complete pre-push validation script
-# This ensures ALL GitHub Actions checks will pass
+# Script de validation complète pré-commit
+# S'assure que TOUS les tests locaux passent
 
-echo "🚀 Complete Pre-Push Validation"
-echo "==============================="
+echo "🚀 Validation Complète Pré-Commit"
+echo "================================="
 echo ""
-echo "This script runs ALL validations to ensure GitHub Actions will pass."
-echo "It may take several minutes to complete."
+echo "Ce script exécute TOUTES les validations pour s'assurer que le commit est prêt."
+echo "Cela peut prendre plusieurs minutes."
 echo ""
 
 set -e
@@ -155,9 +155,6 @@ echo "  • Build: ✓"
 echo "  • Bundle size: ✓"
 echo "  • E2E ready: ✓"
 echo ""
-echo -e "${GREEN}🎉 Ready to push! GitHub Actions will pass.${NC}"
+echo -e "${GREEN}🎉 Prêt pour le commit! Tous les tests sont passés.${NC}"
 echo ""
-echo "Time taken: ${DURATION} seconds"
-echo ""
-echo "To run the EXACT GitHub Actions reproduction:"
-echo "  bash scripts/github-actions-exact.sh"
+echo "Temps écoulé: ${DURATION} secondes"

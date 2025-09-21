@@ -1,6 +1,6 @@
 "use client";
 
-import { FormViewer } from "@forms/runtime";
+import { FormViewer } from "@skemya/runtime";
 
 const demoSchema = {
   id: "demo-form",

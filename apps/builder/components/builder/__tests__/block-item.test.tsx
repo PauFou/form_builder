@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BlockItem } from "../block-item";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
-import type { Block } from "@forms/contracts";
+import type { Block } from "@skemya/contracts";
 
 // Mock the store
 jest.mock("../../../lib/stores/form-builder-store");
@@ -16,8 +16,8 @@ jest.mock("framer-motion", () => ({
 }));
 
 // Mock UI components
-jest.mock("@forms/ui", () => ({
-  ...jest.requireActual("@forms/ui"),
+jest.mock("@skemya/ui", () => ({
+  ...jest.requireActual("@skemya/ui"),
   DropdownMenu: ({ children }: any) => <div>{children}</div>,
   DropdownMenuTrigger: ({ children, asChild, onClick }: any) => {
     const handleClick = (e: any) => {

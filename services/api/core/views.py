@@ -1,4 +1,5 @@
 import os
+import csv
 from rest_framework import viewsets, status, generics
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
@@ -9,7 +10,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from .models import Organization, Submission, Membership, AuditLog
+from .models import Organization, Submission, Membership, AuditLog, Answer
 from .serializers import (
     OrganizationSerializer,
     SubmissionSerializer, UserSerializer
@@ -56,23 +57,113 @@ class SubmissionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Submission.objects.all()
     serializer_class = SubmissionSerializer
     permission_classes = [IsAuthenticated]
-    filterset_fields = ["completed_at", "locale"]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = SubmissionFilter
     search_fields = ["respondent_key", "metadata_json"]
+    ordering_fields = ["started_at", "completed_at"]
+    ordering = ["-started_at"]
     
     def get_queryset(self):
         form_id = self.kwargs.get("form_id")
         return self.queryset.filter(
             form_id=form_id,
             form__organization__memberships__user=self.request.user
-        )
+        ).select_related("form").prefetch_related("answers")
     
     @action(detail=False, methods=["post"])
     def export(self, request, form_id=None):
+        """Export submissions to CSV format"""
+        # Get filtered queryset
         queryset = self.filter_queryset(self.get_queryset())
-        format = request.data.get("format", "csv")
+        format_type = request.data.get("format", "csv")
         
-        # TODO: Implement export logic
-        return Response({"url": "export_url_here"})
+        if format_type != "csv":
+            return Response(
+                {"error": "Only CSV format is currently supported"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Get the form to access its structure
+        form = queryset.first().form if queryset.exists() else None
+        if not form:
+            return Response(
+                {"error": "No submissions found for this form"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Create the HttpResponse object with CSV header
+        response = HttpResponse(content_type='text/csv')
+        filename = f"{form.slug or 'form'}_submissions_{timezone.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        
+        # Get all unique block IDs from the form structure
+        block_ids = []
+        block_labels = {}
+        if form.pages:
+            for page in form.pages:
+                if isinstance(page, dict) and 'blocks' in page:
+                    for block in page.get('blocks', []):
+                        if isinstance(block, dict) and 'id' in block:
+                            block_id = block['id']
+                            block_ids.append(block_id)
+                            # Use question text or title as label, fallback to ID
+                            label = block.get('question', block.get('title', block_id))
+                            block_labels[block_id] = label
+        
+        # Create CSV writer
+        writer = csv.writer(response)
+        
+        # Write header row
+        header = [
+            'Submission ID',
+            'Respondent Key',
+            'Started At',
+            'Completed At',
+            'Locale',
+        ]
+        # Add dynamic columns for each block
+        for block_id in block_ids:
+            header.append(block_labels.get(block_id, block_id))
+        writer.writerow(header)
+        
+        # Write data rows (order by started_at for consistency)
+        for submission in queryset.order_by('started_at'):
+            # Get all answers for this submission
+            answers_dict = {}
+            for answer in submission.answers.all():
+                # Convert JSON value to string representation
+                value = answer.value_json
+                if isinstance(value, dict):
+                    # Handle complex answer types
+                    if 'value' in value:
+                        answers_dict[answer.block_id] = str(value['value'])
+                    elif 'text' in value:
+                        answers_dict[answer.block_id] = str(value['text'])
+                    else:
+                        # For other complex types, use string representation
+                        answers_dict[answer.block_id] = str(value)
+                elif isinstance(value, list):
+                    # Join list items with semicolon
+                    answers_dict[answer.block_id] = '; '.join(str(item) for item in value)
+                else:
+                    answers_dict[answer.block_id] = str(value) if value is not None else ''
+            
+            # Build row data
+            row = [
+                str(submission.id),
+                submission.respondent_key,
+                submission.started_at.isoformat() if submission.started_at else '',
+                submission.completed_at.isoformat() if submission.completed_at else '',
+                submission.locale,
+            ]
+            
+            # Add answer values in the same order as the header
+            for block_id in block_ids:
+                row.append(answers_dict.get(block_id, ''))
+            
+            writer.writerow(row)
+        
+        return response
 
 
 @api_view(['GET'])

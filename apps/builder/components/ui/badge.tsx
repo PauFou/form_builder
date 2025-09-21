@@ -1,1 +1,1 @@
-export { Badge } from "@forms/ui";
+export { Badge } from "@skemya/ui";

@@ -1,5 +1,5 @@
 {
-  "name": "@forms/contracts",
+  "name": "@skemya/contracts",
   "version": "1.0.0",
   "private": true,
   "main": "./src/index.ts",
@@ -14,7 +14,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@forms/config": "workspace:*",
+    "@skemya/config": "workspace:*",
     "@types/jest": "^29.5.12",
     "@types/node": "^20",
     "eslint": "^8",

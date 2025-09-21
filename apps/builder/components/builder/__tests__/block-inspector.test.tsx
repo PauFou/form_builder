@@ -14,7 +14,7 @@ Object.defineProperty(global.crypto, "randomUUID", {
 });
 
 // Mock UI components
-jest.mock("@forms/ui", () => ({
+jest.mock("@skemya/ui", () => ({
   Button: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,
   Input: ({ value, onChange, placeholder, id }: any) => (
     <input id={id} value={value} onChange={onChange} placeholder={placeholder} />

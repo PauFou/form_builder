@@ -2,10 +2,12 @@ import { renderHook, act } from "@testing-library/react";
 import { toast } from "react-hot-toast";
 import { useAutosave } from "../use-autosave";
 import { useFormBuilderStore } from "../../stores/form-builder-store";
+import { formsApi } from "../../api/forms";
 
 // Mock dependencies
 jest.mock("react-hot-toast");
 jest.mock("../../stores/form-builder-store");
+jest.mock("../../api/forms");
 
 // Mock timers
 jest.useFakeTimers();
@@ -13,13 +15,17 @@ jest.useFakeTimers();
 describe("useAutosave", () => {
   const mockMarkClean = jest.fn();
   const mockForm = { id: "test-form", title: "Test Form", pages: [] };
+  const mockConsoleError = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
     jest.clearAllTimers();
     jest.useFakeTimers();
     console.log = jest.fn();
-    console.error = jest.fn();
+    console.error = mockConsoleError;
+
+    // Mock formsApi.update to resolve by default
+    (formsApi.update as jest.Mock).mockResolvedValue({});
   });
 
   afterEach(() => {
@@ -96,7 +102,7 @@ describe("useAutosave", () => {
     });
 
     expect(mockMarkClean).toHaveBeenCalled();
-    expect(console.log).toHaveBeenCalledWith("Form autosaved");
+    expect(formsApi.update).toHaveBeenCalledWith("test-id", expect.any(Object));
   });
 
   it("autosaves with custom delay", async () => {
@@ -189,29 +195,6 @@ describe("useAutosave", () => {
   it("handles save errors", async () => {
     // Mock the save operation to fail
     const mockError = new Error("Save failed");
-    const mockPromise = Promise.reject(mockError);
-
-    // Mock setTimeout to return rejected promise
-    const originalSetTimeout = global.setTimeout;
-    global.setTimeout = jest.fn((cb, delay) => {
-      if (delay === 300) {
-        // Immediately reject for the inner save delay
-        return originalSetTimeout(() => {}, 0);
-      }
-      const timeoutId = originalSetTimeout(cb as any, delay);
-      if (delay === 1000) {
-        // Override the callback to throw error
-        originalSetTimeout(async () => {
-          try {
-            await mockPromise;
-          } catch (error) {
-            console.error("Autosave failed:", error);
-            (toast.error as jest.Mock)("Failed to save changes");
-          }
-        }, delay);
-      }
-      return timeoutId;
-    }) as any;
 
     (useFormBuilderStore as unknown as jest.Mock).mockReturnValue({
       form: mockForm,
@@ -219,26 +202,23 @@ describe("useAutosave", () => {
       markClean: mockMarkClean,
     });
 
-    renderHook(() => useAutosave("test-id"));
+    // Mock formsApi.update to reject
+    (formsApi.update as jest.Mock).mockRejectedValue(mockError);
 
+    const { result } = renderHook(() => useAutosave("form-1", 100));
+
+    // Manually trigger save to test error handling
     await act(async () => {
-      jest.advanceTimersByTime(1000);
-      await Promise.resolve();
+      await result.current.saveNow();
     });
 
-    // Ensure error handler was called
-    await act(async () => {
-      try {
-        await mockPromise;
-      } catch {
-        // Expected
-      }
-    });
+    // Check that error state is set
+    expect(result.current.error).toBe("Save failed");
+    expect(result.current.isSaving).toBe(false);
 
-    expect(console.error).toHaveBeenCalledWith("Autosave failed:", mockError);
-    expect(toast.error).toHaveBeenCalledWith("Failed to save changes");
-
-    global.setTimeout = originalSetTimeout;
+    // Check that error was logged and toast shown
+    expect(mockConsoleError).toHaveBeenCalledWith("Autosave failed:", mockError);
+    expect(toast.error).toHaveBeenCalledWith("Failed to save changes", expect.any(Object));
   });
 
   it("cleans up timeout on unmount", () => {

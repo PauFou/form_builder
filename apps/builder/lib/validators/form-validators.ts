@@ -1,4 +1,4 @@
-import type { Form, Block, LogicRule, LogicCondition, LogicAction } from "@forms/contracts";
+import type { Form, Block, LogicRule, LogicCondition, LogicAction } from "@skemya/contracts";
 
 export interface ValidationError {
   type: "duplicate_key" | "logic_cycle" | "referenced_field";

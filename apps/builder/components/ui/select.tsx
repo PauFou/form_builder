@@ -10,4 +10,4 @@ export {
   SelectTrigger,
   SelectValue,
   type SelectProps,
-} from "@forms/ui";
+} from "@skemya/ui";

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Input, Label, Card, CardContent, Switch, Badge } from "@forms/ui";
+import { Button, Input, Label, Card, CardContent, Switch, Badge } from "@skemya/ui";
 import { Plus, Trash2, ExternalLink, Key, Globe } from "lucide-react";
-import type { Form } from "@forms/contracts";
+import type { Form } from "@skemya/contracts";
 
 interface Webhook {
   id: string;

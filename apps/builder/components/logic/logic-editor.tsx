@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { useFormBuilderStore } from "@/lib/stores/form-builder-store";
 import { useFormBlocks } from "@/lib/hooks/use-form-blocks";
-import type { LogicRule } from "@forms/contracts";
+import type { LogicRule } from "@skemya/contracts";
 import { RuleBuilder } from "./rule-builder";
 import { LogicGraph } from "./logic-graph";
 import { FullScreenLogicGraph } from "./full-screen-logic-graph";

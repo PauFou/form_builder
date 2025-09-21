@@ -7,10 +7,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@forms/ui";
-import { Button } from "@forms/ui";
+} from "@skemya/ui";
+import { Button } from "@skemya/ui";
 import { AlertTriangle } from "lucide-react";
-import type { LogicRule } from "@forms/contracts";
+import type { LogicRule } from "@skemya/contracts";
 
 interface DeleteFieldDialogProps {
   open: boolean;

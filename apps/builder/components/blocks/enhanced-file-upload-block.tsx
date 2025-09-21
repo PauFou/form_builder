@@ -12,9 +12,9 @@ import {
   File,
   Image,
 } from "lucide-react";
-import { Button } from "@forms/ui";
-import { Progress } from "@forms/ui";
-import { Alert, AlertDescription } from "@forms/ui";
+import { Button } from "@skemya/ui";
+import { Progress } from "@skemya/ui";
+import { Alert, AlertDescription } from "@skemya/ui";
 import type { BlockProps } from "./types";
 import { cn } from "../../lib/utils";
 

@@ -1,4 +1,4 @@
-import type { Block as ContractBlock, Field } from "@forms/contracts";
+import type { Block as ContractBlock, Field } from "@skemya/contracts";
 import type { Block as BuilderBlock } from "../components/blocks/types";
 
 /**

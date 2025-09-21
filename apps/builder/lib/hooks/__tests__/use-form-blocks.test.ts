@@ -1,7 +1,7 @@
 import { renderHook } from "@testing-library/react";
 import { useFormBlocks } from "../use-form-blocks";
 import { useFormBuilderStore } from "../../stores/form-builder-store";
-import type { Form } from "@forms/contracts";
+import type { Form } from "@skemya/contracts";
 
 // Mock the store
 jest.mock("../../stores/form-builder-store");

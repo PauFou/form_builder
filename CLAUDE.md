@@ -143,7 +143,7 @@ Respondent → Form runtime (CDN) → Edge ingest → Queue → API → DB/Analy
 - **API**: **Django 5 + DRF**, Django ORM (PostgreSQL), **drf-spectacular** (OpenAPI), **SimpleJWT** for tokens, ASGI served via **Uvicorn/Gunicorn**
 - **Queues**: **Celery** + **Redis** (dev) / **SQS** (prod) — idempotency keys & DLQ
 - **Analytics**: ClickHouse (HTTP interface)
-- **CI/CD**: GitHub Actions; Canary + feature flags; OTel traces in CI for smoke tests
+- **CI/CD**: Tests locaux obligatoires via hooks git; Canary + feature flags; OTel traces locales pour smoke tests
 
 ### Local Dev Commands
 
@@ -235,7 +235,7 @@ pnpm --filter @forms/api test
 
 - **SLOs** codified; synthetic checks from 3 EU regions; status page public
 - **Tracing**: edge→queue→webhook chain correlated by request id
-- **E2E Scenarios**: builder create → publish → submit (desktop+mobile) → webhook receipt; runs on each PR
+- **E2E Scenarios**: builder create → publish → submit (desktop+mobile) → webhook receipt; s'exécute à chaque commit local
 - **Chaos Light**: injected latency & failure to verify retries & idempotency
 
 ---
@@ -297,105 +297,93 @@ POST   /v1/webhook-deliveries/:id/redrive
 5. **Performance budgets** are gates; reject diffs that exceed runtime bundle size
 6. **Accessibility is non‑negotiable**: block merges if WCAG AA checks fail
 
-## 🚨 MANDATORY CI/CD SYNCHRONIZATION (CRITICAL FOR CLAUDE)
+## 🚨 TESTS LOCAUX OBLIGATOIRES (CRITICAL FOR CLAUDE)
 
-### Pre-Push Validation Process
+### Processus de Validation Local
 
-Claude MUST ensure ALL tests pass before ANY push. The project includes multiple validation scripts:
+Claude DOIT s'assurer que TOUS les tests passent AVANT tout commit. Le projet utilise des hooks git pour validation automatique.
 
-#### Quick Checks (for development iteration)
-
-```bash
-bash scripts/ci-check-fixed.sh  # Fast local validation
-```
-
-#### Complete Validation (before pushing)
+#### Tests Rapides (pour itération de développement)
 
 ```bash
-bash scripts/pre-push-complete.sh  # Full validation suite
+bash scripts/test-quick.sh  # Validation locale rapide
 ```
 
-#### EXACT GitHub Actions Reproduction (automatic on git push)
+#### Validation Complète (avant commit)
 
 ```bash
-bash scripts/github-actions-exact.sh  # Runs automatically via git hook
+bash scripts/test-complete.sh  # Suite de validation complète
 ```
 
-### Critical Dependency Checks
+#### Hook Pre-Commit (automatique)
 
-1. **Backend Dependencies**: The project requires `python-decouple` for Django settings
+```bash
+# S'exécute automatiquement via Husky avant chaque commit
+# Configure dans .husky/pre-commit
+```
+
+### Vérifications Critiques
+
+1. **Dépendances Backend**: Le projet nécessite `python-decouple` pour les settings Django
 
    ```bash
-   bash scripts/check-backend-deps.sh  # Verify Python dependencies
+   bash scripts/check-backend-deps.sh  # Vérifier les dépendances Python
    ```
 
-2. **E2E Readiness**: All pages must have proper accessibility landmarks
+2. **E2E Prêt**: Toutes les pages doivent avoir des landmarks d'accessibilité appropriés
    ```bash
-   bash scripts/check-e2e-ready.sh  # Verify E2E will pass
+   bash scripts/check-e2e-ready.sh  # Vérifier que E2E passera
    ```
 
-### Why This Matters
+### Approche Intelligente des Tests
 
-**PROBLEM**: Local tests can pass while GitHub Actions fail due to:
+Claude doit être INTELLIGENT avec les tests:
 
-- Different command syntax (e.g., `pnpm test` vs `pnpm test:ci`)
-- Environment differences (macOS vs Ubuntu)
-- Missing dependencies or services
-- Different Node/Python versions
-- Subtle timing issues
+1. **Comprendre la Cause Racine**: Quand les tests échouent, analyser POURQUOI:
+   - Est-ce un problème d'environnement?
+   - Est-ce un vrai problème de code?
+   - Est-ce un test instable?
 
-**SOLUTION**: The `github-actions-exact.sh` script runs EXACTLY what GitHub Actions runs, in the same order, with the same commands.
+2. **Adapter et Corriger**: Ne pas juste essayer de faire passer les tests. Corriger le VRAI problème:
+   - Si avertissements React: Corriger le code, ne pas supprimer
+   - Si taille du bundle: Optimiser les imports, ne pas augmenter les limites
+   - Si erreurs de type: Ajouter des types appropriés, ne pas utiliser `any`
 
-### Claude's Intelligent CI/CD Approach
+3. **Évolution**: Claude peut et DEVRAIT:
+   - Mettre à jour les scripts de test quand ils deviennent obsolètes
+   - Améliorer l'efficacité des tests tout en maintenant la précision
+   - Ajouter de nouvelles validations au fur et à mesure que le projet grandit
+   - Corriger les tests instables de manière permanente
 
-Claude must be SMART about CI/CD:
+### Solutions aux Problèmes Courants
 
-1. **Understand the Root Cause**: When tests fail, analyze WHY:
-   - Is it an environment issue?
-   - Is it a real code problem?
-   - Is it a flaky test?
+| Problème             | Cause Racine                            | Solution                                |
+| -------------------- | --------------------------------------- | --------------------------------------- |
+| Tests frontend       | `pnpm test` vs `pnpm test:ci`           | Toujours utiliser `pnpm test:ci`        |
+| Taille du bundle     | Vérification analytics manquante        | Exécuter `check-bundle-size.js` complet |
+| Avertissements React | act() ne wrappant pas les updates async | Wrapper correctement avec act()         |
+| Erreurs de type      | Config TypeScript différente            | Utiliser le mode strict partout         |
+| Tests backend        | SQLite vs PostgreSQL                    | Utiliser PostgreSQL localement          |
 
-2. **Adapt and Fix**: Don't just try to make tests pass locally. Fix the ACTUAL issue:
-   - If React warnings: Fix the code, don't suppress
-   - If bundle size: Optimize imports, don't increase limits
-   - If type errors: Add proper types, don't use `any`
+### Checklist Pre-Commit
 
-3. **Evolution**: Claude can and SHOULD:
-   - Update test scripts when they become outdated
-   - Improve CI efficiency while maintaining accuracy
-   - Add new validations as the project grows
-   - Fix flaky tests permanently
+Avant CHAQUE commit, Claude DOIT:
 
-### Common CI/CD Discrepancies and Solutions
+1. ✅ Exécuter `pnpm lint` - ZÉRO erreur permise
+2. ✅ Exécuter `pnpm typecheck` - ZÉRO erreur permise
+3. ✅ Exécuter `pnpm test:ci` - TOUS les tests doivent passer
+4. ✅ Exécuter `bash scripts/test-complete.sh` - DOIT retourner 0
+5. ✅ Vérifier aucun type `any` ajouté
+6. ✅ Vérifier aucun ESLint disable ajouté
+7. ✅ Vérifier taille du bundle < 30KB
 
-| Local Pass / CI Fail | Root Cause                       | Solution                        |
-| -------------------- | -------------------------------- | ------------------------------- |
-| Frontend tests       | `pnpm test` vs `pnpm test:ci`    | Always use `pnpm test:ci`       |
-| Bundle size          | Missing analytics check          | Run full `check-bundle-size.js` |
-| React warnings       | act() not wrapping async updates | Properly wrap with act()        |
-| Type errors          | Different TypeScript config      | Use strict mode everywhere      |
-| Backend tests        | SQLite vs PostgreSQL             | Use PostgreSQL locally          |
+### Maintenance Intelligente des Tests
 
-### Pre-Push Checklist
+Claude devrait proactivement:
 
-Before EVERY push, Claude MUST:
-
-1. ✅ Run `pnpm lint` - ZERO errors allowed
-2. ✅ Run `pnpm typecheck` - ZERO errors allowed
-3. ✅ Run `pnpm test:ci` - ALL tests must pass
-4. ✅ Run `bash scripts/github-actions-exact.sh` - MUST exit 0
-5. ✅ Verify no `any` types added
-6. ✅ Verify no ESLint disables added
-7. ✅ Verify bundle size < 30KB
-
-### Smart CI Maintenance
-
-Claude should proactively:
-
-- Keep CI scripts synchronized with `.github/workflows/ci.yml`
-- Update scripts when GitHub Actions workflow changes
-- Document any new environment requirements
-- Fix root causes, not symptoms
+- Garder les scripts de test à jour
+- Documenter toute nouvelle exigence d'environnement
+- Corriger les causes racines, pas les symptômes
 
 ---
 
@@ -536,10 +524,10 @@ Use Conventional Commits for **every** change:
 - [ ] RGPD: export/suppression PII si applicable
 ```
 
-### Test Coverage (CI blocking thresholds)
+### Test Coverage (seuils bloquants locaux)
 
 - **Backend (Django/DRF)**: **≥ 80%** lines & branches global (pytest/coverage)
 - **Frontend (React/Next)**: **≥ 80%** statements & branches global (vitest/jest)
 - **E2E**: scénarios critiques verts (create → publish → submit → webhook → redrive)
 
-> La CI échoue si les seuils ne sont pas atteints ou si les budgets perf/a11y sont dépassés.
+> Les hooks git bloquent le commit si les seuils ne sont pas atteints ou si les budgets perf/a11y sont dépassés.

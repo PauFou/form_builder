@@ -45,6 +45,9 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "core.middleware.SecurityHeadersMiddleware",
+    "core.middleware.RateLimitMiddleware",
+    "core.middleware.HMACValidationMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -75,9 +78,7 @@ WSGI_APPLICATION = "api.wsgi.application"
 
 # Database
 from .database import get_database_config
-DATABASES = {
-    "default": get_database_config()
-}
+DATABASES = get_database_config()
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -238,3 +239,14 @@ GDPR_DEFAULT_RETENTION_DAYS = {
 }
 GDPR_EXPORT_EXPIRY_DAYS = 7
 GDPR_DELETION_REQUEST_EXPIRY_HOURS = 48
+
+# HMAC validation settings
+HMAC_SECRET = config("HMAC_SECRET", default="dev-hmac-secret-change-in-production")
+HMAC_TOLERANCE_SECONDS = config("HMAC_TOLERANCE_SECONDS", default=300, cast=int)
+
+# Rate limiting settings
+SUBMISSION_RATE_LIMIT_PER_MINUTE = config("SUBMISSION_RATE_LIMIT_PER_MINUTE", default=60, cast=int)
+
+# Ingest service settings
+INGEST_SERVICE_URL = config("INGEST_SERVICE_URL", default="http://localhost:8001")
+INTERNAL_API_KEY = config("INTERNAL_API_KEY", default="internal-worker-key")

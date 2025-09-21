@@ -18,7 +18,7 @@ import {
 } from "@dnd-kit/sortable";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { Button, Card, cn, Tabs, TabsContent, TabsList, TabsTrigger } from "@forms/ui";
+import { Button, Card, cn, Tabs, TabsContent, TabsList, TabsTrigger } from "@skemya/ui";
 import { Plus, FileText } from "lucide-react";
 
 import { BlockItem } from "./block-item";

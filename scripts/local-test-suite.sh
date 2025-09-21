@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Local Test Suite - Replaces GitHub Actions
-# This script runs all tests that were previously run in CI
+# Suite de Tests Locaux - Remplace GitHub Actions
+# Ce script exécute tous les tests localement
 
 set -e
 
@@ -303,6 +303,6 @@ else
         echo -e "   - ${test}"
     done
     echo -e "\nDuration: ${DURATION}s"
-    echo -e "\n${YELLOW}Fix the failing tests before pushing.${NC}"
+    echo -e "\n${YELLOW}Corrigez les tests échoués avant de commiter.${NC}"
     exit 1
 fi

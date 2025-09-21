@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "@jest/globals";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
-import type { Form } from "@forms/contracts";
+import type { Form } from "@skemya/contracts";
 
 describe("FormBuilderStore", () => {
   beforeEach(() => {

@@ -21,8 +21,8 @@ jest.mock("@dnd-kit/sortable", () => ({
 }));
 
 // Mock UI components
-jest.mock("@forms/ui", () => ({
-  ...jest.requireActual("@forms/ui"),
+jest.mock("@skemya/ui", () => ({
+  ...jest.requireActual("@skemya/ui"),
   Card: ({ children, className }: any) => <div className={className}>{children}</div>,
   CardContent: ({ children }: any) => <div>{children}</div>,
   Button: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button>,

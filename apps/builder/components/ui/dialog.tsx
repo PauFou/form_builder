@@ -9,4 +9,4 @@ export {
   DialogTitle,
   DialogTrigger,
   type DialogProps,
-} from "@forms/ui";
+} from "@skemya/ui";

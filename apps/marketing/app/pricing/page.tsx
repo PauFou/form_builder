@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@forms/ui";
+import { Button } from "@skemya/ui";
 import { motion } from "framer-motion";
 import { Check, X, Sparkles } from "lucide-react";
 
@@ -40,7 +40,7 @@ const features: Feature[] = [
   { name: "Redirect to a URL", free: false, pro: true, category: "Publishing" },
   { name: "Add your brand logo", free: false, pro: true, category: "Branding" },
   { name: "Customize form meta data", free: false, pro: true, category: "SEO" },
-  { name: "Remove Forms branding", free: false, pro: true, category: "Branding" },
+  { name: "Remove Skemya branding", free: false, pro: true, category: "Branding" },
   { name: "Partial Submissions", free: false, pro: true, category: "Data" },
   { name: "Refill link", free: false, pro: true, category: "Data" },
   { name: "Custom Domains", free: false, pro: true, category: "Publishing" },
@@ -219,7 +219,7 @@ export default function PricingPage() {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-4xl mx-auto"
           >
-            <h2 className="text-3xl font-bold text-center mb-4">Forms vs Typeform pricing</h2>
+            <h2 className="text-3xl font-bold text-center mb-4">Skemya vs Typeform pricing</h2>
             <p className="text-center text-muted-foreground mb-12">
               See how much you can save with our transparent pricing
             </p>
@@ -253,7 +253,7 @@ export default function PricingPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-success/10 rounded-2xl p-6 text-center">
-                  <h3 className="font-semibold mb-2">Forms</h3>
+                  <h3 className="font-semibold mb-2">Skemya</h3>
                   <div className="text-4xl font-bold mb-2">€{currentPricing.us}</div>
                   <div className="text-2xl">😁</div>
                 </div>
@@ -298,7 +298,7 @@ export default function PricingPage() {
             <div>
               <h3 className="font-semibold mb-2">Do I need a credit card to start?</h3>
               <p className="text-muted-foreground">
-                No! You can start using Forms completely free. No credit card required.
+                No! You can start using Skemya completely free. No credit card required.
               </p>
             </div>
             <div>

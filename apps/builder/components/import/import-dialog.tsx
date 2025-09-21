@@ -23,7 +23,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@forms/ui";
+} from "@skemya/ui";
 import {
   AlertCircle,
   ArrowRight,
@@ -33,9 +33,11 @@ import {
   FileType,
   Import,
   Loader2,
+  Table,
 } from "lucide-react";
 
 import { formsApi } from "../../lib/api/forms";
+import { ParityReport } from "./parity-report";
 
 interface ImportDialogProps {
   open: boolean;
@@ -44,25 +46,40 @@ interface ImportDialogProps {
 
 export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
   const router = useRouter();
-  const [importType, setImportType] = useState<"typeform" | "google_forms">("typeform");
+  const [importType, setImportType] = useState<"typeform" | "google_forms" | "tally">("typeform");
   const [source, setSource] = useState("");
-  const [credentials, setCredentials] = useState({ access_token: "" });
+  const [credentials, setCredentials] = useState({ access_token: "", api_key: "" });
   const [preview, setPreview] = useState<any>(null);
   const [validationResult, setValidationResult] = useState<any>(null);
+  const [requirements, setRequirements] = useState<any>(null);
+  const [importResult, setImportResult] = useState<any>(null);
+  const [showParityReport, setShowParityReport] = useState(false);
 
   // Validate source
   const validateMutation = useMutation({
-    mutationFn: (data: { type: "typeform" | "google_forms"; source: string }) =>
+    mutationFn: (data: { type: "typeform" | "google_forms" | "tally"; source: string }) =>
       formsApi.validateImport(data),
     onSuccess: (data) => {
       setValidationResult(data);
     },
   });
 
+  // Get requirements
+  const requirementsMutation = useMutation({
+    mutationFn: (sourceType: "typeform" | "google_forms" | "tally") =>
+      formsApi.getImportRequirements(sourceType),
+    onSuccess: (data) => {
+      setRequirements(data);
+    },
+  });
+
   // Preview import
   const previewMutation = useMutation({
-    mutationFn: (data: { type: "typeform" | "google_forms"; source: string; credentials?: any }) =>
-      formsApi.previewImport(data),
+    mutationFn: (data: {
+      type: "typeform" | "google_forms" | "tally";
+      source: string;
+      credentials?: any;
+    }) => formsApi.previewImport(data),
     onSuccess: (data) => {
       setPreview(data.preview);
     },
@@ -70,15 +87,26 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
 
   // Perform import
   const importMutation = useMutation({
-    mutationFn: (data: { type: "typeform" | "google_forms"; source: string; credentials?: any }) =>
-      formsApi.importForm(data),
+    mutationFn: (data: {
+      type: "typeform" | "google_forms" | "tally";
+      source: string;
+      credentials?: any;
+    }) => formsApi.importForm(data),
     onSuccess: (data) => {
+      setImportResult(data);
+
       if (data.success) {
-        toast.success("Form imported successfully!");
-        router.push(`/forms/${data.form_id}/edit`);
-        onOpenChange(false);
+        if (data.mapping_report && data.warnings && data.warnings.length > 0) {
+          toast.success("Form imported with some warnings - view the parity report");
+          setShowParityReport(true);
+        } else {
+          toast.success("Form imported successfully!");
+          router.push(`/forms/${data.form_id}/edit`);
+          onOpenChange(false);
+        }
       } else {
-        toast.error("Import completed with warnings");
+        toast.error("Import failed - check the error details");
+        setShowParityReport(true);
       }
     },
     onError: () => {
@@ -98,19 +126,33 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
   };
 
   const handlePreview = () => {
+    let credentialsData = undefined;
+    if (importType === "typeform") {
+      credentialsData = { access_token: credentials.access_token };
+    } else if (importType === "tally") {
+      credentialsData = { api_key: credentials.api_key };
+    }
+
     const data = {
       type: importType,
       source,
-      credentials: importType === "typeform" ? credentials : undefined,
+      credentials: credentialsData,
     };
     previewMutation.mutate(data);
   };
 
   const handleImport = () => {
+    let credentialsData = undefined;
+    if (importType === "typeform") {
+      credentialsData = { access_token: credentials.access_token };
+    } else if (importType === "tally") {
+      credentialsData = { api_key: credentials.api_key };
+    }
+
     const data = {
       type: importType,
       source,
-      credentials: importType === "typeform" ? credentials : undefined,
+      credentials: credentialsData,
     };
     importMutation.mutate(data);
   };
@@ -120,14 +162,20 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="source">
-            {importType === "typeform" ? "Typeform URL or ID" : "Google Forms URL or ID"}
+            {importType === "typeform"
+              ? "Typeform URL or ID"
+              : importType === "google_forms"
+                ? "Google Forms URL or ID"
+                : "Tally URL or Form ID"}
           </Label>
           <Input
             id="source"
             placeholder={
               importType === "typeform"
                 ? "https://form.typeform.com/to/abcdef or abcdef"
-                : "https://docs.google.com/forms/d/abc123/edit"
+                : importType === "google_forms"
+                  ? "https://docs.google.com/forms/d/abc123/edit"
+                  : "https://tally.so/r/abc123 or abc123"
             }
             value={source}
             onChange={(e) => handleSourceChange(e.target.value)}
@@ -161,6 +209,22 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
             />
             <p className="text-xs text-muted-foreground">
               Get your token from Typeform account settings → Personal tokens
+            </p>
+          </div>
+        )}
+
+        {importType === "tally" && (
+          <div className="space-y-2">
+            <Label htmlFor="api_key">API Key</Label>
+            <Input
+              id="api_key"
+              type="password"
+              placeholder="Your Tally API key"
+              value={credentials.api_key}
+              onChange={(e) => setCredentials({ ...credentials, api_key: e.target.value })}
+            />
+            <p className="text-xs text-muted-foreground">
+              Get your API key from Tally account settings → API & Webhooks
             </p>
           </div>
         )}
@@ -243,77 +307,119 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Import Form</DialogTitle>
-          <DialogDescription>
-            Import your existing forms from Typeform or Google Forms
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className={showParityReport ? "max-w-4xl" : "max-w-2xl"}>
+        {showParityReport && importResult ? (
+          <>
+            <DialogHeader>
+              <DialogTitle>Import Report</DialogTitle>
+              <DialogDescription>
+                Review your form import results and compatibility
+              </DialogDescription>
+            </DialogHeader>
+            <ParityReport
+              report={importResult.mapping_report}
+              platform={importType}
+              onClose={() => {
+                if (importResult.success && importResult.form_id) {
+                  router.push(`/forms/${importResult.form_id}/edit`);
+                }
+                onOpenChange(false);
+              }}
+            />
+          </>
+        ) : (
+          <>
+            <DialogHeader>
+              <DialogTitle>Import Form</DialogTitle>
+              <DialogDescription>
+                Import your existing forms from Typeform, Google Forms, or Tally
+              </DialogDescription>
+            </DialogHeader>
 
-        <Tabs value={importType} onValueChange={(v: any) => setImportType(v)}>
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="typeform" className="gap-2">
-              <FileType className="h-4 w-4" />
-              Typeform
-            </TabsTrigger>
-            <TabsTrigger value="google_forms" className="gap-2">
-              <FileCode2 className="h-4 w-4" />
-              Google Forms
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="typeform" className="mt-4">
-            {renderImportContent()}
-          </TabsContent>
-
-          <TabsContent value="google_forms" className="mt-4">
-            {renderImportContent()}
-          </TabsContent>
-        </Tabs>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          {!preview ? (
-            <Button
-              onClick={handlePreview}
-              disabled={
-                !source ||
-                !validationResult?.valid ||
-                (importType === "typeform" && !credentials.access_token) ||
-                previewMutation.isPending
-              }
+            <Tabs
+              value={importType}
+              onValueChange={(v: any) => {
+                setImportType(v);
+                setSource("");
+                setCredentials({ access_token: "", api_key: "" });
+                setPreview(null);
+                setValidationResult(null);
+                requirementsMutation.mutate(v);
+              }}
             >
-              {previewMutation.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Loading...
-                </>
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="typeform" className="gap-2">
+                  <FileType className="h-4 w-4" />
+                  Typeform
+                </TabsTrigger>
+                <TabsTrigger value="google_forms" className="gap-2">
+                  <FileCode2 className="h-4 w-4" />
+                  Google Forms
+                </TabsTrigger>
+                <TabsTrigger value="tally" className="gap-2">
+                  <Table className="h-4 w-4" />
+                  Tally
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="typeform" className="mt-4">
+                {renderImportContent()}
+              </TabsContent>
+
+              <TabsContent value="google_forms" className="mt-4">
+                {renderImportContent()}
+              </TabsContent>
+
+              <TabsContent value="tally" className="mt-4">
+                {renderImportContent()}
+              </TabsContent>
+            </Tabs>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              {!preview ? (
+                <Button
+                  onClick={handlePreview}
+                  disabled={
+                    !source ||
+                    !validationResult?.valid ||
+                    (importType === "typeform" && !credentials.access_token) ||
+                    (importType === "tally" && !credentials.api_key) ||
+                    previewMutation.isPending
+                  }
+                >
+                  {previewMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="h-4 w-4 mr-2" />
+                      Preview
+                    </>
+                  )}
+                </Button>
               ) : (
-                <>
-                  <Eye className="h-4 w-4 mr-2" />
-                  Preview
-                </>
+                <Button onClick={handleImport} disabled={importMutation.isPending}>
+                  {importMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Importing...
+                    </>
+                  ) : (
+                    <>
+                      <Import className="h-4 w-4 mr-2" />
+                      Import Form
+                    </>
+                  )}
+                </Button>
               )}
-            </Button>
-          ) : (
-            <Button onClick={handleImport} disabled={importMutation.isPending}>
-              {importMutation.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Importing...
-                </>
-              ) : (
-                <>
-                  <Import className="h-4 w-4 mr-2" />
-                  Import Form
-                </>
-              )}
-            </Button>
-          )}
-        </DialogFooter>
+            </DialogFooter>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

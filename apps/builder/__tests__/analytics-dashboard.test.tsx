@@ -49,7 +49,7 @@ jest.mock("lucide-react", () => ({
 }));
 
 // Mock UI components
-jest.mock("@forms/ui", () => ({
+jest.mock("@skemya/ui", () => ({
   Card: ({ children, className }: any) => (
     <div className={className} data-testid="card">
       {children}

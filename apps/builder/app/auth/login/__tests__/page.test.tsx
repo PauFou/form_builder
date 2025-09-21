@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { useRouter } from "next/navigation";
 import LoginPage from "../page";
 import { useAuthStore } from "../../../../lib/stores/auth-store";
-import { useToast } from "@forms/ui";
+import { useToast } from "@skemya/ui";
 
 // Mock dependencies
 jest.mock("next/navigation", () => ({
@@ -13,8 +13,8 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("../../../../lib/stores/auth-store");
 
-jest.mock("@forms/ui", () => ({
-  ...jest.requireActual("@forms/ui"),
+jest.mock("@skemya/ui", () => ({
+  ...jest.requireActual("@skemya/ui"),
   useToast: jest.fn(),
 }));
 

@@ -1,0 +1,384 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: "20.x"
+  PYTHON_VERSION: "3.11"
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_DB: test_forms
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_forms
+  DJANGO_SETTINGS_MODULE: api.settings
+  SECRET_KEY: test-secret-key-for-ci
+  HMAC_SECRET: test-hmac-secret
+  REDIS_URL: redis://localhost:6379
+
+jobs:
+  # Job 1: Code Quality
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9.5.0
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pnpm-store
+            node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: ESLint
+        run: pnpm lint
+
+      - name: TypeScript Check
+        run: pnpm typecheck
+
+      - name: Prettier Check
+        run: pnpm format:check
+
+  # Job 2: Frontend Tests
+  frontend-tests:
+    runs-on: ubuntu-latest
+    needs: code-quality
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9.5.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run unit tests
+        run: pnpm test:ci
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          flags: frontend
+
+  # Job 3: Backend Tests
+  backend-tests:
+    runs-on: ubuntu-latest
+    needs: code-quality
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            services/api/.venv
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Python dependencies
+        working-directory: ./services/api
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+          pip install pytest-cov
+
+      - name: Run Django tests
+        working-directory: ./services/api
+        run: |
+          source .venv/bin/activate
+          python manage.py migrate
+          python -m pytest --cov=. --cov-report=xml -v
+
+      - name: Check coverage
+        working-directory: ./services/api
+        run: |
+          source .venv/bin/activate
+          coverage_percentage=$(python -c "import xml.etree.ElementTree as ET; root = ET.parse('coverage.xml').getroot(); print(float(root.attrib.get('line-rate', 0)) * 100)")
+          echo "Coverage: ${coverage_percentage}%"
+          if (( $(echo "$coverage_percentage < 80" | bc -l) )); then
+            echo "Coverage is below 80% requirement"
+            exit 1
+          fi
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./services/api/coverage.xml
+          flags: backend
+
+  # Job 4: Integration Tests
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: [frontend-tests, backend-tests]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9.5.0
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile
+          cd services/api && python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+
+      - name: Run contract tests
+        run: |
+          cd tests/contracts
+          python -m pytest test_service_contracts.py -v
+
+      - name: Run integration tests
+        working-directory: ./services/api
+        run: |
+          source .venv/bin/activate
+          python manage.py migrate
+          python manage.py test core.tests.test_integration_full_flow -v 2
+
+  # Job 5: E2E Tests
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9.5.0
+
+      - name: Install dependencies
+        run: |
+          pnpm install --frozen-lockfile
+          cd services/api && python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+          pnpm playwright install --with-deps chromium
+
+      - name: Build applications
+        run: pnpm build
+
+      - name: Start services
+        run: |
+          # Start API
+          cd services/api
+          source .venv/bin/activate
+          python manage.py migrate
+          python manage.py runserver &
+          cd ../..
+
+          # Start Builder app
+          cd apps/builder
+          PORT=3001 pnpm dev &
+          cd ../..
+
+          # Wait for services
+          npx wait-on http://localhost:8000/health http://localhost:3001 -t 30000
+
+      - name: Run E2E tests
+        run: pnpm playwright test e2e/tests/form-builder-flow.spec.ts
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report/
+
+  # Job 6: Performance Tests
+  performance-tests:
+    runs-on: ubuntu-latest
+    needs: [frontend-tests, backend-tests]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9.5.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build runtime
+        run: pnpm build --filter=@skemya/runtime
+
+      - name: Check bundle size
+        run: |
+          node scripts/check-bundle-size.js
+          # Ensure runtime bundle is under 30KB
+          RUNTIME_SIZE=$(cd packages/runtime && du -b dist/index.js | cut -f1)
+          if [ $RUNTIME_SIZE -gt 30720 ]; then
+            echo "Runtime bundle size ($RUNTIME_SIZE bytes) exceeds 30KB limit"
+            exit 1
+          fi
+
+  # Job 7: Security Scan
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: code-quality
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: NPM Audit
+        run: pnpm audit --audit-level=high
+
+      - name: Python Security Scan
+        working-directory: ./services/api
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install safety
+          safety check
+
+      - name: Secret Scanning
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+
+  # Job 8: Deploy (only on main branch)
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [e2e-tests, performance-tests, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production..."
+          # Add actual deployment steps here

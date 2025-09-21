@@ -19,7 +19,7 @@ import {
   DialogTrigger,
   Checkbox,
   Label,
-} from "@forms/ui";
+} from "@skemya/ui";
 import { Trash2, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 import { useGDPRStore } from "../../lib/stores/gdpr-store";
 

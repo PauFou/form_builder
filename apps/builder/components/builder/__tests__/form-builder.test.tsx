@@ -39,8 +39,8 @@ jest.mock("@dnd-kit/sortable", () => ({
 }));
 
 // Mock UI components
-jest.mock("@forms/ui", () => ({
-  ...jest.requireActual("@forms/ui"),
+jest.mock("@skemya/ui", () => ({
+  ...jest.requireActual("@skemya/ui"),
   ScrollArea: ({ children }: any) => <div>{children}</div>,
   Tabs: ({ children }: any) => <div>{children}</div>,
   TabsContent: ({ children, value }: any) => <div data-value={value}>{children}</div>,

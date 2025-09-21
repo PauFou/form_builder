@@ -11,12 +11,12 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@forms/ui";
+} from "@skemya/ui";
 import { GripVertical, MoreVertical, Copy, Trash2, Settings } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 import { BLOCK_COMPONENTS } from "../blocks";
-import type { Block } from "@forms/contracts";
+import type { Block } from "@skemya/contracts";
 import { contractToBuilderBlock } from "../../lib/block-utils";
 import { DeleteFieldDialog } from "./delete-field-dialog";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Input, Label } from "@forms/ui";
+import { Input, Label } from "@skemya/ui";
 import { Clock } from "lucide-react";
 import { cn } from "../../lib/utils";
 

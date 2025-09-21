@@ -1,6 +1,6 @@
 import { useFormBuilderStore } from "../stores/form-builder-store";
 import { useMemo } from "react";
-import type { Block } from "@forms/contracts";
+import type { Block } from "@skemya/contracts";
 
 export function useFormBlocks(): Block[] {
   const form = useFormBuilderStore((state) => state.form);

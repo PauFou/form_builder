@@ -1,4 +1,4 @@
-import type { Block } from "@forms/contracts";
+import type { Block } from "@skemya/contracts";
 
 export function validateEmail(value: string): boolean {
   if (!value || typeof value !== "string") return false;

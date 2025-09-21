@@ -1,6 +1,6 @@
 import { renderHook, act } from "@testing-library/react";
 import { useFormBuilderStore } from "../form-builder-store";
-import type { Form, Block } from "@forms/contracts";
+import type { Form, Block } from "@skemya/contracts";
 
 describe("Undo/Redo functionality", () => {
   beforeEach(() => {

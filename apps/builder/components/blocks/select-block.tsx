@@ -1,6 +1,6 @@
 "use client";
 
-import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@forms/ui";
+import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@skemya/ui";
 import { BlockProps } from "./types";
 import { useState } from "react";
 

@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { RuleBuilder } from "../rule-builder";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 import { useFormBlocks } from "../../../lib/hooks/use-form-blocks";
-import type { LogicRule, LogicCondition, LogicAction } from "@forms/contracts";
+import type { LogicRule, LogicCondition, LogicAction } from "@skemya/contracts";
 
 // Mock the store and hooks
 jest.mock("../../../lib/stores/form-builder-store");

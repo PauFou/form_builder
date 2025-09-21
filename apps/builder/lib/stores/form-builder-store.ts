@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import type { Form, Block, LogicRule, Theme } from "@forms/contracts";
+import type { Form, Block, LogicRule, Theme } from "@skemya/contracts";
 import type { ValidationRule } from "../types/validation";
 import type { LayoutSettings } from "../types/theme";
 import {
@@ -100,6 +100,7 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
     },
 
     setForm: (form) => {
+      console.log("FormBuilderStore: setForm called with:", form);
       set((state) => {
         state.form = form;
         state.isDirty = false;
@@ -107,6 +108,7 @@ export const useFormBuilderStore = create<FormBuilderStateWithComputed>()(
         state.historyIndex = 0;
         state.isUndoing = false;
       });
+      console.log("FormBuilderStore: state after setForm:", get().form);
     },
 
     updateForm: (updates) => {

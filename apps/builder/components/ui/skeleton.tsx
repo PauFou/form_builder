@@ -1,3 +1,3 @@
 "use client";
 
-export { Skeleton } from "@forms/ui";
+export { Skeleton } from "@skemya/ui";

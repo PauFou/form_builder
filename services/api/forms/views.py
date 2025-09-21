@@ -32,7 +32,7 @@ class FormViewSet(AuditMixin, viewsets.ModelViewSet):
     lookup_field = "id"
     
     def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy', 'publish']:
+        if self.action in ['create', 'update', 'partial_update', 'destroy', 'publish', 'unpublish']:
             return [IsAuthenticated(), CanEditForm()]
         return [IsAuthenticated(), IsOrganizationMember()]
     
@@ -49,6 +49,31 @@ class FormViewSet(AuditMixin, viewsets.ModelViewSet):
             memberships__user=self.request.user,
             memberships__role__in=['owner', 'admin', 'editor']
         )
+        
+        # Generate a slug if not provided
+        if 'slug' not in serializer.validated_data or not serializer.validated_data['slug']:
+            from django.utils.text import slugify
+            import time
+            base_slug = slugify(serializer.validated_data.get('title', 'untitled'))
+            slug = f"{base_slug}-{int(time.time())}"
+            serializer.validated_data['slug'] = slug
+        
+        # Initialize empty pages if not provided
+        if 'pages' not in serializer.validated_data or not serializer.validated_data['pages']:
+            serializer.validated_data['pages'] = [{
+                'id': 'page-1',
+                'title': 'Page 1',
+                'blocks': []
+            }]
+        
+        # Initialize empty objects for other fields
+        if 'logic' not in serializer.validated_data:
+            serializer.validated_data['logic'] = {'rules': []}
+        if 'theme' not in serializer.validated_data:
+            serializer.validated_data['theme'] = {}
+        if 'settings' not in serializer.validated_data:
+            serializer.validated_data['settings'] = {}
+            
         instance = serializer.save(organization=organization, created_by=self.request.user)
         instance._current_user = self.request.user
         
@@ -59,6 +84,43 @@ class FormViewSet(AuditMixin, viewsets.ModelViewSet):
             schema={"blocks": [], "settings": {}}
         )
     
+    @extend_schema(
+        summary="Publish a form",
+        description="Publish a form version with optional canary deployment percentage",
+        request={
+            "type": "object",
+            "properties": {
+                "version_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Specific version ID to publish. If not provided, publishes the latest version."
+                },
+                "canary_percentage": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "default": 0,
+                    "description": "Percentage of traffic for canary deployment"
+                }
+            }
+        },
+        responses={
+            200: {
+                "type": "object",
+                "properties": {
+                    "status": {"type": "string", "enum": ["published"]},
+                    "version": {"type": "integer"},
+                    "canary_percentage": {"type": "integer"}
+                }
+            },
+            400: {
+                "type": "object",
+                "properties": {
+                    "error": {"type": "string"}
+                }
+            }
+        }
+    )
     @action(detail=True, methods=["post"])
     def publish(self, request, id=None):
         form = self.get_object()
@@ -90,6 +152,79 @@ class FormViewSet(AuditMixin, viewsets.ModelViewSet):
             "status": "published",
             "version": version.version,
             "canary_percentage": canary_percentage
+        })
+    
+    @extend_schema(
+        summary="Unpublish a form",
+        description="Unpublish a form by setting its status back to draft. Optionally unpublish all versions or just the latest.",
+        request={
+            "type": "object",
+            "properties": {
+                "unpublish_all_versions": {
+                    "type": "boolean",
+                    "default": False,
+                    "description": "If true, unpublish all versions. If false, only unpublish the latest published version."
+                }
+            }
+        },
+        responses={
+            200: {
+                "type": "object",
+                "properties": {
+                    "status": {"type": "string", "enum": ["draft"]},
+                    "message": {"type": "string"}
+                }
+            },
+            400: {
+                "type": "object",
+                "properties": {
+                    "error": {"type": "string"}
+                }
+            }
+        }
+    )
+    @action(detail=True, methods=["post"])
+    def unpublish(self, request, id=None):
+        """Unpublish a form by setting its status back to draft"""
+        form = self.get_object()
+        
+        # Check if form is currently published
+        if form.status != "published":
+            return Response(
+                {"error": "Form is not currently published"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Set form status back to draft
+        form.status = "draft"
+        form._current_user = request.user
+        form.save()
+        
+        # Optionally unpublish all versions or just the latest
+        unpublish_all = request.data.get("unpublish_all_versions", False)
+        
+        if unpublish_all:
+            # Unpublish all versions
+            form.versions.filter(published_at__isnull=False).update(
+                published_at=None,
+                canary_percentage=0
+            )
+            message = "All versions unpublished"
+        else:
+            # Just unpublish the most recently published version
+            latest_published = form.versions.filter(published_at__isnull=False).first()
+            if latest_published:
+                latest_published.published_at = None
+                latest_published.canary_percentage = 0
+                latest_published._current_user = request.user
+                latest_published.save()
+                message = f"Version {latest_published.version} unpublished"
+            else:
+                message = "No published version found"
+        
+        return Response({
+            "status": "draft",
+            "message": message
         })
     
     @action(detail=True, methods=["post"])
@@ -126,7 +261,7 @@ class FormViewSet(AuditMixin, viewsets.ModelViewSet):
             "type": "object",
             "required": ["type", "source"],
             "properties": {
-                "type": {"type": "string", "enum": ["typeform", "google_forms"]},
+                "type": {"type": "string", "enum": ["typeform", "google_forms", "tally"]},
                 "source": {"type": "string", "description": "URL or ID of the form to import"},
                 "credentials": {"type": "object", "description": "Source-specific credentials"}
             }
@@ -134,7 +269,7 @@ class FormViewSet(AuditMixin, viewsets.ModelViewSet):
     )
     @action(detail=False, methods=['post'], url_path='import')
     def import_form(self, request):
-        """Import a form from Typeform or Google Forms"""
+        """Import a form from Typeform, Google Forms, or Tally"""
         source_type = request.data.get('type')
         source = request.data.get('source')
         credentials = request.data.get('credentials', {})
@@ -199,7 +334,7 @@ class FormViewSet(AuditMixin, viewsets.ModelViewSet):
             "type": "object",
             "required": ["type", "source"],
             "properties": {
-                "type": {"type": "string", "enum": ["typeform", "google_forms"]},
+                "type": {"type": "string", "enum": ["typeform", "google_forms", "tally"]},
                 "source": {"type": "string"}
             }
         }
@@ -233,7 +368,7 @@ class FormViewSet(AuditMixin, viewsets.ModelViewSet):
             "type": "object", 
             "required": ["type", "source"],
             "properties": {
-                "type": {"type": "string", "enum": ["typeform", "google_forms"]},
+                "type": {"type": "string", "enum": ["typeform", "google_forms", "tally"]},
                 "source": {"type": "string"},
                 "credentials": {"type": "object"}
             }

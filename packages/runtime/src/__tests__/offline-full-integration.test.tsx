@@ -379,14 +379,23 @@ describe("FormViewer Offline Integration", () => {
     const nameInputFresh = screen.getByRole("textbox", { name: /What's your name/ });
     fireEvent.change(nameInputFresh, { target: { value: "Fresh User" } });
 
+    // Wait for the form to update and enable the button
+    await waitFor(() => {
+      const nextButton = screen.getByText("Next");
+      expect(nextButton).not.toBeDisabled();
+    });
+
     // Fill in required email field
     await act(async () => {
       fireEvent.click(screen.getByText("Next"));
     });
 
-    await waitFor(() => {
-      expect(screen.getByText("What's your email?")).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText("What's your email?")).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
 
     const emailInput = screen.getByRole("textbox", { name: /What's your email/ });
     fireEvent.change(emailInput, { target: { value: "complete@example.com" } });

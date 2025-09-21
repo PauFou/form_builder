@@ -18,7 +18,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@forms/ui";
+} from "@skemya/ui";
 import { Settings, Palette, Database, Plus, Trash2, AlertCircle } from "lucide-react";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 import { generateFieldKey } from "../../lib/utils/slug";
@@ -26,7 +26,7 @@ import { ValidationEditor } from "./validation-editor";
 import { ThemeEditor } from "./theme-editor";
 import { LogicEditor } from "./logic-editor";
 import { WebhookEditor } from "./webhook-editor";
-import type { Block } from "@forms/contracts";
+import type { Block } from "@skemya/contracts";
 
 interface InspectorProps {
   className?: string;

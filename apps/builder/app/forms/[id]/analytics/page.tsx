@@ -1,18 +1,19 @@
 "use client";
 
-import { use } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { notFound } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
-import { Button, Skeleton } from "@forms/ui";
+import { Button, Skeleton } from "@skemya/ui";
 import { ArrowLeft, Download, Share2 } from "lucide-react";
 
 import { formsApi } from "../../../../lib/api/forms";
-import { AnalyticsDashboard } from "../../../../components/analytics/analytics-dashboard";
+import { AnalyticsDashboardReal } from "../../../../components/analytics/analytics-dashboard-real";
 
-export default function FormAnalyticsPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function FormAnalyticsPage() {
+  const params = useParams();
+  const id = params.id as string;
 
   const {
     data: form,
@@ -89,7 +90,7 @@ export default function FormAnalyticsPage({ params }: { params: Promise<{ id: st
           <Skeleton className="h-96" />
         </div>
       ) : form ? (
-        <AnalyticsDashboard formId={id} />
+        <AnalyticsDashboardReal formId={id} />
       ) : null}
     </div>
   );

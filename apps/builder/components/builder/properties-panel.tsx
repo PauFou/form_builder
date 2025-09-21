@@ -16,7 +16,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@forms/ui";
+} from "@skemya/ui";
 import { Settings, Palette, Shield, Trash2 } from "lucide-react";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 

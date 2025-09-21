@@ -18,7 +18,7 @@ import {
   TabsList,
   TabsTrigger,
   Textarea,
-} from "@forms/ui";
+} from "@skemya/ui";
 import { X, Plus, Trash2 } from "lucide-react";
 
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";

@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { SingleSelectBlock } from "../single-select-block";
-import { Block } from "@forms/contracts";
+import { Block } from "@skemya/contracts";
 
 describe("SingleSelectBlock", () => {
   const defaultBlock: Block = {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "@jest/globals";
-import type { Form, LogicRule } from "@forms/contracts";
+import type { Form, LogicRule } from "@skemya/contracts";
 import {
   validateUniqueKeys,
   generateUniqueKey,

@@ -2,7 +2,7 @@ const baseConfig = require("../../jest.preset.js");
 
 module.exports = {
   ...baseConfig,
-  displayName: "@forms/ui",
+  displayName: "@skemya/ui",
   testMatch: ["<rootDir>/src/**/__tests__/**/*.{test,spec}.{ts,tsx}"],
   setupFilesAfterEnv: ["<rootDir>/src/test-setup.ts"],
   testEnvironment: "jsdom",

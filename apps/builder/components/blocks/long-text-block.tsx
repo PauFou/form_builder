@@ -1,6 +1,6 @@
 "use client";
 
-import { Textarea, Label } from "@forms/ui";
+import { Textarea, Label } from "@skemya/ui";
 import { BlockProps } from "./types";
 import { useState } from "react";
 

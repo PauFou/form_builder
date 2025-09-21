@@ -8,11 +8,11 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Loader2 } from "lucide-react";
 
-import { Button } from "@forms/ui";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@forms/ui";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@forms/ui";
-import { Input } from "@forms/ui";
-import { useToast } from "@forms/ui";
+import { Button } from "@skemya/ui";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@skemya/ui";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@skemya/ui";
+import { Input } from "@skemya/ui";
+import { useToast } from "@skemya/ui";
 import { useAuthStore } from "../../../lib/stores/auth-store";
 
 const loginSchema = z.object({
@@ -45,8 +45,11 @@ export default function LoginPage() {
         description: "You have been logged in successfully.",
       });
       router.push("/dashboard");
-    } catch (error: any) {
-      const message = error.response?.data?.error || error.message || "Invalid email or password";
+    } catch (error) {
+      const message =
+        (error as any).response?.data?.error ||
+        (error as Error).message ||
+        "Invalid email or password";
       setError(message);
       toast({
         title: "Login failed",
@@ -71,7 +74,7 @@ export default function LoginPage() {
               <FormField
                 control={form.control}
                 name="email"
-                render={({ field }: any) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
@@ -89,7 +92,7 @@ export default function LoginPage() {
               <FormField
                 control={form.control}
                 name="password"
-                render={({ field }: any) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>

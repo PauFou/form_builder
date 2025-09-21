@@ -1,0 +1,162 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Clear Storage - Forms Platform</title>
+    <style>
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      button {
+        background: #4f46e5;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      button:hover {
+        background: #4338ca;
+      }
+      .success {
+        color: green;
+        margin-top: 20px;
+        padding: 10px;
+        background: #e8f5e9;
+        border-radius: 4px;
+        display: none;
+      }
+      .info {
+        background: #e3f2fd;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+      }
+      code {
+        background: #f5f5f5;
+        padding: 2px 6px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🧹 Nettoyer le stockage local</h1>
+
+      <div class="info">
+        <p>
+          Cette page permet de nettoyer le stockage local pour résoudre les erreurs de syntaxe lors
+          de la connexion.
+        </p>
+        <p>Ouvrez cette page dans le navigateur où vous avez l'erreur.</p>
+      </div>
+
+      <h2>Étapes :</h2>
+      <ol>
+        <li>Cliquez sur le bouton ci-dessous</li>
+        <li>Retournez sur <code>http://localhost:3001</code></li>
+        <li>Essayez de vous connecter à nouveau</li>
+      </ol>
+
+      <button onclick="clearAllStorage()">🗑️ Nettoyer tout le stockage</button>
+      <button onclick="clearAuthOnly()">🔐 Nettoyer uniquement l'authentification</button>
+
+      <div id="success" class="success"></div>
+
+      <h3>Données actuelles :</h3>
+      <pre
+        id="current-data"
+        style="background: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto"
+      ></pre>
+    </div>
+
+    <script>
+      // Afficher les données actuelles
+      function showCurrentData() {
+        const data = {};
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          try {
+            const value = localStorage.getItem(key);
+            data[key] = value && value.length < 200 ? value : value.substring(0, 200) + "...";
+          } catch (e) {
+            data[key] = "[Erreur de lecture]";
+          }
+        }
+        document.getElementById("current-data").textContent = JSON.stringify(data, null, 2);
+      }
+
+      function clearAllStorage() {
+        try {
+          localStorage.clear();
+          sessionStorage.clear();
+
+          // Nettoyer les cookies
+          document.cookie.split(";").forEach(function (c) {
+            document.cookie = c
+              .replace(/^ +/, "")
+              .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+          });
+
+          showSuccess("✅ Tout le stockage a été nettoyé avec succès !");
+          showCurrentData();
+        } catch (error) {
+          showSuccess("❌ Erreur : " + error.message);
+        }
+      }
+
+      function clearAuthOnly() {
+        try {
+          // Nettoyer les clés liées à l'authentification
+          const authKeys = [
+            "auth-token",
+            "refresh-token",
+            "access_token",
+            "refresh_token",
+            "user",
+            "auth-store",
+          ];
+          authKeys.forEach((key) => {
+            localStorage.removeItem(key);
+            sessionStorage.removeItem(key);
+          });
+
+          // Nettoyer le cookie auth
+          document.cookie = "auth-token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+
+          // Nettoyer le store Zustand
+          const zustandKeys = Object.keys(localStorage).filter((key) => key.includes("auth"));
+          zustandKeys.forEach((key) => localStorage.removeItem(key));
+
+          showSuccess("✅ Les données d'authentification ont été nettoyées !");
+          showCurrentData();
+        } catch (error) {
+          showSuccess("❌ Erreur : " + error.message);
+        }
+      }
+
+      function showSuccess(message) {
+        const successDiv = document.getElementById("success");
+        successDiv.textContent = message;
+        successDiv.style.display = "block";
+      }
+
+      // Afficher les données au chargement
+      showCurrentData();
+    </script>
+  </body>
+</html>

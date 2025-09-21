@@ -8,8 +8,8 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Loader2 } from "lucide-react";
 
-import { Button } from "@forms/ui";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@forms/ui";
+import { Button } from "@skemya/ui";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@skemya/ui";
 import {
   Form,
   FormControl,
@@ -18,9 +18,9 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from "@forms/ui";
-import { Input } from "@forms/ui";
-import { useToast } from "@forms/ui";
+} from "@skemya/ui";
+import { Input } from "@skemya/ui";
+import { useToast } from "@skemya/ui";
 import { authApi } from "../../../lib/api/auth";
 
 const resetPasswordSchema = z

@@ -10,6 +10,8 @@ import { ThemeProvider } from "next-themes";
 import { I18nProvider } from "@/lib/i18n";
 import { SkemyaThemeProvider } from "@/lib/theme";
 import { useState, useEffect } from "react";
+import { AuthProvider } from "@/components/providers/auth-provider";
+import { ClientLayout } from "./client-layout";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -62,16 +64,48 @@ export default function RootLayout({
       }
     >
       <body className={GeistSans.className}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Prevent FOUC by setting theme class immediately
+              (function() {
+                // Add no-transitions class initially
+                document.documentElement.classList.add('no-transitions');
+                
+                let theme = 'light';
+                try {
+                  const stored = localStorage.getItem('theme');
+                  if (stored) {
+                    theme = stored;
+                  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    theme = 'dark';
+                  }
+                } catch (e) {}
+                document.documentElement.classList.add(theme);
+                
+                // Remove no-transitions class after a brief delay
+                requestAnimationFrame(() => {
+                  requestAnimationFrame(() => {
+                    document.documentElement.classList.remove('no-transitions');
+                  });
+                });
+              })();
+            `,
+          }}
+        />
         <QueryClientProvider client={queryClient}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
+            storageKey="theme"
           >
             <SkemyaThemeProvider>
               <I18nProvider>
-                {children}
+                <AuthProvider>
+                  <ClientLayout>{children}</ClientLayout>
+                </AuthProvider>
                 <Toaster
                   position="top-center"
                   toastOptions={{

@@ -3,12 +3,13 @@ export const VERSION = "1.0.0";
 
 // Main exports
 export { FormViewer } from "./components/FormViewer";
+export { TypeformViewer } from "./components/TypeformViewer";
 export { GridFormViewer } from "./components/GridFormViewer";
 export { FormViewerWrapper } from "./components/FormViewerWrapper";
 export { ModeSwitcher } from "./components/ModeSwitcher";
 export { SaveStatus } from "./components/SaveStatus";
 export { ResumeBanner } from "./components/ResumeBanner";
-export { FormViewer as FormRenderer } from "./components/FormViewer"; // Alias for compatibility
+export { TypeformViewer as FormRenderer } from "./components/TypeformViewer"; // Use Typeform style as default
 export { useFormRuntime } from "./hooks";
 export { OfflineService } from "./services/offline-service";
 export { PartialSaveService } from "./services/partial-save-service";

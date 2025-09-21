@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { MultiSelectBlock } from "../multi-select-block";
-import { Block } from "@forms/contracts";
+import { Block } from "@skemya/contracts";
 
 describe("MultiSelectBlock", () => {
   const defaultBlock: Block = {

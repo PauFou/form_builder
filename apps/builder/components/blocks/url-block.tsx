@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Input, Label } from "@forms/ui";
+import { Input, Label } from "@skemya/ui";
 import { Link, ExternalLink, AlertCircle, Check } from "lucide-react";
 import { cn } from "../../lib/utils";
 

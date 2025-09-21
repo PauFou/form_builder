@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { Button } from "@forms/ui";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { Button } from "@skemya/ui";
 import {
   Search,
   Filter,
@@ -34,6 +35,12 @@ import {
   type ColumnDef,
 } from "@tanstack/react-table";
 // import { FixedSizeList as List } from "react-window";
+import {
+  submissionsApi,
+  transformSubmission,
+  transformStats,
+  type Submission as ApiSubmission,
+} from "@/lib/api/submissions";
 
 type Submission = {
   id: string;
@@ -74,91 +81,19 @@ type FormStats = {
   averageTime: number;
 };
 
-// Generate mock data for testing large datasets
-const generateMockSubmissions = (count: number): Submission[] => {
-  const submissions: Submission[] = [];
-  const statuses: ("completed" | "partial")[] = ["completed", "completed", "completed", "partial"];
-  const scores = [65, 72, 85, 92, 78, 89, 94, 67, 83, 91];
-  const tags = [
-    ["satisfied", "premium"],
-    ["promoter"],
-    ["detractor"],
-    [],
-    ["trial"],
-    ["enterprise"],
-  ];
-
-  for (let i = 0; i < count; i++) {
-    const status = statuses[Math.floor(Math.random() * statuses.length)];
-    const completedAt =
-      status === "completed"
-        ? new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString()
-        : null;
-
-    submissions.push({
-      id: `sub_${i + 1}`,
-      respondentId: `resp_${Math.random().toString(36).substring(2, 11)}`,
-      completedAt,
-      status,
-      score: status === "completed" ? scores[Math.floor(Math.random() * scores.length)] : undefined,
-      tags: tags[Math.floor(Math.random() * tags.length)],
-      answers: {
-        q1: ["Very satisfied", "Satisfied", "Neutral", "Dissatisfied"][
-          Math.floor(Math.random() * 4)
-        ],
-        q2: [
-          ["Dashboard", "Analytics"],
-          ["Forms", "Logic"],
-          ["API", "Integrations"],
-        ][Math.floor(Math.random() * 3)],
-        q3: "Sample feedback response...",
-      },
-      metadata: {
-        userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
-        ipAddress: `192.168.1.${Math.floor(Math.random() * 255)}`,
-        duration: Math.floor(Math.random() * 600) + 30, // 30-630 seconds
-        device: ["Chrome on macOS", "Safari on iOS", "Firefox on Windows"][
-          Math.floor(Math.random() * 3)
-        ],
-        locale: "en-US",
-        referrer: Math.random() > 0.5 ? "https://google.com" : undefined,
-      },
-      webhookDeliveries:
-        Math.random() > 0.7
-          ? [
-              {
-                id: `wh_${i}_1`,
-                webhookId: "webhook_1",
-                submissionId: `sub_${i + 1}`,
-                url: "https://api.example.com/webhook",
-                status: Math.random() > 0.8 ? "failed" : "success",
-                attempt: Math.random() > 0.8 ? Math.floor(Math.random() * 3) + 2 : 1,
-                statusCode: Math.random() > 0.8 ? 500 : 200,
-                error: Math.random() > 0.8 ? "Connection timeout" : undefined,
-                sentAt: new Date(Date.now() - Math.random() * 60 * 60 * 1000).toISOString(),
-                nextRetryAt:
-                  Math.random() > 0.8
-                    ? new Date(Date.now() + 60 * 60 * 1000).toISOString()
-                    : undefined,
-              },
-            ]
-          : [],
-    });
-  }
-
-  return submissions;
-};
-
-const mockSubmissions = generateMockSubmissions(1000); // Generate 1000 submissions for testing
-
-const mockStats: FormStats = {
-  views: 2847,
-  submissions: 1127,
-  completionRate: 0.85,
-  averageTime: 245, // seconds
-};
+// Real API data will be loaded here
 
 export default function SubmissionsPage() {
+  const params = useParams();
+  const formId = params.id as string;
+
+  // API state
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [stats, setStats] = useState<FormStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // UI state
   const [selectedSubmissions, setSelectedSubmissions] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
@@ -168,7 +103,53 @@ export default function SubmissionsPage() {
     progress: number;
     format?: string;
   }>({ isExporting: false, progress: 0 });
-  // const [savedViews, setSavedViews] = useState<Array<{id: string; name: string; filters: any}>>([]);
+
+  // Filters state
+  const [filters, setFilters] = useState({
+    status: "",
+    startDate: "",
+    endDate: "",
+    tags: "",
+    minScore: "",
+    maxScore: "",
+  });
+
+  // Load submissions data
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Load submissions and stats in parallel
+        const [submissionsResponse, statsResponse] = await Promise.all([
+          submissionsApi.list({
+            form_pk: formId,
+            search: searchQuery || undefined,
+            ordering: "-started_at",
+            page_size: 100,
+          }),
+          submissionsApi.stats(formId),
+        ]);
+
+        // Transform API data to frontend format
+        const transformedSubmissions = submissionsResponse.results.map(transformSubmission);
+        const transformedStats = transformStats(statsResponse);
+
+        setSubmissions(transformedSubmissions);
+        setStats(transformedStats);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load submissions");
+        console.error("Failed to load submissions:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (formId) {
+      loadData();
+    }
+  }, [formId, searchQuery]);
 
   // Column helper for TanStack Table
   const columnHelper = createColumnHelper<Submission>();
@@ -309,15 +290,16 @@ export default function SubmissionsPage() {
     [columnHelper]
   );
 
-  // Filtered data
+  // Filtered data (local filtering for quick response, API filtering happens on load)
   const filteredData = useMemo(() => {
-    return mockSubmissions.filter(
-      (submission) =>
-        submission.respondentId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        submission.answers.q1?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        submission.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
-  }, [searchQuery]);
+    if (!submissions.length) return [];
+
+    return submissions.filter((submission) => {
+      // Additional local filtering can be added here if needed
+      // Most filtering is handled at the API level
+      return true;
+    });
+  }, [submissions]);
 
   // Initialize React Table
   const table = useReactTable({
@@ -343,24 +325,30 @@ export default function SubmissionsPage() {
 
   // Export functionality
   const handleExport = async (format: "csv" | "parquet") => {
-    setExportProgress({ isExporting: true, progress: 0, format });
+    try {
+      setExportProgress({ isExporting: true, progress: 0, format });
 
-    // Simulate export progress
-    for (let i = 0; i <= 100; i += 10) {
-      await new Promise((resolve) => setTimeout(resolve, 200));
-      setExportProgress((prev) => ({ ...prev, progress: i }));
+      // Call the real API
+      const blob = await submissionsApi.export({
+        form_pk: formId,
+        format,
+        search: searchQuery || undefined,
+      });
+
+      // Create download
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `submissions-${formId}-${Date.now()}.${format}`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      setExportProgress({ isExporting: false, progress: 100 });
+    } catch (err) {
+      console.error("Export failed:", err);
+      setError("Export failed. Please try again.");
+      setExportProgress({ isExporting: false, progress: 0 });
     }
-
-    // Simulate download
-    const blob = new Blob(["Mock export data"], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `submissions-${Date.now()}.${format}`;
-    a.click();
-    URL.revokeObjectURL(url);
-
-    setExportProgress({ isExporting: false, progress: 0 });
   };
 
   // Webhook redrive functionality
@@ -391,8 +379,14 @@ export default function SubmissionsPage() {
               <div>
                 <h1 className="font-semibold">Submissions</h1>
                 <p className="text-xs text-muted-foreground">
-                  {mockStats.submissions.toLocaleString()} responses •{" "}
-                  {Math.round(mockStats.completionRate * 100)}% completion rate
+                  {stats ? (
+                    <>
+                      {stats.submissions.toLocaleString()} responses •{" "}
+                      {Math.round(stats.completionRate * 100)}% completion rate
+                    </>
+                  ) : (
+                    "Loading..."
+                  )}
                 </p>
               </div>
             </div>
@@ -424,43 +418,49 @@ export default function SubmissionsPage() {
 
           {/* Stats Row */}
           <div className="flex items-center gap-8 px-6 py-4 bg-muted/30 border-t">
-            <div className="flex items-center gap-2">
-              <Eye className="h-4 w-4 text-muted-foreground" />
-              <div>
-                <div className="text-sm font-medium">{mockStats.views.toLocaleString()}</div>
-                <div className="text-xs text-muted-foreground">Views</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-muted-foreground" />
-              <div>
-                <div className="text-sm font-medium">{mockStats.submissions.toLocaleString()}</div>
-                <div className="text-xs text-muted-foreground">Submissions</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Target className="h-4 w-4 text-muted-foreground" />
-              <div>
-                <div className="text-sm font-medium">
-                  {Math.round(mockStats.completionRate * 100)}%
+            {stats ? (
+              <>
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <div className="text-sm font-medium">{stats.views.toLocaleString()}</div>
+                    <div className="text-xs text-muted-foreground">Views</div>
+                  </div>
                 </div>
-                <div className="text-xs text-muted-foreground">Completion</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Timer className="h-4 w-4 text-muted-foreground" />
-              <div>
-                <div className="text-sm font-medium">{formatDuration(mockStats.averageTime)}</div>
-                <div className="text-xs text-muted-foreground">Avg Time</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-green-600" />
-              <div>
-                <div className="text-sm font-medium text-green-600">+12%</div>
-                <div className="text-xs text-muted-foreground">vs Last Week</div>
-              </div>
-            </div>
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <div className="text-sm font-medium">{stats.submissions.toLocaleString()}</div>
+                    <div className="text-xs text-muted-foreground">Submissions</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Target className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <div className="text-sm font-medium">
+                      {Math.round(stats.completionRate * 100)}%
+                    </div>
+                    <div className="text-xs text-muted-foreground">Completion</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Timer className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <div className="text-sm font-medium">{formatDuration(stats.averageTime)}</div>
+                    <div className="text-xs text-muted-foreground">Avg Time</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-green-600" />
+                  <div>
+                    <div className="text-sm font-medium text-green-600">+12%</div>
+                    <div className="text-xs text-muted-foreground">vs Last Week</div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-sm text-muted-foreground">Loading statistics...</div>
+            )}
           </div>
         </header>
 
@@ -573,65 +573,88 @@ export default function SubmissionsPage() {
           </motion.div>
         )}
 
-        {/* TanStack Table with React Window for Virtualization */}
-        <div className="flex-1 overflow-hidden flex flex-col">
-          {/* Table Header */}
-          <div className="flex bg-muted/50 border-b sticky top-0 z-10">
-            {table.getHeaderGroups().map((headerGroup) =>
-              headerGroup.headers.map((header) => {
-                const width = header.getSize();
-                return (
-                  <div
-                    key={header.id}
-                    className="px-4 py-3 text-sm font-medium flex items-center border-r last:border-r-0"
-                    style={{ width, minWidth: width, maxWidth: width }}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </div>
-                );
-              })
-            )}
+        {/* Error State */}
+        {error && (
+          <div className="p-4 bg-red-50 border border-red-200 m-4 rounded-lg">
+            <div className="flex items-center gap-2 text-red-800">
+              <AlertCircle className="h-4 w-4" />
+              <span className="font-medium">Error</span>
+            </div>
+            <p className="text-red-700 text-sm mt-1">{error}</p>
           </div>
+        )}
 
-          {/* Table Body - Scrollable with pagination-like approach */}
-          <div className="flex-1 overflow-auto">
-            <div className="min-w-full">
-              {table
-                .getRowModel()
-                .rows.slice(0, 100)
-                .map((row) => (
-                  <div
-                    key={row.id}
-                    className="flex border-b hover:bg-muted/30 transition-colors items-center"
-                  >
-                    {row.getVisibleCells().map((cell) => {
-                      const column = cell.column;
-                      const width = column.getSize();
-                      return (
-                        <div
-                          key={cell.id}
-                          className="px-4 py-3 flex items-center border-r last:border-r-0"
-                          style={{ width, minWidth: width, maxWidth: width }}
-                        >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
+        {/* Loading State */}
+        {loading && (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-muted-foreground" />
+              <p className="text-muted-foreground">Loading submissions...</p>
             </div>
           </div>
+        )}
 
-          {/* Table Footer */}
-          <div className="border-t px-4 py-3 bg-muted/30 text-sm text-muted-foreground">
-            Showing {table.getRowModel().rows.length} of {filteredData.length} submissions
-            {selectedSubmissions.size > 0 && (
-              <span className="ml-4">• {selectedSubmissions.size} selected</span>
-            )}
+        {/* TanStack Table with React Window for Virtualization */}
+        {!loading && !error && (
+          <div className="flex-1 overflow-hidden flex flex-col">
+            {/* Table Header */}
+            <div className="flex bg-muted/50 border-b sticky top-0 z-10">
+              {table.getHeaderGroups().map((headerGroup) =>
+                headerGroup.headers.map((header) => {
+                  const width = header.getSize();
+                  return (
+                    <div
+                      key={header.id}
+                      className="px-4 py-3 text-sm font-medium flex items-center border-r last:border-r-0"
+                      style={{ width, minWidth: width, maxWidth: width }}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Table Body - Scrollable with pagination-like approach */}
+            <div className="flex-1 overflow-auto">
+              <div className="min-w-full">
+                {table
+                  .getRowModel()
+                  .rows.slice(0, 100)
+                  .map((row) => (
+                    <div
+                      key={row.id}
+                      className="flex border-b hover:bg-muted/30 transition-colors items-center"
+                    >
+                      {row.getVisibleCells().map((cell) => {
+                        const column = cell.column;
+                        const width = column.getSize();
+                        return (
+                          <div
+                            key={cell.id}
+                            className="px-4 py-3 flex items-center border-r last:border-r-0"
+                            style={{ width, minWidth: width, maxWidth: width }}
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ))}
+              </div>
+            </div>
+
+            {/* Table Footer */}
+            <div className="border-t px-4 py-3 bg-muted/30 text-sm text-muted-foreground">
+              Showing {table.getRowModel().rows.length} of {filteredData.length} submissions
+              {selectedSubmissions.size > 0 && (
+                <span className="ml-4">• {selectedSubmissions.size} selected</span>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Enhanced Detail Panel with Webhooks */}

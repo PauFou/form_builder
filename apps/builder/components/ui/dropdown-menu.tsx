@@ -13,4 +13,4 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
   type DropdownMenuProps,
-} from "@forms/ui";
+} from "@skemya/ui";

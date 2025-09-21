@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Card } from "@forms/ui";
-import { Button } from "@forms/ui";
-import { ScrollArea } from "@forms/ui";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@forms/ui";
+import { Card } from "@skemya/ui";
+import { Button } from "@skemya/ui";
+import { ScrollArea } from "@skemya/ui";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@skemya/ui";
+import { useDraggable } from "@dnd-kit/core";
 import {
   Type,
   AlignLeft,
@@ -32,10 +33,11 @@ import {
   Blocks,
   Clock,
   Link,
+  GripVertical,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
-import type { Block } from "@forms/contracts";
+import type { Block } from "@skemya/contracts";
 import { LogicEditor } from "../logic/logic-editor";
 
 const blockTypes = [
@@ -128,25 +130,13 @@ export function BlockLibrary() {
                   <div className="grid gap-2">
                     {blockTypes
                       .filter((block) => block.category === category)
-                      .map((block) => {
-                        const Icon = block.icon;
-                        return (
-                          <motion.div
-                            key={block.type}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                          >
-                            <Button
-                              variant="outline"
-                              className="w-full justify-start gap-3 h-auto py-3"
-                              onClick={() => handleAddBlock(block.type)}
-                            >
-                              <Icon className="h-4 w-4" />
-                              <span className="text-sm">{block.label}</span>
-                            </Button>
-                          </motion.div>
-                        );
-                      })}
+                      .map((block) => (
+                        <DraggableBlock
+                          key={block.type}
+                          block={block}
+                          onAddBlock={handleAddBlock}
+                        />
+                      ))}
                   </div>
                 </div>
               ))}
@@ -163,5 +153,53 @@ export function BlockLibrary() {
         </TabsContent>
       </Tabs>
     </Card>
+  );
+}
+
+// Draggable block component
+function DraggableBlock({
+  block,
+  onAddBlock,
+}: {
+  block: { icon: any; type: string; label: string; category: string };
+  onAddBlock: (type: string) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `library-${block.type}`,
+    data: {
+      source: "library",
+      blockType: block.type,
+    },
+  });
+
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      }
+    : undefined;
+
+  const Icon = block.icon;
+
+  return (
+    <motion.div
+      ref={setNodeRef}
+      style={style}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className={isDragging ? "opacity-50" : ""}
+    >
+      <Button
+        variant="outline"
+        className="w-full justify-start gap-2 h-auto py-3 cursor-move"
+        onClick={() => onAddBlock(block.type)}
+        {...attributes}
+      >
+        <div {...listeners} className="touch-none">
+          <GripVertical className="h-4 w-4 text-muted-foreground" />
+        </div>
+        <Icon className="h-4 w-4" />
+        <span className="text-sm flex-1 text-left">{block.label}</span>
+      </Button>
+    </motion.div>
   );
 }

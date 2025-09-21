@@ -10,12 +10,12 @@ const path = require("path");
 
 // Performance budgets
 const BUDGETS = {
-  "@forms/runtime": {
+  "@skemya/runtime": {
     "dist/index.js": 30 * 1024, // 30KB gzipped
     "dist/index.mjs": 30 * 1024, // 30KB gzipped
     "dist/embed.global.js": 5 * 1024, // 5KB gzipped
   },
-  "@forms/analytics": {
+  "@skemya/analytics": {
     "dist/index.js": 15 * 1024, // 15KB gzipped
   },
 };
@@ -27,14 +27,14 @@ let hasErrors = false;
 // Check runtime package
 const runtimePath = path.join(__dirname, "../packages/runtime");
 if (fs.existsSync(runtimePath)) {
-  console.log("📦 Checking @forms/runtime bundle sizes...");
+  console.log("📦 Checking @skemya/runtime bundle sizes...");
 
   // The runtime package already has size-limit configured
   // We'll rely on that for accurate gzipped sizes
   const { execSync } = require("child_process");
 
   try {
-    const output = execSync("pnpm --filter @forms/runtime size", {
+    const output = execSync("pnpm --filter @skemya/runtime size", {
       cwd: path.join(__dirname, ".."),
       encoding: "utf8",
     });
@@ -55,16 +55,16 @@ if (fs.existsSync(runtimePath)) {
 // Check analytics package
 const analyticsPath = path.join(__dirname, "../packages/analytics");
 if (fs.existsSync(analyticsPath)) {
-  console.log("\n📦 Checking @forms/analytics bundle sizes...");
+  console.log("\n📦 Checking @skemya/analytics bundle sizes...");
 
   // First check if dist exists, if not try to build
   const distPath = path.join(analyticsPath, "dist");
   if (!fs.existsSync(distPath)) {
-    console.log("  Building @forms/analytics package...");
+    console.log("  Building @skemya/analytics package...");
     const { execSync } = require("child_process");
 
     try {
-      execSync("pnpm --filter @forms/analytics build", {
+      execSync("pnpm --filter @skemya/analytics build", {
         cwd: path.join(__dirname, ".."),
         encoding: "utf8",
         stdio: "inherit",
@@ -77,7 +77,7 @@ if (fs.existsSync(analyticsPath)) {
 
   // Now check the bundle sizes
   if (fs.existsSync(distPath)) {
-    for (const [file, budget] of Object.entries(BUDGETS["@forms/analytics"])) {
+    for (const [file, budget] of Object.entries(BUDGETS["@skemya/analytics"])) {
       // file already contains "dist/" prefix from BUDGETS config
       const filePath = path.join(analyticsPath, file);
 

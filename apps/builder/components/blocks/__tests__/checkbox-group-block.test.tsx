@@ -2,10 +2,10 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CheckboxGroupBlock } from "../checkbox-group-block";
-import { Block } from "@forms/contracts";
+import { Block } from "@skemya/contracts";
 
 // Mock UI components
-jest.mock("@forms/ui", () => ({
+jest.mock("@skemya/ui", () => ({
   Label: ({ children, className, onClick }: any) => (
     <label className={className} onClick={onClick}>
       {children}

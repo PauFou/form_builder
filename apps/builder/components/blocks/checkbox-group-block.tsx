@@ -1,6 +1,6 @@
 "use client";
 
-import { Label, Checkbox } from "@forms/ui";
+import { Label, Checkbox } from "@skemya/ui";
 import { BlockProps } from "./types";
 import { useState } from "react";
 

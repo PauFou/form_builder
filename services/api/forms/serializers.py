@@ -5,6 +5,7 @@ from .models import Form, FormVersion
 class FormSerializer(serializers.ModelSerializer):
     created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
     organization_name = serializers.CharField(source='organization.name', read_only=True)
+    id = serializers.UUIDField(read_only=True)  # Explicitly define UUID field
     
     class Meta:
         model = Form
@@ -21,6 +22,9 @@ class FormSerializer(serializers.ModelSerializer):
             'id', 'submission_count', 'view_count', 'organization',
             'created_by', 'created_at', 'updated_at'
         ]
+        extra_kwargs = {
+            'slug': {'required': False, 'allow_blank': True}
+        }
     
     def validate_pages(self, value):
         """Validate pages structure"""

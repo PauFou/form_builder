@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Button } from "@forms/ui";
-import { Input } from "@forms/ui";
-import { Label } from "@forms/ui";
-import { Textarea } from "@forms/ui";
-import { Badge } from "@forms/ui";
-import { Slider } from "@forms/ui";
-import { Switch } from "@forms/ui";
-import { Alert, AlertDescription } from "@forms/ui";
+import { Button } from "@skemya/ui";
+import { Input } from "@skemya/ui";
+import { Label } from "@skemya/ui";
+import { Textarea } from "@skemya/ui";
+import { Badge } from "@skemya/ui";
+import { Slider } from "@skemya/ui";
+import { Switch } from "@skemya/ui";
+import { Alert, AlertDescription } from "@skemya/ui";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@forms/ui";
+} from "@skemya/ui";
 import {
   Play,
   AlertTriangle,
@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 import { formsApi } from "../../lib/api/forms";
-import type { FormVersion } from "@forms/contracts";
+import type { FormVersion } from "@skemya/contracts";
 import { cn } from "../../lib/utils";
 import { toast } from "react-hot-toast";
 import { ValidationErrorsDialog } from "./validation-errors-dialog";

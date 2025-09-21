@@ -35,8 +35,8 @@ class RegisterView(generics.CreateAPIView):
         user = serializer.save()
         
         # Create default organization for the user
-        org_name = request.data.get('organization_name', f"{user.username}'s Organization")
-        org_slug = org_name.lower().replace(' ', '-').replace("'", '')
+        org_name = request.data.get('organization_name', '') or f"{user.username}'s Workspace"
+        org_slug = org_name.lower().replace(' ', '-').replace("'", '').replace(".", "")
         
         # Ensure unique slug
         base_slug = org_slug
@@ -69,10 +69,8 @@ class RegisterView(generics.CreateAPIView):
         
         return Response({
             'user': UserSerializer(user).data,
-            'tokens': {
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            },
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
             'organization': {
                 'id': str(organization.id),
                 'name': organization.name,

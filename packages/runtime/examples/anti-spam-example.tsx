@@ -1,6 +1,6 @@
 import React from "react";
-import { FormViewer, antiSpamService } from "@forms/runtime";
-import type { FormSchema, RuntimeConfig } from "@forms/runtime";
+import { FormViewer, antiSpamService } from "@skemya/runtime";
+import type { FormSchema, RuntimeConfig } from "@skemya/runtime";
 
 // Example form schema
 const schema: FormSchema = {

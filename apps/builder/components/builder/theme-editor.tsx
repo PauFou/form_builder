@@ -16,10 +16,10 @@ import {
   Separator,
   Input,
   Button,
-} from "@forms/ui";
+} from "@skemya/ui";
 import { Palette, Layout, Type } from "lucide-react";
 import { ThemeTokens, LayoutSettings, DEFAULT_THEME, DEFAULT_LAYOUT } from "../../lib/types/theme";
-import type { Form, Theme } from "@forms/contracts";
+import type { Form, Theme } from "@skemya/contracts";
 
 interface ThemeEditorProps {
   form: Form | null;

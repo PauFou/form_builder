@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Setup script for local testing environment
-# This replaces GitHub Actions with a comprehensive local testing setup
+# Script de configuration pour environnement de test local
+# Remplace GitHub Actions par un système de tests locaux complet
 
 set -e
 

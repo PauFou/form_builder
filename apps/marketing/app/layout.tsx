@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Build forms. Ship answers.",
+  title: "Skemya - Build forms. Ship answers.",
   description:
     "Professional form platform with EU hosting, advanced logic, and blazing fast performance. A powerful alternative to Typeform.",
 };

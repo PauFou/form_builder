@@ -1,6 +1,6 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@forms/ui";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@skemya/ui";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 import { Sidebar } from "./sidebar";
 import { Canvas } from "./canvas";
@@ -18,7 +18,8 @@ import {
   PointerSensor,
   KeyboardSensor,
 } from "@dnd-kit/core";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAnalytics } from "../../lib/hooks/use-analytics";
 
 interface FormBuilderProps {
   onSave?: () => void;
@@ -30,6 +31,20 @@ export function FormBuilder({ onSave, onPreview, onPublish }: FormBuilderProps) 
   const { form, selectedBlockId } = useFormBuilderStore();
   const [activeTab, setActiveTab] = useState("design");
   const [draggedItem, setDraggedItem] = useState<any>(null);
+
+  // Analytics tracking for form builder interactions
+  const analytics = useAnalytics({
+    formId: form?.id || "unknown",
+    organizationId: "placeholder-org-id", // TODO: Get from auth context
+    enabled: !!form?.id,
+  });
+
+  // Track form builder usage
+  useEffect(() => {
+    if (form?.id) {
+      analytics.trackFormStart();
+    }
+  }, [form?.id, analytics]);
 
   // Enable keyboard shortcuts
   useUndoRedoShortcuts({ onSave, onPreview });

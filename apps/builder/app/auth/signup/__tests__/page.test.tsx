@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { useRouter } from "next/navigation";
 import SignupPage from "../page";
 import { useAuthStore } from "../../../../lib/stores/auth-store";
-import { useToast } from "@forms/ui";
+import { useToast } from "@skemya/ui";
 
 // Mock dependencies
 jest.mock("next/navigation", () => ({
@@ -13,8 +13,8 @@ jest.mock("next/navigation", () => ({
 
 jest.mock("../../../../lib/stores/auth-store");
 
-jest.mock("@forms/ui", () => ({
-  ...jest.requireActual("@forms/ui"),
+jest.mock("@skemya/ui", () => ({
+  ...jest.requireActual("@skemya/ui"),
   useToast: jest.fn(),
 }));
 
@@ -43,7 +43,7 @@ describe("SignupPage", () => {
     expect(screen.getByLabelText("Full Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
-    expect(screen.getByLabelText("Organization Name")).toBeInTheDocument();
+    expect(screen.getByLabelText(/Organization Name/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Create account" })).toBeInTheDocument();
   });
 
@@ -58,9 +58,7 @@ describe("SignupPage", () => {
       expect(screen.getByText("Name must be at least 2 characters")).toBeInTheDocument();
       expect(screen.getByText("Invalid email address")).toBeInTheDocument();
       expect(screen.getByText("Password must be at least 8 characters")).toBeInTheDocument();
-      expect(
-        screen.getByText("Organization name must be at least 2 characters")
-      ).toBeInTheDocument();
+      // Organization name is optional, so no validation error expected
     });
   });
 
@@ -88,7 +86,7 @@ describe("SignupPage", () => {
     const nameInput = screen.getByLabelText("Full Name");
     const emailInput = screen.getByLabelText("Email");
     const passwordInput = screen.getByLabelText("Password");
-    const orgInput = screen.getByLabelText("Organization Name");
+    const orgInput = screen.getByLabelText(/Organization Name/);
 
     await user.type(nameInput, "John Doe");
     await user.type(emailInput, "john@example.com");
@@ -122,7 +120,7 @@ describe("SignupPage", () => {
     const nameInput = screen.getByLabelText("Full Name");
     const emailInput = screen.getByLabelText("Email");
     const passwordInput = screen.getByLabelText("Password");
-    const orgInput = screen.getByLabelText("Organization Name");
+    const orgInput = screen.getByLabelText(/Organization Name/);
 
     await user.type(nameInput, "John Doe");
     await user.type(emailInput, "existing@example.com");
@@ -169,7 +167,7 @@ describe("SignupPage", () => {
     const nameInput = screen.getByLabelText("Full Name");
     const emailInput = screen.getByLabelText("Email");
     const passwordInput = screen.getByLabelText("Password");
-    const orgInput = screen.getByLabelText("Organization Name");
+    const orgInput = screen.getByLabelText(/Organization Name/);
 
     await user.type(nameInput, "John Doe");
     await user.type(emailInput, "john@example.com");

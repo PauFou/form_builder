@@ -1,3 +1,3 @@
 "use client";
 
-export { Separator, type SeparatorProps } from "@forms/ui";
+export { Separator, type SeparatorProps } from "@skemya/ui";
