@@ -1,0 +1,869 @@
+"""
+Comprehensive GDPR Compliance Tests
+Tests all aspects of GDPR compliance including data deletion, export, audit trails, and retention policies
+"""
+
+import json
+import pytest
+from datetime import datetime, timedelta
+from django.test import TestCase, TransactionTestCase
+from django.contrib.auth import get_user_model
+from django.utils import timezone
+from django.core.files.uploadedfile import SimpleUploadedFile
+from rest_framework.test import APIClient
+from rest_framework import status
+from unittest.mock import patch, Mock
+
+from core.models import Organization, Submission, Answer, AuditLog, Partial
+from forms.models import Form, FormVersion
+from webhooks.models import Webhook, WebhookDelivery
+from integrations.models import Integration, IntegrationLog
+from files.models import UploadedFile
+from analytics.models import AnalyticsEvent
+
+
+User = get_user_model()
+
+
+class GDPRDataDeletionTests(TransactionTestCase):
+    """Test complete data deletion across all services"""
+    
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(
+            username='gdpr_test',
+            email='gdpr@test.com',
+            password='testpass123'
+        )
+        self.org = Organization.objects.create(
+            name='GDPR Test Org',
+            slug='gdpr-test'
+        )
+        self.user.memberships.create(organization=self.org, role='owner')
+        
+        # Create test form with submissions
+        self.form = Form.objects.create(
+            organization=self.org,
+            title='GDPR Test Form',
+            created_by=self.user
+        )
+        
+        # Create submissions with PII
+        self.submission = Submission.objects.create(
+            form=self.form,
+            respondent_key='resp-123',
+            metadata={
+                'ip_address': '192.168.1.1',
+                'user_agent': 'Mozilla/5.0',
+                'referrer': 'https://example.com'
+            }
+        )
+        
+        # Create answers with PII
+        Answer.objects.create(
+            submission=self.submission,
+            block_id='email-field',
+            type='email',
+            value={'email': 'user@example.com'}
+        )
+        
+        Answer.objects.create(
+            submission=self.submission,
+            block_id='name-field',
+            type='text',
+            value={'text': 'John Doe'}
+        )
+        
+        # Create file uploads
+        self.uploaded_file = UploadedFile.objects.create(
+            submission=self.submission,
+            field_id='file-field',
+            filename='passport.pdf',
+            file_path='uploads/resp-123/passport.pdf',
+            file_size=1024000,
+            mime_type='application/pdf'
+        )
+        
+        # Create partial submission
+        self.partial = PartialSubmission.objects.create(
+            form=self.form,
+            respondent_key='resp-123',
+            data={
+                'email': 'partial@example.com',
+                'phone': '+1234567890'
+            }
+        )
+        
+        # Create webhook deliveries
+        self.webhook = Webhook.objects.create(
+            organization=self.org,
+            url='https://example.com/webhook',
+            secret='test-secret'
+        )
+        
+        self.delivery = WebhookDelivery.objects.create(
+            webhook=self.webhook,
+            submission=self.submission,
+            payload={
+                'email': 'user@example.com',
+                'name': 'John Doe'
+            },
+            response_body='{"status": "ok"}'
+        )
+        
+        # Create integration logs
+        self.integration = Integration.objects.create(
+            organization=self.org,
+            provider='google_sheets',
+            config={'sheet_id': 'test-sheet'}
+        )
+        
+        self.integration_log = IntegrationLog.objects.create(
+            integration=self.integration,
+            submission=self.submission,
+            action='sync',
+            data={'email': 'user@example.com'},
+            status='success'
+        )
+        
+        # Create analytics events
+        self.analytics_event = AnalyticsEvent.objects.create(
+            form_id=self.form.id,
+            respondent_id='resp-123',
+            event_type='form_submit',
+            metadata={
+                'ip': '192.168.1.1',
+                'country': 'US'
+            }
+        )
+    
+    def test_user_data_deletion_request(self):
+        """Test complete user data deletion via API"""
+        self.client.force_authenticate(user=self.user)
+        
+        # Request data deletion
+        response = self.client.post('/api/v1/gdpr/delete-my-data/', {
+            'confirm': True,
+            'reason': 'User requested deletion'
+        })
+        
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertIn('deletion_token', response.data)
+        
+        # Verify deletion token was created
+        deletion_token = response.data['deletion_token']
+        
+        # Confirm deletion with token
+        response = self.client.post(f'/api/v1/gdpr/confirm-deletion/{deletion_token}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Verify all user data is anonymized/deleted
+        user = User.objects.get(id=self.user.id)
+        self.assertTrue(user.email.endswith('@deleted.local'))
+        self.assertEqual(user.first_name, 'Deleted')
+        self.assertEqual(user.last_name, 'User')
+        self.assertFalse(user.is_active)
+    
+    def test_submission_data_deletion(self):
+        """Test deletion of specific submission data"""
+        self.client.force_authenticate(user=self.user)
+        
+        # Delete specific submission
+        response = self.client.delete(
+            f'/api/v1/forms/{self.form.id}/submissions/{self.submission.id}/gdpr-delete/'
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Verify submission is anonymized
+        submission = Submission.objects.get(id=self.submission.id)
+        self.assertIsNone(submission.respondent_key)
+        self.assertNotIn('ip_address', submission.metadata)
+        self.assertNotIn('user_agent', submission.metadata)
+        
+        # Verify answers are deleted
+        self.assertEqual(Answer.objects.filter(submission=submission).count(), 0)
+        
+        # Verify files are deleted
+        with self.assertRaises(UploadedFile.DoesNotExist):
+            UploadedFile.objects.get(id=self.uploaded_file.id)
+    
+    def test_cross_service_data_deletion(self):
+        """Test that deletion cascades across all services"""
+        self.client.force_authenticate(user=self.user)
+        
+        # Delete form (should cascade to all related data)
+        response = self.client.delete(
+            f'/api/v1/forms/{self.form.id}/gdpr-delete-all-data/'
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Verify cascading deletions
+        self.assertEqual(Submission.objects.filter(form=self.form).count(), 0)
+        self.assertEqual(Answer.objects.filter(submission__form=self.form).count(), 0)
+        self.assertEqual(PartialSubmission.objects.filter(form=self.form).count(), 0)
+        self.assertEqual(UploadedFile.objects.filter(submission__form=self.form).count(), 0)
+        
+        # Verify webhook deliveries are anonymized
+        delivery = WebhookDelivery.objects.get(id=self.delivery.id)
+        self.assertNotIn('email', delivery.payload)
+        self.assertNotIn('name', delivery.payload)
+        
+        # Verify integration logs are anonymized
+        log = IntegrationLog.objects.get(id=self.integration_log.id)
+        self.assertNotIn('email', log.data)
+        
+        # Verify analytics events are anonymized
+        event = AnalyticsEvent.objects.get(id=self.analytics_event.id)
+        self.assertIsNone(event.respondent_id)
+        self.assertNotIn('ip', event.metadata)
+    
+    def test_deletion_audit_trail(self):
+        """Test that all deletions are properly audited"""
+        self.client.force_authenticate(user=self.user)
+        
+        # Perform deletion
+        response = self.client.delete(
+            f'/api/v1/forms/{self.form.id}/submissions/{self.submission.id}/gdpr-delete/'
+        )
+        
+        # Verify audit log entry
+        audit_logs = AuditLog.objects.filter(
+            action='gdpr_deletion',
+            entity='submission',
+            entity_id=str(self.submission.id)
+        )
+        
+        self.assertEqual(audit_logs.count(), 1)
+        audit_log = audit_logs.first()
+        
+        self.assertEqual(audit_log.actor_id, self.user.id)
+        self.assertIn('deleted_fields', audit_log.metadata)
+        self.assertIn('deletion_reason', audit_log.metadata)
+        self.assertIn('timestamp', audit_log.metadata)
+    
+    @patch('storage.s3_client.delete_object')
+    def test_file_deletion_from_storage(self, mock_s3_delete):
+        """Test that files are deleted from S3/storage"""
+        self.client.force_authenticate(user=self.user)
+        
+        # Delete submission with files
+        response = self.client.delete(
+            f'/api/v1/forms/{self.form.id}/submissions/{self.submission.id}/gdpr-delete/'
+        )
+        
+        # Verify S3 deletion was called
+        mock_s3_delete.assert_called_with(
+            Bucket='form-uploads',
+            Key='uploads/resp-123/passport.pdf'
+        )
+    
+    def test_deletion_with_active_integrations(self):
+        """Test deletion handling when integrations are active"""
+        # Create active integration sync
+        self.integration.last_sync = timezone.now()
+        self.integration.save()
+        
+        self.client.force_authenticate(user=self.user)
+        
+        # Attempt deletion
+        response = self.client.delete(
+            f'/api/v1/forms/{self.form.id}/submissions/{self.submission.id}/gdpr-delete/'
+        )
+        
+        # Should queue deletion for after sync completion
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertIn('deletion_queued', response.data)
+        
+        # Verify deletion job was created
+        # In real implementation, check background job queue
+
+
+class GDPRDataExportTests(TestCase):
+    """Test GDPR data export functionality"""
+    
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(
+            username='export_test',
+            email='export@test.com',
+            password='testpass123'
+        )
+        self.org = Organization.objects.create(
+            name='Export Test Org',
+            slug='export-test'
+        )
+        self.user.memberships.create(organization=self.org, role='owner')
+        
+        # Create test data
+        self.form = Form.objects.create(
+            organization=self.org,
+            title='Export Test Form',
+            created_by=self.user
+        )
+        
+        # Create multiple submissions
+        for i in range(5):
+            submission = Submission.objects.create(
+                form=self.form,
+                respondent_key=f'resp-{i}',
+                completed_at=timezone.now() - timedelta(days=i)
+            )
+            
+            Answer.objects.create(
+                submission=submission,
+                block_id='email',
+                type='email',
+                value={'email': f'user{i}@example.com'}
+            )
+    
+    def test_user_data_export_request(self):
+        """Test complete user data export"""
+        self.client.force_authenticate(user=self.user)
+        
+        response = self.client.post('/api/v1/gdpr/export-my-data/')
+        
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertIn('export_token', response.data)
+        self.assertIn('estimated_time', response.data)
+        
+        # In real implementation, this would be async
+        # Here we'll simulate the export being ready
+        export_token = response.data['export_token']
+        
+        # Check export status
+        response = self.client.get(f'/api/v1/gdpr/export-status/{export_token}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('status', response.data)
+        
+        # Download export
+        response = self.client.get(f'/api/v1/gdpr/download-export/{export_token}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response['Content-Type'], 'application/zip')
+        self.assertIn('attachment', response['Content-Disposition'])
+    
+    def test_export_data_completeness(self):
+        """Test that export includes all user data"""
+        self.client.force_authenticate(user=self.user)
+        
+        # Create various data types
+        webhook = Webhook.objects.create(
+            organization=self.org,
+            url='https://test.com'
+        )
+        
+        integration = Integration.objects.create(
+            organization=self.org,
+            provider='slack'
+        )
+        
+        # Request export
+        response = self.client.post('/api/v1/gdpr/export-my-data/')
+        export_token = response.data['export_token']
+        
+        # Mock the export content check
+        # In real implementation, this would unzip and verify
+        expected_files = [
+            'account_info.json',
+            'forms.json',
+            'submissions.json',
+            'files_list.json',
+            'webhooks.json',
+            'integrations.json',
+            'audit_logs.json',
+            'README.txt'
+        ]
+        
+        # Verify all expected files would be included
+        # This is a mock verification - real test would check zip contents
+    
+    def test_export_data_format(self):
+        """Test that exported data is in correct format"""
+        self.client.force_authenticate(user=self.user)
+        
+        # In a real test, we would:
+        # 1. Generate export
+        # 2. Unzip the file
+        # 3. Parse JSON files
+        # 4. Verify structure
+        
+        # Mock verification
+        expected_account_structure = {
+            'user_id': str,
+            'email': str,
+            'username': str,
+            'date_joined': str,
+            'organizations': list,
+            'settings': dict
+        }
+        
+        expected_submission_structure = {
+            'submission_id': str,
+            'form_id': str,
+            'submitted_at': str,
+            'answers': list,
+            'metadata': dict
+        }
+    
+    def test_export_anonymization_options(self):
+        """Test export with anonymization options"""
+        self.client.force_authenticate(user=self.user)
+        
+        response = self.client.post('/api/v1/gdpr/export-my-data/', {
+            'anonymize_ips': True,
+            'exclude_metadata': True
+        })
+        
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        
+        # Verify anonymization was applied in export
+        # In real implementation, check that IPs are masked
+        # and metadata is excluded from export
+    
+    def test_export_date_range_filter(self):
+        """Test export with date range filtering"""
+        self.client.force_authenticate(user=self.user)
+        
+        response = self.client.post('/api/v1/gdpr/export-my-data/', {
+            'start_date': '2024-01-01',
+            'end_date': '2024-12-31'
+        })
+        
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        
+        # Verify only data within range is exported
+    
+    def test_export_audit_trail(self):
+        """Test that exports are properly audited"""
+        self.client.force_authenticate(user=self.user)
+        
+        response = self.client.post('/api/v1/gdpr/export-my-data/')
+        
+        # Verify audit log
+        audit_logs = AuditLog.objects.filter(
+            action='gdpr_export',
+            actor_id=self.user.id
+        )
+        
+        self.assertEqual(audit_logs.count(), 1)
+        audit_log = audit_logs.first()
+        
+        self.assertIn('export_token', audit_log.metadata)
+        self.assertIn('requested_at', audit_log.metadata)
+        self.assertIn('ip_address', audit_log.metadata)
+
+
+class GDPRRetentionPolicyTests(TestCase):
+    """Test data retention policy enforcement"""
+    
+    def setUp(self):
+        self.org = Organization.objects.create(
+            name='Retention Test Org',
+            slug='retention-test',
+            settings={
+                'data_retention_days': 90,
+                'partial_retention_days': 30
+            }
+        )
+    
+    def test_automatic_old_data_deletion(self):
+        """Test automatic deletion of data past retention period"""
+        # Create old submission
+        old_submission = Submission.objects.create(
+            form=Form.objects.create(
+                organization=self.org,
+                title='Test Form'
+            ),
+            completed_at=timezone.now() - timedelta(days=100)
+        )
+        
+        # Create recent submission
+        recent_submission = Submission.objects.create(
+            form=old_submission.form,
+            completed_at=timezone.now() - timedelta(days=10)
+        )
+        
+        # Run retention policy enforcement
+        from gdpr.tasks import enforce_retention_policies
+        enforce_retention_policies()
+        
+        # Verify old submission is deleted
+        with self.assertRaises(Submission.DoesNotExist):
+            Submission.objects.get(id=old_submission.id)
+        
+        # Verify recent submission remains
+        self.assertTrue(
+            Submission.objects.filter(id=recent_submission.id).exists()
+        )
+    
+    def test_partial_submission_retention(self):
+        """Test retention of partial submissions"""
+        form = Form.objects.create(
+            organization=self.org,
+            title='Test Form'
+        )
+        
+        # Create old partial
+        old_partial = PartialSubmission.objects.create(
+            form=form,
+            respondent_key='old-resp',
+            updated_at=timezone.now() - timedelta(days=35)
+        )
+        
+        # Create recent partial
+        recent_partial = PartialSubmission.objects.create(
+            form=form,
+            respondent_key='new-resp',
+            updated_at=timezone.now() - timedelta(days=5)
+        )
+        
+        # Run retention enforcement
+        from gdpr.tasks import enforce_retention_policies
+        enforce_retention_policies()
+        
+        # Verify old partial is deleted
+        with self.assertRaises(PartialSubmission.DoesNotExist):
+            PartialSubmission.objects.get(id=old_partial.id)
+        
+        # Verify recent partial remains
+        self.assertTrue(
+            PartialSubmission.objects.filter(id=recent_partial.id).exists()
+        )
+    
+    def test_retention_policy_override(self):
+        """Test form-specific retention policy override"""
+        # Create form with custom retention
+        form = Form.objects.create(
+            organization=self.org,
+            title='Legal Form',
+            settings={
+                'data_retention_days': 2555  # 7 years for legal
+            }
+        )
+        
+        # Create old submission that would normally be deleted
+        submission = Submission.objects.create(
+            form=form,
+            completed_at=timezone.now() - timedelta(days=365)
+        )
+        
+        # Run retention enforcement
+        from gdpr.tasks import enforce_retention_policies
+        enforce_retention_policies()
+        
+        # Verify submission is retained due to override
+        self.assertTrue(
+            Submission.objects.filter(id=submission.id).exists()
+        )
+    
+    def test_legal_hold_prevents_deletion(self):
+        """Test that legal hold prevents automatic deletion"""
+        form = Form.objects.create(
+            organization=self.org,
+            title='Test Form'
+        )
+        
+        # Create old submission with legal hold
+        submission = Submission.objects.create(
+            form=form,
+            completed_at=timezone.now() - timedelta(days=100),
+            metadata={'legal_hold': True}
+        )
+        
+        # Run retention enforcement
+        from gdpr.tasks import enforce_retention_policies
+        enforce_retention_policies()
+        
+        # Verify submission is retained
+        self.assertTrue(
+            Submission.objects.filter(id=submission.id).exists()
+        )
+    
+    def test_retention_policy_audit(self):
+        """Test that retention deletions are audited"""
+        form = Form.objects.create(
+            organization=self.org,
+            title='Test Form'
+        )
+        
+        # Create old submission
+        old_submission = Submission.objects.create(
+            form=form,
+            completed_at=timezone.now() - timedelta(days=100)
+        )
+        submission_id = old_submission.id
+        
+        # Run retention enforcement
+        from gdpr.tasks import enforce_retention_policies
+        enforce_retention_policies()
+        
+        # Verify audit log
+        audit_logs = AuditLog.objects.filter(
+            action='retention_deletion',
+            entity='submission',
+            entity_id=str(submission_id)
+        )
+        
+        self.assertEqual(audit_logs.count(), 1)
+        self.assertIn('retention_days', audit_logs.first().metadata)
+        self.assertIn('deletion_reason', audit_logs.first().metadata)
+
+
+class GDPRConsentManagementTests(TestCase):
+    """Test consent management and tracking"""
+    
+    def setUp(self):
+        self.client = APIClient()
+        self.form = Form.objects.create(
+            organization=Organization.objects.create(
+                name='Test Org',
+                slug='test-org'
+            ),
+            title='Test Form'
+        )
+    
+    def test_consent_recording(self):
+        """Test that consent is properly recorded"""
+        response = self.client.post(
+            f'/api/v1/forms/{self.form.id}/submissions/',
+            {
+                'answers': {'email': 'test@example.com'},
+                'consent': {
+                    'marketing': True,
+                    'analytics': True,
+                    'third_party': False
+                },
+                'consent_text': 'I agree to the terms',
+                'consent_version': '1.0'
+            }
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
+        submission = Submission.objects.get(id=response.data['id'])
+        self.assertIn('consent', submission.metadata)
+        self.assertEqual(submission.metadata['consent']['marketing'], True)
+        self.assertEqual(submission.metadata['consent_version'], '1.0')
+    
+    def test_consent_withdrawal(self):
+        """Test consent withdrawal functionality"""
+        # Create submission with consent
+        submission = Submission.objects.create(
+            form=self.form,
+            respondent_key='resp-123',
+            metadata={
+                'consent': {
+                    'marketing': True,
+                    'analytics': True
+                }
+            }
+        )
+        
+        # Withdraw consent
+        response = self.client.post(
+            f'/api/v1/gdpr/withdraw-consent/',
+            {
+                'submission_id': submission.id,
+                'withdraw_types': ['marketing']
+            }
+        )
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Verify consent updated
+        submission.refresh_from_db()
+        self.assertFalse(submission.metadata['consent']['marketing'])
+        self.assertTrue(submission.metadata['consent']['analytics'])
+        
+        # Verify audit log
+        self.assertTrue(
+            AuditLog.objects.filter(
+                action='consent_withdrawn',
+                entity='submission',
+                entity_id=str(submission.id)
+            ).exists()
+        )
+    
+    def test_consent_based_processing(self):
+        """Test that data processing respects consent"""
+        # Create submission without marketing consent
+        submission = Submission.objects.create(
+            form=self.form,
+            respondent_key='resp-123',
+            metadata={
+                'consent': {
+                    'marketing': False,
+                    'analytics': True
+                }
+            }
+        )
+        
+        # Attempt to sync to marketing integration
+        integration = Integration.objects.create(
+            organization=self.form.organization,
+            provider='mailchimp',
+            purpose='marketing'
+        )
+        
+        # This should fail due to lack of consent
+        from integrations.tasks import sync_submission_to_integration
+        result = sync_submission_to_integration(submission.id, integration.id)
+        
+        self.assertFalse(result['success'])
+        self.assertEqual(result['error'], 'Missing consent for marketing')
+
+
+class GDPRDataMinimizationTests(TestCase):
+    """Test data minimization principles"""
+    
+    def test_ip_address_anonymization(self):
+        """Test IP addresses are properly anonymized"""
+        submission = Submission.objects.create(
+            form=Form.objects.create(
+                organization=Organization.objects.create(
+                    name='Test',
+                    slug='test'
+                ),
+                title='Test'
+            ),
+            metadata={
+                'ip_address': '192.168.1.100',
+                'anonymize_ip': True
+            }
+        )
+        
+        # Run anonymization
+        from gdpr.utils import anonymize_ip
+        anonymized = anonymize_ip(submission.metadata['ip_address'])
+        
+        # Verify last octet is zeroed
+        self.assertEqual(anonymized, '192.168.1.0')
+    
+    def test_unnecessary_data_removal(self):
+        """Test removal of unnecessary data fields"""
+        form = Form.objects.create(
+            organization=Organization.objects.create(
+                name='Test',
+                slug='test'
+            ),
+            title='Test',
+            settings={
+                'collect_minimal_data': True
+            }
+        )
+        
+        # Submit with extra metadata
+        response = self.client.post(
+            f'/api/v1/forms/{form.id}/submissions/',
+            {
+                'answers': {'email': 'test@example.com'},
+                'metadata': {
+                    'screen_resolution': '1920x1080',
+                    'browser_plugins': ['Flash', 'Java'],
+                    'battery_level': 0.85
+                }
+            }
+        )
+        
+        submission = Submission.objects.get(id=response.data['id'])
+        
+        # Verify unnecessary data was not stored
+        self.assertNotIn('screen_resolution', submission.metadata)
+        self.assertNotIn('browser_plugins', submission.metadata)
+        self.assertNotIn('battery_level', submission.metadata)
+    
+    def test_field_level_encryption(self):
+        """Test that sensitive fields are encrypted"""
+        submission = Submission.objects.create(
+            form=Form.objects.create(
+                organization=Organization.objects.create(
+                    name='Test',
+                    slug='test'
+                ),
+                title='Test'
+            )
+        )
+        
+        # Create answer with sensitive data
+        answer = Answer.objects.create(
+            submission=submission,
+            block_id='ssn-field',
+            type='ssn',
+            value={'ssn': '123-45-6789'},
+            is_sensitive=True
+        )
+        
+        # Verify data is encrypted in database
+        # In real implementation, check actual DB value
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT value FROM core_answer WHERE id = %s",
+                [answer.id]
+            )
+            db_value = cursor.fetchone()[0]
+            
+            # Should not contain plain SSN
+            self.assertNotIn('123-45-6789', str(db_value))
+
+
+class GDPRCrossBorderTransferTests(TestCase):
+    """Test cross-border data transfer compliance"""
+    
+    def test_data_residency_enforcement(self):
+        """Test that data stays in specified regions"""
+        org = Organization.objects.create(
+            name='EU Org',
+            slug='eu-org',
+            settings={
+                'data_residency': 'eu',
+                'allowed_regions': ['eu-west-1', 'eu-central-1']
+            }
+        )
+        
+        # Attempt to create integration with US endpoint
+        response = self.client.post(
+            f'/api/v1/organizations/{org.id}/integrations/',
+            {
+                'provider': 'webhook',
+                'config': {
+                    'url': 'https://us-east-1.amazonaws.com/webhook'
+                }
+            }
+        )
+        
+        # Should be rejected
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('region not allowed', response.data['error'])
+    
+    def test_data_transfer_agreements(self):
+        """Test that proper agreements are in place for transfers"""
+        org = Organization.objects.create(
+            name='EU Org',
+            slug='eu-org',
+            settings={'data_residency': 'eu'}
+        )
+        
+        # Create US integration (requires SCC)
+        integration = Integration.objects.create(
+            organization=org,
+            provider='salesforce',
+            region='us',
+            requires_transfer_agreement=True
+        )
+        
+        # Attempt sync without agreement
+        submission = Submission.objects.create(
+            form=Form.objects.create(organization=org, title='Test')
+        )
+        
+        from integrations.tasks import sync_submission_to_integration
+        result = sync_submission_to_integration(submission.id, integration.id)
+        
+        self.assertFalse(result['success'])
+        self.assertEqual(result['error'], 'Missing data transfer agreement')
+
+
+if __name__ == '__main__':
+    pytest.main([__file__, '-v'])

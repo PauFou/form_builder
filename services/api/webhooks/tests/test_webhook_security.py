@@ -12,7 +12,6 @@ from rest_framework.test import APITestCase
 from django.contrib.auth import get_user_model
 from core.models import Organization, Membership
 from webhooks.models import Webhook
-from webhooks.tasks import deliver_webhook, calculate_hmac_signature
 
 User = get_user_model()
 
@@ -75,7 +74,7 @@ class WebhookSecurityTestCase(APITestCase):
         payload = json.dumps({"test": "data"})
         wrong_signature = self.generate_hmac_signature(payload, "wrong-secret")
         
-        with patch('requests.post') as mock_post:
+        with patch('requests.post'):
             # Test signature validation failure
             calculated_sig = self.generate_hmac_signature(payload, self.webhook.secret)
             result = wrong_signature == calculated_sig
@@ -85,7 +84,7 @@ class WebhookSecurityTestCase(APITestCase):
 
     def test_hmac_signature_format_validation(self):
         """Test HMAC signature format requirements"""
-        payload = json.dumps({"test": "data"})
+        json.dumps({"test": "data"})
         
         # Test various invalid signature formats
         invalid_signatures = [
@@ -99,7 +98,7 @@ class WebhookSecurityTestCase(APITestCase):
         
         for invalid_sig in invalid_signatures:
             with self.subTest(signature=invalid_sig):
-                with patch('requests.post') as mock_post:
+                with patch('requests.post'):
                     # Test invalid signature format
                     result = False  # Invalid signatures should always fail
                     
@@ -108,7 +107,7 @@ class WebhookSecurityTestCase(APITestCase):
     def test_timing_attack_prevention(self):
         """Test that HMAC comparison is constant-time to prevent timing attacks"""
         payload = json.dumps({"test": "data"})
-        correct_signature = self.generate_hmac_signature(payload, self.webhook.secret)
+        self.generate_hmac_signature(payload, self.webhook.secret)
         
         # Generate wrong signatures of different lengths
         wrong_signatures = [
@@ -142,7 +141,7 @@ class WebhookSecurityTestCase(APITestCase):
             "test": "data",
             "timestamp": int(time.time())
         })
-        signature = self.generate_hmac_signature(payload, self.webhook.secret)
+        self.generate_hmac_signature(payload, self.webhook.secret)
         
         with patch('requests.post') as mock_post:
             mock_post.return_value.status_code = 200
@@ -165,7 +164,7 @@ class WebhookSecurityTestCase(APITestCase):
             "test": "data",
             "timestamp": old_timestamp
         })
-        signature = self.generate_hmac_signature(payload, self.webhook.secret)
+        self.generate_hmac_signature(payload, self.webhook.secret)
         
         with patch('requests.post'):
             # Simulate webhook delivery
@@ -181,7 +180,7 @@ class WebhookSecurityTestCase(APITestCase):
             "test": "data", 
             "timestamp": future_timestamp
         })
-        signature = self.generate_hmac_signature(payload, self.webhook.secret)
+        self.generate_hmac_signature(payload, self.webhook.secret)
         
         with patch('requests.post'):
             # Simulate webhook delivery
@@ -240,7 +239,7 @@ class WebhookSecurityTestCase(APITestCase):
     def test_webhook_delivery_retry_security(self):
         """Test security aspects of webhook retry mechanism"""
         payload = json.dumps({"test": "data"})
-        signature = self.generate_hmac_signature(payload, self.webhook.secret)
+        self.generate_hmac_signature(payload, self.webhook.secret)
         
         with patch('requests.post') as mock_post:
             # Simulate server errors for retries
@@ -264,7 +263,7 @@ class WebhookSecurityTestCase(APITestCase):
     def test_webhook_ssl_verification(self):
         """Test that SSL certificate verification is enforced"""
         payload = json.dumps({"test": "data"})
-        signature = self.generate_hmac_signature(payload, self.webhook.secret)
+        self.generate_hmac_signature(payload, self.webhook.secret)
         
         with patch('requests.post') as mock_post:
             # Simulate webhook delivery
@@ -279,7 +278,7 @@ class WebhookSecurityTestCase(APITestCase):
     def test_webhook_timeout_configuration(self):
         """Test webhook timeout configuration for security"""
         payload = json.dumps({"test": "data"})
-        signature = self.generate_hmac_signature(payload, self.webhook.secret)
+        self.generate_hmac_signature(payload, self.webhook.secret)
         
         with patch('requests.post') as mock_post:
             # Simulate webhook delivery
@@ -296,7 +295,7 @@ class WebhookSecurityTestCase(APITestCase):
     def test_webhook_rate_limiting(self):
         """Test webhook rate limiting per endpoint"""
         payload = json.dumps({"test": "data"})
-        signature = self.generate_hmac_signature(payload, self.webhook.secret)
+        self.generate_hmac_signature(payload, self.webhook.secret)
         
         with patch('requests.post') as mock_post:
             mock_post.return_value.status_code = 200
@@ -318,11 +317,11 @@ class WebhookSecurityTestCase(APITestCase):
         large_payload = json.dumps({
             "data": "x" * 1000000  # 1MB payload
         })
-        signature = self.generate_hmac_signature(large_payload, self.webhook.secret)
+        self.generate_hmac_signature(large_payload, self.webhook.secret)
         
         with patch('requests.post'):
             # Simulate large payload rejection
-            result = False  # Large payloads should be rejected
+            pass  # Large payloads should be rejected
             
             # TODO: Implement payload size validation
             # Large payloads should be rejected
@@ -334,7 +333,7 @@ class WebhookSecurityTestCase(APITestCase):
         malicious_payload = json.dumps({
             "data": "test\r\nX-Injected-Header: malicious"
         })
-        signature = self.generate_hmac_signature(malicious_payload, self.webhook.secret)
+        self.generate_hmac_signature(malicious_payload, self.webhook.secret)
         
         with patch('requests.post') as mock_post:
             # Simulate header injection prevention  

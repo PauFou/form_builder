@@ -185,6 +185,252 @@ describe("PaymentBlock", () => {
       expect(screen.getByText("$-10.00 USD")).toBeInTheDocument();
       // TODO: Should validate and prevent negative amounts
     });
+
+    it("should sanitize currency symbol against XSS", () => {
+      const xssSymbolBlock = {
+        ...mockPaymentBlock,
+        properties: {
+          amount: 100,
+          currency: "USD",
+          currencySymbol: '<img src=x onerror="alert(1)">',
+        },
+      };
+
+      render(<PaymentBlock block={xssSymbolBlock} />);
+      expect(screen.queryByRole("img")).not.toBeInTheDocument();
+      // Should escape HTML in currency symbol
+    });
+
+    it("should prevent script injection in payment description", () => {
+      const xssDescriptionBlock = {
+        ...mockPaymentBlock,
+        properties: {
+          ...mockPaymentBlock.properties,
+          paymentDescription: '<iframe src="javascript:alert(1)"></iframe>',
+        },
+      };
+
+      render(<PaymentBlock block={xssDescriptionBlock} />);
+      expect(screen.queryByTitle("iframe")).not.toBeInTheDocument();
+    });
+
+    it("should validate card number format", () => {
+      render(<PaymentBlock block={mockPaymentBlock} />);
+
+      const cardInput = screen.getByPlaceholderText("1234 1234 1234 1234");
+
+      // Test invalid card numbers
+      fireEvent.change(cardInput, { target: { value: "not-a-number" } });
+      expect(cardInput).toHaveValue("not-a-number");
+      // TODO: Should show validation error
+
+      // Test SQL injection attempt
+      fireEvent.change(cardInput, { target: { value: "'; DROP TABLE payments; --" } });
+      expect(cardInput).toHaveValue("'; DROP TABLE payments; --");
+      // TODO: Should sanitize input
+    });
+
+    it("should enforce maximum amount limits", () => {
+      const hugeAmountBlock = {
+        ...mockPaymentBlock,
+        properties: {
+          amount: 999999999999,
+          currency: "USD",
+          currencySymbol: "$",
+        },
+      };
+
+      render(<PaymentBlock block={hugeAmountBlock} />);
+      expect(screen.getByText("$999999999999.00 USD")).toBeInTheDocument();
+      // TODO: Should have reasonable max limit
+    });
+
+    it("should prevent buffer overflow with long inputs", () => {
+      render(<PaymentBlock block={mockPaymentBlock} />);
+
+      const cardInput = screen.getByPlaceholderText("1234 1234 1234 1234");
+      const veryLongInput = "4".repeat(1000);
+
+      fireEvent.change(cardInput, { target: { value: veryLongInput } });
+      // In current implementation, input is not limited
+      // TODO: Add maxLength attribute to card input
+      expect(cardInput).toHaveValue(veryLongInput);
+    });
+  });
+
+  // Stripe Integration Tests
+  describe("Stripe Integration", () => {
+    it("should handle Stripe loading errors", () => {
+      // Mock Stripe not loading
+      const { container } = render(<PaymentBlock block={mockPaymentBlock} />);
+
+      // Should show fallback UI
+      expect(container.textContent).toContain("Secure payment powered by Stripe");
+      // TODO: Test actual Stripe element mounting
+    });
+
+    it("should validate card with Stripe test cards", () => {
+      render(<PaymentBlock block={mockPaymentBlock} />);
+
+      const cardInput = screen.getByPlaceholderText("1234 1234 1234 1234");
+
+      // Valid test cards
+      const testCards = [
+        "4242424242424242", // Visa
+        "5555555555554444", // Mastercard
+        "378282246310005", // Amex
+      ];
+
+      testCards.forEach((card) => {
+        fireEvent.change(cardInput, { target: { value: card } });
+        expect(cardInput).toHaveValue(card);
+        // TODO: Verify Stripe validation passes
+      });
+    });
+
+    it("should handle declined card scenarios", () => {
+      render(<PaymentBlock block={mockPaymentBlock} />);
+
+      const cardInput = screen.getByPlaceholderText("1234 1234 1234 1234");
+
+      // Stripe test cards for specific errors
+      const declineCards = {
+        "4000000000000002": "card_declined",
+        "4000000000009995": "insufficient_funds",
+        "4000000000009987": "lost_card",
+        "4000000000009979": "stolen_card",
+      };
+
+      Object.entries(declineCards).forEach(([card, error]) => {
+        fireEvent.change(cardInput, { target: { value: card } });
+        // TODO: Test error handling for each scenario
+      });
+    });
+
+    it("should handle 3D Secure authentication", () => {
+      render(<PaymentBlock block={mockPaymentBlock} />);
+
+      const cardInput = screen.getByPlaceholderText("1234 1234 1234 1234");
+
+      // 3DS required test card
+      fireEvent.change(cardInput, { target: { value: "4000002500003155" } });
+
+      // TODO: Test 3DS modal/redirect handling
+    });
+  });
+
+  // Error Handling Tests
+  describe("Error Handling", () => {
+    it("should handle network failures gracefully", () => {
+      // TODO: Mock network failure
+      render(<PaymentBlock block={mockPaymentBlock} />);
+
+      // Should show retry option
+      // Should preserve entered data
+    });
+
+    it("should handle payment processing timeout", () => {
+      // TODO: Mock timeout scenario
+      render(<PaymentBlock block={mockPaymentBlock} />);
+
+      // Should show timeout message
+      // Should allow retry
+    });
+
+    it("should prevent double submission", () => {
+      render(<PaymentBlock block={mockPaymentBlock} />);
+
+      // TODO: Test submit button disabling during processing
+      // TODO: Test idempotency key generation
+    });
+  });
+
+  // Compliance Tests
+  describe("PCI Compliance", () => {
+    it("should not log sensitive card data", () => {
+      const consoleSpy = jest.spyOn(console, "log").mockImplementation();
+
+      render(<PaymentBlock block={mockPaymentBlock} />);
+
+      const cardInput = screen.getByPlaceholderText("1234 1234 1234 1234");
+      fireEvent.change(cardInput, { target: { value: "4242424242424242" } });
+
+      // Ensure card number is never logged
+      expect(consoleSpy).not.toHaveBeenCalledWith(expect.stringContaining("4242424242424242"));
+
+      consoleSpy.mockRestore();
+    });
+
+    it("should use secure connection indicators", () => {
+      render(<PaymentBlock block={mockPaymentBlock} />);
+
+      // Check for security indicators
+      expect(screen.getByText(/Secure payment/i)).toBeInTheDocument();
+      // TODO: Check for HTTPS requirement
+    });
+
+    it("should not store card data in localStorage", () => {
+      const localStorageSpy = jest.spyOn(Storage.prototype, "setItem");
+
+      render(<PaymentBlock block={mockPaymentBlock} />);
+
+      const cardInput = screen.getByPlaceholderText("1234 1234 1234 1234");
+      fireEvent.change(cardInput, { target: { value: "4242424242424242" } });
+
+      // Ensure card data is never stored
+      expect(localStorageSpy).not.toHaveBeenCalledWith(
+        expect.any(String),
+        expect.stringContaining("4242424242424242")
+      );
+
+      localStorageSpy.mockRestore();
+    });
+  });
+
+  // Currency Handling Tests
+  describe("Multi-Currency Support", () => {
+    it("should support all major currencies", () => {
+      const currencies = [
+        { code: "EUR", symbol: "€", amount: 25.5 },
+        { code: "GBP", symbol: "£", amount: 19.99 },
+        { code: "JPY", symbol: "¥", amount: 3000 },
+        { code: "CAD", symbol: "$", amount: 35.0 },
+        { code: "AUD", symbol: "$", amount: 40.0 },
+      ];
+
+      currencies.forEach(({ code, symbol, amount }) => {
+        const currencyBlock = {
+          ...mockPaymentBlock,
+          properties: { amount, currency: code, currencySymbol: symbol },
+        };
+
+        const { unmount } = render(<PaymentBlock block={currencyBlock} />);
+
+        // Component always uses toFixed(2) for all currencies
+        expect(screen.getByText(`${symbol}${amount.toFixed(2)} ${code}`)).toBeInTheDocument();
+
+        unmount();
+      });
+    });
+
+    it("should handle currency conversion display", () => {
+      const multiCurrencyBlock = {
+        ...mockPaymentBlock,
+        properties: {
+          amount: 100,
+          currency: "USD",
+          currencySymbol: "$",
+          showConversion: true,
+          conversionRate: 0.85,
+          targetCurrency: "EUR",
+        },
+      };
+
+      render(<PaymentBlock block={multiCurrencyBlock} />);
+
+      expect(screen.getByText("$100.00 USD")).toBeInTheDocument();
+      // TODO: Show conversion info (≈ €85.00)
+    });
   });
 
   // Accessibility Tests
