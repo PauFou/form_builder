@@ -121,7 +121,7 @@ if [ -f "${ROOT_DIR}/services/api/requirements.txt" ]; then
         source .venv/bin/activate
     fi
     
-    # Run Django tests
+    # Run Django tests including new security tests
     export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/test_forms"
     export DJANGO_SETTINGS_MODULE="api.settings"
     export SECRET_KEY="test-secret-key-for-ci"
@@ -129,8 +129,13 @@ if [ -f "${ROOT_DIR}/services/api/requirements.txt" ]; then
     
     run_test "Django Unit Tests" "DJANGO_SETTINGS_MODULE=api.settings_test_sqlite python manage.py test --verbosity=1" true "${ROOT_DIR}/services/api"
     
-    # Note: Coverage checking disabled when using Django test runner
-    # To enable coverage, install django-coverage and configure accordingly
+    # Run security tests specifically
+    run_test "Auth Security Tests" "DJANGO_SETTINGS_MODULE=api.settings_test_sqlite python manage.py test core.tests.test_auth_security -v 2" true "${ROOT_DIR}/services/api"
+    
+    # Run webhook security tests
+    if [ -f "${ROOT_DIR}/services/api/webhooks/tests/test_webhook_security.py" ]; then
+        run_test "Webhook Security Tests" "DJANGO_SETTINGS_MODULE=api.settings_test_sqlite python manage.py test webhooks.tests.test_webhook_security -v 2" true "${ROOT_DIR}/services/api"
+    fi
     
     cd "${ROOT_DIR}"
 fi
@@ -144,7 +149,7 @@ echo -e "${BLUE}═════════════════════�
 if [ -f "${ROOT_DIR}/tests/contracts/test_service_contracts.py" ]; then
     # Check dependencies using the API's virtual environment
     if cd "${ROOT_DIR}/services/api" && source .venv/bin/activate && python -c "import jsonschema, deepdiff" 2>/dev/null; then
-        run_test "API Contract Tests" "cd services/api && source .venv/bin/activate && cd ../../tests/contracts && PYTHONPATH=/Users/paul/Desktop/form_builder/services/api python -m pytest test_service_contracts.py -v --tb=short -p no:django" true "${ROOT_DIR}"
+        run_test "API Contract Tests" "cd services/api && source .venv/bin/activate && cd ../../tests/contracts && PYTHONPATH=${ROOT_DIR}/services/api python -m pytest test_service_contracts.py -v --tb=short -p no:django" true "${ROOT_DIR}"
         cd "${ROOT_DIR}"
     else
         echo -e "${YELLOW}▶ Skipping API Contract Tests (missing dependencies: jsonschema, deepdiff)${NC}"

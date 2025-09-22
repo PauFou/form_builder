@@ -8,7 +8,9 @@ interface PaymentBlockProps {
 }
 
 export function PaymentBlock({ block, isSelected, isPreview }: PaymentBlockProps) {
-  const amount = block.properties?.amount || 0;
+  const rawAmount = block.properties?.amount || 0;
+  // Ensure amount is a valid number
+  const amount = typeof rawAmount === "number" && !isNaN(rawAmount) ? rawAmount : 0;
   const currency = block.properties?.currency || "USD";
   const currencySymbol = block.properties?.currencySymbol || "$";
   const description = block.properties?.paymentDescription || "";

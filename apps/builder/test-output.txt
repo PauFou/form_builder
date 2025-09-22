@@ -1,0 +1,4 @@
+
+> @skemya/builder@1.0.0 test /Users/paul/Desktop/form_builder/apps/builder
+> jest
+

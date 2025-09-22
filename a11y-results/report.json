@@ -3,18 +3,18 @@
     "page": "marketing-home",
     "url": "http://localhost:3000",
     "error": "Server not ready",
-    "timestamp": "2025-09-21T19:39:43.276Z"
+    "timestamp": "2025-09-22T18:16:16.157Z"
   },
   {
     "page": "builder-home",
     "url": "http://localhost:3001",
-    "violations": [],
-    "timestamp": "2025-09-21T19:39:45.511Z"
+    "error": "1 accessibility violation was detected\n\n1 !== 0\n",
+    "timestamp": "2025-09-22T18:16:18.784Z"
   },
   {
     "page": "dashboard",
     "url": "http://localhost:3001/dashboard",
-    "violations": [],
-    "timestamp": "2025-09-21T19:39:47.670Z"
+    "error": "1 accessibility violation was detected\n\n1 !== 0\n",
+    "timestamp": "2025-09-22T18:16:21.002Z"
   }
 ]
