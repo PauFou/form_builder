@@ -2,13 +2,21 @@
 (function () {
   "use strict";
 
+  interface FormSubmitData {
+    formId: string;
+    values: Record<string, unknown>;
+    startedAt: string;
+    completedAt?: string;
+    metadata?: Record<string, string | number | boolean | undefined>;
+  }
+
   interface EmbedOptions {
     formId: string;
     container?: string | HTMLElement;
     mode?: "inline" | "popup" | "drawer";
     theme?: Record<string, string>;
     onReady?: () => void;
-    onSubmit?: (data: any) => void;
+    onSubmit?: (data: FormSubmitData) => void;
   }
 
   // Minimal loader
@@ -66,15 +74,30 @@
       });
   }
 
+  interface FormConfig {
+    id: string;
+    version?: number;
+    title?: string;
+    description?: string;
+    theme?: Record<string, string>;
+    [key: string]: unknown;
+  }
+
+  interface FormRuntimeInstance {
+    mount: (container: HTMLElement) => void;
+    unmount: () => void;
+    on: <T = unknown>(event: string, handler: (data: T) => void) => void;
+  }
+
   // Initialize form with config
-  function initializeForm(config: any, container: HTMLElement, options: EmbedOptions) {
+  function initializeForm(config: FormConfig, container: HTMLElement, options: EmbedOptions) {
     // Apply custom theme
     if (options.theme) {
       config.theme = { ...config.theme, ...options.theme };
     }
 
     // Create form instance
-    const form = new window.FormRuntime(config);
+    const form = new (window as any).FormRuntime(config) as FormRuntimeInstance;
 
     // Set up event handlers
     if (options.onReady) {
@@ -97,7 +120,7 @@
   }
 
   // Create popup modal
-  function createPopup(container: HTMLElement, form: any) {
+  function createPopup(container: HTMLElement, form: FormRuntimeInstance) {
     const modal = document.createElement("div");
     modal.className = "forms-modal";
     modal.innerHTML = `
@@ -181,7 +204,7 @@
   }
 
   // Create side drawer
-  function createDrawer(container: HTMLElement, form: any) {
+  function createDrawer(container: HTMLElement, form: FormRuntimeInstance) {
     const drawer = document.createElement("div");
     drawer.className = "forms-drawer";
     drawer.innerHTML = `
