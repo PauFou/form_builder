@@ -35,20 +35,12 @@ describe("useAuthStore", () => {
   const mockOrganization = { id: "org-1", name: "Test Org" };
   const mockTokens = { access: "access-token", refresh: "refresh-token" };
 
-  // Prevent unhandled promise rejections
-  const originalHandler = process.listeners("unhandledRejection")[0];
-  beforeAll(() => {
-    process.removeAllListeners("unhandledRejection");
-    process.on("unhandledRejection", () => {
-      // Silently ignore
-    });
-  });
+  // Store original console.error for restoration
+  const originalConsoleError = console.error;
 
-  afterAll(() => {
-    process.removeAllListeners("unhandledRejection");
-    if (originalHandler) {
-      process.on("unhandledRejection", originalHandler);
-    }
+  afterEach(() => {
+    // Restore console.error
+    console.error = originalConsoleError;
   });
 
   beforeEach(() => {
@@ -56,6 +48,7 @@ describe("useAuthStore", () => {
     jest.resetAllMocks();
     localStorageMock.getItem.mockReturnValue(null);
     document.cookie = "";
+    // Silence console.error for this test suite
     console.error = jest.fn();
 
     // Reset store state
@@ -200,20 +193,24 @@ describe("useAuthStore", () => {
         return null;
       });
 
-      // Simply mock to throw an error
+      // Mock to throw an error - the store uses try...finally so it won't propagate
       (authApi.logout as jest.Mock).mockRejectedValue(new Error("Network error"));
 
       const { result } = renderHook(() => useAuthStore());
 
-      // No need to expect error, logout should handle it internally
+      // The logout function uses try...finally so it won't throw
       await act(async () => {
         await result.current.logout();
       });
 
-      // State should still be cleared
+      // State should still be cleared because of the finally block
       expect(result.current.user).toBeNull();
       expect(result.current.isAuthenticated).toBe(false);
       expect(localStorageMock.removeItem).toHaveBeenCalledWith("access_token");
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith("refresh_token");
+
+      // API should have been called even though it failed
+      expect(authApi.logout).toHaveBeenCalled();
     });
   });
 

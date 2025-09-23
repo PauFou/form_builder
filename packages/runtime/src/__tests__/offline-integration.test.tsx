@@ -211,9 +211,9 @@ describe("Offline Integration", () => {
     // Go to phone step
     fireEvent.click(screen.getByText("Next"));
 
-    // Wait for phone step - use a more flexible matcher
+    // Wait for phone step
     await waitFor(() => {
-      expect(screen.getByText(/phone/i)).toBeInTheDocument();
+      expect(screen.getByText("What is your phone number?")).toBeInTheDocument();
     });
 
     // Phone is optional, click submit

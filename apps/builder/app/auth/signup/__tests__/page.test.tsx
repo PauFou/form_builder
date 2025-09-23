@@ -74,7 +74,7 @@ describe("SignupPage", () => {
     expect(emailInput.validity.typeMismatch).toBe(true);
 
     // The form should not submit with invalid email
-    const form = emailInput.closest('form');
+    const form = emailInput.closest("form");
     expect(form?.checkValidity()).toBe(false);
   });
 
