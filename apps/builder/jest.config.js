@@ -16,9 +16,7 @@ const customJestConfig = {
   testPathIgnorePatterns: ["/node_modules/", "/.next/", "/e2e/"],
   // Handle ES modules
   extensionsToTreatAsEsm: [".ts", ".tsx"],
-  transformIgnorePatterns: [
-    "node_modules/(?!(uuid|@skemya/)/)"
-  ],
+  transformIgnorePatterns: ["node_modules/(?!(uuid|@skemya/)/)"],
   collectCoverageFrom: [
     "**/*.{js,jsx,ts,tsx}",
     "!**/*.d.ts",
