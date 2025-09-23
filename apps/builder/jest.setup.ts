@@ -94,6 +94,26 @@ jest.mock("lucide-react", () => {
   );
 });
 
+// Mock react-hotkeys-hook
+jest.mock("react-hotkeys-hook", () => ({
+  useHotkeys: jest.fn(),
+}));
+
+// Mock @skemya/ui components - simpler approach
+jest.mock("@skemya/ui", () => {
+  const React = require("react");
+  const originalModule = jest.requireActual("@skemya/ui");
+  
+  return {
+    ...originalModule,
+    // Override only problematic components if needed
+    Dialog: ({ children, open }: any) => open ? React.createElement("div", { "data-testid": "dialog" }, children) : null,
+    Button: React.forwardRef(({ children, onClick, disabled, ...props }: any, ref: any) => 
+      React.createElement("button", { ref, onClick, disabled, ...props }, children)
+    ),
+  };
+});
+
 // Mock @dnd-kit/core
 jest.mock("@dnd-kit/core", () => ({
   DndContext: ({ children }: any) => children,
