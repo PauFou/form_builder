@@ -22,5 +22,9 @@ module.exports = {
     "react-hooks/exhaustive-deps": "off",
     // Allow TypeScript namespace in component library
     "@typescript-eslint/no-namespace": "off",
+    // Allow require in config files
+    "@typescript-eslint/no-var-requires": "off",
+    // Allow regex escapes in validation utilities
+    "no-useless-escape": "off",
   },
 };
