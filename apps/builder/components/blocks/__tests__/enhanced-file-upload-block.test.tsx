@@ -1023,7 +1023,6 @@ describe("EnhancedFileUploadBlock", () => {
     });
 
     it("should escape XSS attempts in filenames for display", async () => {
-      jest.useFakeTimers();
       const mockMath = jest.spyOn(Math, "random").mockReturnValue(0.5);
       const { container } = render(
         <EnhancedFileUploadBlock
@@ -1049,22 +1048,27 @@ describe("EnhancedFileUploadBlock", () => {
         expect(screen.getByText("<img src=x onerror=\"alert('XSS')\"/>.jpg")).toBeInTheDocument();
       });
 
-      // Advance timers to complete the upload
-      await act(async () => {
-        // Run all timers to completion
-        jest.runAllTimers();
-      });
+      // Wait for upload to complete - the component uses setTimeout internally
+      await waitFor(
+        () => {
+          expect(screen.getByText("Uploaded successfully")).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
-      // Wait for upload to complete
-      await waitFor(() => {
-        expect(screen.getByText("Uploaded successfully")).toBeInTheDocument();
-      });
+      // Give time for the final onUpdate call
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Then check that onUpdate was called
       expect(mockOnUpdate).toHaveBeenCalled();
-      const updateCall = mockOnUpdate.mock.calls[0][0];
+      const updateCall = mockOnUpdate.mock.calls[mockOnUpdate.mock.calls.length - 1][0];
       // File should be uploaded with original name for server to validate
-      expect(updateCall.defaultValue[0]).toMatchObject({
+      expect(updateCall.defaultValue).toBeDefined();
+      expect(updateCall.defaultValue.length).toBeGreaterThan(0);
+      const uploadedFile = updateCall.defaultValue.find(
+        (f: any) => f.name === "<img src=x onerror=\"alert('XSS')\"/>.jpg"
+      );
+      expect(uploadedFile).toMatchObject({
         name: "<img src=x onerror=\"alert('XSS')\"/>.jpg",
         status: "uploaded",
       });
@@ -1073,7 +1077,6 @@ describe("EnhancedFileUploadBlock", () => {
       expect(global.alert).not.toHaveBeenCalled();
 
       mockMath.mockRestore();
-      jest.useRealTimers();
     }, 10000);
 
     it("should validate MIME type against file extension", async () => {
@@ -1140,7 +1143,6 @@ describe("EnhancedFileUploadBlock", () => {
     });
 
     it("should prepare file metadata for server-side sanitization", async () => {
-      jest.useFakeTimers();
       const mockMath = jest.spyOn(Math, "random").mockReturnValue(0.5);
 
       const { container } = render(
@@ -1176,32 +1178,34 @@ describe("EnhancedFileUploadBlock", () => {
         expect(screen.getByText("photo.jpg")).toBeInTheDocument();
       });
 
-      // Advance timers to complete the upload
-      await act(async () => {
-        // Run all timers to completion
-        jest.runAllTimers();
-      });
+      // Wait for upload to complete - the component uses setTimeout internally
+      await waitFor(
+        () => {
+          expect(screen.getByText("Uploaded successfully")).toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
 
-      // Wait for upload to complete
-      await waitFor(() => {
-        expect(screen.getByText("Uploaded successfully")).toBeInTheDocument();
-      });
+      // Give time for the final onUpdate call
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Then check that onUpdate was called
       expect(mockOnUpdate).toHaveBeenCalled();
-      const updateCall = mockOnUpdate.mock.calls[0][0];
+      const updateCall = mockOnUpdate.mock.calls[mockOnUpdate.mock.calls.length - 1][0];
       // Verify file is prepared for upload with basic metadata only
-      expect(updateCall.defaultValue[0]).toMatchObject({
+      expect(updateCall.defaultValue).toBeDefined();
+      expect(updateCall.defaultValue.length).toBeGreaterThan(0);
+      const uploadedFile = updateCall.defaultValue.find((f: any) => f.name === "photo.jpg");
+      expect(uploadedFile).toMatchObject({
         name: "photo.jpg",
         type: "image/jpeg",
         status: "uploaded",
       });
       // Ensure no sensitive metadata is included
-      expect(updateCall.defaultValue[0]).not.toHaveProperty("exifData");
-      expect(updateCall.defaultValue[0]).not.toHaveProperty("GPS");
+      expect(uploadedFile).not.toHaveProperty("exifData");
+      expect(uploadedFile).not.toHaveProperty("GPS");
 
       mockMath.mockRestore();
-      jest.useRealTimers();
     }, 10000);
 
     it("should enforce Content Security Policy for uploads", async () => {

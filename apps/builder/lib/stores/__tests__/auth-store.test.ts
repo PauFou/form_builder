@@ -180,9 +180,8 @@ describe("useAuthStore", () => {
     });
 
     it("clears state even if API call fails", async () => {
-      // Silence unhandled rejection warnings for this test
-      const originalOnUnhandledRejection = process.listeners("unhandledRejection")[0];
-      process.removeAllListeners("unhandledRejection");
+      // Mock API to reject - set it up before anything else
+      (authApi.logout as jest.Mock).mockImplementation(() => Promise.reject(new Error("Network error")));
 
       useAuthStore.setState({
         user: mockUser,
@@ -197,13 +196,11 @@ describe("useAuthStore", () => {
         return null;
       });
 
-      // Mock API to reject
-      (authApi.logout as jest.Mock).mockRejectedValue(new Error("Network error"));
-
       const { result } = renderHook(() => useAuthStore());
 
       // The logout function uses try...finally so it won't throw
       await act(async () => {
+        // logout doesn't throw errors - it handles them in the finally block
         await result.current.logout();
       });
 
@@ -215,11 +212,6 @@ describe("useAuthStore", () => {
 
       // API should have been called even though it failed
       expect(authApi.logout).toHaveBeenCalled();
-
-      // Restore unhandled rejection listener
-      if (originalOnUnhandledRejection) {
-        process.on("unhandledRejection", originalOnUnhandledRejection);
-      }
     });
   });
 
