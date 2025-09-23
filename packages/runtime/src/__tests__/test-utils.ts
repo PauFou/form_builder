@@ -10,12 +10,23 @@ import {
 } from "fake-indexeddb";
 
 export function mockIndexedDB() {
-  (globalThis as any).indexedDB = new IDBFactory();
-  (globalThis as any).IDBKeyRange = IDBKeyRange;
-  (globalThis as any).IDBDatabase = IDBDatabase;
-  (globalThis as any).IDBTransaction = IDBTransaction;
-  (globalThis as any).IDBObjectStore = IDBObjectStore;
-  (globalThis as any).IDBIndex = IDBIndex;
-  (globalThis as any).IDBCursor = IDBCursor;
-  (globalThis as any).IDBRequest = IDBRequest;
+  const globalWithIDB = globalThis as typeof globalThis & {
+    indexedDB: IDBFactory;
+    IDBKeyRange: typeof IDBKeyRange;
+    IDBDatabase: typeof IDBDatabase;
+    IDBTransaction: typeof IDBTransaction;
+    IDBObjectStore: typeof IDBObjectStore;
+    IDBIndex: typeof IDBIndex;
+    IDBCursor: typeof IDBCursor;
+    IDBRequest: typeof IDBRequest;
+  };
+
+  globalWithIDB.indexedDB = new IDBFactory();
+  globalWithIDB.IDBKeyRange = IDBKeyRange;
+  globalWithIDB.IDBDatabase = IDBDatabase;
+  globalWithIDB.IDBTransaction = IDBTransaction;
+  globalWithIDB.IDBObjectStore = IDBObjectStore;
+  globalWithIDB.IDBIndex = IDBIndex;
+  globalWithIDB.IDBCursor = IDBCursor;
+  globalWithIDB.IDBRequest = IDBRequest;
 }

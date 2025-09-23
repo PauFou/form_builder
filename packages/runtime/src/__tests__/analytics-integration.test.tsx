@@ -3,9 +3,15 @@ import { render, fireEvent, waitFor, cleanup } from "@testing-library/react";
 import { FormViewer } from "../components/FormViewer";
 import type { FormSchema, RuntimeConfig } from "../types";
 
-// Mock fetch
-// @ts-expect-error - Mock fetch for testing
-(globalThis as any).fetch = jest.fn();
+// Mock fetch for testing
+interface MockFetch {
+  (input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
+  mockImplementation: jest.MockedFunction<typeof fetch>["mockImplementation"];
+  mockResolvedValue: jest.MockedFunction<typeof fetch>["mockResolvedValue"];
+  mockRejectedValue: jest.MockedFunction<typeof fetch>["mockRejectedValue"];
+}
+
+(globalThis as any).fetch = jest.fn() as MockFetch;
 
 describe("Analytics Integration", () => {
   const mockSchema: FormSchema = {
@@ -57,10 +63,10 @@ describe("Analytics Integration", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (globalThis as any).fetch.mockResolvedValue({
+    (globalThis.fetch as MockFetch).mockResolvedValue({
       ok: true,
       json: async () => ({ id: "submission-123" }),
-    });
+    } as Response);
     consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
   });
 
@@ -305,7 +311,7 @@ describe("Analytics Integration", () => {
 
   it("should handle analytics API errors gracefully", async () => {
     const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
-    (globalThis as any).fetch.mockRejectedValueOnce(new Error("Network error"));
+    (globalThis.fetch as MockFetch).mockRejectedValueOnce(new Error("Network error"));
 
     const { getByLabelText } = render(<FormViewer schema={mockSchema} config={mockConfig} />);
 

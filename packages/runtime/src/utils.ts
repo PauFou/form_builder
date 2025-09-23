@@ -1,6 +1,6 @@
-import type { Block, ValidationRule } from "./types";
+import type { Block, ValidationRule, FieldValue } from "./types";
 
-export function validateField(block: Block, value: any): string | null {
+export function validateField(block: Block, value: FieldValue): string | null {
   // Required validation
   if (block.required && !value) {
     return `${block.question} is required`;
@@ -9,13 +9,13 @@ export function validateField(block: Block, value: any): string | null {
   // Type-specific validations
   switch (block.type) {
     case "email":
-      if (value && !isValidEmail(value)) {
+      if (value && typeof value === "string" && !isValidEmail(value)) {
         return "Please enter a valid email address";
       }
       break;
 
     case "phone":
-      if (value && !isValidPhone(value)) {
+      if (value && typeof value === "string" && !isValidPhone(value)) {
         return "Please enter a valid phone number";
       }
       break;
@@ -28,7 +28,11 @@ export function validateField(block: Block, value: any): string | null {
       break;
 
     case "date":
-      if (value && !isValidDate(value)) {
+      if (
+        value &&
+        (typeof value === "string" || value instanceof Date) &&
+        !isValidDate(String(value))
+      ) {
         return "Please enter a valid date";
       }
       break;
@@ -45,28 +49,40 @@ export function validateField(block: Block, value: any): string | null {
   return null;
 }
 
-function applyValidationRule(rule: ValidationRule, value: any): string | null {
+function applyValidationRule(rule: ValidationRule, value: FieldValue): string | null {
   switch (rule.type) {
     case "min":
-      if (typeof value === "string" && value.length < rule.value) {
+      if (
+        typeof value === "string" &&
+        typeof rule.value === "number" &&
+        value.length < rule.value
+      ) {
         return rule.message || `Minimum length is ${rule.value}`;
       }
-      if (typeof value === "number" && value < rule.value) {
+      if (typeof value === "number" && typeof rule.value === "number" && value < rule.value) {
         return rule.message || `Minimum value is ${rule.value}`;
       }
       break;
 
     case "max":
-      if (typeof value === "string" && value.length > rule.value) {
+      if (
+        typeof value === "string" &&
+        typeof rule.value === "number" &&
+        value.length > rule.value
+      ) {
         return rule.message || `Maximum length is ${rule.value}`;
       }
-      if (typeof value === "number" && value > rule.value) {
+      if (typeof value === "number" && typeof rule.value === "number" && value > rule.value) {
         return rule.message || `Maximum value is ${rule.value}`;
       }
       break;
 
     case "pattern":
-      if (typeof value === "string" && !new RegExp(rule.value).test(value)) {
+      if (
+        typeof value === "string" &&
+        typeof rule.value === "string" &&
+        !new RegExp(rule.value).test(value)
+      ) {
         return rule.message || "Invalid format";
       }
       break;
@@ -75,7 +91,7 @@ function applyValidationRule(rule: ValidationRule, value: any): string | null {
   return null;
 }
 
-export function shouldShowBlock(_block: Block, _values: Record<string, any>): boolean {
+export function shouldShowBlock(_block: Block, _values: Record<string, FieldValue>): boolean {
   // Blocks are shown by default unless hidden by logic rules
   // Logic evaluation is now handled by LogicEvaluator in hooks.ts
   return true;
@@ -97,7 +113,7 @@ function isValidDate(date: string): boolean {
 }
 
 // Debounce for auto-save
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -110,7 +126,7 @@ export function debounce<T extends (...args: any[]) => any>(
 }
 
 // Format display values
-export function formatValue(value: any, type: Block["type"]): string {
+export function formatValue(value: FieldValue, type: Block["type"]): string {
   if (value == null) return "";
 
   switch (type) {
@@ -121,10 +137,14 @@ export function formatValue(value: any, type: Block["type"]): string {
       }).format(Number(value));
 
     case "date":
-      return new Date(value).toLocaleDateString();
+      return value instanceof Date
+        ? value.toLocaleDateString()
+        : new Date(String(value)).toLocaleDateString();
 
     case "datetime":
-      return new Date(value).toLocaleString();
+      return value instanceof Date
+        ? value.toLocaleString()
+        : new Date(String(value)).toLocaleString();
 
     case "checkboxGroup":
       return Array.isArray(value) ? value.join(", ") : String(value);

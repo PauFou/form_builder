@@ -325,6 +325,79 @@ export const formsApi = {
     const response = await apiClient.get(`/v1/forms/import/requirements/${sourceType}/`);
     return response.data;
   },
+
+  // Export submissions
+  exportSubmissions: async (
+    formId: string,
+    params: {
+      ids?: string[];
+      format: "csv" | "json" | "xlsx" | "parquet";
+      options?: {
+        dateRange?: { start?: string; end?: string };
+        status?: string;
+        includeMetadata?: boolean;
+        includePartials?: boolean;
+        anonymize?: boolean;
+        fields?: string[];
+      };
+    }
+  ): Promise<any> => {
+    const response = await apiClient.post(`/v1/forms/${formId}/submissions/export/`, params, {
+      responseType: "blob",
+    });
+    return response;
+  },
+
+  // Get submissions
+  getSubmissions: async (
+    formId: string,
+    params?: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      status?: string;
+      tags?: string[];
+    }
+  ): Promise<{ submissions: any[]; total: number; page: number; limit: number }> => {
+    const response = await apiClient.get(`/v1/forms/${formId}/submissions/`, { params });
+    return response.data;
+  },
+
+  // Get single submission
+  getSubmission: async (formId: string, submissionId: string): Promise<any> => {
+    const response = await apiClient.get(`/v1/forms/${formId}/submissions/${submissionId}/`);
+    return response.data;
+  },
+
+  // Update submission
+  updateSubmission: async (formId: string, submissionId: string, data: any): Promise<any> => {
+    const response = await apiClient.patch(
+      `/v1/forms/${formId}/submissions/${submissionId}/`,
+      data
+    );
+    return response.data;
+  },
+
+  // Delete submissions
+  deleteSubmissions: async (formId: string, submissionIds: string[]): Promise<void> => {
+    await apiClient.post(`/v1/forms/${formId}/submissions/delete/`, { ids: submissionIds });
+  },
+
+  // Get tags
+  getTags: async (formId: string): Promise<string[]> => {
+    const response = await apiClient.get(`/v1/forms/${formId}/tags/`);
+    return response.data;
+  },
+
+  // Get versions (alias for versions method)
+  getVersions: async (id: string): Promise<any[]> => {
+    return formsApi.versions(id);
+  },
+
+  // Restore version
+  restoreVersion: async (formId: string, versionId: string): Promise<void> => {
+    await apiClient.post(`/v1/forms/${formId}/versions/${versionId}/restore/`);
+  },
 };
 
 // Export individual functions for compatibility

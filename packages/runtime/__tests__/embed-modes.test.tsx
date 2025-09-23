@@ -5,7 +5,7 @@ import type { FormSchema } from "../src/types";
 
 // Mock FormViewer
 jest.mock("../src/components/FormViewer", () => ({
-  FormViewer: ({ config }: any) => (
+  FormViewer: ({ config }: { config: { onSubmit?: (data: unknown) => void } }) => (
     <div data-testid="form-viewer">
       <button onClick={() => config.onSubmit?.({ test: "data" })}>Submit Form</button>
     </div>

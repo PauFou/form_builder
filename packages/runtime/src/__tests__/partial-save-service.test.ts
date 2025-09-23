@@ -69,9 +69,11 @@ describe("PartialSaveService", () => {
     service.destroy();
     jest.restoreAllMocks();
     // Reset window.location if it was mocked
-    if ((window as any).location && (window as any).location._isMock) {
-      delete (window as any).location;
-      (window as any).location = window.location;
+    const windowWithLocation = window as Window & { location: Location & { _isMock?: boolean } };
+    if (windowWithLocation.location && windowWithLocation.location._isMock) {
+      const originalLocation = window.location;
+      delete (windowWithLocation as { location?: Location }).location;
+      windowWithLocation.location = originalLocation;
     }
   });
 
@@ -273,9 +275,10 @@ describe("PartialSaveService", () => {
       const originalURLSearchParams = global.URLSearchParams;
 
       // Create a simple mock URLSearchParams
-      global.URLSearchParams = jest.fn().mockImplementation(() => ({
+      const MockURLSearchParams = jest.fn().mockImplementation(() => ({
         get: (key: string) => (key === "resume" ? "token-123" : null),
-      })) as any;
+      }));
+      global.URLSearchParams = MockURLSearchParams as any;
 
       delete (window as any).location;
       (window as any).location = {

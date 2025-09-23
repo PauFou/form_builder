@@ -40,7 +40,7 @@ function TestForm({ schema, config }: { schema: FormSchema; config: RuntimeConfi
         // Ignore parsing errors
       }
     }
-  }, [config.formId, config.respondentKey]);
+  }, [config.formId, config.respondentKey, state.values]);
 
   if (state.isComplete) {
     return <div data-testid="complete">Form submitted successfully!</div>;

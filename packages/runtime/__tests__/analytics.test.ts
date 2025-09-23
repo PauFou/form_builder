@@ -125,7 +125,7 @@ describe("AnalyticsService", () => {
 
   describe("event batching", () => {
     it("should batch events until flush threshold", () => {
-      const flushSpy = jest.spyOn(analytics, "flush" as any);
+      const flushSpy = jest.spyOn(analytics as any, "flush");
 
       analytics.trackFormView("test-form", "respondent-123");
 
@@ -140,15 +140,17 @@ describe("AnalyticsService", () => {
 
     it("should have a flush timer configured", () => {
       // Test that the service sets up timers via checking if it has a flush timer
-      expect((analytics as any).flushTimer).toBeDefined();
-      expect((analytics as any).config.flushInterval).toBe(100);
+      const service = analytics as any;
+      expect(service.flushTimer).toBeDefined();
+      expect(service.config.flushInterval).toBe(100);
     });
   });
 
   describe("error handling", () => {
     it("should handle network errors gracefully", () => {
       // Test that service can handle configuration for error cases
-      expect((analytics as any).config.enableDebug).toBe(false);
+      const service = analytics as any;
+      expect(service.config.enableDebug).toBe(false);
 
       // Test that service has error handling mechanisms
       expect(analytics.destroy).toBeDefined();
@@ -159,8 +161,9 @@ describe("AnalyticsService", () => {
   describe("configuration", () => {
     it("should respect enableTracking setting", () => {
       // Test with existing instance by modifying config
-      const originalTracking = (analytics as any).config.enableTracking;
-      (analytics as any).config.enableTracking = false;
+      const service = analytics as any;
+      const originalTracking = service.config.enableTracking;
+      service.config.enableTracking = false;
 
       const trackSpy = jest.spyOn(analytics, "track");
 
@@ -170,12 +173,13 @@ describe("AnalyticsService", () => {
       expect(trackSpy).toHaveBeenCalled();
 
       // Restore original setting
-      (analytics as any).config.enableTracking = originalTracking;
+      service.config.enableTracking = originalTracking;
     });
 
     it("should have unique session ID", () => {
       // Access private sessionId via any cast for testing
-      const sessionId = (analytics as any).sessionId;
+      const service = analytics as any;
+      const sessionId = service.sessionId;
 
       expect(sessionId).toBeDefined();
       expect(typeof sessionId).toBe("string");

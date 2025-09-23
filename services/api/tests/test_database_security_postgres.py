@@ -318,7 +318,7 @@ class TransactionSecurityTests(TransactionTestCase):
                 executor.submit(create_submission, i)
                 for i in range(120)
             ]
-            results = [f.result() for f in futures]
+            [f.result() for f in futures]
         
         # Should not exceed max submissions
         actual_count = Submission.objects.filter(form=form).count()
@@ -428,7 +428,7 @@ class QueryOptimizationSecurityTests(TestCase):
         org2 = Organization.objects.create(name='Org2', slug='org2')
         
         form1 = Form.objects.create(organization=org1, title='Form1')
-        form2 = Form.objects.create(organization=org2, title='Form2')
+        Form.objects.create(organization=org2, title='Form2')
         
         user = User.objects.create_user(username='test', password='test')
         user.memberships.create(organization=org1, role='viewer')
@@ -479,8 +479,7 @@ class DatabaseConnectionSecurityTests(TestCase):
     def test_connection_pooling_isolation(self):
         """Test that connection pooling maintains isolation"""
         # Different users should not share connection state
-        from django.db import connections
-        
+                
         # This would test that connection pooling doesn't leak data
         # between requests from different users
         pass

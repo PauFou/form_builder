@@ -66,6 +66,11 @@ export class AntiSpamService {
     return AntiSpamService.instance;
   }
 
+  // Reset singleton for testing
+  static resetInstance(): void {
+    AntiSpamService.instance = null!;
+  }
+
   updateConfig(config: Partial<AntiSpamConfig>): void {
     this.config = {
       ...this.config,
@@ -142,7 +147,7 @@ export class AntiSpamService {
   ): Promise<{
     isValid: boolean;
     reason?: string;
-    details?: any;
+    details?: Record<string, unknown>;
   }> {
     const results = [];
 
@@ -178,7 +183,7 @@ export class AntiSpamService {
       this.recordAttempt(options.ip, options.formId);
     }
 
-    return { isValid: true, details: results };
+    return { isValid: true, details: { checks: results } };
   }
 
   // Validate honeypot field

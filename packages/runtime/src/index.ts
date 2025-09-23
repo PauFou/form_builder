@@ -10,6 +10,7 @@ export { ModeSwitcher } from "./components/ModeSwitcher";
 export { SaveStatus } from "./components/SaveStatus";
 export { ResumeBanner } from "./components/ResumeBanner";
 export { TypeformViewer as FormRenderer } from "./components/TypeformViewer"; // Use Typeform style as default
+export { OneQuestionViewer } from "./components/OneQuestionViewer";
 export { useFormRuntime } from "./hooks";
 export { OfflineService } from "./services/offline-service";
 export { PartialSaveService } from "./services/partial-save-service";

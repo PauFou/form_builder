@@ -37,7 +37,7 @@ export function useResume(config: RuntimeConfig): ResumeState {
             hasResumableData: true,
             resumeUrl: resumeUrl.toString(),
             lastUpdated: savedState.data.metadata?.lastUpdated
-              ? new Date(savedState.data.metadata.lastUpdated)
+              ? new Date(String(savedState.data.metadata.lastUpdated))
               : null,
             loading: false,
           });

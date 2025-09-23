@@ -2,7 +2,9 @@
 export { cn } from "./lib/utils";
 
 // UI Components
+export * from "./components/ui/accordion";
 export * from "./components/ui/alert";
+export * from "./components/ui/avatar";
 export * from "./components/ui/badge";
 export * from "./components/ui/button";
 export * from "./components/ui/calendar";
@@ -25,12 +27,22 @@ export * from "./components/ui/sheet";
 export * from "./components/ui/skeleton";
 export * from "./components/ui/slider";
 export * from "./components/ui/switch";
+export * from "./components/ui/table";
 export * from "./components/ui/tabs";
 export * from "./components/ui/textarea";
 export * from "./components/ui/toast";
 export * from "./components/ui/toaster";
 export * from "./components/ui/tooltip";
 export * from "./components/ui/use-toast";
+
+// Monitoring Components
+export * from "./components/monitoring/web-vitals-monitor";
+
+// Providers
+export * from "./providers/web-vitals-provider";
+
+// Hooks
+export * from "./hooks/use-web-vitals";
 
 // Re-export component library dependencies for convenience
 export { Slot } from "@radix-ui/react-slot";

@@ -3,8 +3,10 @@
  * Supports variables, operators, and functions
  */
 
+type ContextValue = string | number | boolean | Date | Context | undefined;
+
 interface Context {
-  [key: string]: string | number | boolean | Date | Context | undefined;
+  [key: string]: ContextValue;
 }
 
 interface Expression {
@@ -487,23 +489,38 @@ export class ExpressionEngine {
 
         switch (node.operator) {
           case "+":
-            return (left as any) + (right as any);
+            if (typeof left === "string" || typeof right === "string") {
+              return String(left) + String(right);
+            }
+            return (Number(left) || 0) + (Number(right) || 0);
           case "-":
-            return (left as any) - (right as any);
+            return (Number(left) || 0) - (Number(right) || 0);
           case "*":
-            return (left as any) * (right as any);
+            return (Number(left) || 0) * (Number(right) || 0);
           case "/":
-            return (left as any) / (right as any);
+            return (Number(left) || 0) / (Number(right) || 0);
           case "%":
-            return (left as any) % (right as any);
+            return (Number(left) || 0) % (Number(right) || 0);
           case "<":
-            return (left as any) < (right as any);
+            if (left instanceof Date && right instanceof Date) {
+              return left.getTime() < right.getTime();
+            }
+            return (Number(left) || 0) < (Number(right) || 0);
           case ">":
-            return (left as any) > (right as any);
+            if (left instanceof Date && right instanceof Date) {
+              return left.getTime() > right.getTime();
+            }
+            return (Number(left) || 0) > (Number(right) || 0);
           case "<=":
-            return (left as any) <= (right as any);
+            if (left instanceof Date && right instanceof Date) {
+              return left.getTime() <= right.getTime();
+            }
+            return (Number(left) || 0) <= (Number(right) || 0);
           case ">=":
-            return (left as any) >= (right as any);
+            if (left instanceof Date && right instanceof Date) {
+              return left.getTime() >= right.getTime();
+            }
+            return (Number(left) || 0) >= (Number(right) || 0);
           case "==":
             return left == right;
           case "!=":
@@ -524,7 +541,7 @@ export class ExpressionEngine {
         const operand = this.evaluateAST(node.right, context);
         switch (node.operator) {
           case "-":
-            return -(operand as any);
+            return -(Number(operand) || 0);
           case "!":
             return !operand;
           default:
@@ -541,7 +558,8 @@ export class ExpressionEngine {
           throw new Error(`Unknown function: ${node.name}`);
         }
         const args = node.args.map((arg) => this.evaluateAST(arg, context));
-        return (func as (...args: any[]) => any)(...args) as
+        // Type assertion is safe here because we control the FUNCTIONS object
+        return (func as (...args: unknown[]) => unknown)(...args) as
           | string
           | number
           | boolean

@@ -23,10 +23,32 @@ const badgeVariants = cva(
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
-
-function Badge({ className, variant, ...props }: BadgeProps) {
-  return <div className={cn(badgeVariants({ variant }), className)} {...props} />;
+    VariantProps<typeof badgeVariants> {
+  /**
+   * Whether this badge represents a status that changes dynamically
+   * When true, adds role="status" and aria-live="polite"
+   */
+  isStatus?: boolean;
+  /**
+   * Accessible label for screen readers when the badge content is not descriptive enough
+   */
+  ariaLabel?: string;
 }
+
+const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
+  ({ className, variant, isStatus = false, ariaLabel, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(badgeVariants({ variant }), className)}
+        role={isStatus ? "status" : undefined}
+        aria-live={isStatus ? "polite" : undefined}
+        aria-label={ariaLabel}
+        {...props}
+      />
+    );
+  }
+);
+Badge.displayName = "Badge";
 
 export { Badge, badgeVariants };

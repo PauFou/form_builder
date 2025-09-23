@@ -4,7 +4,6 @@ Tests actual system performance under various load conditions
 """
 
 import time
-import asyncio
 import concurrent.futures
 import statistics
 from datetime import datetime, timedelta
@@ -113,7 +112,7 @@ class DatabasePerformanceTests(TransactionTestCase):
         # Test 3: Aggregation query
         start_time = time.time()
         from django.db.models import Count, Avg
-        stats = Submission.objects.filter(
+        Submission.objects.filter(
             form=self.form
         ).aggregate(
             total=Count('id'),
@@ -362,7 +361,7 @@ class CachePerformanceTests(TransactionTestCase):
         
         # Warm cache query
         start = time.time()
-        warm_result = cache.get(cache_key)
+        cache.get(cache_key)
         warm_time = time.time() - start
         
         print(f"Cold cache: {cold_time*1000:.2f}ms")

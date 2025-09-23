@@ -3,17 +3,15 @@ Cross-Service Integration Tests
 Tests the complete flow between API, Ingest, Workers, and external services
 """
 
-import asyncio
-import json
 import pytest
 from datetime import datetime
-from unittest.mock import patch, Mock, AsyncMock
+from unittest.mock import patch, Mock
 from django.test import TransactionTestCase
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from core.models import Organization, Submission, Partial
+from core.models import Organization, Submission
 from forms.models import Form
 from webhooks.models import Webhook, Delivery
 from webhooks.tasks import deliver_webhook
@@ -85,7 +83,7 @@ class FullSubmissionFlowTests(TransactionTestCase):
         
         # Simulate worker processing queue
         from workers.submission_processor import process_submission
-        result = process_submission(edge_payload)
+        process_submission(edge_payload)
         
         # Verify submission created
         submission = Submission.objects.get(
@@ -408,7 +406,7 @@ class WebhookReliabilityTests(TransactionTestCase):
     def test_webhook_idempotency(self):
         """Test idempotent webhook delivery"""
         # Create delivery with idempotency key
-        delivery1 = Delivery.objects.create(
+        Delivery.objects.create(
             webhook=self.webhook,
             submission=self.submission,
             idempotency_key='idem-123',
@@ -585,16 +583,10 @@ class SecurityIntegrationTests(TransactionTestCase):
     
     def test_audit_trail_completeness(self):
         """Test audit logging across all services"""
-        submission_data = {
-            'formId': 'test-form',
-            'answers': {'email': 'test@example.com'}
-        }
-        
         # Track through entire flow
         # Edge -> Queue -> API -> DB -> Webhooks -> Integrations
         
         # Verify audit entries at each step
-        from core.models import AuditLog
         
         # Should have entries for:
         # - Ingestion

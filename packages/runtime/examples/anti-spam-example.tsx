@@ -156,7 +156,7 @@ function AntiSpamStats() {
 // Example 4: Server-Side Validation (for API)
 export async function validateSubmissionOnServer(
   request: Request,
-  formData: any
+  formData: Record<string, unknown>
 ): Promise<{ isValid: boolean; reason?: string }> {
   // Extract client IP (example for Express/Node.js environment)
   const clientIP =

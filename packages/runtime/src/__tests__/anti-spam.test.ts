@@ -9,8 +9,9 @@ describe("AntiSpamService", () => {
   let service: AntiSpamService;
 
   beforeEach(() => {
-    // Create a new instance for each test
-    service = new (AntiSpamService as any)();
+    // Reset and create a new instance for each test
+    AntiSpamService.resetInstance();
+    service = AntiSpamService.getInstance();
     // Set up mock time starting at 0
     service.setCurrentTime(0);
     jest.clearAllMocks();

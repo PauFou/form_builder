@@ -1,12 +1,12 @@
 import React, { memo, useCallback } from "react";
-import type { Block } from "../types";
+import type { Block, FieldValue } from "../types";
 
 interface FormFieldProps {
   block: Block;
-  value: any;
+  value: FieldValue;
   error?: string;
   touched?: boolean;
-  onChange: (value: any) => void;
+  onChange: (value: FieldValue) => void;
   onBlur: () => void;
 }
 
@@ -47,10 +47,10 @@ export const FormField = memo(function FormField({
           <input
             {...baseProps}
             type={block.type === "number" ? "number" : block.type}
-            value={value || ""}
+            value={typeof value === "string" || typeof value === "number" ? String(value) : ""}
             onChange={handleChange}
             className="fr-input"
-            placeholder={block.properties?.placeholder}
+            placeholder={block.properties?.placeholder as string | undefined}
           />
         );
 
@@ -58,20 +58,25 @@ export const FormField = memo(function FormField({
         return (
           <textarea
             {...baseProps}
-            value={value || ""}
+            value={typeof value === "string" ? value : value?.toString() || ""}
             onChange={handleChange}
             className="fr-textarea"
-            rows={block.properties?.rows || 4}
-            placeholder={block.properties?.placeholder}
+            rows={(block.properties?.rows as number) || 4}
+            placeholder={block.properties?.placeholder as string | undefined}
           />
         );
 
       case "dropdown":
       case "select":
         return (
-          <select {...baseProps} value={value || ""} onChange={handleChange} className="fr-select">
+          <select
+            {...baseProps}
+            value={typeof value === "string" ? value : value?.toString() || ""}
+            onChange={handleChange}
+            className="fr-select"
+          >
             <option value="">Choose an option</option>
-            {block.properties?.options?.map((option: string) => (
+            {(block.properties?.options as string[] | undefined)?.map((option: string) => (
               <option key={option} value={option}>
                 {option}
               </option>
@@ -82,7 +87,7 @@ export const FormField = memo(function FormField({
       case "checkboxGroup":
         return (
           <div className="fr-checkbox-group" role="group" aria-labelledby={`${block.id}-label`}>
-            {block.properties?.options?.map((option: string) => (
+            {(block.properties?.options as string[] | undefined)?.map((option: string) => (
               <label key={option} className="fr-checkbox-label">
                 <input
                   type="checkbox"
@@ -108,7 +113,7 @@ export const FormField = memo(function FormField({
         return (
           <label className="fr-checkbox-label">
             <input {...baseProps} type="checkbox" checked={!!value} onChange={handleChange} />
-            <span>{block.properties?.label || "Check this box"}</span>
+            <span>{String(block.properties?.label || "Check this box")}</span>
           </label>
         );
 
@@ -120,7 +125,7 @@ export const FormField = memo(function FormField({
               <button
                 key={rating}
                 type="button"
-                className={`fr-rating-star ${value >= rating ? "active" : ""}`}
+                className={`fr-rating-star ${typeof value === "number" && value >= rating ? "active" : ""}`}
                 onClick={() => onChange(rating)}
                 onBlur={onBlur}
                 aria-label={`${rating} out of ${maxRating}`}
@@ -137,11 +142,17 @@ export const FormField = memo(function FormField({
           <input
             {...baseProps}
             type="date"
-            value={value || ""}
+            value={
+              typeof value === "string"
+                ? value
+                : value instanceof Date
+                  ? value.toISOString().split("T")[0]
+                  : ""
+            }
             onChange={handleChange}
             className="fr-input"
-            min={block.properties?.min}
-            max={block.properties?.max}
+            min={block.properties?.min as string | undefined}
+            max={block.properties?.max as string | undefined}
           />
         );
 
@@ -150,7 +161,7 @@ export const FormField = memo(function FormField({
           <input
             {...baseProps}
             type="text"
-            value={value || ""}
+            value={typeof value === "string" ? value : value?.toString() || ""}
             onChange={handleChange}
             className="fr-input"
           />

@@ -1,7 +1,18 @@
 import { openDB, DBSchema, IDBPDatabase } from "idb";
 import mitt, { Emitter } from "mitt";
 import type { FormState, FormData, RuntimeConfig } from "../types";
-import { debounce } from "../utils";
+
+// Custom debounce function for this service
+function debounceService<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: ReturnType<typeof setTimeout>;
+  return function (...args: Parameters<T>) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  } as (...args: Parameters<T>) => void;
+}
 
 interface FormDB extends DBSchema {
   submissions: {
@@ -54,8 +65,12 @@ export class OfflineService {
   private readonly dbVersion = 1;
 
   // Throttled functions
-  private readonly throttledSave: ReturnType<typeof debounce>;
-  private readonly throttledSync: ReturnType<typeof debounce>;
+  private readonly throttledSave: (
+    respondentKey: string,
+    state: FormState,
+    data: Partial<FormData>
+  ) => void;
+  private readonly throttledSync: () => void;
 
   constructor(config: RuntimeConfig) {
     this.config = config;
@@ -63,8 +78,19 @@ export class OfflineService {
     this.dbName = `forms-runtime-${config.formId}`;
 
     // Create throttled functions
-    this.throttledSave = debounce(this._saveState.bind(this), config.autoSaveInterval || 5000);
-    this.throttledSync = debounce(this._syncPartial.bind(this), 10000); // Sync every 10s max
+    this.throttledSave = debounceService(
+      (respondentKey: string, state: FormState, data: Partial<FormData>) => {
+        this._saveState(respondentKey, state, data);
+      },
+      config.autoSaveInterval || 5000
+    ) as (respondentKey: string, state: FormState, data: Partial<FormData>) => void;
+
+    this.throttledSync = debounceService(
+      () => {
+        this._syncPartial();
+      },
+      10000 // Sync every 10s max
+    ) as () => void;
 
     // Initialize online/offline detection
     this.isOnline = navigator.onLine;

@@ -2,6 +2,13 @@ import { OfflineService } from "../services/offline-service";
 import type { FormState, FormData, RuntimeConfig } from "../types";
 import { mockIndexedDB } from "./test-utils";
 
+// Helper function for creating mock form data
+const createMockFormData = (): Partial<FormData> => ({
+  formId: "test-form",
+  values: {},
+  startedAt: new Date().toISOString(),
+});
+
 describe("OfflineService", () => {
   let service: OfflineService;
   let config: RuntimeConfig;
@@ -68,7 +75,7 @@ describe("OfflineService", () => {
         isComplete: false,
       };
 
-      await service.saveState("user", state, {} as any);
+      await service.saveState("user", state, createMockFormData());
 
       // Wait for save
       await new Promise((resolve) => setTimeout(resolve, 1100));
@@ -99,7 +106,7 @@ describe("OfflineService", () => {
         isComplete: false,
       };
 
-      await disabledService.saveState("user", state, {} as any);
+      await disabledService.saveState("user", state, createMockFormData());
       const retrieved = await disabledService.getState();
       expect(retrieved).toBeNull();
 
@@ -128,7 +135,7 @@ describe("OfflineService", () => {
             ...state,
             values: { count: i },
           },
-          {} as any
+          createMockFormData()
         );
       }
 
@@ -160,7 +167,7 @@ describe("OfflineService", () => {
 
       // Save multiple times to trigger sync
       for (let i = 0; i < 5; i++) {
-        await syncService.saveState("user", state, {} as any);
+        await syncService.saveState("user", state, createMockFormData());
       }
 
       // Wait for save throttle + sync throttle
@@ -223,7 +230,7 @@ describe("OfflineService", () => {
         isComplete: false,
       };
 
-      await service.saveState("user", state, {} as any);
+      await service.saveState("user", state, createMockFormData());
 
       // Wait for save
       await new Promise((resolve) => setTimeout(resolve, 1100));
@@ -297,7 +304,7 @@ describe("OfflineService", () => {
       };
 
       // Save state and handle the promise properly
-      await syncService.saveState("user", state, {} as any);
+      await syncService.saveState("user", state, createMockFormData());
 
       // Wait for save + sync attempt with shorter timeout
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -345,7 +352,9 @@ describe("OfflineService", () => {
       await new Promise((resolve) => setTimeout(resolve, 1100));
 
       // Now we need to directly update the updatedAt in the database to simulate an old submission
-      const db = await (service as any).initDB();
+      // Access private method for testing
+      const serviceInternal = service as any;
+      const db = await serviceInternal.initDB();
       const tx = db.transaction("submissions", "readwrite");
       const record = await tx.objectStore("submissions").get(`${config.formId}-user`);
       if (record) {

@@ -67,7 +67,8 @@ Object.defineProperty(window, "location", {
 // jsdom provides these natively
 
 // Mock fetch globally
-(global as any).fetch = jest.fn();
+const globalWithFetch = global as typeof global & { fetch: jest.Mock };
+globalWithFetch.fetch = jest.fn();
 
 // Mock indexedDB
 import "fake-indexeddb/auto";

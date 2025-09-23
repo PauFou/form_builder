@@ -19,12 +19,12 @@ export function Navigation() {
         </Link>
 
         <div className="ml-auto flex items-center gap-4">
-          <Link href="#features">
+          <Link href="/features">
             <Button variant="ghost" size="sm">
               Features
             </Button>
           </Link>
-          <Link href="#templates">
+          <Link href="/templates">
             <Button variant="ghost" size="sm">
               Templates
             </Button>

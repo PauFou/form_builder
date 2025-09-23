@@ -3,6 +3,38 @@ export interface Page {
   blocks: Block[];
 }
 
+// Type for form field values
+export type FieldValue = string | number | boolean | Date | string[] | File | null | undefined;
+
+// Type for block properties
+export type BlockProperties = {
+  min?: number;
+  max?: number;
+  step?: number;
+  format?: string;
+  accept?: string;
+  multiple?: boolean;
+  maxSize?: number;
+  rows?: number;
+  cols?: number;
+  currency?: string;
+  dateFormat?: string;
+  timeFormat?: string;
+  minDate?: string;
+  maxDate?: string;
+  defaultValue?: FieldValue;
+  [key: string]: string | number | boolean | FieldValue | undefined;
+};
+
+// Type for metadata
+export type FormMetadata = {
+  userAgent?: string;
+  referrer?: string;
+  timezone?: string;
+  language?: string;
+  [key: string]: string | number | boolean | undefined;
+};
+
 export interface FormSchema {
   id: string;
   version?: number;
@@ -60,14 +92,16 @@ export interface Block {
   description?: string;
   placeholder?: string;
   required?: boolean;
-  properties?: Record<string, any>;
+  properties?: BlockProperties;
   validation?: ValidationRule[];
   options?: BlockOption[];
 }
 
+export type ValidationValue = string | number | RegExp | ((value: FieldValue) => boolean);
+
 export interface ValidationRule {
   type: "min" | "max" | "pattern" | "custom";
-  value: any;
+  value: ValidationValue;
   message?: string;
 }
 
@@ -88,19 +122,19 @@ export interface LogicCondition {
   id?: string;
   field: string;
   operator: "equals" | "not_equals" | "contains" | "not_contains" | "greater_than" | "less_than";
-  value: any;
+  value: FieldValue;
 }
 
 export interface LogicAction {
   id?: string;
   type: "show" | "hide" | "skip" | "jump" | "set_value";
   target: string;
-  value?: any;
+  value?: FieldValue | number; // number for jump actions (step/page index)
 }
 
 export interface FormState {
   currentStep: number;
-  values: Record<string, any>;
+  values: Record<string, FieldValue>;
   errors: Record<string, string>;
   touched: Record<string, boolean>;
   isSubmitting: boolean;
@@ -127,10 +161,10 @@ export interface RuntimeConfig {
 
 export interface FormData {
   formId: string;
-  values: Record<string, any>;
+  values: Record<string, FieldValue>;
   startedAt: string;
   completedAt?: string;
-  metadata?: Record<string, any>;
+  metadata?: FormMetadata;
 }
 
-export type FormDataPartial = Record<string, any>;
+export type FormDataPartial = Record<string, FieldValue>;

@@ -1,17 +1,41 @@
 import * as React from "react";
 import { cn } from "../../lib/utils";
 
-const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn(
-        "rounded-2xl border bg-card text-card-foreground shadow-sm transition-all",
-        className
-      )}
-      {...props}
-    />
-  )
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  asChild?: boolean;
+  interactive?: boolean;
+  ariaLabelledBy?: string;
+  ariaLabel?: string;
+}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  (
+    { className, asChild = false, interactive = false, ariaLabelledBy, ariaLabel, ...props },
+    ref
+  ) => {
+    const Component = asChild ? React.Fragment : "div";
+
+    if (asChild) {
+      return <>{props.children}</>;
+    }
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "rounded-2xl border bg-card text-card-foreground shadow-sm transition-all",
+          interactive &&
+            "hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          className
+        )}
+        role={interactive ? "button" : "article"}
+        tabIndex={interactive ? 0 : undefined}
+        aria-labelledby={ariaLabelledBy}
+        aria-label={ariaLabel}
+        {...props}
+      />
+    );
+  }
 );
 Card.displayName = "Card";
 

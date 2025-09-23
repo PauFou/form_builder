@@ -62,7 +62,7 @@ const formSchema: FormSchema = {
 
 export function PartialSaveExample() {
   const [showResumeBanner, setShowResumeBanner] = useState(false);
-  const [savedData, setSavedData] = useState<any>(null);
+  const [savedData, setSavedData] = useState<Record<string, unknown> | null>(null);
 
   // Configuration for the form runtime
   const config: RuntimeConfig = {

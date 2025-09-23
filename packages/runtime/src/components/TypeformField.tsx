@@ -1,12 +1,12 @@
 import React, { memo, useCallback, useState } from "react";
-import type { Block } from "../types";
+import type { Block, FieldValue } from "../types";
 
 interface TypeformFieldProps {
   block: Block;
-  value: any;
+  value: FieldValue;
   error?: string;
   touched?: boolean;
-  onChange: (value: any) => void;
+  onChange: (value: FieldValue) => void;
   onBlur: () => void;
 }
 
@@ -55,10 +55,10 @@ export const TypeformField = memo(function TypeformField({
           <input
             {...baseProps}
             type={block.type === "text" ? "text" : block.type === "phone" ? "tel" : block.type}
-            value={value || ""}
+            value={typeof value === "string" ? value : value?.toString() || ""}
             onChange={handleChange}
             className="typeform-input"
-            placeholder={block.properties?.placeholder || "Type your answer here..."}
+            placeholder={String(block.properties?.placeholder || "Type your answer here...")}
             autoComplete={block.type === "email" ? "email" : block.type === "phone" ? "tel" : "off"}
           />
         );
@@ -68,10 +68,10 @@ export const TypeformField = memo(function TypeformField({
           <input
             {...baseProps}
             type="number"
-            value={value || ""}
+            value={typeof value === "string" ? value : value?.toString() || ""}
             onChange={handleChange}
             className="typeform-input"
-            placeholder={block.properties?.placeholder || "Type your answer here..."}
+            placeholder={String(block.properties?.placeholder || "Type your answer here...")}
             min={block.properties?.min}
             max={block.properties?.max}
             step={block.properties?.step}
@@ -82,11 +82,11 @@ export const TypeformField = memo(function TypeformField({
         return (
           <textarea
             {...baseProps}
-            value={value || ""}
+            value={typeof value === "string" ? value : value?.toString() || ""}
             onChange={handleChange}
             className="typeform-textarea"
             rows={4}
-            placeholder={block.properties?.placeholder || "Type your answer here..."}
+            placeholder={String(block.properties?.placeholder || "Type your answer here...")}
           />
         );
 
@@ -96,14 +96,14 @@ export const TypeformField = memo(function TypeformField({
           <div className="typeform-select-wrapper">
             <select
               {...baseProps}
-              value={value || ""}
+              value={typeof value === "string" ? value : value?.toString() || ""}
               onChange={handleChange}
               className="typeform-select"
             >
               <option value="">Choose an option...</option>
-              {block.options?.map((option: any) => (
-                <option key={option.value || option} value={option.value || option}>
-                  {option.label || option}
+              {block.options?.map((option) => (
+                <option key={option.id} value={option.value || option.text}>
+                  {option.text}
                 </option>
               ))}
             </select>
@@ -127,42 +127,44 @@ export const TypeformField = memo(function TypeformField({
             role="group"
             aria-labelledby={`${block.id}-label`}
           >
-            {block.options?.map((option: any, index: number) => (
-              <label key={option.value || option} className="typeform-checkbox-label">
-                <input
-                  type="checkbox"
-                  name={`${block.id}[]`}
-                  value={option.value || option}
-                  checked={Array.isArray(value) && value.includes(option.value || option)}
-                  onChange={(e) => {
-                    const currentValues = Array.isArray(value) ? value : [];
-                    const optionValue = option.value || option;
-                    const newValue = e.target.checked
-                      ? [...currentValues, optionValue]
-                      : currentValues.filter((v) => v !== optionValue);
-                    onChange(newValue);
-                  }}
-                  onBlur={onBlur}
-                  className="typeform-checkbox-input"
-                />
-                <span className="typeform-checkbox-custom">
-                  <span className="typeform-checkbox-letter">
-                    {String.fromCharCode(65 + index)}
+            {block.options?.map((option, index) => {
+              const optionValue = option.value || option.text;
+              return (
+                <label key={option.id} className="typeform-checkbox-label">
+                  <input
+                    type="checkbox"
+                    name={`${block.id}[]`}
+                    value={optionValue}
+                    checked={Array.isArray(value) && value.includes(optionValue)}
+                    onChange={(e) => {
+                      const currentValues = Array.isArray(value) ? value : [];
+                      const newValue = e.target.checked
+                        ? [...currentValues, optionValue]
+                        : currentValues.filter((v) => v !== optionValue);
+                      onChange(newValue);
+                    }}
+                    onBlur={onBlur}
+                    className="typeform-checkbox-input"
+                  />
+                  <span className="typeform-checkbox-custom">
+                    <span className="typeform-checkbox-letter">
+                      {String.fromCharCode(65 + index)}
+                    </span>
+                    {option.text}
+                    <svg className="typeform-checkbox-check" viewBox="0 0 24 24">
+                      <path
+                        d="M20 6L9 17l-5-5"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   </span>
-                  {option.label || option}
-                  <svg className="typeform-checkbox-check" viewBox="0 0 24 24">
-                    <path
-                      d="M20 6L9 17l-5-5"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
-              </label>
-            ))}
+                </label>
+              );
+            })}
           </div>
         );
 
@@ -193,7 +195,7 @@ export const TypeformField = memo(function TypeformField({
               <button
                 key={rating}
                 type="button"
-                className={`typeform-rating-star ${value >= rating ? "active" : ""}`}
+                className={`typeform-rating-star ${typeof value === "number" && value >= rating ? "active" : ""}`}
                 onClick={() => onChange(rating)}
                 onBlur={onBlur}
                 aria-label={`${rating} out of ${maxRating}`}
@@ -201,7 +203,7 @@ export const TypeformField = memo(function TypeformField({
                 <svg viewBox="0 0 24 24">
                   <path
                     d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                    fill={value >= rating ? "currentColor" : "none"}
+                    fill={typeof value === "number" && value >= rating ? "currentColor" : "none"}
                     stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
@@ -222,8 +224,12 @@ export const TypeformField = memo(function TypeformField({
         return (
           <div className="typeform-scale">
             <div className="typeform-scale-labels">
-              <span className="typeform-scale-label-min">{block.properties?.minLabel || min}</span>
-              <span className="typeform-scale-label-max">{block.properties?.maxLabel || max}</span>
+              <span className="typeform-scale-label-min">
+                {String(block.properties?.minLabel || min)}
+              </span>
+              <span className="typeform-scale-label-max">
+                {String(block.properties?.maxLabel || max)}
+              </span>
             </div>
             <div className="typeform-scale-options">
               {scalePoints.map((point) => (
@@ -247,7 +253,7 @@ export const TypeformField = memo(function TypeformField({
           <input
             {...baseProps}
             type="date"
-            value={value || ""}
+            value={typeof value === "string" ? value : value?.toString() || ""}
             onChange={handleChange}
             className="typeform-input typeform-date-input"
             min={block.properties?.min}
@@ -260,7 +266,7 @@ export const TypeformField = memo(function TypeformField({
           <input
             {...baseProps}
             type="time"
-            value={value || ""}
+            value={typeof value === "string" ? value : value?.toString() || ""}
             onChange={handleChange}
             className="typeform-input typeform-time-input"
           />
@@ -271,7 +277,7 @@ export const TypeformField = memo(function TypeformField({
           <input
             {...baseProps}
             type="text"
-            value={value || ""}
+            value={typeof value === "string" ? value : value?.toString() || ""}
             onChange={handleChange}
             className="typeform-input"
             placeholder="Type your answer here..."

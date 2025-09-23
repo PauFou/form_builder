@@ -298,10 +298,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
         lastUpdatedAt: new Date().toISOString(),
         metadata: {
           userAgent: navigator.userAgent,
-          viewport: {
-            width: window.innerWidth,
-            height: window.innerHeight,
-          },
+          viewport: `${window.innerWidth}x${window.innerHeight}`,
           locale: config.locale,
         },
       });
@@ -315,13 +312,10 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
         startedAt: startTimeRef.current,
         metadata: {
           userAgent: navigator.userAgent,
-          viewport: {
-            width: window.innerWidth,
-            height: window.innerHeight,
-          },
+          viewport: `${window.innerWidth}x${window.innerHeight}`,
           locale: config.locale,
-          currentStep: state.currentStep,
-          progress: ((state.currentStep + 1) / visibleBlocks.length) * 100,
+          currentStep: String(state.currentStep),
+          progress: String(((state.currentStep + 1) / visibleBlocks.length) * 100),
         },
       };
 
@@ -621,7 +615,7 @@ export function useFormRuntime(schema: FormSchema, config: RuntimeConfig) {
         analyticsRef.current.trackFormSubmit(
           config.formId,
           respondentKeyRef.current,
-          data.metadata?.submissionId || "unknown",
+          String(data.metadata?.submissionId || "unknown"),
           false
         );
       }

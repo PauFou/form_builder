@@ -84,6 +84,8 @@
   },
   "packageManager": "pnpm@9.5.0",
   "dependencies": {
-    "axios": "^1.12.1"
+    "@tanstack/react-virtual": "^3.13.12",
+    "axios": "^1.12.1",
+    "recharts": "^2.12.7"
   }
 }

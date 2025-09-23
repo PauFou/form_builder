@@ -4,11 +4,12 @@ Tests security measures with SQLite-compatible queries
 """
 import pytest
 from django.test import TestCase, TransactionTestCase
-from django.db import connection, models
+from django.db import connection
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 
-from core.models import Organization, Form, Submission, Answer
+from core.models import Organization, Submission
+from forms.models import Form
 
 User = get_user_model()
 
@@ -98,14 +99,14 @@ class DataIsolationTests(TransactionTestCase):
         client.force_authenticate(user=self.user1)
         
         # User1 should see only org1's form
-        response = client.get('/api/v1/forms/')
+        response = client.get('/v1/forms/')
         self.assertEqual(response.status_code, 200)
         forms = response.data.get('results', [])
         self.assertEqual(len(forms), 1)
         self.assertEqual(forms[0]['id'], str(self.form1.id))
         
         # User1 should not be able to access org2's form
-        response = client.get(f'/api/v1/forms/{self.form2.id}/')
+        response = client.get(f'/v1/forms/{self.form2.id}/')
         self.assertEqual(response.status_code, 404)
     
     def test_query_level_isolation(self):
@@ -142,7 +143,7 @@ class TransactionSecurityTests(TransactionTestCase):
                         respondent_key=f'respondent-{index}'
                     )
                     results.append(submission.id)
-            except Exception as e:
+            except Exception:
                 results.append(None)
         
         # Create 10 concurrent submissions
@@ -196,12 +197,10 @@ class DatabaseConnectionSecurityTests(TestCase):
         """Test that connection pooling maintains isolation"""
         # SQLite doesn't have connection pooling like PostgreSQL
         # But we can verify that each test has its own connection
-        conn1_id = id(connection.connection)
         
         # Force a new connection
         connection.close()
         connection.ensure_connection()
-        conn2_id = id(connection.connection)
         
         # In SQLite memory mode, connections might be reused
         # Just verify we can get connections

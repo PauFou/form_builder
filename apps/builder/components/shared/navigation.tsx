@@ -11,15 +11,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@skemya/ui";
-import { LogIn, User, LogOut, Settings } from "lucide-react";
+import { LogIn, User, LogOut, Settings, Search, Command } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "../../lib/stores/auth-store";
+import { useCommandPaletteTrigger } from "../providers/command-palette-provider";
 import { cn } from "../../lib/utils";
 
 export function Navigation() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuthStore();
+  const { openCommandPalette } = useCommandPaletteTrigger();
 
   const handleLogout = async () => {
     await logout();
@@ -41,6 +43,20 @@ export function Navigation() {
         <div className="ml-auto flex items-center gap-2">
           {isAuthenticated ? (
             <>
+              {/* Global Search/Command Palette Trigger */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={openCommandPalette}
+                className="gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              >
+                <Search className="h-4 w-4" />
+                <span className="hidden sm:inline">Search</span>
+                <div className="hidden md:flex items-center gap-1 ml-2">
+                  <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded border">⌘K</kbd>
+                </div>
+              </Button>
+              <div className="h-6 w-px bg-border" />
               <Link href="/forms">
                 <Button
                   variant="ghost"
@@ -53,6 +69,20 @@ export function Navigation() {
                   )}
                 >
                   My Forms
+                </Button>
+              </Link>
+              <Link href="/templates">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "hover:bg-transparent hover:text-primary transition-colors",
+                    pathname === "/templates"
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Templates
                 </Button>
               </Link>
               <Link href="/integrations">
@@ -98,11 +128,18 @@ export function Navigation() {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    Account Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>Organization</DropdownMenuItem>
+                  <Link href="/profile">
+                    <DropdownMenuItem>
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/settings">
+                    <DropdownMenuItem>
+                      <Settings className="mr-2 h-4 w-4" />
+                      Organization Settings
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />

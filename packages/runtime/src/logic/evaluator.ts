@@ -3,12 +3,12 @@
  * Evaluates logic rules and conditions in forms
  */
 
-import type { LogicRule, LogicCondition, LogicAction, FormData } from "../types";
+import type { LogicRule, LogicCondition, LogicAction, FormData, FieldValue } from "../types";
 
 export class LogicEvaluator {
   private formData: FormData;
   private hiddenFields: Set<string> = new Set();
-  private fieldValues: Map<string, any> = new Map();
+  private fieldValues: Map<string, FieldValue> = new Map();
 
   constructor(formData: FormData) {
     this.formData = formData;

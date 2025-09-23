@@ -11,6 +11,7 @@ import { I18nProvider } from "@/lib/i18n";
 import { SkemyaThemeProvider } from "@/lib/theme";
 import { useState, useEffect } from "react";
 import { AuthProvider } from "@/components/providers/auth-provider";
+import { CommandPaletteProvider } from "@/components/providers/command-palette-provider";
 import { ClientLayout } from "./client-layout";
 
 const inter = Inter({
@@ -104,7 +105,9 @@ export default function RootLayout({
             <SkemyaThemeProvider>
               <I18nProvider>
                 <AuthProvider>
-                  <ClientLayout>{children}</ClientLayout>
+                  <CommandPaletteProvider>
+                    <ClientLayout>{children}</ClientLayout>
+                  </CommandPaletteProvider>
                 </AuthProvider>
                 <Toaster
                   position="top-center"

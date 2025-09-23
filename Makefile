@@ -26,7 +26,38 @@ install: ## Install all dependencies
 	cd services/analytics && pip install -r requirements.txt
 	@echo "${GREEN}✓ Dependencies installed${NC}"
 
-dev: ## Start all development servers
+dev: ## Show instructions for starting dev servers
+	@echo "${BLUE}Pour démarrer Forms Platform:${NC}"
+	@echo ""
+	@echo "${YELLOW}Terminal 1 - Backend API:${NC}"
+	@echo "  make dev-backend"
+	@echo ""
+	@echo "${YELLOW}Terminal 2 - Frontend:${NC}"
+	@echo "  make dev-frontend"
+	@echo ""
+	@echo "${GREEN}Compte de test:${NC} test@example.com / Test1234!"
+	@echo "${GREEN}API Docs:${NC} http://localhost:8000/v1/docs/swagger"
+
+dev-backend: ## Start backend API only
+	@echo "${BLUE}Starting Django API...${NC}"
+	@cd services/api && \
+	([ -d .venv ] || python3 -m venv .venv) && \
+	. .venv/bin/activate && \
+	pip install -q -r requirements.txt 2>/dev/null || true && \
+	python manage.py migrate --no-input && \
+	python manage.py create_test_user 2>/dev/null || true && \
+	echo "${GREEN}✓ API ready on http://localhost:8000${NC}" && \
+	python manage.py runserver
+
+dev-frontend: ## Start frontend only
+	@echo "${BLUE}Starting frontend apps...${NC}"
+	@pnpm install --silent 2>/dev/null || true && \
+	echo "${GREEN}✓ Frontend ready:${NC}" && \
+	echo "  Marketing: http://localhost:3000" && \
+	echo "  Builder: http://localhost:3001" && \
+	pnpm dev
+
+dev-old: ## Start all development servers (old method with concurrently)
 	@echo "${BLUE}Starting development servers...${NC}"
 	@trap 'echo "${RED}Stopping servers...${NC}"' INT; \
 	make docker-up && \

@@ -1,25 +1,26 @@
 import React, { useState } from "react";
+import { FormSchema, Block, FieldValue } from "./types";
 
 export interface FormViewerProps {
-  schema: any;
+  schema: FormSchema;
   config: {
     formId: string;
     apiUrl?: string;
     enableOffline?: boolean;
     autoSaveInterval?: number;
-    onSubmit: (data: any) => Promise<void>;
-    onPartialSave?: (data: any) => void;
-    onError?: (error: any) => void;
+    onSubmit: (data: Record<string, FieldValue>) => Promise<void>;
+    onPartialSave?: (data: Record<string, FieldValue>) => void;
+    onError?: (error: Error) => void;
   };
 }
 
 export function FormViewer({ schema, config }: FormViewerProps) {
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [formData, setFormData] = useState<Record<string, FieldValue>>({});
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Get all blocks from all pages
-  const allBlocks = schema.pages?.flatMap((page: any) => page.blocks || []) || [];
+  const allBlocks = schema.pages?.flatMap((page) => page.blocks || []) || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,13 +29,13 @@ export function FormViewer({ schema, config }: FormViewerProps) {
       await config.onSubmit(formData);
       setCurrentStep(allBlocks.length); // Show thank you
     } catch (error) {
-      config.onError?.(error);
+      config.onError?.(error as Error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleChange = (blockId: string, value: any) => {
+  const handleChange = (blockId: string, value: FieldValue) => {
     setFormData((prev) => ({ ...prev, [blockId]: value }));
     config.onPartialSave?.({ ...formData, [blockId]: value });
   };
@@ -172,7 +173,7 @@ export function FormViewer({ schema, config }: FormViewerProps) {
   );
 }
 
-function renderField(block: any, value: any, onChange: (value: any) => void) {
+function renderField(block: Block, value: FieldValue, onChange: (value: FieldValue) => void) {
   const baseStyle = {
     width: "100%",
     padding: "0.75rem",
@@ -187,9 +188,9 @@ function renderField(block: any, value: any, onChange: (value: any) => void) {
       return (
         <input
           type={block.type}
-          value={value || ""}
+          value={typeof value === "string" ? value : value?.toString() || ""}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={block.properties?.placeholder}
+          placeholder={block.properties?.placeholder as string | undefined}
           required={block.required}
           style={baseStyle}
         />
@@ -198,10 +199,10 @@ function renderField(block: any, value: any, onChange: (value: any) => void) {
     case "long_text":
       return (
         <textarea
-          value={value || ""}
+          value={typeof value === "string" ? value : value?.toString() || ""}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={block.properties?.placeholder}
-          rows={block.properties?.rows || 4}
+          placeholder={block.properties?.placeholder as string | undefined}
+          rows={(block.properties?.rows as number) || 4}
           required={block.required}
           style={baseStyle}
         />
@@ -210,13 +211,13 @@ function renderField(block: any, value: any, onChange: (value: any) => void) {
     case "dropdown":
       return (
         <select
-          value={value || ""}
+          value={typeof value === "string" ? value : value?.toString() || ""}
           onChange={(e) => onChange(e.target.value)}
           required={block.required}
           style={baseStyle}
         >
           <option value="">Choose an option...</option>
-          {block.properties?.options?.map((option: string) => (
+          {(block.properties?.options as string[] | undefined)?.map((option: string) => (
             <option key={option} value={option}>
               {option}
             </option>
@@ -237,7 +238,7 @@ function renderField(block: any, value: any, onChange: (value: any) => void) {
                 border: "none",
                 cursor: "pointer",
                 fontSize: "2rem",
-                color: value > i ? "#f59e0b" : "#d1d5db",
+                color: typeof value === "number" && value > i ? "#f59e0b" : "#d1d5db",
                 transition: "color 0.2s",
               }}
             >

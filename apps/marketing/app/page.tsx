@@ -80,7 +80,7 @@ export default function HomePage() {
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
-              <Link href="http://localhost:3001">
+              <Link href="/templates">
                 <Button size="lg" variant="outline">
                   See templates
                 </Button>
@@ -426,9 +426,11 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-center mt-12"
           >
-            <Button variant="outline" size="lg">
-              Browse all templates
-            </Button>
+            <Link href="/templates">
+              <Button variant="outline" size="lg">
+                Browse all templates
+              </Button>
+            </Link>
           </motion.div>
         </div>
       </section>
@@ -725,20 +727,20 @@ export default function HomePage() {
               <h4 className="font-semibold mb-4">Product</h4>
               <ul className="space-y-2">
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    href="/features"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Features
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    href="/templates"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Templates
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a
