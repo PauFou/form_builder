@@ -186,7 +186,7 @@ describe("useAuthStore", () => {
       expect(result.current.isAuthenticated).toBe(false);
     });
 
-    it.skip("clears state even if API call fails", async () => {
+    it("clears state even if API call fails", async () => {
       useAuthStore.setState({
         user: mockUser,
         organization: mockOrganization,

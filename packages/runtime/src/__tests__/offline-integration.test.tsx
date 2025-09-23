@@ -189,7 +189,7 @@ describe("Offline Integration", () => {
     });
   }, 10000);
 
-  it.skip("should clear offline data after successful submission", async () => {
+  it("should clear offline data after successful submission", async () => {
     mockConfig.onSubmit = jest.fn().mockResolvedValue(undefined);
     // Disable anti-spam for this test
     mockConfig.enableAntiSpam = false;

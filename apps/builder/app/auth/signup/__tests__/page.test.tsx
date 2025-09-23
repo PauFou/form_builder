@@ -62,20 +62,20 @@ describe("SignupPage", () => {
     });
   });
 
-  it.skip("validates email format", async () => {
-    // Skipped: HTML5 email validation prevents form submission with invalid email
+  it("validates email format using HTML5 validation", async () => {
     const user = userEvent.setup();
     render(<SignupPage />);
 
-    const emailInput = screen.getByLabelText("Email");
+    const emailInput = screen.getByLabelText("Email") as HTMLInputElement;
     await user.type(emailInput, "invalid-email");
 
-    const submitButton = screen.getByRole("button", { name: "Create account" });
-    await user.click(submitButton);
+    // HTML5 email validation should mark the input as invalid
+    expect(emailInput.validity.valid).toBe(false);
+    expect(emailInput.validity.typeMismatch).toBe(true);
 
-    await waitFor(() => {
-      expect(screen.getByText("Invalid email address")).toBeInTheDocument();
-    });
+    // The form should not submit with invalid email
+    const form = emailInput.closest('form');
+    expect(form?.checkValidity()).toBe(false);
   });
 
   it("submits form with valid data", async () => {

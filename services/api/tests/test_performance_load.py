@@ -16,7 +16,7 @@ from rest_framework.test import APIClient
 
 from core.models import Organization, Submission, Answer
 from forms.models import Form
-from webhooks.models import Webhook, WebhookDelivery
+from webhooks.models import Webhook, Delivery
 
 
 class DatabasePerformanceTests(TransactionTestCase):
@@ -453,7 +453,7 @@ class WebhookPerformanceTests(TransactionTestCase):
         fan_out_time = time.time() - start
         
         # Check that deliveries were queued
-        delivery_count = WebhookDelivery.objects.filter(
+        delivery_count = Delivery.objects.filter(
             submission=submission
         ).count()
         
@@ -468,7 +468,7 @@ class WebhookPerformanceTests(TransactionTestCase):
         # Create many pending deliveries
         deliveries = []
         for i in range(1000):
-            delivery = WebhookDelivery(
+            delivery = Delivery(
                 webhook=self.webhooks[i % len(self.webhooks)],
                 submission_id=i,
                 payload={'test': i},
@@ -476,7 +476,7 @@ class WebhookPerformanceTests(TransactionTestCase):
             )
             deliveries.append(delivery)
         
-        WebhookDelivery.objects.bulk_create(deliveries)
+        Delivery.objects.bulk_create(deliveries)
         
         # Process batch
         start = time.time()
