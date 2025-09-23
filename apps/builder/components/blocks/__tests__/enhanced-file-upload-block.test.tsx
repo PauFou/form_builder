@@ -1051,10 +1051,8 @@ describe("EnhancedFileUploadBlock", () => {
 
       // Advance timers to complete the upload
       await act(async () => {
-        // Upload simulation takes 11 * 50ms = 550ms
-        jest.advanceTimersByTime(600);
-        // Let promises resolve
-        await Promise.resolve();
+        // Run all timers to completion
+        jest.runAllTimers();
       });
 
       // Wait for upload to complete
@@ -1180,10 +1178,8 @@ describe("EnhancedFileUploadBlock", () => {
 
       // Advance timers to complete the upload
       await act(async () => {
-        // Upload simulation takes 11 * 50ms = 550ms
-        jest.advanceTimersByTime(600);
-        // Let promises resolve
-        await Promise.resolve();
+        // Run all timers to completion
+        jest.runAllTimers();
       });
 
       // Wait for upload to complete
