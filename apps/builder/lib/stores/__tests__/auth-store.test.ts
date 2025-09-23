@@ -50,7 +50,7 @@ describe("useAuthStore", () => {
     document.cookie = "";
     // Silence console.error for this test suite
     console.error = jest.fn();
-    
+
     // Reset all auth API mocks to successful responses by default
     (authApi.login as jest.Mock).mockResolvedValue({});
     (authApi.logout as jest.Mock).mockResolvedValue(undefined);
