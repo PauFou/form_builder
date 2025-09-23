@@ -9,7 +9,7 @@ import { Button, Tabs, TabsList, TabsTrigger, TabsContent } from "@skemya/ui";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 import { PageView } from "./PageView";
 import { BlockRenderer } from "./BlockRenderer";
-import { v4 as uuidv4 } from "uuid";
+// Use native crypto.randomUUID instead of uuid package
 
 export function FormCanvas() {
   const { form, selectedPageId, selectPage, addPage, addBlock, moveBlock } = useFormBuilderStore();
@@ -43,7 +43,7 @@ export function FormCanvas() {
       const targetIndex = overData?.index ?? 0;
 
       const newBlock = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         type: activeData.blockType,
         question: activeData.label,
         required: false,
