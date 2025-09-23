@@ -149,7 +149,9 @@ export function EnhancedFileUploadBlock({ block, isSelected, onUpdate }: BlockPr
 
         setFiles((prev) => {
           const updated = prev.map((f) =>
-            f.id === uploadedFile.id ? { ...f, status: "uploaded" as const, progress: 100, url: mockUrl } : f
+            f.id === uploadedFile.id
+              ? { ...f, status: "uploaded" as const, progress: 100, url: mockUrl }
+              : f
           );
           // Update parent component with the current state
           onUpdate?.({ defaultValue: updated });

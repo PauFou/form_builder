@@ -1166,19 +1166,19 @@ describe("EnhancedFileUploadBlock", () => {
         expect(screen.getByText("photo.jpg")).toBeInTheDocument();
       });
 
-      // Wait for upload to start 
+      // Wait for upload to start
       await act(async () => {
         await new Promise((resolve) => setTimeout(resolve, 2000));
       });
 
       // The file should be shown in the UI
       expect(screen.getByText("photo.jpg")).toBeInTheDocument();
-      
+
       // Verify no sensitive metadata is included in the displayed file
       // The test verifies that the component doesn't expose sensitive data
       const fileElement = screen.getByText("photo.jpg");
       expect(fileElement).toBeInTheDocument();
-      
+
       // Check that the file is being processed (shows uploading state or progress)
       // The component shows either "Uploading..." or progress percentage
       try {
