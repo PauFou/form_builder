@@ -61,7 +61,7 @@ jest.mock("framer-motion", () => ({
             style,
             ...domProps
           } = props;
-          
+
           return React.createElement(prop as string, { ...domProps, ref }, children);
         });
       },
@@ -79,19 +79,16 @@ jest.mock("framer-motion", () => ({
 // Mock lucide-react icons
 jest.mock("lucide-react", () => {
   const React = require("react");
-  return new Proxy(
-    {} as any,
-    {
-      get: (target: any, prop: string | symbol) => {
-        if (typeof prop === "string") {
-          return React.forwardRef(({ children, ...props }: any, ref: any) =>
-            React.createElement("svg", { ...props, ref, "data-testid": prop }, children)
-          );
-        }
-        return target[prop as any];
-      },
-    }
-  );
+  return new Proxy({} as any, {
+    get: (target: any, prop: string | symbol) => {
+      if (typeof prop === "string") {
+        return React.forwardRef(({ children, ...props }: any, ref: any) =>
+          React.createElement("svg", { ...props, ref, "data-testid": prop }, children)
+        );
+      }
+      return target[prop as any];
+    },
+  });
 });
 
 // Mock react-hotkeys-hook
@@ -103,12 +100,13 @@ jest.mock("react-hotkeys-hook", () => ({
 jest.mock("@skemya/ui", () => {
   const React = require("react");
   const originalModule = jest.requireActual("@skemya/ui");
-  
+
   return {
     ...originalModule,
     // Override only problematic components if needed
-    Dialog: ({ children, open }: any) => open ? React.createElement("div", { "data-testid": "dialog" }, children) : null,
-    Button: React.forwardRef(({ children, onClick, disabled, ...props }: any, ref: any) => 
+    Dialog: ({ children, open }: any) =>
+      open ? React.createElement("div", { "data-testid": "dialog" }, children) : null,
+    Button: React.forwardRef(({ children, onClick, disabled, ...props }: any, ref: any) =>
       React.createElement("button", { ref, onClick, disabled, ...props }, children)
     ),
   };
