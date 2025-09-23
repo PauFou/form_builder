@@ -55,26 +55,10 @@ jest.mock("../../../../lib/stores/auth-store", () => ({
   })),
 }));
 
-jest.mock("../../../../components/builder/form-canvas", () => ({
-  FormCanvas: () => <div data-testid="form-canvas">Form Canvas</div>,
-}));
-
-jest.mock("../../../../components/builder/block-library", () => ({
-  BlockLibrary: () => <div data-testid="block-library">Block Library</div>,
-}));
-
-jest.mock("../../../../components/builder/block-inspector", () => ({
-  BlockInspector: () => <div data-testid="block-inspector">Block Inspector</div>,
-}));
-
-jest.mock("../../../../components/builder/block-settings", () => ({
-  BlockSettings: () => <div data-testid="block-settings">Block Settings</div>,
-}));
-
-jest.mock("../../../../components/builder/modern-form-builder-enhanced", () => ({
-  ModernFormBuilderEnhanced: ({ form }: any) => (
-    <div data-testid="modern-form-builder">
-      <div>Form: {form?.title}</div>
+jest.mock("../../../../components/builder/FormBuilder", () => ({
+  FormBuilder: ({ formId }: any) => (
+    <div data-testid="form-builder">
+      <div>Form ID: {formId}</div>
       <div data-testid="form-canvas">Form Canvas</div>
       <div data-testid="block-library">Block Library</div>
       <div data-testid="block-inspector">Block Inspector</div>

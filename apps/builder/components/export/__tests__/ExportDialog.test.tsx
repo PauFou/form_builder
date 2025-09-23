@@ -25,15 +25,19 @@ describe("ExportDialog", () => {
 
     // Mock DOM methods
     const mockClick = jest.fn();
+    const originalCreateElement = document.createElement;
     document.createElement = jest.fn().mockImplementation((tagName) => {
       if (tagName === "a") {
         return {
           click: mockClick,
           href: "",
           download: "",
+          setAttribute: jest.fn(),
+          removeAttribute: jest.fn(),
         };
       }
-      return {};
+      // For other elements, use the original createElement
+      return originalCreateElement.call(document, tagName);
     });
   });
 

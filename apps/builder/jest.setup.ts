@@ -35,11 +35,102 @@ jest.mock("next/navigation", () => ({
 
 // Mock framer-motion to avoid animation issues in tests
 jest.mock("framer-motion", () => ({
-  motion: {
-    div: ({ children, ...props }: any) => React.createElement("div", props, children),
-    button: ({ children, ...props }: any) => React.createElement("button", props, children),
-  },
+  motion: new Proxy(
+    {},
+    {
+      get(target, prop) {
+        return React.forwardRef(({ children, ...props }: any, ref: any) => {
+          // Filter out framer-motion specific props
+          const {
+            animate,
+            initial,
+            exit,
+            whileHover,
+            whileTap,
+            whileFocus,
+            whileInView,
+            whileDrag,
+            drag,
+            dragConstraints,
+            dragElastic,
+            dragMomentum,
+            layout,
+            layoutId,
+            transition,
+            variants,
+            style,
+            ...domProps
+          } = props;
+          
+          return React.createElement(prop as string, { ...domProps, ref }, children);
+        });
+      },
+    }
+  ),
   AnimatePresence: ({ children }: any) => children,
+  useAnimation: () => ({
+    start: jest.fn(),
+    stop: jest.fn(),
+    set: jest.fn(),
+  }),
+  useMotionValue: (initial: any) => ({ get: () => initial, set: jest.fn() }),
+}));
+
+// Mock lucide-react icons
+jest.mock("lucide-react", () => {
+  const React = require("react");
+  return new Proxy(
+    {},
+    {
+      get: (target, prop) => {
+        if (typeof prop === "string") {
+          return React.forwardRef(({ children, ...props }: any, ref: any) =>
+            React.createElement("svg", { ...props, ref, "data-testid": prop }, children)
+          );
+        }
+        return target[prop];
+      },
+    }
+  );
+});
+
+// Mock @dnd-kit/core
+jest.mock("@dnd-kit/core", () => ({
+  DndContext: ({ children }: any) => children,
+  DragOverlay: ({ children }: any) => children,
+  useDndMonitor: () => {},
+  useDraggable: () => ({
+    attributes: {},
+    listeners: {},
+    setNodeRef: jest.fn(),
+    transform: null,
+  }),
+  useDroppable: () => ({
+    setNodeRef: jest.fn(),
+    isOver: false,
+  }),
+  pointerWithin: jest.fn(),
+  rectIntersection: jest.fn(),
+  closestCenter: jest.fn(),
+  KeyboardSensor: jest.fn(),
+  PointerSensor: jest.fn(),
+  useSensor: jest.fn(),
+  useSensors: jest.fn(() => []),
+}));
+
+// Mock @dnd-kit/sortable
+jest.mock("@dnd-kit/sortable", () => ({
+  SortableContext: ({ children }: any) => children,
+  useSortable: () => ({
+    attributes: {},
+    listeners: {},
+    setNodeRef: jest.fn(),
+    transform: null,
+    transition: null,
+    isDragging: false,
+  }),
+  verticalListSortingStrategy: "vertical-list",
+  sortableKeyboardCoordinates: jest.fn(),
 }));
 
 // Mock environment variables
