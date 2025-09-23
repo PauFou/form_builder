@@ -489,7 +489,11 @@ describe("FormViewer Offline Integration", () => {
       } else {
         // Values might be nested under a page key
         const keys = Object.keys(firstCall.values);
-        if (keys.length === 1 && firstCall.values[keys[0]] && typeof firstCall.values[keys[0]] === 'object') {
+        if (
+          keys.length === 1 &&
+          firstCall.values[keys[0]] &&
+          typeof firstCall.values[keys[0]] === "object"
+        ) {
           expect(firstCall.values[keys[0]].name).toBe("A");
         } else if (keys.length === 0) {
           // Empty values object - partial save called before form synced
@@ -527,7 +531,11 @@ describe("FormViewer Offline Integration", () => {
         expect(secondCall.data.name).toBe("ABC");
       } else {
         const keys = Object.keys(secondCall.data);
-        if (keys.length === 1 && secondCall.data[keys[0]] && typeof secondCall.data[keys[0]] === 'object') {
+        if (
+          keys.length === 1 &&
+          secondCall.data[keys[0]] &&
+          typeof secondCall.data[keys[0]] === "object"
+        ) {
           expect(secondCall.data[keys[0]].name).toBe("ABC");
         }
       }
@@ -536,7 +544,11 @@ describe("FormViewer Offline Integration", () => {
         expect(secondCall.values.name).toBe("ABC");
       } else {
         const keys = Object.keys(secondCall.values);
-        if (keys.length === 1 && secondCall.values[keys[0]] && typeof secondCall.values[keys[0]] === 'object') {
+        if (
+          keys.length === 1 &&
+          secondCall.values[keys[0]] &&
+          typeof secondCall.values[keys[0]] === "object"
+        ) {
           expect(secondCall.values[keys[0]].name).toBe("ABC");
         }
       }
@@ -562,7 +574,11 @@ describe("FormViewer Offline Integration", () => {
         expect(thirdCall.data.name).toBe("ABCDE");
       } else {
         const keys = Object.keys(thirdCall.data);
-        if (keys.length === 1 && thirdCall.data[keys[0]] && typeof thirdCall.data[keys[0]] === 'object') {
+        if (
+          keys.length === 1 &&
+          thirdCall.data[keys[0]] &&
+          typeof thirdCall.data[keys[0]] === "object"
+        ) {
           expect(thirdCall.data[keys[0]].name).toBe("ABCDE");
         }
       }
@@ -571,7 +587,11 @@ describe("FormViewer Offline Integration", () => {
         expect(thirdCall.values.name).toBe("ABCDE");
       } else {
         const keys = Object.keys(thirdCall.values);
-        if (keys.length === 1 && thirdCall.values[keys[0]] && typeof thirdCall.values[keys[0]] === 'object') {
+        if (
+          keys.length === 1 &&
+          thirdCall.values[keys[0]] &&
+          typeof thirdCall.values[keys[0]] === "object"
+        ) {
           expect(thirdCall.values[keys[0]].name).toBe("ABCDE");
         }
       }

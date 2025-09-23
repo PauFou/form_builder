@@ -50,6 +50,12 @@ describe("useAuthStore", () => {
     document.cookie = "";
     // Silence console.error for this test suite
     console.error = jest.fn();
+    
+    // Reset all auth API mocks to successful responses by default
+    (authApi.login as jest.Mock).mockResolvedValue({});
+    (authApi.logout as jest.Mock).mockResolvedValue(undefined);
+    (authApi.signup as jest.Mock).mockResolvedValue({});
+    (authApi.getMe as jest.Mock).mockResolvedValue({});
 
     // Reset store state
     useAuthStore.setState({
@@ -181,7 +187,9 @@ describe("useAuthStore", () => {
 
     it("clears state even if API call fails", async () => {
       // Mock API to reject - set it up before anything else
-      (authApi.logout as jest.Mock).mockImplementation(() => Promise.reject(new Error("Network error")));
+      (authApi.logout as jest.Mock).mockImplementation(() =>
+        Promise.reject(new Error("Network error"))
+      );
 
       useAuthStore.setState({
         user: mockUser,
