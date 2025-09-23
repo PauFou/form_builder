@@ -1023,6 +1023,7 @@ describe("EnhancedFileUploadBlock", () => {
     });
 
     it("should escape XSS attempts in filenames for display", async () => {
+      jest.useFakeTimers();
       const mockMath = jest.spyOn(Math, "random").mockReturnValue(0.5);
       const { container } = render(
         <EnhancedFileUploadBlock
@@ -1048,13 +1049,18 @@ describe("EnhancedFileUploadBlock", () => {
         expect(screen.getByText("<img src=x onerror=\"alert('XSS')\"/>.jpg")).toBeInTheDocument();
       });
 
+      // Advance timers to complete the upload
+      await act(async () => {
+        // Upload simulation takes 11 * 50ms = 550ms
+        jest.advanceTimersByTime(600);
+        // Let promises resolve
+        await Promise.resolve();
+      });
+
       // Wait for upload to complete
-      await waitFor(
-        () => {
-          expect(screen.getByText("Uploaded successfully")).toBeInTheDocument();
-        },
-        { timeout: 5000 }
-      );
+      await waitFor(() => {
+        expect(screen.getByText("Uploaded successfully")).toBeInTheDocument();
+      });
 
       // Then check that onUpdate was called
       expect(mockOnUpdate).toHaveBeenCalled();
@@ -1069,6 +1075,7 @@ describe("EnhancedFileUploadBlock", () => {
       expect(global.alert).not.toHaveBeenCalled();
 
       mockMath.mockRestore();
+      jest.useRealTimers();
     }, 10000);
 
     it("should validate MIME type against file extension", async () => {
@@ -1135,6 +1142,7 @@ describe("EnhancedFileUploadBlock", () => {
     });
 
     it("should prepare file metadata for server-side sanitization", async () => {
+      jest.useFakeTimers();
       const mockMath = jest.spyOn(Math, "random").mockReturnValue(0.5);
 
       const { container } = render(
@@ -1170,13 +1178,18 @@ describe("EnhancedFileUploadBlock", () => {
         expect(screen.getByText("photo.jpg")).toBeInTheDocument();
       });
 
+      // Advance timers to complete the upload
+      await act(async () => {
+        // Upload simulation takes 11 * 50ms = 550ms
+        jest.advanceTimersByTime(600);
+        // Let promises resolve
+        await Promise.resolve();
+      });
+
       // Wait for upload to complete
-      await waitFor(
-        () => {
-          expect(screen.getByText("Uploaded successfully")).toBeInTheDocument();
-        },
-        { timeout: 5000 }
-      );
+      await waitFor(() => {
+        expect(screen.getByText("Uploaded successfully")).toBeInTheDocument();
+      });
 
       // Then check that onUpdate was called
       expect(mockOnUpdate).toHaveBeenCalled();
@@ -1192,6 +1205,7 @@ describe("EnhancedFileUploadBlock", () => {
       expect(updateCall.defaultValue[0]).not.toHaveProperty("GPS");
 
       mockMath.mockRestore();
+      jest.useRealTimers();
     }, 10000);
 
     it("should enforce Content Security Policy for uploads", async () => {

@@ -461,7 +461,11 @@ describe("FormViewer Offline Integration", () => {
     });
 
     expect(onPartialSave).toHaveBeenCalledTimes(1);
-    expect(onPartialSave.mock.calls[0][0].values.name).toBe("A");
+    // Check what we actually received
+    const firstCall = onPartialSave.mock.calls[0][0];
+    expect(firstCall).toBeDefined();
+    expect(firstCall.values).toBeDefined();
+    expect(firstCall.values.name).toBe("A");
 
     onPartialSave.mockClear();
 
