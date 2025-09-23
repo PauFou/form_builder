@@ -296,6 +296,7 @@ POST   /v1/webhook-deliveries/:id/redrive
 4. **Minimal PRs**; observable impact; update this CLAUDE.md if architecture changes
 5. **Performance budgets** are gates; reject diffs that exceed runtime bundle size
 6. **Accessibility is non‑negotiable**: block merges if WCAG AA checks fail
+7. **NEVER skip tests**: JAMAIS utiliser `SKIP_TESTS=true` lors des commits/push. Toujours faire face aux échecs de tests et les corriger. Les tests qui échouent indiquent des problèmes réels qui doivent être résolus, pas contournés.
 
 ## 🚨 TESTS LOCAUX OBLIGATOIRES (CRITICAL FOR CLAUDE)
 

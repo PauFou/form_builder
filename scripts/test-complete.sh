@@ -105,7 +105,7 @@ echo -e "${BLUE}PHASE 2: UNIT TESTS${NC}"
 echo -e "${BLUE}════════════════════════════════════════════════════════════════════════════════${NC}"
 
 # Frontend unit tests
-run_test "Frontend Unit Tests" "pnpm test"
+run_test "Frontend Unit Tests" "pnpm test:ci"
 
 # Backend unit tests
 if [ -f "${ROOT_DIR}/services/api/requirements.txt" ]; then

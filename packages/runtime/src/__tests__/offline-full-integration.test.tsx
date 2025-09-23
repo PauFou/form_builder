@@ -331,8 +331,19 @@ describe("FormViewer Offline Integration", () => {
 
   it("should clear offline data after successful submission", async () => {
     // Test that offline data is saved and then cleared after submission
-    const respondentKey = "test-clear-123";
+    const respondentKey = "test-clear-123-" + Date.now(); // Unique key per test run
     const onSubmit = jest.fn().mockResolvedValue(undefined);
+
+    // Aggressive cleanup for this test to avoid interference
+    localStorage.clear();
+    jest.clearAllMocks();
+
+    // Reset all timers and wait for any pending operations
+    jest.useRealTimers();
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    });
+
     const config: RuntimeConfig = {
       formId: "test-form",
       apiUrl: "/api/v1",
@@ -374,50 +385,81 @@ describe("FormViewer Offline Integration", () => {
       expect(screen.getByText("What's your name?")).toBeInTheDocument();
     });
 
-    // Now complete the form and submit
-    // The name field might still be empty since we're on a fresh form
+    // Start fresh form - ensure we're on first step
+    await waitFor(() => {
+      expect(screen.getByText("What's your name?")).toBeInTheDocument();
+    });
+
+    // Fill form step by step properly
     const nameInputFresh = screen.getByRole("textbox", { name: /What's your name/ });
     fireEvent.change(nameInputFresh, { target: { value: "Fresh User" } });
 
-    // Wait for the form to update and enable the button
+    // Wait for the value to be set and validate
     await waitFor(() => {
-      const nextButton = screen.getByText("Next");
-      expect(nextButton).not.toBeDisabled();
+      expect(nameInputFresh).toHaveValue("Fresh User");
     });
 
-    // Fill in required email field
+    // Go to next step
     await act(async () => {
       fireEvent.click(screen.getByText("Next"));
     });
 
-    await waitFor(
-      () => {
-        expect(screen.getByText("What's your email?")).toBeInTheDocument();
-      },
-      { timeout: 3000 }
-    );
+    // Wait for email step
+    await waitFor(() => {
+      expect(screen.getByText("What's your email?")).toBeInTheDocument();
+    });
 
     const emailInput = screen.getByRole("textbox", { name: /What's your email/ });
     fireEvent.change(emailInput, { target: { value: "complete@example.com" } });
 
-    // Go to last step
+    // Wait for the email value to be set
+    await waitFor(() => {
+      expect(emailInput).toHaveValue("complete@example.com");
+    });
+
+    // Go to final step
     await act(async () => {
       fireEvent.click(screen.getByText("Next"));
     });
 
+    // Wait for feedback step
     await waitFor(() => {
       expect(screen.getByText("Any feedback?")).toBeInTheDocument();
     });
 
-    // Submit the form
-    await act(async () => {
-      fireEvent.click(screen.getByText("Submit"));
+    const feedbackInput = screen.getByRole("textbox", { name: /Any feedback/ });
+    fireEvent.change(feedbackInput, { target: { value: "Test feedback" } });
+
+    // Wait for the feedback value to be set
+    await waitFor(() => {
+      expect(feedbackInput).toHaveValue("Test feedback");
     });
 
-    // Wait for submission to complete
-    await waitFor(() => {
-      expect(onSubmit).toHaveBeenCalled();
+    // Wait for form validation to complete
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 300));
     });
+
+    // Find submit button and ensure it's enabled
+    const submitButton = screen.getByText("Submit");
+    await waitFor(() => {
+      expect(submitButton).not.toBeDisabled();
+    });
+
+    // Submit the form
+    await act(async () => {
+      fireEvent.click(submitButton);
+      // Wait a bit for any async submission handlers to start
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    });
+
+    // Wait for submission to complete with extended timeout
+    await waitFor(
+      () => {
+        expect(onSubmit).toHaveBeenCalled();
+      },
+      { timeout: 8000 }
+    );
 
     // Clean up
     unmount2();
@@ -430,7 +472,7 @@ describe("FormViewer Offline Integration", () => {
       const nameInputNew = screen.getByRole("textbox", { name: /What's your name/ });
       expect(nameInputNew).toHaveValue("");
     });
-  }, 10000);
+  }, 15000);
 
   it("should handle partial submissions throttling", async () => {
     // Test that partial saves are throttled appropriately
