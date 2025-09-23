@@ -51,12 +51,6 @@ describe("useAuthStore", () => {
     // Silence console.error for this test suite
     console.error = jest.fn();
 
-    // Reset all auth API mocks to successful responses by default
-    (authApi.login as jest.Mock).mockResolvedValue({});
-    (authApi.logout as jest.Mock).mockResolvedValue(undefined);
-    (authApi.signup as jest.Mock).mockResolvedValue({});
-    (authApi.getMe as jest.Mock).mockResolvedValue({});
-
     // Reset store state
     useAuthStore.setState({
       user: null,
@@ -186,11 +180,7 @@ describe("useAuthStore", () => {
     });
 
     it("clears state even if API call fails", async () => {
-      // Mock API to reject - set it up before anything else
-      (authApi.logout as jest.Mock).mockImplementation(() =>
-        Promise.reject(new Error("Network error"))
-      );
-
+      // Set up the store state first
       useAuthStore.setState({
         user: mockUser,
         organization: mockOrganization,
@@ -199,16 +189,16 @@ describe("useAuthStore", () => {
       });
 
       // Mock localStorage to have a refresh token
-      localStorageMock.getItem.mockImplementation((key) => {
-        if (key === "refresh_token") return "refresh-token";
-        return null;
-      });
+      localStorageMock.getItem.mockReturnValue("refresh-token");
+
+      // Mock API to reject
+      (authApi.logout as jest.Mock).mockRejectedValue(new Error("Network error"));
 
       const { result } = renderHook(() => useAuthStore());
 
-      // The logout function uses try...finally so it won't throw
+      // The logout should complete successfully even if API fails
+      // because the error is caught in the try/finally block
       await act(async () => {
-        // logout doesn't throw errors - it handles them in the finally block
         await result.current.logout();
       });
 

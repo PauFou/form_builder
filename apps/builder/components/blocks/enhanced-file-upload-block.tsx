@@ -147,20 +147,14 @@ export function EnhancedFileUploadBlock({ block, isSelected, onUpdate }: BlockPr
         // Simulate successful upload response
         const mockUrl = `https://storage.example.com/uploads/${uploadedFile.id}`;
 
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.id === uploadedFile.id ? { ...f, status: "uploaded", progress: 100, url: mockUrl } : f
-          )
-        );
-
-        // Update parent component
-        const uploadedFiles = files.concat({
-          ...uploadedFile,
-          status: "uploaded",
-          url: mockUrl,
-          progress: 100,
+        setFiles((prev) => {
+          const updated = prev.map((f) =>
+            f.id === uploadedFile.id ? { ...f, status: "uploaded" as const, progress: 100, url: mockUrl } : f
+          );
+          // Update parent component with the current state
+          onUpdate?.({ defaultValue: updated });
+          return updated;
         });
-        onUpdate?.({ defaultValue: uploadedFiles });
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "Upload failed";
 
@@ -171,7 +165,7 @@ export function EnhancedFileUploadBlock({ block, isSelected, onUpdate }: BlockPr
         );
       }
     },
-    [files, onUpdate]
+    [onUpdate]
   );
 
   // Retry upload

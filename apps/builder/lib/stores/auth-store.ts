@@ -58,6 +58,9 @@ export const useAuthStore = create<AuthState>()(
       logout: async () => {
         try {
           await authApi.logout();
+        } catch (error) {
+          // Silently ignore logout API errors - we still want to clear local state
+          console.warn("Logout API call failed:", error);
         } finally {
           // Clear tokens
           localStorage.removeItem("access_token");

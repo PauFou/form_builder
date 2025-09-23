@@ -2,19 +2,19 @@
   {
     "page": "marketing-home",
     "url": "http://localhost:3000",
-    "error": "Server not ready",
-    "timestamp": "2025-09-23T08:14:42.987Z"
+    "error": "1 accessibility violation was detected\n\n1 !== 0\n",
+    "timestamp": "2025-09-23T09:26:06.740Z"
   },
   {
     "page": "builder-home",
     "url": "http://localhost:3001",
     "error": "1 accessibility violation was detected\n\n1 !== 0\n",
-    "timestamp": "2025-09-23T08:14:47.042Z"
+    "timestamp": "2025-09-23T09:26:08.892Z"
   },
   {
     "page": "dashboard",
     "url": "http://localhost:3001/dashboard",
     "error": "1 accessibility violation was detected\n\n1 !== 0\n",
-    "timestamp": "2025-09-23T08:14:49.403Z"
+    "timestamp": "2025-09-23T09:26:11.036Z"
   }
 ]
