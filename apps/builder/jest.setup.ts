@@ -80,15 +80,15 @@ jest.mock("framer-motion", () => ({
 jest.mock("lucide-react", () => {
   const React = require("react");
   return new Proxy(
-    {},
+    {} as any,
     {
-      get: (target, prop) => {
+      get: (target: any, prop: string | symbol) => {
         if (typeof prop === "string") {
           return React.forwardRef(({ children, ...props }: any, ref: any) =>
             React.createElement("svg", { ...props, ref, "data-testid": prop }, children)
           );
         }
-        return target[prop];
+        return target[prop as any];
       },
     }
   );
