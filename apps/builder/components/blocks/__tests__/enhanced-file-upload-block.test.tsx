@@ -1022,11 +1022,9 @@ describe("EnhancedFileUploadBlock", () => {
       mockMath.mockRestore();
     });
 
-    it(
-      "should escape XSS attempts in filenames for display",
-      async () => {
-        const mockMath = jest.spyOn(Math, "random").mockReturnValue(0.5);
-        const { container } = render(
+    it("should escape XSS attempts in filenames for display", async () => {
+      const mockMath = jest.spyOn(Math, "random").mockReturnValue(0.5);
+      const { container } = render(
         <EnhancedFileUploadBlock
           block={{
             ...defaultBlock,
@@ -1047,7 +1045,7 @@ describe("EnhancedFileUploadBlock", () => {
 
       // Wait for file to be displayed
       await waitFor(() => {
-        expect(screen.getByText('<img src=x onerror="alert(\'XSS\')"/>.jpg')).toBeInTheDocument();
+        expect(screen.getByText("<img src=x onerror=\"alert('XSS')\"/>.jpg")).toBeInTheDocument();
       });
 
       // Wait for upload to complete
@@ -1071,9 +1069,7 @@ describe("EnhancedFileUploadBlock", () => {
       expect(global.alert).not.toHaveBeenCalled();
 
       mockMath.mockRestore();
-    },
-    10000
-  );
+    }, 10000);
 
     it("should validate MIME type against file extension", async () => {
       const { container } = render(
@@ -1138,12 +1134,10 @@ describe("EnhancedFileUploadBlock", () => {
       mockMath.mockRestore();
     });
 
-    it(
-      "should prepare file metadata for server-side sanitization",
-      async () => {
-        const mockMath = jest.spyOn(Math, "random").mockReturnValue(0.5);
+    it("should prepare file metadata for server-side sanitization", async () => {
+      const mockMath = jest.spyOn(Math, "random").mockReturnValue(0.5);
 
-        const { container } = render(
+      const { container } = render(
         <EnhancedFileUploadBlock
           block={{
             ...defaultBlock,
@@ -1198,9 +1192,7 @@ describe("EnhancedFileUploadBlock", () => {
       expect(updateCall.defaultValue[0]).not.toHaveProperty("GPS");
 
       mockMath.mockRestore();
-    },
-    10000
-  );
+    }, 10000);
 
     it("should enforce Content Security Policy for uploads", async () => {
       const { container } = render(
