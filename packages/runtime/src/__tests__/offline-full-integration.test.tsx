@@ -454,17 +454,17 @@ describe("FormViewer Offline Integration", () => {
 
     // Type multiple times rapidly
     fireEvent.change(nameInput, { target: { value: "A" } });
-    
+
     // Wait a bit for the first save
     await act(async () => {
       await new Promise((resolve) => setTimeout(resolve, 2200));
     });
-    
+
     expect(onPartialSave).toHaveBeenCalledTimes(1);
     expect(onPartialSave.mock.calls[0][0].values.name).toBe("A");
-    
+
     onPartialSave.mockClear();
-    
+
     // Now type more rapidly
     fireEvent.change(nameInput, { target: { value: "AB" } });
     fireEvent.change(nameInput, { target: { value: "ABC" } });

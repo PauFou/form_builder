@@ -193,10 +193,10 @@ describe("useAuthStore", () => {
         return null;
       });
 
-      // Mock to throw an error - the store uses try...finally so it won't propagate
-      (authApi.logout as jest.Mock).mockRejectedValue(new Error("Network error"));
-
       const { result } = renderHook(() => useAuthStore());
+
+      // Mock to throw an error - but the logout method catches it
+      (authApi.logout as jest.Mock).mockRejectedValue(new Error("Network error"));
 
       // The logout function uses try...finally so it won't throw
       await act(async () => {

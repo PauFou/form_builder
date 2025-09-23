@@ -1022,9 +1022,11 @@ describe("EnhancedFileUploadBlock", () => {
       mockMath.mockRestore();
     });
 
-    it("should escape XSS attempts in filenames for display", async () => {
-      const mockMath = jest.spyOn(Math, "random").mockReturnValue(0.5);
-      const { container } = render(
+    it(
+      "should escape XSS attempts in filenames for display",
+      async () => {
+        const mockMath = jest.spyOn(Math, "random").mockReturnValue(0.5);
+        const { container } = render(
         <EnhancedFileUploadBlock
           block={{
             ...defaultBlock,
@@ -1043,25 +1045,35 @@ describe("EnhancedFileUploadBlock", () => {
         fireEvent.change(input, { target: { files: [xssFile] } });
       });
 
-      // Check that filename is displayed safely
+      // Wait for file to be displayed
+      await waitFor(() => {
+        expect(screen.getByText('<img src=x onerror="alert(\'XSS\')"/>.jpg')).toBeInTheDocument();
+      });
+
+      // Wait for upload to complete
       await waitFor(
         () => {
-          expect(mockOnUpdate).toHaveBeenCalled();
-          const updateCall = mockOnUpdate.mock.calls[0][0];
-          // File should be uploaded with original name for server to validate
-          expect(updateCall.defaultValue[0]).toMatchObject({
-            name: "<img src=x onerror=\"alert('XSS')\"/>.jpg",
-            status: "uploaded",
-          });
-
-          // Verify no script execution occurred
-          expect(global.alert).not.toHaveBeenCalled();
+          expect(screen.getByText("Uploaded successfully")).toBeInTheDocument();
         },
         { timeout: 5000 }
       );
 
+      // Then check that onUpdate was called
+      expect(mockOnUpdate).toHaveBeenCalled();
+      const updateCall = mockOnUpdate.mock.calls[0][0];
+      // File should be uploaded with original name for server to validate
+      expect(updateCall.defaultValue[0]).toMatchObject({
+        name: "<img src=x onerror=\"alert('XSS')\"/>.jpg",
+        status: "uploaded",
+      });
+
+      // Verify no script execution occurred
+      expect(global.alert).not.toHaveBeenCalled();
+
       mockMath.mockRestore();
-    });
+    },
+    10000
+  );
 
     it("should validate MIME type against file extension", async () => {
       const { container } = render(
@@ -1126,10 +1138,12 @@ describe("EnhancedFileUploadBlock", () => {
       mockMath.mockRestore();
     });
 
-    it("should prepare file metadata for server-side sanitization", async () => {
-      const mockMath = jest.spyOn(Math, "random").mockReturnValue(0.5);
+    it(
+      "should prepare file metadata for server-side sanitization",
+      async () => {
+        const mockMath = jest.spyOn(Math, "random").mockReturnValue(0.5);
 
-      const { container } = render(
+        const { container } = render(
         <EnhancedFileUploadBlock
           block={{
             ...defaultBlock,
@@ -1157,25 +1171,36 @@ describe("EnhancedFileUploadBlock", () => {
         fireEvent.change(input, { target: { files: [file] } });
       });
 
+      // Wait for file to be displayed
+      await waitFor(() => {
+        expect(screen.getByText("photo.jpg")).toBeInTheDocument();
+      });
+
+      // Wait for upload to complete
       await waitFor(
         () => {
-          expect(mockOnUpdate).toHaveBeenCalled();
-          const updateCall = mockOnUpdate.mock.calls[0][0];
-          // Verify file is prepared for upload with basic metadata only
-          expect(updateCall.defaultValue[0]).toMatchObject({
-            name: "photo.jpg",
-            type: "image/jpeg",
-            status: "uploaded",
-          });
-          // Ensure no sensitive metadata is included
-          expect(updateCall.defaultValue[0]).not.toHaveProperty("exifData");
-          expect(updateCall.defaultValue[0]).not.toHaveProperty("GPS");
+          expect(screen.getByText("Uploaded successfully")).toBeInTheDocument();
         },
         { timeout: 5000 }
       );
 
+      // Then check that onUpdate was called
+      expect(mockOnUpdate).toHaveBeenCalled();
+      const updateCall = mockOnUpdate.mock.calls[0][0];
+      // Verify file is prepared for upload with basic metadata only
+      expect(updateCall.defaultValue[0]).toMatchObject({
+        name: "photo.jpg",
+        type: "image/jpeg",
+        status: "uploaded",
+      });
+      // Ensure no sensitive metadata is included
+      expect(updateCall.defaultValue[0]).not.toHaveProperty("exifData");
+      expect(updateCall.defaultValue[0]).not.toHaveProperty("GPS");
+
       mockMath.mockRestore();
-    });
+    },
+    10000
+  );
 
     it("should enforce Content Security Policy for uploads", async () => {
       const { container } = render(
