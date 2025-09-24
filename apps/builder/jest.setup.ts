@@ -116,32 +116,40 @@ jest.mock("@skemya/ui", () => {
       React.createElement("p", { "data-testid": "dialog-description" }, children),
     DialogFooter: ({ children }: any) =>
       React.createElement("div", { "data-testid": "dialog-footer" }, children),
-    
+
     // Form components
     Button: React.forwardRef(({ children, onClick, disabled, variant, ...props }: any, ref: any) =>
-      React.createElement("button", { ref, onClick, disabled, className: variant, ...props }, children)
+      React.createElement(
+        "button",
+        { ref, onClick, disabled, className: variant, ...props },
+        children
+      )
     ),
     Label: ({ children, htmlFor, ...props }: any) =>
       React.createElement("label", { htmlFor, ...props }, children),
     Switch: ({ checked, onCheckedChange, ...props }: any) =>
-      React.createElement("input", { 
-        type: "checkbox", 
-        checked, 
+      React.createElement("input", {
+        type: "checkbox",
+        checked,
         onChange: (e: any) => onCheckedChange?.(e.target.checked),
         role: "switch",
-        ...props
+        ...props,
       }),
     Checkbox: ({ checked, onCheckedChange, ...props }: any) =>
-      React.createElement("input", { 
-        type: "checkbox", 
-        checked, 
+      React.createElement("input", {
+        type: "checkbox",
+        checked,
         onChange: (e: any) => onCheckedChange?.(e.target.checked),
-        ...props
+        ...props,
       }),
-    
+
     // Select components
     Select: ({ children, value, onValueChange }: any) =>
-      React.createElement("div", { "data-value": value, onClick: () => onValueChange?.("test") }, children),
+      React.createElement(
+        "div",
+        { "data-value": value, onClick: () => onValueChange?.("test") },
+        children
+      ),
     SelectContent: ({ children }: any) =>
       React.createElement("div", { "data-testid": "select-content" }, children),
     SelectItem: ({ children, value }: any) =>
@@ -150,34 +158,36 @@ jest.mock("@skemya/ui", () => {
       React.createElement("div", { "data-testid": "select-trigger" }, children),
     SelectValue: ({ placeholder }: any) =>
       React.createElement("span", {}, placeholder || "All Time"),
-    
+
     // Tabs components
     Tabs: ({ children, defaultValue }: any) =>
       React.createElement("div", { "data-default-value": defaultValue }, children),
-    TabsList: ({ children }: any) =>
-      React.createElement("div", { role: "tablist" }, children),
+    TabsList: ({ children }: any) => React.createElement("div", { role: "tablist" }, children),
     TabsTrigger: ({ children, value }: any) =>
       React.createElement("button", { role: "tab", "data-value": value }, children),
     TabsContent: ({ children, value }: any) =>
       React.createElement("div", { role: "tabpanel", "data-value": value }, children),
-    
+
     // RadioGroup components
     RadioGroup: ({ children, value, onValueChange }: any) =>
-      React.createElement("div", { 
-        role: "radiogroup", 
-        "data-value": value,
-        onClick: () => onValueChange?.("csv")
-      }, children),
+      React.createElement(
+        "div",
+        {
+          role: "radiogroup",
+          "data-value": value,
+          onClick: () => onValueChange?.("csv"),
+        },
+        children
+      ),
     RadioGroupItem: ({ value, id }: any) =>
       React.createElement("input", { type: "radio", value, id }),
-    
+
     // Progress component
     Progress: ({ value }: any) =>
       React.createElement("div", { role: "progressbar", "aria-valuenow": value }),
-    
+
     // Badge component
-    Badge: ({ children }: any) =>
-      React.createElement("span", { className: "badge" }, children),
+    Badge: ({ children }: any) => React.createElement("span", { className: "badge" }, children),
   };
 });
 

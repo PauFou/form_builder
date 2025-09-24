@@ -124,7 +124,7 @@ describe("FormEditPage", () => {
     await screen.findByTestId("form-canvas");
 
     // Give time for useEffect to complete
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(mockStore.setForm).toHaveBeenCalledWith(mockForm);
   });
@@ -155,10 +155,10 @@ describe("FormEditPage", () => {
 
     // Component still renders FormBuilder, but API call fails silently
     expect(screen.getByTestId("form-builder")).toBeInTheDocument();
-    
+
     // Give time for useEffect and error to be logged
-    await new Promise(resolve => setTimeout(resolve, 0));
-    
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
     // Form should not be set in store when API fails
     expect(mockStore.setForm).not.toHaveBeenCalled();
   });
@@ -169,9 +169,9 @@ describe("FormEditPage", () => {
     render(<FormEditPage />);
 
     await screen.findByTestId("form-canvas");
-    
+
     // Give time for useEffect to complete
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     // Check that formsApi.get was called with the correct ID
     expect(formsApi.get).toHaveBeenCalledWith("456");
