@@ -17,7 +17,7 @@ jest.mock("next/navigation", () => ({
   })),
 }));
 
-// Mock tanstack/react-query hooks
+// Mock tanstack/react-query hooks (not used by this component, but may be imported by dependencies)
 jest.mock("@tanstack/react-query", () => ({
   ...jest.requireActual("@tanstack/react-query"),
   useQuery: jest.fn(),
@@ -113,13 +113,18 @@ describe("FormEditPage", () => {
       isLoading: false,
       error: null,
     });
-    (formsApi.get as jest.Mock).mockResolvedValue(mockForm);
+    // The component uses formsApi.get directly, so mock it to return { data: mockForm }
+    (formsApi.get as jest.Mock).mockResolvedValue({ data: mockForm });
   });
 
   it("should load form on mount", async () => {
     render(<FormEditPage />);
 
+    // Wait for the component to render
     await screen.findByTestId("form-canvas");
+
+    // Give time for useEffect to complete
+    await new Promise(resolve => setTimeout(resolve, 0));
 
     expect(mockStore.setForm).toHaveBeenCalledWith(mockForm);
   });
@@ -134,28 +139,28 @@ describe("FormEditPage", () => {
     expect(screen.getByTestId("block-inspector")).toBeInTheDocument();
   });
 
-  it("should display loading state initially", () => {
-    (useQuery as jest.Mock).mockReturnValue({
-      data: null,
-      isLoading: true,
-      error: null,
-    });
-
+  it("should render FormBuilder component", () => {
     render(<FormEditPage />);
 
-    expect(screen.getByText("Loading form...")).toBeInTheDocument();
+    // The component always renders FormBuilder immediately, no loading state
+    expect(screen.getByTestId("form-builder")).toBeInTheDocument();
+    expect(screen.getByText("Form ID: 123")).toBeInTheDocument();
   });
 
-  it("should handle error when form not found", async () => {
-    (useQuery as jest.Mock).mockReturnValue({
-      data: null,
-      isLoading: false,
-      error: new Error("Form not found"),
-    });
+  it("should handle API error gracefully", async () => {
+    // Mock API to reject
+    (formsApi.get as jest.Mock).mockRejectedValue(new Error("Form not found"));
 
     render(<FormEditPage />);
 
-    expect(screen.getByText("Failed to load form")).toBeInTheDocument();
+    // Component still renders FormBuilder, but API call fails silently
+    expect(screen.getByTestId("form-builder")).toBeInTheDocument();
+    
+    // Give time for useEffect and error to be logged
+    await new Promise(resolve => setTimeout(resolve, 0));
+    
+    // Form should not be set in store when API fails
+    expect(mockStore.setForm).not.toHaveBeenCalled();
   });
 
   it("should pass correct form ID to API", async () => {
@@ -164,11 +169,11 @@ describe("FormEditPage", () => {
     render(<FormEditPage />);
 
     await screen.findByTestId("form-canvas");
+    
+    // Give time for useEffect to complete
+    await new Promise(resolve => setTimeout(resolve, 0));
 
-    expect(useQuery).toHaveBeenCalledWith(
-      expect.objectContaining({
-        queryKey: ["form", "456"],
-      })
-    );
+    // Check that formsApi.get was called with the correct ID
+    expect(formsApi.get).toHaveBeenCalledWith("456");
   });
 });

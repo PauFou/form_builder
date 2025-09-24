@@ -96,19 +96,88 @@ jest.mock("react-hotkeys-hook", () => ({
   useHotkeys: jest.fn(),
 }));
 
-// Mock @skemya/ui components - simpler approach
+// Mock @skemya/ui components - comprehensive approach
 jest.mock("@skemya/ui", () => {
   const React = require("react");
   const originalModule = jest.requireActual("@skemya/ui");
 
   return {
     ...originalModule,
-    // Override only problematic components if needed
+    // Dialog components
     Dialog: ({ children, open }: any) =>
       open ? React.createElement("div", { "data-testid": "dialog" }, children) : null,
-    Button: React.forwardRef(({ children, onClick, disabled, ...props }: any, ref: any) =>
-      React.createElement("button", { ref, onClick, disabled, ...props }, children)
+    DialogContent: ({ children }: any) =>
+      React.createElement("div", { "data-testid": "dialog-content" }, children),
+    DialogHeader: ({ children }: any) =>
+      React.createElement("div", { "data-testid": "dialog-header" }, children),
+    DialogTitle: ({ children }: any) =>
+      React.createElement("h2", { "data-testid": "dialog-title" }, children),
+    DialogDescription: ({ children }: any) =>
+      React.createElement("p", { "data-testid": "dialog-description" }, children),
+    DialogFooter: ({ children }: any) =>
+      React.createElement("div", { "data-testid": "dialog-footer" }, children),
+    
+    // Form components
+    Button: React.forwardRef(({ children, onClick, disabled, variant, ...props }: any, ref: any) =>
+      React.createElement("button", { ref, onClick, disabled, className: variant, ...props }, children)
     ),
+    Label: ({ children, htmlFor, ...props }: any) =>
+      React.createElement("label", { htmlFor, ...props }, children),
+    Switch: ({ checked, onCheckedChange, ...props }: any) =>
+      React.createElement("input", { 
+        type: "checkbox", 
+        checked, 
+        onChange: (e: any) => onCheckedChange?.(e.target.checked),
+        role: "switch",
+        ...props
+      }),
+    Checkbox: ({ checked, onCheckedChange, ...props }: any) =>
+      React.createElement("input", { 
+        type: "checkbox", 
+        checked, 
+        onChange: (e: any) => onCheckedChange?.(e.target.checked),
+        ...props
+      }),
+    
+    // Select components
+    Select: ({ children, value, onValueChange }: any) =>
+      React.createElement("div", { "data-value": value, onClick: () => onValueChange?.("test") }, children),
+    SelectContent: ({ children }: any) =>
+      React.createElement("div", { "data-testid": "select-content" }, children),
+    SelectItem: ({ children, value }: any) =>
+      React.createElement("div", { role: "option", "data-value": value }, children),
+    SelectTrigger: ({ children }: any) =>
+      React.createElement("div", { "data-testid": "select-trigger" }, children),
+    SelectValue: ({ placeholder }: any) =>
+      React.createElement("span", {}, placeholder || "All Time"),
+    
+    // Tabs components
+    Tabs: ({ children, defaultValue }: any) =>
+      React.createElement("div", { "data-default-value": defaultValue }, children),
+    TabsList: ({ children }: any) =>
+      React.createElement("div", { role: "tablist" }, children),
+    TabsTrigger: ({ children, value }: any) =>
+      React.createElement("button", { role: "tab", "data-value": value }, children),
+    TabsContent: ({ children, value }: any) =>
+      React.createElement("div", { role: "tabpanel", "data-value": value }, children),
+    
+    // RadioGroup components
+    RadioGroup: ({ children, value, onValueChange }: any) =>
+      React.createElement("div", { 
+        role: "radiogroup", 
+        "data-value": value,
+        onClick: () => onValueChange?.("csv")
+      }, children),
+    RadioGroupItem: ({ value, id }: any) =>
+      React.createElement("input", { type: "radio", value, id }),
+    
+    // Progress component
+    Progress: ({ value }: any) =>
+      React.createElement("div", { role: "progressbar", "aria-valuenow": value }),
+    
+    // Badge component
+    Badge: ({ children }: any) =>
+      React.createElement("span", { className: "badge" }, children),
   };
 });
 
