@@ -64,7 +64,8 @@ describe("SelectBlock", () => {
     const questionLabel = screen.getByText("Choose an option");
     await user.click(questionLabel);
 
-    const input = screen.getByDisplayValue("Choose an option");
+    // Wait for the input to appear
+    const input = await screen.findByDisplayValue("Choose an option");
     await user.clear(input);
     await user.type(input, "Pick your favorite");
     await user.keyboard("{Enter}");

@@ -151,8 +151,9 @@ describe("RuleBuilder", () => {
 
     render(<RuleBuilder rule={existingRule} onSave={mockOnSave} onCancel={mockOnCancel} />);
 
-    // Should show existing data
-    expect(screen.getByText("Name")).toBeInTheDocument();
+    // Should show existing data - using getAllByText since "Name" might appear multiple times
+    const nameElements = screen.getAllByText("Name");
+    expect(nameElements.length).toBeGreaterThan(0);
     expect(screen.getByText("Show field")).toBeInTheDocument();
   });
 

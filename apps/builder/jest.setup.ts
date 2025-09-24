@@ -144,7 +144,7 @@ jest.mock("@skemya/ui", () => {
       }),
 
     // Select components
-    Select: ({ children, value, onValueChange }: any) =>
+    Select: ({ children, value, onValueChange, disabled }: any) =>
       React.createElement(
         "div",
         { "data-value": value, onClick: () => onValueChange?.("test") },
@@ -154,8 +154,14 @@ jest.mock("@skemya/ui", () => {
       React.createElement("div", { "data-testid": "select-content" }, children),
     SelectItem: ({ children, value }: any) =>
       React.createElement("div", { role: "option", "data-value": value }, children),
-    SelectTrigger: ({ children }: any) =>
-      React.createElement("div", { "data-testid": "select-trigger" }, children),
+    SelectTrigger: ({ children, id }: any) =>
+      React.createElement("div", { 
+        "data-testid": "select-trigger", 
+        role: "combobox",
+        id,
+        "aria-expanded": "false",
+        "aria-haspopup": "listbox"
+      }, children),
     SelectValue: ({ placeholder }: any) =>
       React.createElement("span", {}, placeholder || "All Time"),
 
@@ -187,7 +193,8 @@ jest.mock("@skemya/ui", () => {
       React.createElement("div", { role: "progressbar", "aria-valuenow": value }),
 
     // Badge component
-    Badge: ({ children }: any) => React.createElement("span", { className: "badge" }, children),
+    Badge: ({ children, className, ...props }: any) =>
+      React.createElement("span", { className: `badge ${className || ""}`.trim(), ...props }, children),
   };
 });
 
