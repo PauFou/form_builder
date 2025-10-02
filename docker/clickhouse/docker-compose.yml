@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.12
+    container_name: forms_clickhouse
+    ports:
+      - "8123:8123"  # HTTP interface
+      - "9000:9000"  # Native client
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - ./config.xml:/etc/clickhouse-server/config.d/custom.xml:ro
+      - ./users.xml:/etc/clickhouse-server/users.d/custom.xml:ro
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    environment:
+      CLICKHOUSE_DB: forms_analytics
+      CLICKHOUSE_USER: forms_user
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-forms_password}
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - forms_network
+
+volumes:
+  clickhouse_data:
+    driver: local
+
+networks:
+  forms_network:
+    external: true

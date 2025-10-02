@@ -22,6 +22,7 @@ interface AuthState {
   ) => Promise<void>;
   checkAuth: () => Promise<void>;
   updateUser: (user: Partial<User>) => void;
+  setDevAuth: (user: User, organization: Organization) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -135,6 +136,17 @@ export const useAuthStore = create<AuthState>()(
         set((state) => ({
           user: state.user ? { ...state.user, ...updates } : null,
         }));
+      },
+
+      setDevAuth: (user, organization) => {
+        if (process.env.NODE_ENV === 'development') {
+          set({
+            user,
+            organization,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+        }
       },
     }),
     {

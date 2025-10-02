@@ -1,0 +1,22 @@
+{
+  "name": "@forms/ingest",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@cloudflare/workers-types": "^4.20231218.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0",
+    "wrangler": "^3.22.1"
+  }
+}

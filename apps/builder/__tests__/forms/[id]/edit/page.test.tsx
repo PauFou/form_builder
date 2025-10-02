@@ -113,8 +113,8 @@ describe("FormEditPage", () => {
       isLoading: false,
       error: null,
     });
-    // The component uses formsApi.get directly, so mock it to return { data: mockForm }
-    (formsApi.get as jest.Mock).mockResolvedValue({ data: mockForm });
+    // The component uses formsApi.get directly, mock it to return the form directly
+    (formsApi.get as jest.Mock).mockResolvedValue(mockForm);
   });
 
   it("should load form on mount", async () => {

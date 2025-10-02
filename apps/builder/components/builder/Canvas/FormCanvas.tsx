@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { DndContext, DragOverlay, pointerWithin, rectIntersection } from "@dnd-kit/core";
+import { DragOverlay, pointerWithin, rectIntersection } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, FileText } from "lucide-react";
@@ -12,78 +12,18 @@ import { BlockRenderer } from "./BlockRenderer";
 // Use native crypto.randomUUID instead of uuid package
 
 export function FormCanvas() {
-  const { form, selectedPageId, selectPage, addPage, addBlock, moveBlock } = useFormBuilderStore();
-
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [overId, setOverId] = useState<string | null>(null);
+  const { form, selectedPageId, selectPage, addPage } = useFormBuilderStore();
 
   if (!form) return null;
 
   const currentPageId = selectedPageId || form.pages[0]?.id;
-
-  const handleDragStart = (event: any) => {
-    setActiveId(event.active.id);
-  };
-
-  const handleDragOver = (event: any) => {
-    setOverId(event.over?.id || null);
-  };
-
-  const handleDragEnd = (event: any) => {
-    const { active, over } = event;
-
-    if (!over) return;
-
-    const activeData = active.data.current;
-    const overData = over.data.current;
-
-    // Handle new block drop
-    if (activeData?.type === "new-block") {
-      const pageId = overData?.pageId || currentPageId;
-      const targetIndex = overData?.index ?? 0;
-
-      const newBlock = {
-        id: crypto.randomUUID(),
-        type: activeData.blockType,
-        question: activeData.label,
-        required: false,
-        settings: {},
-      };
-
-      addBlock(newBlock, pageId, targetIndex);
-    }
-    // Handle block reordering
-    else if (activeData?.type === "block" && overData?.type === "drop-zone") {
-      const blockId = active.id;
-      const newPageId = overData.pageId;
-      const newIndex = overData.index;
-
-      if (blockId && newPageId !== undefined && newIndex !== undefined) {
-        moveBlock(blockId, newPageId, newIndex);
-      }
-    }
-
-    setActiveId(null);
-    setOverId(null);
-  };
 
   const handleAddPage = () => {
     const pageNumber = form.pages.length + 1;
     addPage(`Page ${pageNumber}`);
   };
 
-  // Get the active block for drag overlay
-  const activeBlock = activeId
-    ? form.pages.flatMap((p: any) => p.blocks).find((b: any) => b.id === activeId)
-    : null;
-
   return (
-    <DndContext
-      onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
-      onDragEnd={handleDragEnd}
-      collisionDetection={pointerWithin}
-    >
       <div className="h-full flex flex-col">
         {/* Page Tabs */}
         {form.pages.length > 1 && (
@@ -146,15 +86,5 @@ export function FormCanvas() {
           </div>
         </div>
       </div>
-
-      {/* Drag Overlay */}
-      <DragOverlay>
-        {activeBlock && (
-          <div className="shadow-lg">
-            <BlockRenderer block={activeBlock} isDragging />
-          </div>
-        )}
-      </DragOverlay>
-    </DndContext>
   );
 }

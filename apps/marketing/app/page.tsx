@@ -74,13 +74,13 @@ export default function HomePage() {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
-              <Link href="http://localhost:3001/auth/signup">
+              <Link href="http://localhost:3301/auth/signup">
                 <Button size="lg" className="group">
                   Get started
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
-              <Link href="/templates">
+              <Link href="http://localhost:3301">
                 <Button size="lg" variant="outline">
                   See templates
                 </Button>
@@ -426,11 +426,9 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-center mt-12"
           >
-            <Link href="/templates">
-              <Button variant="outline" size="lg">
-                Browse all templates
-              </Button>
-            </Link>
+            <Button variant="outline" size="lg">
+              Browse all templates
+            </Button>
           </motion.div>
         </div>
       </section>
@@ -643,7 +641,7 @@ export default function HomePage() {
                   team collaboration, and more!
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link href="http://localhost:3001/auth/signup">
+                  <Link href="http://localhost:3301/auth/signup">
                     <Button size="lg">Get started free</Button>
                   </Link>
                   <Link href="/pricing">
@@ -698,7 +696,7 @@ export default function HomePage() {
                 required.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="http://localhost:3001/auth/signup">
+                <Link href="http://localhost:3301/auth/signup">
                   <Button size="lg" variant="secondary" className="group">
                     Get started free
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -727,20 +725,20 @@ export default function HomePage() {
               <h4 className="font-semibold mb-4">Product</h4>
               <ul className="space-y-2">
                 <li>
-                  <Link
-                    href="/features"
+                  <a
+                    href="#"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Features
-                  </Link>
+                  </a>
                 </li>
                 <li>
-                  <Link
-                    href="/templates"
+                  <a
+                    href="#"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Templates
-                  </Link>
+                  </a>
                 </li>
                 <li>
                   <a

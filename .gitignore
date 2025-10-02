@@ -64,3 +64,34 @@ minio_data/
 # Local test configuration
 .testconfig
 .push-test-results.log
+
+# Screenshots and test reports
+*.png
+*.html
+!docs/**/*.png
+!docs/**/*.html
+!public/**/*.png
+!apps/*/public/**/*.png
+audit-screenshots/
+audit-*/
+
+# Authentication files (security)
+auth-*.json
+test-*.json
+*-state.json
+
+# Playwright MCP
+.playwright-mcp/
+
+# Test scripts
+test-*.py
+*-audit.py
+*-test.py
+
+# Backup folders
+backup-*/
+
+# E2E test screenshots
+e2e/screenshots/
+e2e/videos/
+test-results/

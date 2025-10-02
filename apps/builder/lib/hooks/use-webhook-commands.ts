@@ -14,20 +14,30 @@ export function useWebhookCommands() {
   // Get webhook stats for quick actions
   const { data: stats } = useQuery({
     queryKey: ["webhook-stats"],
-    queryFn: () => webhooksApi.getStats(),
+    queryFn: () => webhooksApi.getStats().catch(() => null),
     staleTime: 30000, // 30 seconds
+    retry: false, // Don't retry on failure
+    enabled: typeof window !== 'undefined', // Only run in browser
+    throwOnError: false, // Don't throw errors
   });
 
   // Get recent failed deliveries for quick redrive
   const { data: recentFailures } = useQuery({
     queryKey: ["webhook-deliveries", { status: "failed", limit: 5 }],
     queryFn: async () => {
-      const response = await webhooksApi.getDeliveries({
-        status: "failed",
-      });
-      return response.results.slice(0, 5);
+      try {
+        const response = await webhooksApi.getDeliveries({
+          status: "failed",
+        });
+        return response.results.slice(0, 5);
+      } catch {
+        return []; // Return empty array on error
+      }
     },
     staleTime: 10000, // 10 seconds
+    retry: false, // Don't retry on failure
+    enabled: typeof window !== 'undefined', // Only run in browser
+    throwOnError: false, // Don't throw errors
   });
 
   const webhookCommands: Command[] = [

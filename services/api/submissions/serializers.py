@@ -2,26 +2,28 @@ from rest_framework import serializers
 from core.models import Submission, Answer
 
 
-class AnswerSerializer(serializers.ModelSerializer):
+class SubmissionAnswerSerializer(serializers.ModelSerializer):
     """
     Serializer for submission answers.
+    Renamed to avoid conflict with core.serializers.AnswerSerializer.
     """
-    
+
     class Meta:
         model = Answer
         fields = ['id', 'block_id', 'type', 'value_json', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 
-class SubmissionSerializer(serializers.ModelSerializer):
+class SubmissionDetailSerializer(serializers.ModelSerializer):
     """
     Serializer for form submissions (read operations).
+    Renamed to avoid conflict with core.serializers.SubmissionSerializer.
     """
-    answers = AnswerSerializer(many=True, read_only=True)
+    answers = SubmissionAnswerSerializer(many=True, read_only=True)
     form_title = serializers.CharField(source='form.title', read_only=True)
     form_slug = serializers.CharField(source='form.slug', read_only=True)
     tags = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Submission
         fields = [
@@ -38,6 +40,10 @@ class SubmissionSerializer(serializers.ModelSerializer):
         if obj.metadata_json and 'tags' in obj.metadata_json:
             return obj.metadata_json['tags']
         return []
+
+
+# Backward compatibility alias
+SubmissionSerializer = SubmissionDetailSerializer
 
 
 class SubmissionCreateSerializer(serializers.ModelSerializer):

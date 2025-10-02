@@ -20,6 +20,7 @@ urlpatterns = [
     path("v1/", include("accounts.urls")),
     path("v1/gdpr/", include("gdpr.urls")),
     path("v1/analytics/", include("analytics.urls")),
+    path("v1/payments/", include("payments.urls")),
     
     # Auth is included in core.urls
     

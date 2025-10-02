@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@forms/ui", "@forms/contracts"],
+  transpilePackages: ["@skemya/ui", "@skemya/contracts"],
 };
 
 export default nextConfig;

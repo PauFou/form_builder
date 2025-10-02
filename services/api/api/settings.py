@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "integrations",
     "importers",
     "gdpr",
+    "payments",
 ]
 
 MIDDLEWARE = [
@@ -149,9 +150,9 @@ SIMPLE_JWT = {
 
 # CORS
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://localhost:3002",
+    "http://localhost:3300",  # Marketing
+    "http://localhost:3301",  # Builder
+    "http://localhost:3302",  # Runtime Demo
 ]
 CORS_ALLOW_CREDENTIALS = True
 

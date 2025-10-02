@@ -23,6 +23,7 @@ import {
   FileText,
   LayoutGrid,
   Search,
+  ChevronDown,
 } from "lucide-react";
 import { Input } from "@skemya/ui";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@skemya/ui";
@@ -186,6 +187,3 @@ export function BlockLibrary() {
     </div>
   );
 }
-
-// Fix for ChevronDown import
-import { ChevronDown } from "lucide-react";

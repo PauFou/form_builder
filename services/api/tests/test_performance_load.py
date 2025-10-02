@@ -271,7 +271,7 @@ class APILoadTests(TransactionTestCase):
         total_submissions = concurrent_users * submissions_per_user
         throughput = total_submissions / total_duration
         
-        print(f"\nLoad Test Results:")
+        print("\nLoad Test Results:")
         print(f"Total submissions: {total_submissions}")
         print(f"Total duration: {total_duration:.2f}s")
         print(f"Throughput: {throughput:.1f} req/s")

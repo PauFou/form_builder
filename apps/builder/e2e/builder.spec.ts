@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Form Builder", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:3001");
+    await page.goto("http://localhost:3301");
   });
 
   test("should display builder layout with correct dimensions", async ({ page }) => {

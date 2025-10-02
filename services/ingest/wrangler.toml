@@ -1,0 +1,33 @@
+name = "forms-ingest"
+main = "src/index.ts"
+compatibility_date = "2023-12-18"
+
+# EU deployment
+[env.production]
+name = "forms-ingest-prod"
+routes = [
+  { pattern = "ingest.forms.eu/*", zone_name = "forms.eu" }
+]
+
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "rate_limit_namespace_id"
+preview_id = "rate_limit_preview_id"
+
+[[queues.producers]]
+queue = "form-events"
+binding = "EVENT_QUEUE"
+
+[[queues.producers]]
+queue = "form-submissions" 
+binding = "SUBMISSION_QUEUE"
+
+[vars]
+ALLOWED_ORIGINS = "https://forms.eu,https://app.forms.eu"
+MAX_EVENTS_PER_BATCH = "1000"
+MAX_REQUEST_SIZE = "1048576"
+
+[env.production.vars]
+HMAC_SECRET = "REPLACE_WITH_PRODUCTION_SECRET"
+API_ENDPOINT = "https://api.forms.eu"
+CLICKHOUSE_ENDPOINT = "https://analytics.forms.eu"

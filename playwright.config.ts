@@ -26,7 +26,7 @@ export default defineConfig({
     ["line"],
   ],
   use: {
-    baseURL: "http://localhost:3001",
+    baseURL: "http://localhost:3301",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
@@ -59,14 +59,14 @@ export default defineConfig({
   webServer: [
     {
       command: "pnpm --filter @skemya/builder dev",
-      port: 3001,
+      port: 3301,
       reuseExistingServer: !process.env.CI,
       timeout: 120000,
     },
-    // API server commented out until backend is ready
+    // API server - uncomment if needed for E2E tests
     // {
-    //   command: 'cd services/api && python manage.py runserver',
-    //   port: 8000,
+    //   command: 'cd services/api && python manage.py runserver 8888',
+    //   port: 8888,
     //   reuseExistingServer: !process.env.CI,
     //   timeout: 120000,
     // },

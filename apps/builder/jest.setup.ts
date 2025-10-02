@@ -270,3 +270,10 @@ global.fetch = jest.fn(() =>
     headers: new Headers(),
   })
 ) as jest.Mock;
+
+// Mock ResizeObserver
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));

@@ -15,8 +15,8 @@ export default function EditFormPage() {
   useEffect(() => {
     const loadForm = async () => {
       try {
-        const response = await formsApi.get(formId);
-        setForm(response.data);
+        const form = await formsApi.get(formId);
+        setForm(form);
       } catch (error) {
         console.error("Failed to load form:", error);
         toast.error("Failed to load form");

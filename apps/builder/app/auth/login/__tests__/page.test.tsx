@@ -111,7 +111,7 @@ describe("LoginPage", () => {
         title: "Success",
         description: "You have been logged in successfully.",
       });
-      expect(mockPush).toHaveBeenCalledWith("/dashboard");
+      expect(mockPush).toHaveBeenCalledWith("/forms");
     });
   });
 
@@ -156,14 +156,14 @@ describe("LoginPage", () => {
   it("shows forgot password link", () => {
     render(<LoginPage />);
 
-    const forgotLink = screen.getByRole("link", { name: "Forgot your password?" });
+    const forgotLink = screen.getByRole("link", { name: "Forgot password?" });
     expect(forgotLink).toHaveAttribute("href", "/auth/forgot-password");
   });
 
   it("shows sign up link", () => {
     render(<LoginPage />);
 
-    const signUpLink = screen.getByRole("link", { name: "Sign up" });
+    const signUpLink = screen.getByRole("link", { name: "Create account" });
     expect(signUpLink).toHaveAttribute("href", "/auth/signup");
   });
 

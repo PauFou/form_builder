@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@forms/ui", "@forms/contracts", "@forms/runtime"],
+  transpilePackages: ["@skemya/ui", "@skemya/contracts", "@skemya/runtime"],
   // Optimize for production
   reactStrictMode: true,
   swcMinify: true,
@@ -19,7 +19,7 @@ const nextConfig = {
         exclude: [
           /node_modules/,
           // Exclude packages that cause source map warnings
-          /\/@forms\//,
+          /\/@skemya\//,
         ],
       });
     }

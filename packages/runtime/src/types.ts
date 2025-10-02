@@ -4,7 +4,19 @@ export interface Page {
 }
 
 // Type for form field values
-export type FieldValue = string | number | boolean | Date | string[] | File | null | undefined;
+export type FieldValue = 
+  | string 
+  | number 
+  | boolean 
+  | Date 
+  | string[] 
+  | File 
+  | null 
+  | undefined
+  | { amount?: number; currency?: string } // For currency block
+  | { score?: number; feedback?: string } // For NPS block
+  | Record<string, string | string[]> // For matrix block
+  | Array<{ date: string; slotId: string; time: string }>; // For scheduler block
 
 // Type for block properties
 export type BlockProperties = {
@@ -15,15 +27,62 @@ export type BlockProperties = {
   accept?: string;
   multiple?: boolean;
   maxSize?: number;
-  rows?: number;
+  rows?: number | Array<{ id: string; label: string }>; // For matrix block
   cols?: number;
+  columns?: Array<{ id: string; label: string }>; // For matrix block
   currency?: string;
   dateFormat?: string;
   timeFormat?: string;
   minDate?: string;
   maxDate?: string;
   defaultValue?: FieldValue;
-  [key: string]: string | number | boolean | FieldValue | undefined;
+  // Payment block
+  amount?: number;
+  stripePublicKey?: string;
+  allowCoupons?: boolean;
+  // NPS block
+  notLikelyLabel?: string;
+  extremelyLikelyLabel?: string;
+  showLabels?: boolean;
+  showFollowUp?: boolean;
+  followUpQuestion?: string;
+  // Scale block
+  minLabel?: string;
+  maxLabel?: string;
+  showValue?: boolean;
+  prefix?: string;
+  suffix?: string;
+  marks?: Array<{ value: number; label: string }>;
+  // Ranking block
+  choices?: Array<{ id: string; label: string }>;
+  minRankings?: number;
+  maxRankings?: number;
+  allowPartialRanking?: boolean;
+  // Currency block
+  defaultCurrency?: string;
+  allowCurrencyChange?: boolean;
+  currencies?: string[];
+  decimalPlaces?: number;
+  // Signature block
+  backgroundColor?: string;
+  penColor?: string;
+  width?: number;
+  height?: number;
+  allowDownload?: boolean;
+  // Scheduler block
+  availableSlots?: Array<{
+    date: string;
+    slots: Array<{
+      id: string;
+      time: string;
+      available: boolean;
+    }>;
+  }>;
+  timeSlotDuration?: number;
+  timezone?: string;
+  allowMultiple?: boolean;
+  maxSelections?: number;
+  [key: string]: string | number | boolean | FieldValue | undefined | any[];
 };
 
 // Type for metadata
@@ -80,9 +139,13 @@ export type BlockType =
   | "checkbox"
   | "rating"
   | "scale"
+  | "nps"
+  | "ranking"
+  | "matrix"
   | "file_upload"
   | "signature"
-  | "payment";
+  | "payment"
+  | "scheduler";
 
 export interface Block {
   id: string;

@@ -31,7 +31,7 @@ import Link from "next/link";
 
 export default function PricingPage() {
   return (
-    <main className="min-h-screen">
+    <div className="min-h-screen">
       {/* Aurora Background */}
       <div className="aurora-bg fixed inset-0 -z-10">
         <div className="aurora-blur-1" />
@@ -47,10 +47,10 @@ export default function PricingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Badge className="mb-6 bg-primary/10 text-primary border-primary/20" variant="outline">
-              <Star className="h-3 w-3 mr-1" />
-              Simple, transparent pricing
-            </Badge>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 backdrop-blur-sm border border-border/50 text-sm mb-6">
+              <Star className="h-4 w-4 text-primary" />
+              <span className="text-muted-foreground">Simple, transparent pricing</span>
+            </div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
               Choose your{" "}
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
@@ -141,7 +141,7 @@ export default function PricingPage() {
                       </Badge>
                     </li>
                   </ul>
-                  <Link href="http://localhost:3001/auth/signup" className="w-full">
+                  <Link href="http://localhost:3301/auth/signup" className="w-full">
                     <Button className="w-full" size="lg">
                       Get started free
                     </Button>
@@ -159,7 +159,7 @@ export default function PricingPage() {
               className="relative"
             >
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-                <Badge className="bg-primary text-primary-foreground">
+                <Badge variant="default" className="shadow-sm">
                   <Star className="h-3 w-3 mr-1" />
                   Most Popular
                 </Badge>
@@ -221,11 +221,8 @@ export default function PricingPage() {
                         <span className="text-sm">Analytics dashboard</span>
                       </li>
                     </ul>
-                    <Link href="http://localhost:3001/auth/signup" className="w-full">
-                      <Button
-                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                        size="lg"
-                      >
+                    <Link href="http://localhost:3301/auth/signup" className="w-full">
+                      <Button className="w-full" size="lg">
                         Start 14-day trial
                       </Button>
                     </Link>
@@ -622,8 +619,8 @@ export default function PricingPage() {
                   <p className="text-sm text-green-700 mb-4">
                     Plus 6x faster loading, EU data residency, and advanced features
                   </p>
-                  <Link href="http://localhost:3001/auth/signup">
-                    <Button size="lg" className="bg-green-600 hover:bg-green-700">
+                  <Link href="http://localhost:3301/auth/signup">
+                    <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white">
                       Switch to Skemya
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
@@ -765,22 +762,14 @@ export default function PricingPage() {
               residency, and more features for less money.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="http://localhost:3001/auth/signup">
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  className="group bg-white text-primary hover:bg-white/90"
-                >
+              <Link href="http://localhost:3301/auth/signup">
+                <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90">
                   Start free trial
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link href="mailto:sales@skemya.com">
-                <Button
-                  size="lg"
-                  variant="ghost"
-                  className="text-white hover:text-white/90 hover:bg-white/20 border-white/30 border"
-                >
+                <Button size="lg" variant="outline" className="text-white border-white/50 hover:bg-white/10">
                   Talk to sales
                 </Button>
               </Link>
@@ -791,6 +780,6 @@ export default function PricingPage() {
           </motion.div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

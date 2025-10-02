@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosError } from "axios";
 import { toast } from "react-hot-toast";
 
 // Get API URL from environment variable or use default
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8888";
 
 // Create axios instance
 const axiosInstance: AxiosInstance = axios.create({

@@ -36,15 +36,15 @@ describe("SignupPage", () => {
   it("renders signup form", () => {
     render(<SignupPage />);
 
-    expect(screen.getByText("Create an account")).toBeInTheDocument();
+    expect(screen.getByText("Create your account")).toBeInTheDocument();
     expect(
-      screen.getByText("Enter your information to get started with Forms Platform")
+      screen.getByText("Start building beautiful forms in minutes")
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Full Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
     expect(screen.getByLabelText(/Organization Name/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Create account" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Create/i })).toBeInTheDocument();
   });
 
   it("shows validation errors for empty fields", async () => {
@@ -87,11 +87,13 @@ describe("SignupPage", () => {
     const emailInput = screen.getByLabelText("Email");
     const passwordInput = screen.getByLabelText("Password");
     const orgInput = screen.getByLabelText(/Organization Name/);
+    const agreeCheckbox = screen.getByRole("checkbox");
 
     await user.type(nameInput, "John Doe");
     await user.type(emailInput, "john@example.com");
     await user.type(passwordInput, "Password123");
     await user.type(orgInput, "Test Organization");
+    await user.click(agreeCheckbox);
 
     const submitButton = screen.getByRole("button", { name: "Create account" });
     await user.click(submitButton);
@@ -104,8 +106,8 @@ describe("SignupPage", () => {
         "Test Organization"
       );
       expect(mockToast).toHaveBeenCalledWith({
-        title: "Account created",
-        description: "Your account has been created successfully. Welcome!",
+        title: "Account created!",
+        description: "Welcome to Skemya. Let's build something amazing together.",
       });
       expect(mockPush).toHaveBeenCalledWith("/dashboard");
     });
@@ -121,11 +123,13 @@ describe("SignupPage", () => {
     const emailInput = screen.getByLabelText("Email");
     const passwordInput = screen.getByLabelText("Password");
     const orgInput = screen.getByLabelText(/Organization Name/);
+    const agreeCheckbox = screen.getByRole("checkbox");
 
     await user.type(nameInput, "John Doe");
     await user.type(emailInput, "existing@example.com");
     await user.type(passwordInput, "Password123");
     await user.type(orgInput, "Test Organization");
+    await user.click(agreeCheckbox);
 
     const submitButton = screen.getByRole("button", { name: "Create account" });
     await user.click(submitButton);

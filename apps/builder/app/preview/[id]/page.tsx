@@ -149,7 +149,7 @@ export default function PreviewPage() {
             schema={form as any}
             config={{
               formId,
-              apiUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
+              apiUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8888",
               onSubmit: handleSubmit,
               onPartialSave: handlePartialSave,
               enableAnalytics: true,

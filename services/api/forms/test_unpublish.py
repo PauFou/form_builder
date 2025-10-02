@@ -19,6 +19,7 @@ class TestFormUnpublishEndpoint:
     @pytest.fixture
     def test_user(self, db):
         return User.objects.create_user(
+            username="test@example.com",
             email="test@example.com",
             password="testpass123"
         )
@@ -138,6 +139,7 @@ class TestFormUnpublishEndpoint:
         """Test unpublishing requires edit permission"""
         # Create a viewer user
         viewer = User.objects.create_user(
+            username="viewer@example.com",
             email="viewer@example.com",
             password="viewerpass123"
         )

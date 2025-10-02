@@ -23,6 +23,13 @@ jest.mock("../../lib/api/forms", () => ({
 
 jest.mock("@tanstack/react-query", () => ({
   useQuery: jest.fn(),
+  useMutation: jest.fn(() => ({
+    mutate: jest.fn(),
+    isPending: false,
+  })),
+  useQueryClient: jest.fn(() => ({
+    invalidateQueries: jest.fn(),
+  })),
   QueryClient: jest.fn(() => ({
     invalidateQueries: jest.fn(),
   })),
@@ -37,6 +44,15 @@ jest.mock("../../components/shared/navigation", () => ({
 jest.mock("@skemya/ui", () => ({
   ...jest.requireActual("@skemya/ui"),
   Skeleton: () => <div data-testid="skeleton" />,
+}));
+
+// Mock auth store
+jest.mock("../../lib/stores/auth-store", () => ({
+  useAuthStore: jest.fn(() => ({
+    organization: { id: "test-org-id", name: "Test Org", slug: "test-org" },
+    isLoading: false,
+    setDevAuth: jest.fn(),
+  })),
 }));
 
 describe("FormsPage", () => {
@@ -81,7 +97,7 @@ describe("FormsPage", () => {
     });
     // Default useQuery mock for successful data
     (useQuery as jest.Mock).mockReturnValue({
-      data: mockResponse.forms, // Return forms array directly
+      data: { forms: mockForms }, // Return object with forms property
       isLoading: false,
       error: null,
       refetch: jest.fn(),
@@ -187,7 +203,7 @@ describe("FormsPage", () => {
       limit: 10,
     };
     (useQuery as jest.Mock).mockReturnValue({
-      data: emptyResponse.forms, // Return empty forms array
+      data: { forms: [] }, // Return object with empty forms array
       isLoading: false,
       error: null,
       refetch: jest.fn(),
@@ -206,7 +222,7 @@ describe("FormsPage", () => {
     console.error = jest.fn();
 
     (useQuery as jest.Mock).mockReturnValue({
-      data: [], // Return empty array for error state
+      data: null, // Return null for error state
       isLoading: false,
       error: new Error("Failed to load forms"),
       refetch: jest.fn(),

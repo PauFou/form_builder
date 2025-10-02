@@ -281,13 +281,13 @@ export default function TemplatesPage() {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case "beginner":
-        return "bg-green-100 text-green-800";
+        return "bg-green-50/50 border-green-200/50 text-green-700";
       case "intermediate":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-50/50 border-yellow-200/50 text-yellow-700";
       case "advanced":
-        return "bg-red-100 text-red-800";
+        return "bg-red-50/50 border-red-200/50 text-red-700";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-50/50 border-gray-200/50 text-gray-700";
     }
   };
 
@@ -308,10 +308,10 @@ export default function TemplatesPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Badge className="mb-6 bg-primary/10 text-primary border-primary/20" variant="outline">
-              <Sparkles className="h-3 w-3 mr-1" />
-              50+ Professional Templates
-            </Badge>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 backdrop-blur-sm border border-border/50 text-sm mb-6">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="text-muted-foreground">50+ Professional Templates</span>
+            </div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
               Start with a{" "}
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
@@ -323,13 +323,13 @@ export default function TemplatesPage() {
               Typeform and Google Forms. Get started in minutes, not hours.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="http://localhost:3001/auth/signup">
+              <Link href="http://localhost:3301/auth/signup">
                 <Button size="lg" className="group">
                   Browse templates
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
-              <Link href="http://localhost:3001/import">
+              <Link href="http://localhost:3301/import">
                 <Button size="lg" variant="outline">
                   <Upload className="mr-2 h-4 w-4" />
                   Import existing form
@@ -401,9 +401,12 @@ export default function TemplatesPage() {
                     </div>
                     <div className="flex items-center justify-between">
                       <Badge
-                        className={getDifficultyColor(template.difficulty)}
+                        className={`${getDifficultyColor(template.difficulty)} shadow-sm border`}
                         variant="secondary"
                       >
+                        {template.difficulty === "beginner" && <CheckCircle className="h-3 w-3 mr-1" />}
+                        {template.difficulty === "intermediate" && <TrendingUp className="h-3 w-3 mr-1" />}
+                        {template.difficulty === "advanced" && <Award className="h-3 w-3 mr-1" />}
                         {template.difficulty}
                       </Badge>
                       <Button
@@ -591,7 +594,10 @@ export default function TemplatesPage() {
                             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                               <template.icon className="h-6 w-6 text-primary" />
                             </div>
-                            <Badge variant="outline" className="text-xs">
+                            <Badge 
+                              variant="outline" 
+                              className="text-xs bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20"
+                            >
                               {template.category}
                             </Badge>
                           </div>
@@ -615,9 +621,12 @@ export default function TemplatesPage() {
                           </div>
                           <div className="flex items-center justify-between">
                             <Badge
-                              className={getDifficultyColor(template.difficulty)}
+                              className={`${getDifficultyColor(template.difficulty)} shadow-sm border`}
                               variant="secondary"
                             >
+                              {template.difficulty === "beginner" && <CheckCircle className="h-3 w-3 mr-1" />}
+                              {template.difficulty === "intermediate" && <TrendingUp className="h-3 w-3 mr-1" />}
+                              {template.difficulty === "advanced" && <Award className="h-3 w-3 mr-1" />}
                               {template.difficulty}
                             </Badge>
                             <Button
@@ -658,13 +667,19 @@ export default function TemplatesPage() {
                                   {template.name}
                                 </h3>
                                 <div className="flex items-center gap-2">
-                                  <Badge variant="outline" className="text-xs">
+                                  <Badge 
+                                    variant="outline" 
+                                    className="text-xs bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20"
+                                  >
                                     {template.category}
                                   </Badge>
                                   <Badge
-                                    className={getDifficultyColor(template.difficulty)}
+                                    className={`${getDifficultyColor(template.difficulty)} shadow-sm border`}
                                     variant="secondary"
                                   >
+                                    {template.difficulty === "beginner" && <CheckCircle className="h-3 w-3 mr-1" />}
+                                    {template.difficulty === "intermediate" && <TrendingUp className="h-3 w-3 mr-1" />}
+                                    {template.difficulty === "advanced" && <Award className="h-3 w-3 mr-1" />}
                                     {template.difficulty}
                                   </Badge>
                                 </div>
@@ -774,7 +789,7 @@ export default function TemplatesPage() {
                 <Button variant="outline" onClick={() => setPreviewTemplate(null)}>
                   Close
                 </Button>
-                <Link href={`http://localhost:3001/builder?template=${previewTemplate.id}`}>
+                <Link href={`http://localhost:3301/builder?template=${previewTemplate.id}`}>
                   <Button>
                     Use this template
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -804,7 +819,7 @@ export default function TemplatesPage() {
               form in minutes.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="http://localhost:3001/auth/signup">
+              <Link href="http://localhost:3301/auth/signup">
                 <Button
                   size="lg"
                   variant="secondary"
@@ -814,7 +829,7 @@ export default function TemplatesPage() {
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
-              <Link href="http://localhost:3001/builder">
+              <Link href="http://localhost:3301/builder">
                 <Button
                   size="lg"
                   variant="ghost"

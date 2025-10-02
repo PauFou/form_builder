@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Inter } from "next/font/google";
+import { Navigation } from "../components/shared/navigation";
 import "./globals.css";
 
 const inter = Inter({
@@ -33,7 +34,12 @@ export default function RootLayout({
         } as React.CSSProperties
       }
     >
-      <body className={GeistSans.className}>{children}</body>
+      <body className={GeistSans.className}>
+        <Navigation />
+        <main className="pt-20">
+          {children}
+        </main>
+      </body>
     </html>
   );
 }

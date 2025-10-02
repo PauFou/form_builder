@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.utils import timezone
 from datetime import timedelta
+from drf_spectacular.utils import extend_schema_field
 
 from .models import (
     DataResidencyConfig, DataRetentionPolicy, PIIFieldConfig,
@@ -150,7 +151,9 @@ class DataDeletionRequestSerializer(serializers.ModelSerializer):
             'processed_by', 'deletion_report', 'created_at', 'updated_at'
         ]
     
-    def get_can_process(self, obj):
+    @extend_schema_field(serializers.BooleanField)
+    def get_can_process(self, obj) -> bool:
+        """Check if deletion request can be processed."""
         return obj.status == 'verified'
     
     def create(self, validated_data):
@@ -211,7 +214,9 @@ class DataExportRequestSerializer(serializers.ModelSerializer):
             'export_size_bytes', 'expires_at', 'created_at', 'updated_at'
         ]
     
-    def get_download_url(self, obj):
+    @extend_schema_field(serializers.CharField(allow_null=True))
+    def get_download_url(self, obj) -> str | None:
+        """Get download URL for completed export."""
         if obj.status == 'completed' and obj.export_url:
             return obj.export_url
         return None

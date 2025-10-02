@@ -6,6 +6,7 @@
 /* Component styles */
 @import "./typeform.css";
 @import "./typeform-fields.css";
+@import "./new-blocks.css";
 
 /* Ensure smooth font rendering */
 * {

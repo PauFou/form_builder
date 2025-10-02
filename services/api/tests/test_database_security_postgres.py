@@ -84,7 +84,7 @@ class SQLInjectionTests(TestCase):
         
         for param, payload in injection_payloads.items():
             response = client.get(
-                f'/api/v1/forms/',
+                '/api/v1/forms/',
                 {param: payload}
             )
             

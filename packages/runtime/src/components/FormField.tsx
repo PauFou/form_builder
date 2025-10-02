@@ -95,10 +95,10 @@ export const FormField = memo(function FormField({
                   value={option}
                   checked={Array.isArray(value) && (value as string[]).includes(option)}
                   onChange={(e) => {
-                    const currentValues = Array.isArray(value) ? value : [];
+                    const stringValues = Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
                     const newValue = e.target.checked
-                      ? [...currentValues, option]
-                      : currentValues.filter((v) => v !== option);
+                      ? [...stringValues, option]
+                      : stringValues.filter((v) => v !== option);
                     onChange(newValue);
                   }}
                   onBlur={onBlur}

@@ -71,7 +71,7 @@ importers:
         version: 3.10.1(eslint-plugin-import@2.32.0)(eslint@8.57.1)
       eslint-plugin-import:
         specifier: ^2.29.1
-        version: 2.32.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@8.57.1))(eslint@8.57.1)
+        version: 2.32.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
       eslint-plugin-jsx-a11y:
         specifier: ^6.8.0
         version: 6.10.2(eslint@8.57.1)
@@ -638,6 +638,12 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.0.7
         version: 1.2.8(@types/react-dom@18.3.7(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@stripe/react-stripe-js':
+        specifier: ^4.0.2
+        version: 4.0.2(@stripe/stripe-js@7.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@stripe/stripe-js':
+        specifier: ^7.9.0
+        version: 7.9.0
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.1
@@ -665,6 +671,9 @@ importers:
       react-hook-form:
         specifier: ^7.52.0
         version: 7.62.0(react@19.1.1)
+      react-signature-canvas:
+        specifier: 1.1.0-alpha.2
+        version: 1.1.0-alpha.2(@types/prop-types@15.7.15)(@types/react@18.3.24)(prop-types@15.8.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       tailwind-merge:
         specifier: ^2.3.0
         version: 2.6.0
@@ -714,6 +723,9 @@ importers:
       '@types/react-dom':
         specifier: ^18
         version: 18.3.7(@types/react@18.3.24)
+      '@types/react-signature-canvas':
+        specifier: ^1.0.7
+        version: 1.0.7
       '@vitejs/plugin-react':
         specifier: ^5.0.3
         version: 5.0.3(vite@5.4.0(@types/node@20.19.13)(terser@5.44.0))
@@ -2546,6 +2558,17 @@ packages:
     peerDependencies:
       storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
 
+  '@stripe/react-stripe-js@4.0.2':
+    resolution: {integrity: sha512-l2wau+8/LOlHl+Sz8wQ1oDuLJvyw51nQCsu6/ljT6smqzTszcMHifjAJoXlnMfcou3+jK/kQyVe04u/ufyTXgg==}
+    peerDependencies:
+      '@stripe/stripe-js': '>=1.44.1 <8.0.0'
+      react: '>=16.8.0 <20.0.0'
+      react-dom: '>=16.8.0 <20.0.0'
+
+  '@stripe/stripe-js@7.9.0':
+    resolution: {integrity: sha512-ggs5k+/0FUJcIgNY08aZTqpBTtbExkJMYMLSMwyucrhtWexVOEY1KJmhBsxf+E/Q15f5rbwBpj+t0t2AW2oCsQ==}
+    engines: {node: '>=12.16'}
+
   '@swc/core-darwin-arm64@1.13.5':
     resolution: {integrity: sha512-lKNv7SujeXvKn16gvQqUQI5DdyY8v7xcoO3k06/FJbHJS90zEwZdQiMNRiqpYw/orU543tPaWgz7cIYWhbopiQ==}
     engines: {node: '>=10'}
@@ -2792,6 +2815,9 @@ packages:
     peerDependencies:
       '@types/react': ^18.0.0
 
+  '@types/react-signature-canvas@1.0.7':
+    resolution: {integrity: sha512-0ulzaUvcIQ0HdNB5fHj+KE7ztWhlhYRsi65TdPIRj/t+FD5Rr8NJKBv4/xLViz7HsUh/tgqsoyKeARrm9+gPIg==}
+
   '@types/react-window@1.8.8':
     resolution: {integrity: sha512-8Ls660bHR1AUA2kuRvVG9D/4XpRC6wjAaPT9dil7Ckc76eP9TKWZwwmgfq8Q1LANX3QNDnoU4Zp48A3w+zK69Q==}
 
@@ -2800,6 +2826,9 @@ packages:
 
   '@types/resolve@1.20.6':
     resolution: {integrity: sha512-A4STmOXPhMUtHH+S6ymgE2GiBSMqf4oTvcQZMcHzokuTLVYzXTB8ttjcgxOVaAp2lGwEdzZ0J+cRbbeevQj1UQ==}
+
+  '@types/signature_pad@2.3.6':
+    resolution: {integrity: sha512-v3j92gCQJoxomHhd+yaG4Vsf8tRS/XbzWKqDv85UsqjMGy4zhokuwKe4b6vhbgncKkh+thF+gpz6+fypTtnFqQ==}
 
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
@@ -5654,6 +5683,20 @@ packages:
       '@types/react':
         optional: true
 
+  react-signature-canvas@1.1.0-alpha.2:
+    resolution: {integrity: sha512-tKUNk3Gmh04Ug4K8p5g8Is08BFUKvbXxi0PyetQ/f8OgCBzcx4vqNf9+OArY/TdNdfHtswXQNRwZD6tyELjkjQ==}
+    peerDependencies:
+      '@types/prop-types': ^15.7.3
+      '@types/react': 0.14 - 19
+      prop-types: ^15.5.8
+      react: 0.14 - 19
+      react-dom: 0.14 - 19
+    peerDependenciesMeta:
+      '@types/prop-types':
+        optional: true
+      '@types/react':
+        optional: true
+
   react-smooth@4.0.4:
     resolution: {integrity: sha512-gnGKTpYwqL0Iii09gHobNolvX4Kiq4PKx6eWBCYYix+8cdw+cGo3do906l1NBPKkSWx1DghC1dlWG9L2uGd61Q==}
     peerDependencies:
@@ -5893,6 +5936,9 @@ packages:
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
+
+  signature_pad@2.3.2:
+    resolution: {integrity: sha512-peYXLxOsIY6MES2TrRLDiNg2T++8gGbpP2yaC+6Ohtxr+a2dzoaqWosWDY9sWqTAAk6E/TyQO+LJw9zQwyu5kA==}
 
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
@@ -6172,6 +6218,9 @@ packages:
   tree-kill@1.2.2:
     resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
     hasBin: true
+
+  trim-canvas@0.1.2:
+    resolution: {integrity: sha512-nd4Ga3iLFV94mdhW9JFMLpQbHUyCQuhFOD71PEAt1NjtMD5wbZctzhX8c3agHNybMR5zXD1XTGoIEWk995E6pQ==}
 
   ts-api-utils@1.4.3:
     resolution: {integrity: sha512-i3eMG77UTMD0hZhgRS562pv83RC6ukSAC2GMNWc+9dieh/+jDM5u5YG+NHX6VNDRHQcHwmsTHctP9LhbC3WxVw==}
@@ -8578,6 +8627,15 @@ snapshots:
     dependencies:
       storybook: 8.6.14(prettier@3.6.2)
 
+  '@stripe/react-stripe-js@4.0.2(@stripe/stripe-js@7.9.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+    dependencies:
+      '@stripe/stripe-js': 7.9.0
+      prop-types: 15.8.1
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
+
+  '@stripe/stripe-js@7.9.0': {}
+
   '@swc/core-darwin-arm64@1.13.5':
     optional: true
 
@@ -8831,6 +8889,11 @@ snapshots:
     dependencies:
       '@types/react': 18.3.24
 
+  '@types/react-signature-canvas@1.0.7':
+    dependencies:
+      '@types/react': 18.3.24
+      '@types/signature_pad': 2.3.6
+
   '@types/react-window@1.8.8':
     dependencies:
       '@types/react': 18.3.24
@@ -8841,6 +8904,8 @@ snapshots:
       csstype: 3.1.3
 
   '@types/resolve@1.20.6': {}
+
+  '@types/signature_pad@2.3.6': {}
 
   '@types/stack-utils@2.0.3': {}
 
@@ -10095,7 +10160,7 @@ snapshots:
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@8.57.1)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@8.57.1))(eslint@8.57.1)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
       eslint-plugin-react: 7.37.5(eslint@8.57.1)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.57.1)
@@ -10129,7 +10194,7 @@ snapshots:
       tinyglobby: 0.2.15
       unrs-resolver: 1.11.1
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@8.57.1))(eslint@8.57.1)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -10144,7 +10209,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@8.57.1))(eslint@8.57.1):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -12109,6 +12174,19 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.24
 
+  react-signature-canvas@1.1.0-alpha.2(@types/prop-types@15.7.15)(@types/react@18.3.24)(prop-types@15.8.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
+    dependencies:
+      '@babel/runtime': 7.28.4
+      '@types/signature_pad': 2.3.6
+      prop-types: 15.8.1
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
+      signature_pad: 2.3.2
+      trim-canvas: 0.1.2
+    optionalDependencies:
+      '@types/prop-types': 15.7.15
+      '@types/react': 18.3.24
+
   react-smooth@4.0.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
     dependencies:
       fast-equals: 5.2.2
@@ -12415,6 +12493,8 @@ snapshots:
 
   signal-exit@4.1.0: {}
 
+  signature_pad@2.3.2: {}
+
   sisteransi@1.0.5: {}
 
   size-limit@11.2.0:
@@ -12720,6 +12800,8 @@ snapshots:
       punycode: 2.3.1
 
   tree-kill@1.2.2: {}
+
+  trim-canvas@0.1.2: {}
 
   ts-api-utils@1.4.3(typescript@5.9.2):
     dependencies:

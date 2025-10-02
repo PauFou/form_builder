@@ -148,7 +148,7 @@ export default function FeaturesPage() {
   ];
 
   return (
-    <main className="min-h-screen">
+    <div className="min-h-screen">
       {/* Aurora Background */}
       <div className="aurora-bg fixed inset-0 -z-10">
         <div className="aurora-blur-1" />
@@ -164,10 +164,10 @@ export default function FeaturesPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Badge className="mb-6 bg-primary/10 text-primary border-primary/20" variant="outline">
-              <Sparkles className="h-3 w-3 mr-1" />
-              Everything you need
-            </Badge>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 backdrop-blur-sm border border-border/50 text-sm mb-6">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="text-muted-foreground">Everything you need</span>
+            </div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
               Collect data{" "}
               <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
@@ -179,13 +179,13 @@ export default function FeaturesPage() {
               features. The complete platform for modern data collection.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="http://localhost:3001/auth/signup">
-                <Button size="lg" className="group">
+              <Link href="http://localhost:3301/auth/signup">
+                <Button size="lg">
                   Try it free
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
-              <Link href="http://localhost:3001/demo">
+              <Link href="http://localhost:3301/demo">
                 <Button size="lg" variant="outline">
                   Watch demo
                 </Button>
@@ -261,12 +261,9 @@ export default function FeaturesPage() {
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
             >
-              <Badge
-                className="mb-4 bg-primary/10 text-primary border-primary/20"
-                variant="outline"
-              >
-                Visual Builder
-              </Badge>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted/50 backdrop-blur-sm border border-border/50 text-sm mb-4">
+                <span className="text-muted-foreground">Visual Builder</span>
+              </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 Build forms like a{" "}
                 <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
@@ -326,10 +323,10 @@ export default function FeaturesPage() {
                 </div>
               </div>
 
-              <Link href="http://localhost:3001/demo">
-                <Button size="lg" className="group">
+              <Link href="http://localhost:3301/demo">
+                <Button size="lg">
                   Try the builder
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             </motion.div>
@@ -380,12 +377,9 @@ export default function FeaturesPage() {
               viewport={{ once: true }}
               className="order-1 lg:order-2"
             >
-              <Badge
-                className="mb-4 bg-primary/10 text-primary border-primary/20"
-                variant="outline"
-              >
-                Lightning Fast
-              </Badge>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted/50 backdrop-blur-sm border border-border/50 text-sm mb-4">
+                <span className="text-muted-foreground">Lightning Fast</span>
+              </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 Speed that{" "}
                 <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
@@ -513,7 +507,7 @@ export default function FeaturesPage() {
                   <p className="text-sm text-green-700 mb-4">
                     Plus EU data residency and enterprise-grade security built-in
                   </p>
-                  <Link href="http://localhost:3001/auth/signup">
+                  <Link href="http://localhost:3301/auth/signup">
                     <Button size="lg" className="bg-green-600 hover:bg-green-700">
                       Start building forms
                       <ArrowRight className="ml-2 h-4 w-4" />
@@ -626,21 +620,17 @@ export default function FeaturesPage() {
               required.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="http://localhost:3001/auth/signup">
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  className="group bg-white text-primary hover:bg-white/90"
-                >
+              <Link href="http://localhost:3301/auth/signup">
+                <Button size="lg" variant="secondary">
                   Start building forms
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link href="/templates">
                 <Button
                   size="lg"
-                  variant="ghost"
-                  className="text-white hover:text-white/90 hover:bg-white/20 border-white/30 border"
+                  variant="outline"
+                  className="text-white border-white/50 hover:bg-white/10"
                 >
                   Browse templates
                 </Button>
@@ -652,6 +642,6 @@ export default function FeaturesPage() {
           </motion.div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

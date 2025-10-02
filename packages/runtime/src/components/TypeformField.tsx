@@ -129,18 +129,19 @@ export const TypeformField = memo(function TypeformField({
           >
             {block.options?.map((option, index) => {
               const optionValue = option.value || option.text;
+              const stringValues = Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
+
               return (
                 <label key={option.id} className="typeform-checkbox-label">
                   <input
                     type="checkbox"
                     name={`${block.id}[]`}
                     value={optionValue}
-                    checked={Array.isArray(value) && value.includes(optionValue)}
+                    checked={stringValues.includes(optionValue)}
                     onChange={(e) => {
-                      const currentValues = Array.isArray(value) ? value : [];
                       const newValue = e.target.checked
-                        ? [...currentValues, optionValue]
-                        : currentValues.filter((v) => v !== optionValue);
+                        ? [...stringValues, optionValue]
+                        : stringValues.filter((v) => v !== optionValue);
                       onChange(newValue);
                     }}
                     onBlur={onBlur}
@@ -271,6 +272,168 @@ export const TypeformField = memo(function TypeformField({
             className="typeform-input typeform-time-input"
           />
         );
+
+      case "currency": {
+        const currencyValue = typeof value === "object" && value && "currency" in value && typeof value.currency === "string" ? value.currency : "USD";
+        const amountValue = typeof value === "object" && value && "amount" in value && typeof value.amount === "number" ? value.amount : 0;
+
+        return (
+          <div className="typeform-currency">
+            <select
+              value={currencyValue}
+              onChange={(e) => onChange({ amount: amountValue, currency: e.target.value })}
+              className="typeform-currency-select"
+              aria-label="Currency"
+            >
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="JPY">JPY (¥)</option>
+            </select>
+            <input
+              {...baseProps}
+              type="number"
+              value={amountValue}
+              onChange={(e) => onChange({ amount: parseFloat(e.target.value) || 0, currency: currencyValue })}
+              className="typeform-input typeform-currency-input"
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+            />
+          </div>
+        );
+      }
+
+      case "nps": {
+        return (
+          <div className="typeform-nps">
+            <div className="typeform-nps-scale">
+              {Array.from({ length: 11 }, (_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className={`typeform-nps-button ${value === i ? "active" : ""}`}
+                  onClick={() => onChange(i)}
+                  onBlur={onBlur}
+                  aria-label={`${i} out of 10`}
+                >
+                  {i}
+                </button>
+              ))}
+            </div>
+            <div className="typeform-nps-labels">
+              <span>Not likely at all</span>
+              <span>Extremely likely</span>
+            </div>
+          </div>
+        );
+      }
+
+      case "ranking": {
+        const items = Array.isArray(value) ? value : block.options?.map((o) => o.value || o.text) || [];
+
+        return (
+          <div className="typeform-ranking">
+            {items.map((item, index) => {
+              const itemText = typeof item === "string" ? item : JSON.stringify(item);
+              const itemKey = typeof item === "string" ? item : `item-${index}`;
+
+              return (
+                <div key={itemKey} className="typeform-ranking-item">
+                  <span className="typeform-ranking-number">{index + 1}</span>
+                  <span className="typeform-ranking-text">{itemText}</span>
+                </div>
+              );
+            })}
+            <p className="typeform-ranking-hint">Drag items to reorder</p>
+          </div>
+        );
+      }
+
+      case "matrix": {
+        const matrixValue = (typeof value === "object" && value && !Array.isArray(value) ? value : {}) as Record<string, string | string[]>;
+        const rows = Array.isArray(block.properties?.rows) ? block.properties.rows : [];
+        const columns = Array.isArray(block.properties?.columns) ? block.properties.columns : [];
+
+        return (
+          <div className="typeform-matrix">
+            <table className="typeform-matrix-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  {columns.map((col: any) => (
+                    <th key={col.id}>{col.label}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row: any) => (
+                  <tr key={row.id}>
+                    <td>{row.label}</td>
+                    {columns.map((col: any) => (
+                      <td key={col.id}>
+                        <input
+                          type="radio"
+                          name={`matrix-${block.id}-${row.id}`}
+                          value={col.id}
+                          checked={matrixValue[row.id as string] === col.id}
+                          onChange={() => onChange({ ...matrixValue, [row.id]: col.id })}
+                          onBlur={onBlur}
+                        />
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      }
+
+      case "signature": {
+        return (
+          <div className="typeform-signature">
+            <div className="typeform-signature-pad">
+              <p className="typeform-signature-placeholder">Sign here</p>
+            </div>
+            <button type="button" className="typeform-signature-clear">
+              Clear
+            </button>
+          </div>
+        );
+      }
+
+      case "payment": {
+        return (
+          <div className="typeform-payment">
+            <div className="typeform-payment-amount">
+              {block.properties?.currency || "$"}{block.properties?.amount || "0.00"}
+            </div>
+            <div className="typeform-payment-card">
+              <input
+                type="text"
+                placeholder="Card number"
+                className="typeform-input"
+                disabled
+              />
+            </div>
+            <p className="typeform-payment-info">Payment processing will be available in production</p>
+          </div>
+        );
+      }
+
+      case "scheduler": {
+        return (
+          <div className="typeform-scheduler">
+            <div className="typeform-scheduler-calendar">
+              <p>Calendar view will be rendered here</p>
+            </div>
+            <div className="typeform-scheduler-slots">
+              <p>Available time slots will appear here</p>
+            </div>
+          </div>
+        );
+      }
 
       default:
         return (
