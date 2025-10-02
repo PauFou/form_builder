@@ -3,7 +3,6 @@
 import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { motion } from "framer-motion";
 import {
   GripVertical,
   Settings,
@@ -37,6 +36,7 @@ interface BlockRendererProps {
   block: Block;
   pageId?: string;
   isDragging?: boolean;
+  index?: number;
 }
 
 const blockIcons: Record<string, React.ComponentType<any>> = {
@@ -61,7 +61,7 @@ const blockIcons: Record<string, React.ComponentType<any>> = {
   description: FileText,
 };
 
-export function BlockRenderer({ block, pageId, isDragging }: BlockRendererProps) {
+export function BlockRenderer({ block, pageId, isDragging, index }: BlockRendererProps) {
   const { selectBlock, selectedBlockId, duplicateBlock, deleteBlock } = useFormBuilderStore();
 
   const {
@@ -77,6 +77,7 @@ export function BlockRenderer({ block, pageId, isDragging }: BlockRendererProps)
       type: "block",
       block,
       pageId,
+      index,
     },
   });
 
@@ -108,21 +109,22 @@ export function BlockRenderer({ block, pageId, isDragging }: BlockRendererProps)
       ref={setNodeRef}
       style={style}
       onClick={handleSelect}
+      data-block-id={block.id}
       className={cn(
         "group relative bg-card border rounded-lg p-4 cursor-pointer transition-all",
         isSelected && "ring-2 ring-primary border-primary",
-        showDragging && "opacity-50 cursor-move",
+        showDragging && "opacity-0",
         !showDragging && "hover:border-primary/50 hover:shadow-sm"
       )}
     >
-      {/* Drag Handle */}
-      <div
-        className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-move"
-        {...attributes}
-        {...listeners}
-      >
-        <GripVertical className="h-5 w-5 text-muted-foreground" />
-      </div>
+        {/* Drag Handle */}
+        <div
+          className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-move z-10"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical className="h-5 w-5 text-muted-foreground" />
+        </div>
 
       {/* Content */}
       <div className="pl-6">

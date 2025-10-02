@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { BlockRenderer } from "./BlockRenderer";
-import { DropZone } from "./DropZone";
 import type { Page } from "@skemya/contracts";
 
 interface PageViewProps {
@@ -49,14 +48,8 @@ export function PageView({ page, isActive }: PageViewProps) {
       {/* Blocks */}
       <SortableContext items={blockIds} strategy={verticalListSortingStrategy}>
         <div className="space-y-4">
-          {/* Initial drop zone */}
-          <DropZone pageId={page.id} index={0} />
-
           {page.blocks.map((block: any, index: number) => (
-            <React.Fragment key={block.id}>
-              <BlockRenderer block={block} pageId={page.id} />
-              <DropZone pageId={page.id} index={index + 1} />
-            </React.Fragment>
+            <BlockRenderer key={block.id} block={block} pageId={page.id} index={index} />
           ))}
 
           {/* Empty state */}

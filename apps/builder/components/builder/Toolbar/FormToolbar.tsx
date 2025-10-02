@@ -76,7 +76,6 @@ export function FormToolbar({ formId }: FormToolbarProps) {
 
       setLastSaved(new Date());
       markClean();
-      toast.success("Form saved successfully");
     } catch (error) {
       console.error("Failed to save form:", error);
       toast.error("Failed to save form");
