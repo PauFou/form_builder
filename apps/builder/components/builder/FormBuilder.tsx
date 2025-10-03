@@ -278,7 +278,7 @@ export function FormBuilder({ formId }: FormBuilderProps) {
         <FormToolbar formId={formId} />
 
         {/* Main Content */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex overflow-hidden" style={{ height: 'calc(100vh - 64px)' }}>
         {/* Left Panel - Block Library */}
         <AnimatePresence mode="wait">
           {!leftPanelCollapsed && (
@@ -287,10 +287,10 @@ export function FormBuilder({ formId }: FormBuilderProps) {
               animate={{ width: 280, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="relative border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+              className="relative border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 overflow-hidden"
             >
-              <div className="h-full flex flex-col">
-                <div className="flex items-center justify-between p-4 border-b">
+              <div className="h-full flex flex-col overflow-hidden">
+                <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
                   <h2 className="font-semibold">Add Fields</h2>
                   <Button size="sm" variant="ghost" onClick={() => setLeftPanelCollapsed(true)}>
                     <ChevronLeft className="h-4 w-4" />
@@ -317,7 +317,7 @@ export function FormBuilder({ formId }: FormBuilderProps) {
         )}
 
         {/* Center - Canvas */}
-        <main className="flex-1 relative bg-muted/30 overflow-hidden">
+        <main className="flex-1 relative bg-muted/30 overflow-hidden h-full">
           <div className="absolute top-4 right-4 z-10">
             <Button
               size="sm"
@@ -343,10 +343,10 @@ export function FormBuilder({ formId }: FormBuilderProps) {
               animate={{ width: 320, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="relative border-l bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+              className="relative border-l bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 overflow-hidden"
             >
-              <div className="h-full flex flex-col">
-                <div className="flex items-center justify-between p-4 border-b">
+              <div className="h-full flex flex-col overflow-hidden">
+                <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
                   <h2 className="font-semibold">Properties</h2>
                   <Button size="sm" variant="ghost" onClick={() => setRightPanelCollapsed(true)}>
                     <ChevronRight className="h-4 w-4" />

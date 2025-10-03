@@ -124,9 +124,9 @@ export function BlockLibrary() {
     .filter((category) => category.blocks.length > 0);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-hidden">
       {/* Search */}
-      <div className="p-4 border-b">
+      <div className="p-4 border-b flex-shrink-0">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -138,8 +138,8 @@ export function BlockLibrary() {
         </div>
       </div>
 
-      {/* Block Categories */}
-      <div className="flex-1 overflow-y-auto">
+      {/* Block Categories - Scrollable Area */}
+      <div className="flex-1 overflow-y-auto min-h-0">
         {searchQuery ? (
           // Search Results
           <div className="p-4 space-y-2">
@@ -178,8 +178,8 @@ export function BlockLibrary() {
         )}
       </div>
 
-      {/* Help Text */}
-      <div className="p-4 border-t bg-muted/30">
+      {/* Help Text - Always visible at bottom */}
+      <div className="p-4 border-t bg-muted/30 flex-shrink-0">
         <p className="text-xs text-muted-foreground text-center">
           Drag fields to add them to your form
         </p>
