@@ -3,7 +3,16 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label } from "@skemya/ui";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+} from "@skemya/ui";
 import { Lock, ArrowLeft, KeySquare, CheckCircle, Eye, EyeOff, Shield } from "lucide-react";
 import Link from "next/link";
 
@@ -19,10 +28,12 @@ function ResetPasswordForm() {
   const token = searchParams.get("token");
 
   const validatePassword = (password: string) => {
-    return password.length >= 8 && 
-           /[A-Z]/.test(password) && 
-           /[a-z]/.test(password) && 
-           /[0-9]/.test(password);
+    return (
+      password.length >= 8 &&
+      /[A-Z]/.test(password) &&
+      /[a-z]/.test(password) &&
+      /[0-9]/.test(password)
+    );
   };
 
   const passwordsMatch = password === confirmPassword && confirmPassword !== "";
@@ -44,14 +55,14 @@ function ResetPasswordForm() {
     return (
       <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/80 to-indigo-100/60">
         <div className="absolute inset-0 -z-10">
-          <motion.div 
+          <motion.div
             className="absolute inset-0"
             animate={{
               background: [
                 "radial-gradient(600px circle at 20% 40%, rgba(59, 130, 246, 0.15), transparent 50%), radial-gradient(800px circle at 80% 60%, rgba(139, 92, 246, 0.15), transparent 50%)",
                 "radial-gradient(600px circle at 60% 20%, rgba(59, 130, 246, 0.2), transparent 50%), radial-gradient(800px circle at 40% 80%, rgba(139, 92, 246, 0.2), transparent 50%)",
-                "radial-gradient(600px circle at 20% 40%, rgba(59, 130, 246, 0.15), transparent 50%), radial-gradient(800px circle at 80% 60%, rgba(139, 92, 246, 0.15), transparent 50%)"
-              ]
+                "radial-gradient(600px circle at 20% 40%, rgba(59, 130, 246, 0.15), transparent 50%), radial-gradient(800px circle at 80% 60%, rgba(139, 92, 246, 0.15), transparent 50%)",
+              ],
             }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           />
@@ -65,7 +76,9 @@ function ResetPasswordForm() {
           </CardHeader>
           <CardContent className="space-y-4">
             <Link href="/auth/forgot-password" className="block">
-              <Button variant="outline" className="w-full">Request new link</Button>
+              <Button variant="outline" className="w-full">
+                Request new link
+              </Button>
             </Link>
             <Link
               href="/auth/login"
@@ -84,19 +97,19 @@ function ResetPasswordForm() {
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/80 to-indigo-100/60">
       {/* Animated background elements */}
       <div className="absolute inset-0 -z-10">
-        <motion.div 
+        <motion.div
           className="absolute inset-0"
           animate={{
             background: [
               "radial-gradient(600px circle at 20% 40%, rgba(59, 130, 246, 0.15), transparent 50%), radial-gradient(800px circle at 80% 60%, rgba(139, 92, 246, 0.15), transparent 50%)",
               "radial-gradient(600px circle at 60% 20%, rgba(59, 130, 246, 0.2), transparent 50%), radial-gradient(800px circle at 40% 80%, rgba(139, 92, 246, 0.2), transparent 50%)",
-              "radial-gradient(600px circle at 20% 40%, rgba(59, 130, 246, 0.15), transparent 50%), radial-gradient(800px circle at 80% 60%, rgba(139, 92, 246, 0.15), transparent 50%)"
-            ]
+              "radial-gradient(600px circle at 20% 40%, rgba(59, 130, 246, 0.15), transparent 50%), radial-gradient(800px circle at 80% 60%, rgba(139, 92, 246, 0.15), transparent 50%)",
+            ],
           }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
-      
+
       <div className="w-full max-w-md px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -116,9 +129,7 @@ function ResetPasswordForm() {
               <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
                 Reset your password
               </CardTitle>
-              <CardDescription className="text-lg">
-                Enter your new password below
-              </CardDescription>
+              <CardDescription className="text-lg">Enter your new password below</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -152,7 +163,8 @@ function ResetPasswordForm() {
                   </div>
                   {password && (
                     <p className="text-xs text-muted-foreground">
-                      Password strength: {validatePassword(password) ? (
+                      Password strength:{" "}
+                      {validatePassword(password) ? (
                         <span className="text-green-600 font-medium">Strong</span>
                       ) : (
                         <span className="text-orange-600 font-medium">
@@ -188,15 +200,18 @@ function ResetPasswordForm() {
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       className="absolute right-12 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
                     </button>
-                    {confirmPassword && (
-                      passwordsMatch ? (
+                    {confirmPassword &&
+                      (passwordsMatch ? (
                         <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
                       ) : (
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-orange-500" />
-                      )
-                    )}
+                      ))}
                   </div>
                 </motion.div>
 
@@ -206,9 +221,9 @@ function ResetPasswordForm() {
                   transition={{ delay: 0.6 }}
                   className="space-y-4"
                 >
-                  <Button 
-                    type="submit" 
-                    className="w-full h-12 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl" 
+                  <Button
+                    type="submit"
+                    className="w-full h-12 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl"
                     disabled={isLoading || !validatePassword(password) || !passwordsMatch}
                   >
                     {isLoading ? (

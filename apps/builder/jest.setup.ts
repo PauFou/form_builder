@@ -155,13 +155,17 @@ jest.mock("@skemya/ui", () => {
     SelectItem: ({ children, value }: any) =>
       React.createElement("div", { role: "option", "data-value": value }, children),
     SelectTrigger: ({ children, id }: any) =>
-      React.createElement("div", { 
-        "data-testid": "select-trigger", 
-        role: "combobox",
-        id,
-        "aria-expanded": "false",
-        "aria-haspopup": "listbox"
-      }, children),
+      React.createElement(
+        "div",
+        {
+          "data-testid": "select-trigger",
+          role: "combobox",
+          id,
+          "aria-expanded": "false",
+          "aria-haspopup": "listbox",
+        },
+        children
+      ),
     SelectValue: ({ placeholder }: any) =>
       React.createElement("span", {}, placeholder || "All Time"),
 
@@ -194,7 +198,11 @@ jest.mock("@skemya/ui", () => {
 
     // Badge component
     Badge: ({ children, className, ...props }: any) =>
-      React.createElement("span", { className: `badge ${className || ""}`.trim(), ...props }, children),
+      React.createElement(
+        "span",
+        { className: `badge ${className || ""}`.trim(), ...props },
+        children
+      ),
   };
 });
 

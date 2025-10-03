@@ -48,16 +48,16 @@ export default function CreateFormPage() {
           settings: {
             theme: "default",
             layout: "one-at-a-time",
-            allowBackNavigation: true
-          }
+            allowBackNavigation: true,
+          },
         };
-        
+
         console.log("Creating form with data:", newFormData);
         const newForm = await formsApi.create(newFormData);
         console.log("Form created successfully:", newForm);
-        
+
         setForm(newForm);
-        
+
         // Redirect to the edit page with the new form ID
         router.replace(`/forms/${newForm.id}/edit`);
       } catch (error) {

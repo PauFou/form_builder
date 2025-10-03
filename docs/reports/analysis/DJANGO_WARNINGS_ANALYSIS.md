@@ -7,12 +7,12 @@
 
 ## 📊 Récapitulatif
 
-| Catégorie | Count | Priorité | Action |
-|-----------|-------|----------|--------|
-| **OpenAPI Schema** (W001) | 23 | 🟡 Medium | Corriger partiellement |
-| **OpenAPI Missing Serializers** (W002) | 16 | 🟢 Low | Documenter uniquement |
-| **Security Dev** | 6 | 🟢 Low | Normal en dev |
-| **TOTAL** | **45** | - | - |
+| Catégorie                              | Count  | Priorité  | Action                 |
+| -------------------------------------- | ------ | --------- | ---------------------- |
+| **OpenAPI Schema** (W001)              | 23     | 🟡 Medium | Corriger partiellement |
+| **OpenAPI Missing Serializers** (W002) | 16     | 🟢 Low    | Documenter uniquement  |
+| **Security Dev**                       | 6      | 🟢 Low    | Normal en dev          |
+| **TOTAL**                              | **45** | -         | -                      |
 
 ---
 
@@ -30,6 +30,7 @@ submissions.serializers.SubmissionSerializer vs core.serializers.SubmissionSeria
 **Impact**: ⚠️ **Schéma OpenAPI incorrect**
 
 **Solution**:
+
 ```python
 # Dans submissions/serializers.py, renommer:
 class SubmissionDetailSerializer(serializers.ModelSerializer):
@@ -59,6 +60,7 @@ class DataExportRequestSerializer:
 ```
 
 **Solution**:
+
 ```python
 from drf_spectacular.utils import extend_schema_field
 
@@ -82,6 +84,7 @@ class DataExportRequestSerializer:
 ### 3. Auth Views Sans Request Body Schemas (4 warnings)
 
 **Endpoints concernés**:
+
 - POST /v1/auth/logout/
 - POST /v1/auth/password-reset/request/
 - POST /v1/auth/password-reset/confirm/
@@ -114,6 +117,7 @@ def logout_view(request):
 ### 4. Forms Import Endpoints (5 warnings)
 
 **Endpoints concernés**:
+
 - POST /v1/forms/import/
 - POST /v1/forms/import/preview/
 - POST /v1/forms/import/validate/
@@ -159,6 +163,7 @@ urlpatterns = [
 ### 6. Analytics Views Sans Serializers (16 warnings)
 
 **Views concernés**:
+
 - `get_form_analytics`, `get_form_funnel`, `get_form_questions_performance`
 - `get_form_realtime`, `track_event`, `track_events_batch`
 - `verify_email`, `download_file`
@@ -167,6 +172,7 @@ urlpatterns = [
 - `webhook_statistics`, `GDPRComplianceStatusViewSet`
 
 **Raison**: Ces vues sont soit :
+
 - Des vues de lecture ClickHouse (retournent JSON dynamique)
 - Des webhooks (pas de schéma prédéfini)
 - Des vues de download/upload (fichiers binaires)
@@ -179,18 +185,19 @@ urlpatterns = [
 
 ### 7. Security Warnings Dev (6 warnings)
 
-| Warning | Setting | Action |
-|---------|---------|--------|
-| W004 | SECURE_HSTS_SECONDS | ✅ Normal en dev (requis seulement en prod avec HTTPS) |
-| W008 | SECURE_SSL_REDIRECT | ✅ Normal en dev (localhost n'a pas SSL) |
-| W009 | SECRET_KEY | ✅ OK pour dev (.env a un secret dev) |
-| W012 | SESSION_COOKIE_SECURE | ✅ Normal en dev (requis seulement avec HTTPS) |
-| W016 | CSRF_COOKIE_SECURE | ✅ Normal en dev (requis seulement avec HTTPS) |
-| W018 | DEBUG=True | ✅ Intentionnel en dev |
+| Warning | Setting               | Action                                                 |
+| ------- | --------------------- | ------------------------------------------------------ |
+| W004    | SECURE_HSTS_SECONDS   | ✅ Normal en dev (requis seulement en prod avec HTTPS) |
+| W008    | SECURE_SSL_REDIRECT   | ✅ Normal en dev (localhost n'a pas SSL)               |
+| W009    | SECRET_KEY            | ✅ OK pour dev (.env a un secret dev)                  |
+| W012    | SESSION_COOKIE_SECURE | ✅ Normal en dev (requis seulement avec HTTPS)         |
+| W016    | CSRF_COOKIE_SECURE    | ✅ Normal en dev (requis seulement avec HTTPS)         |
+| W018    | DEBUG=True            | ✅ Intentionnel en dev                                 |
 
 **Action**: Ces warnings sont **normaux et attendus** en développement local.
 
 **Pour production**, ajouter dans `settings_prod.py`:
+
 ```python
 SECURE_HSTS_SECONDS = 31536000  # 1 an
 SECURE_SSL_REDIRECT = True
@@ -206,16 +213,19 @@ DEBUG = False
 ## 🎯 Plan d'Action Recommandé
 
 ### Corrections Immédiates (2h)
+
 1. ✅ Renommer serializers dupliqués (Submission/Answer)
 2. ✅ Ajouter type hints GDPR serializers
 3. ✅ Documenter les analytics views (commentaires)
 
 ### Améliorations Futures (4h)
+
 4. ⏭️ Ajouter schemas auth endpoints
 5. ⏭️ Créer serializers pour forms import
 6. ⏭️ Fixer GDPR URL patterns
 
 ### Production Ready (1h)
+
 7. ⏭️ Créer `settings_prod.py` avec security flags
 8. ⏭️ Documenter dans CLAUDE.md
 
@@ -277,4 +287,4 @@ SubmissionSerializer = SubmissionDetailSerializer  # Alias
 
 ---
 
-*Analyse complétée le 1er Octobre 2025*
+_Analyse complétée le 1er Octobre 2025_

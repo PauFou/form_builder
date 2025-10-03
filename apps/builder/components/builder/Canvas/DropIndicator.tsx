@@ -9,7 +9,11 @@ interface DropIndicatorProps {
 }
 
 export function DropIndicator({ overId, isAbove }: DropIndicatorProps) {
-  const [indicatorPosition, setIndicatorPosition] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [indicatorPosition, setIndicatorPosition] = useState<{
+    top: number;
+    left: number;
+    width: number;
+  } | null>(null);
   const rafRef = useRef<number | null>(null);
 
   useEffect(() => {

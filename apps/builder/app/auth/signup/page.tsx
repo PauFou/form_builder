@@ -76,7 +76,7 @@ export default function SignupPage() {
       <div className="aurora-blur-1" />
       <div className="aurora-blur-2" />
       <div className="aurora-pulse" />
-      
+
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -105,11 +105,7 @@ export default function SignupPage() {
                     <FormItem>
                       <FormLabel>Full Name</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="John Doe"
-                          autoComplete="name"
-                          {...field}
-                        />
+                        <Input placeholder="John Doe" autoComplete="name" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -158,11 +154,7 @@ export default function SignupPage() {
                     <FormItem>
                       <FormLabel>Organization Name</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Acme Inc."
-                          autoComplete="organization"
-                          {...field}
-                        />
+                        <Input placeholder="Acme Inc." autoComplete="organization" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -174,10 +166,7 @@ export default function SignupPage() {
                   render={({ field }: any) => (
                     <FormItem className="flex items-start space-x-3 space-y-0">
                       <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
+                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                       </FormControl>
                       <div className="space-y-1 leading-none">
                         <FormLabel>

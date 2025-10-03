@@ -4,8 +4,8 @@ import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 // Import dev utils in development
-if (process.env.NODE_ENV === 'development') {
-  import('../../lib/dev-utils');
+if (process.env.NODE_ENV === "development") {
+  import("../../lib/dev-utils");
 }
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, formatDistanceToNow } from "date-fns";
@@ -159,10 +159,19 @@ function DashboardStats({ forms }: { forms: FormWithStats[] }) {
         </CardHeader>
         <CardContent>
           <div className="flex gap-2">
-            <Button size="sm" className="flex-1" onClick={() => window.location.href = '#create-form'}>
+            <Button
+              size="sm"
+              className="flex-1"
+              onClick={() => (window.location.href = "#create-form")}
+            >
               <Plus className="h-3 w-3" />
             </Button>
-            <Button size="sm" variant="outline" className="flex-1" onClick={() => window.location.href = '#import-form'}>
+            <Button
+              size="sm"
+              variant="outline"
+              className="flex-1"
+              onClick={() => (window.location.href = "#import-form")}
+            >
               <Upload className="h-3 w-3" />
             </Button>
           </div>
@@ -201,9 +210,9 @@ function CreateFormDialog({ onSuccess }: { onSuccess?: () => void }) {
     console.log("handleSubmit called, organization:", organization);
 
     // Use dev organization if not logged in (development mode)
-    const orgId = organization?.id || 'eaee0d9b-9065-42c4-a915-356f1c1f7a84'; // Using the existing org ID from database
-    
-    if (!organization && process.env.NODE_ENV === 'production') {
+    const orgId = organization?.id || "eaee0d9b-9065-42c4-a915-356f1c1f7a84"; // Using the existing org ID from database
+
+    if (!organization && process.env.NODE_ENV === "production") {
       toast.error("Please log in to create forms");
       return;
     }
@@ -213,7 +222,7 @@ function CreateFormDialog({ onSuccess }: { onSuccess?: () => void }) {
       description: formData.get("description") as string,
       organization_id: orgId,
     };
-    
+
     console.log("Creating form with data:", data);
     createMutation.mutate(data);
   };
@@ -236,11 +245,7 @@ function CreateFormDialog({ onSuccess }: { onSuccess?: () => void }) {
         </div>
       </div>
       <div className="flex justify-end mt-4">
-        <Button 
-          type="submit" 
-          disabled={createMutation.isPending}
-          className="h-10 px-5 font-medium"
-        >
+        <Button type="submit" disabled={createMutation.isPending} className="h-10 px-5 font-medium">
           {createMutation.isPending ? (
             <>
               <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent inline-block" />
@@ -265,25 +270,25 @@ export default function FormsPage() {
   const [sortBy, setSortBy] = useState<"updated" | "created" | "submissions">("updated");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
-  
+
   // Debug effect
   React.useEffect(() => {
-    console.log('Dialog states:', { createDialogOpen, importDialogOpen });
+    console.log("Dialog states:", { createDialogOpen, importDialogOpen });
   }, [createDialogOpen, importDialogOpen]);
 
   // Development bypass - set a mock organization if not logged in
   React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development' && !organization && !authStore.isLoading) {
-      console.log('Dev mode: Setting mock organization');
+    if (process.env.NODE_ENV === "development" && !organization && !authStore.isLoading) {
+      console.log("Dev mode: Setting mock organization");
       const mockUser = {
-        id: 'dev-user-id',
-        email: 'demo@example.com',
-        name: 'Demo User'
+        id: "dev-user-id",
+        email: "demo@example.com",
+        name: "Demo User",
       } as User;
       const mockOrg = {
-        id: 'dev-org-id',
-        name: 'Demo Organization',
-        slug: 'demo-org'
+        id: "dev-org-id",
+        name: "Demo Organization",
+        slug: "demo-org",
       } as Organization;
       authStore.setDevAuth(mockUser, mockOrg);
     }
@@ -423,10 +428,10 @@ export default function FormsPage() {
             <p className="text-muted-foreground mt-1">Manage and monitor your forms performance</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
-                console.log('Import button clicked');
+                console.log("Import button clicked");
                 setImportDialogOpen(true);
               }}
               className="h-10 px-5 font-medium"
@@ -434,7 +439,7 @@ export default function FormsPage() {
               <Upload className="h-4 w-4 mr-2" />
               Import
             </Button>
-            
+
             {/* Import Dialog */}
             <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
               <DialogContent>
@@ -442,24 +447,26 @@ export default function FormsPage() {
                   <DialogTitle>Import Form</DialogTitle>
                 </DialogHeader>
                 <p className="mb-4">Import functionality is coming soon!</p>
-                <p className="text-sm text-gray-600">You'll be able to import forms from Typeform, Google Forms, and Tally.</p>
+                <p className="text-sm text-gray-600">
+                  You'll be able to import forms from Typeform, Google Forms, and Tally.
+                </p>
                 <div className="mt-4 flex justify-end">
                   <Button onClick={() => setImportDialogOpen(false)}>Close</Button>
                 </div>
               </DialogContent>
             </Dialog>
 
-            <Button 
+            <Button
               className="btn-gradient h-10 px-5 font-medium"
               onClick={() => {
-                console.log('Create Form button clicked - opening dialog');
+                console.log("Create Form button clicked - opening dialog");
                 setCreateDialogOpen(true);
               }}
             >
               <Plus className="h-4 w-4 mr-2" />
               Create Form
             </Button>
-            
+
             {/* Create Form Dialog */}
             <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
               <DialogContent>
@@ -714,15 +721,15 @@ export default function FormsPage() {
                 Start collecting responses with beautiful, responsive forms that work on any device
               </p>
               <div className="flex items-center justify-center gap-4">
-                <Button 
+                <Button
                   onClick={() => setCreateDialogOpen(true)}
                   className="btn-gradient h-12 px-6 text-base font-medium"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Create Form
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => setImportDialogOpen(true)}
                   className="h-12 px-6 text-base font-medium"
                 >

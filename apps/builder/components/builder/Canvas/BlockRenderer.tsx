@@ -117,14 +117,14 @@ export function BlockRenderer({ block, pageId, isDragging, index }: BlockRendere
         !showDragging && "hover:border-primary/50 hover:shadow-sm"
       )}
     >
-        {/* Drag Handle */}
-        <div
-          className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-move z-10"
-          {...attributes}
-          {...listeners}
-        >
-          <GripVertical className="h-5 w-5 text-muted-foreground" />
-        </div>
+      {/* Drag Handle */}
+      <div
+        className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-move z-10"
+        {...attributes}
+        {...listeners}
+      >
+        <GripVertical className="h-5 w-5 text-muted-foreground" />
+      </div>
 
       {/* Content */}
       <div className="pl-6">

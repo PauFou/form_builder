@@ -3,16 +3,19 @@
 ## ✅ **Corrections Appliquées**
 
 ### **1. Relaxé les Contraintes de Drag**
+
 ```tsx
 // AVANT (trop restrictif)
 distance: 3, // Fallait draguer 3px avant d'activer
 
-// APRÈS (immédiat)  
+// APRÈS (immédiat)
 distance: 0, // Drag commence instantanément
 ```
 
 ### **2. Ajouté Debug Logs**
+
 Les logs dans la console vont montrer :
+
 - 🐛 **DRAG START** : Quand tu commences à draguer
 - 🎯 **DRAG OVER** : Quand tu passes sur une zone
 - 🏁 **DRAG END** : Quand tu lâches
@@ -22,6 +25,7 @@ Les logs dans la console vont montrer :
 ## 🧪 **Test du Fix**
 
 ### **Étapes** :
+
 1. **Lance l'app** : `./start-complete-stack.sh`
 2. **Va sur** : http://localhost:3001/forms
 3. **Crée un formulaire** puis clique "Edit"
@@ -30,6 +34,7 @@ Les logs dans la console vont montrer :
 6. **Regarde les logs** dans console
 
 ### **Si ça marche** ✅ :
+
 ```
 🐛 DRAG START: library-short_text {source: "library", blockType: "short_text"}
 📚 Dragging block from library: short_text
@@ -39,6 +44,7 @@ Les logs dans la console vont montrer :
 ```
 
 ### **Si ça marche pas** ❌ :
+
 - **Pas de logs** → Problème plus profond
 - **DRAG START mais pas DRAG OVER** → Zones de drop pas configurées
 - **DRAG END mais pas Adding** → Logic de drop cassée
@@ -46,26 +52,32 @@ Les logs dans la console vont montrer :
 ## 🔍 **Debug Supplémentaire**
 
 ### **Test 1: Elements Draggables**
+
 Console browser :
+
 ```javascript
-document.querySelectorAll('[data-dnd-kit-draggable]').length
+document.querySelectorAll("[data-dnd-kit-draggable]").length;
 // Doit être > 0
 ```
 
 ### **Test 2: Drop Zones**
+
 ```javascript
-document.querySelectorAll('[data-dnd-kit-droppable]').length  
+document.querySelectorAll("[data-dnd-kit-droppable]").length;
 // Doit être > 0
 ```
 
 ### **Test 3: Form State**
+
 ```javascript
 // Dans la console, vérifier le state du form
-window.__formBuilderState || "Form state not accessible"
+window.__formBuilderState || "Form state not accessible";
 ```
 
 ### **Test 4: Basic HTML5**
+
 Si rien marche, teste le fichier `test-drag-drop-debug.html` :
+
 ```bash
 open test-drag-drop-debug.html
 ```
@@ -73,18 +85,21 @@ open test-drag-drop-debug.html
 ## 🚀 **Autres Fixes Possibles**
 
 ### **Fix A: Simplifier Collision Detection**
+
 Si les logs montrent des problèmes de collision :
 
 ```tsx
 // Dans form-builder.tsx - remplacer:
-collisionDetection={customCollisionDetection}
+collisionDetection = { customCollisionDetection };
 
 // Par:
-collisionDetection={closestCenter}
+collisionDetection = { closestCenter };
 ```
 
 ### **Fix B: Vérifier Drop Zone Setup**
+
 Dans `enhanced-drop-zone.tsx`, s'assurer que :
+
 ```tsx
 const { setNodeRef } = useDroppable({
   id: `drop-zone-${pageId}-${index}`,
@@ -97,7 +112,9 @@ const { setNodeRef } = useDroppable({
 ```
 
 ### **Fix C: CSS Interference**
+
 Chercher dans DevTools si ces styles interfèrent :
+
 ```css
 pointer-events: none;
 user-select: none;
@@ -107,8 +124,9 @@ touch-action: none;
 ## 🎯 **Quick Test**
 
 **Pour tester rapidement** :
+
 1. Lance l'app
-2. Va dans form edit 
+2. Va dans form edit
 3. F12 → Console
 4. Drag un block
 5. **Si tu vois des logs** → Le fix marche
@@ -117,14 +135,21 @@ touch-action: none;
 ## ❓ **Si Ça Marche Toujours Pas**
 
 Copie-colle dans console browser :
+
 ```javascript
 // Test complet de drag & drop
 console.log("=== DRAG & DROP DEBUG ===");
 console.log("Draggable elements:", document.querySelectorAll('[draggable="true"]').length);
-console.log("DND Kit draggables:", document.querySelectorAll('[data-dnd-kit-draggable]').length);  
-console.log("DND Kit droppables:", document.querySelectorAll('[data-dnd-kit-droppable]').length);
-console.log("Form builder present:", !!document.querySelector('.form-builder, [class*="form-builder"]'));
-console.log("Block library present:", !!document.querySelector('.block-library, [class*="block-library"]'));
+console.log("DND Kit draggables:", document.querySelectorAll("[data-dnd-kit-draggable]").length);
+console.log("DND Kit droppables:", document.querySelectorAll("[data-dnd-kit-droppable]").length);
+console.log(
+  "Form builder present:",
+  !!document.querySelector('.form-builder, [class*="form-builder"]')
+);
+console.log(
+  "Block library present:",
+  !!document.querySelector('.block-library, [class*="block-library"]')
+);
 ```
 
 Et envoie-moi le résultat !

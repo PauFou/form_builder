@@ -36,9 +36,7 @@ export default function RootLayout({
     >
       <body className={GeistSans.className}>
         <Navigation />
-        <main className="pt-20">
-          {children}
-        </main>
+        <main className="pt-20">{children}</main>
       </body>
     </html>
   );

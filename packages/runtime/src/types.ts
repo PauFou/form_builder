@@ -4,14 +4,14 @@ export interface Page {
 }
 
 // Type for form field values
-export type FieldValue = 
-  | string 
-  | number 
-  | boolean 
-  | Date 
-  | string[] 
-  | File 
-  | null 
+export type FieldValue =
+  | string
+  | number
+  | boolean
+  | Date
+  | string[]
+  | File
+  | null
   | undefined
   | { amount?: number; currency?: string } // For currency block
   | { score?: number; feedback?: string } // For NPS block

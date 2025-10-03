@@ -16,21 +16,22 @@ C'est tout ! L'API est accessible sur http://localhost:8000
 
 ## 📋 Services Disponibles
 
-| Service | URL | Credentials |
-|---------|-----|-------------|
-| Django API | http://localhost:8888 | dev@local.com / dev123 |
-| PostgreSQL | localhost:5432 | forms_user / forms_password |
-| Redis | localhost:6379 | (pas de auth) |
-| Marketing* | http://localhost:3300 | - |
-| Builder* | http://localhost:3301 | dev@local.com / dev123 |
+| Service     | URL                   | Credentials                 |
+| ----------- | --------------------- | --------------------------- |
+| Django API  | http://localhost:8888 | dev@local.com / dev123      |
+| PostgreSQL  | localhost:5432        | forms_user / forms_password |
+| Redis       | localhost:6379        | (pas de auth)               |
+| Marketing\* | http://localhost:3300 | -                           |
+| Builder\*   | http://localhost:3301 | dev@local.com / dev123      |
 
-*Optionnel, à démarrer manuellement si besoin
+\*Optionnel, à démarrer manuellement si besoin
 
 ---
 
 ## 🎯 Workflows Courants
 
 ### 1. Développement Backend
+
 ```bash
 # Démarrer les services
 ./start-dev-complete.sh
@@ -46,6 +47,7 @@ cd services/api && pytest -xvs
 ```
 
 ### 2. Développement Frontend
+
 ```bash
 # S'assurer que l'API tourne
 curl http://localhost:8888/health
@@ -60,6 +62,7 @@ pnpm dev  # Port 3301
 ```
 
 ### 3. Tests Complets
+
 ```bash
 # Frontend
 pnpm test:ci
@@ -76,6 +79,7 @@ pnpm test:e2e
 ## 🐛 Dépannage
 
 ### Problème: PostgreSQL ne démarre pas
+
 ```bash
 # Vérifier le statut
 brew services list | grep postgres
@@ -88,6 +92,7 @@ psql -U forms_user -d forms_db
 ```
 
 ### Problème: Redis ne répond pas
+
 ```bash
 # Vérifier le statut
 brew services list | grep redis
@@ -100,6 +105,7 @@ redis-cli ping  # Devrait répondre PONG
 ```
 
 ### Problème: Django ne démarre pas
+
 ```bash
 # Voir les logs
 tail -f /tmp/django_dev.log
@@ -112,6 +118,7 @@ cd services/api && python manage.py runserver 8000
 ```
 
 ### Problème: Migrations non appliquées
+
 ```bash
 cd services/api
 python manage.py migrate
@@ -147,6 +154,7 @@ git commit -m "feat: description"
 ## 💡 Tips & Astuces
 
 ### Créer un nouveau user rapidement
+
 ```python
 # Via Django shell
 python manage.py shell
@@ -157,6 +165,7 @@ python manage.py shell
 ```
 
 ### Tester l'API avec curl
+
 ```bash
 # Login
 curl -X POST http://localhost:8888/v1/auth/login/ \
@@ -168,6 +177,7 @@ curl http://localhost:8888/health
 ```
 
 ### Voir tous les users
+
 ```bash
 cd services/api
 python manage.py shell << 'EOF'
@@ -182,6 +192,7 @@ EOF
 ## 🎉 C'est Parti !
 
 Vous êtes prêt à développer. Pour toute question, consultez:
+
 - `CLAUDE.md` pour les règles du projet
 - `AUDIT_COMPLET_01_OCT_2025.md` pour l'état actuel
 - Documentation Django/Next.js pour les détails techniques

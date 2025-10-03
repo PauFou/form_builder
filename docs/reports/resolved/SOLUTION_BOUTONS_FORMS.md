@@ -3,11 +3,13 @@
 ## Diagnostic complet
 
 ### Problème 1: Redirection automatique vers /auth/login
+
 - L'AuthProvider redirige automatiquement vers la page de login quand il n'y a pas de token valide
 - Cela empêche le code de mock auth dans forms/page.tsx de s'exécuter
 - Les boutons n'apparaissent pas car l'utilisateur n'est jamais authentifié
 
 ### Problème 2: Thème passé de dark à light
+
 - Le thème par défaut a été changé dans `theme-store.ts` de "dark" à "light"
 - J'ai déjà corrigé cela en mettant "system" par défaut
 
@@ -16,6 +18,7 @@
 ### Option 1: Désactiver temporairement la redirection auth en développement
 
 Modifier `auth-provider.tsx` ligne 51-54:
+
 ```typescript
 } else if (!token && !isAuthenticated && !pathname?.startsWith("/auth/") && process.env.NODE_ENV !== 'development') {
   // No token, not authenticated, and not on auth page - redirect to login (except in dev)
@@ -26,9 +29,10 @@ Modifier `auth-provider.tsx` ligne 51-54:
 ### Option 2: Créer un middleware de développement
 
 Ajouter une condition dans le middleware pour bypass l'auth en développement:
+
 ```typescript
 // middleware.ts
-if (process.env.NODE_ENV === 'development' && pathname.startsWith('/forms')) {
+if (process.env.NODE_ENV === "development" && pathname.startsWith("/forms")) {
   return NextResponse.next();
 }
 ```
@@ -42,8 +46,9 @@ if (process.env.NODE_ENV === 'development' && pathname.startsWith('/forms')) {
 ### Option 4: Modifier temporairement forms/page.tsx
 
 Ajouter une condition pour afficher les boutons même sans auth en développement:
+
 ```typescript
-const showButtons = organization || process.env.NODE_ENV === 'development';
+const showButtons = organization || process.env.NODE_ENV === "development";
 ```
 
 ## Recommandation

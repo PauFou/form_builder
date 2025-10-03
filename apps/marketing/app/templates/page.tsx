@@ -404,8 +404,12 @@ export default function TemplatesPage() {
                         className={`${getDifficultyColor(template.difficulty)} shadow-sm border`}
                         variant="secondary"
                       >
-                        {template.difficulty === "beginner" && <CheckCircle className="h-3 w-3 mr-1" />}
-                        {template.difficulty === "intermediate" && <TrendingUp className="h-3 w-3 mr-1" />}
+                        {template.difficulty === "beginner" && (
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                        )}
+                        {template.difficulty === "intermediate" && (
+                          <TrendingUp className="h-3 w-3 mr-1" />
+                        )}
                         {template.difficulty === "advanced" && <Award className="h-3 w-3 mr-1" />}
                         {template.difficulty}
                       </Badge>
@@ -594,8 +598,8 @@ export default function TemplatesPage() {
                             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                               <template.icon className="h-6 w-6 text-primary" />
                             </div>
-                            <Badge 
-                              variant="outline" 
+                            <Badge
+                              variant="outline"
                               className="text-xs bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20"
                             >
                               {template.category}
@@ -624,9 +628,15 @@ export default function TemplatesPage() {
                               className={`${getDifficultyColor(template.difficulty)} shadow-sm border`}
                               variant="secondary"
                             >
-                              {template.difficulty === "beginner" && <CheckCircle className="h-3 w-3 mr-1" />}
-                              {template.difficulty === "intermediate" && <TrendingUp className="h-3 w-3 mr-1" />}
-                              {template.difficulty === "advanced" && <Award className="h-3 w-3 mr-1" />}
+                              {template.difficulty === "beginner" && (
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                              )}
+                              {template.difficulty === "intermediate" && (
+                                <TrendingUp className="h-3 w-3 mr-1" />
+                              )}
+                              {template.difficulty === "advanced" && (
+                                <Award className="h-3 w-3 mr-1" />
+                              )}
                               {template.difficulty}
                             </Badge>
                             <Button
@@ -667,8 +677,8 @@ export default function TemplatesPage() {
                                   {template.name}
                                 </h3>
                                 <div className="flex items-center gap-2">
-                                  <Badge 
-                                    variant="outline" 
+                                  <Badge
+                                    variant="outline"
                                     className="text-xs bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20"
                                   >
                                     {template.category}
@@ -677,9 +687,15 @@ export default function TemplatesPage() {
                                     className={`${getDifficultyColor(template.difficulty)} shadow-sm border`}
                                     variant="secondary"
                                   >
-                                    {template.difficulty === "beginner" && <CheckCircle className="h-3 w-3 mr-1" />}
-                                    {template.difficulty === "intermediate" && <TrendingUp className="h-3 w-3 mr-1" />}
-                                    {template.difficulty === "advanced" && <Award className="h-3 w-3 mr-1" />}
+                                    {template.difficulty === "beginner" && (
+                                      <CheckCircle className="h-3 w-3 mr-1" />
+                                    )}
+                                    {template.difficulty === "intermediate" && (
+                                      <TrendingUp className="h-3 w-3 mr-1" />
+                                    )}
+                                    {template.difficulty === "advanced" && (
+                                      <Award className="h-3 w-3 mr-1" />
+                                    )}
                                     {template.difficulty}
                                   </Badge>
                                 </div>

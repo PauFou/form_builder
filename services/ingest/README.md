@@ -27,6 +27,7 @@ Users → Edge Workers (30+ locations) → Queues → Backend API
 ### Analytics Events
 
 #### Single Event
+
 ```http
 POST /events/track
 Content-Type: application/json
@@ -41,6 +42,7 @@ Content-Type: application/json
 ```
 
 #### Batch Events
+
 ```http
 POST /events/batch
 Content-Type: application/json
@@ -57,6 +59,7 @@ Content-Type: application/json
 ### Form Submissions
 
 #### Complete Submission
+
 ```http
 POST /forms/{formId}/submit
 Content-Type: application/json
@@ -75,6 +78,7 @@ Content-Type: application/json
 ```
 
 #### Partial Submission (Autosave)
+
 ```http
 POST /forms/{formId}/partial
 Content-Type: application/json
@@ -91,6 +95,7 @@ Content-Type: application/json
 ### Webhooks
 
 #### Stripe Webhooks
+
 ```http
 POST /webhooks/stripe
 X-Webhook-Signature: sha256=...
@@ -106,6 +111,7 @@ X-Webhook-Timestamp: 1234567890
 ## Development
 
 ### Local Development
+
 ```bash
 # Install dependencies
 pnpm install
@@ -118,6 +124,7 @@ pnpm test
 ```
 
 ### Environment Variables
+
 ```toml
 # wrangler.toml
 [vars]
@@ -134,6 +141,7 @@ CLICKHOUSE_ENDPOINT = "https://analytics.forms.eu"
 ## Rate Limiting
 
 Default limits:
+
 - 100 requests per minute per IP
 - Configurable via KV namespace
 - Headers included: `X-RateLimit-*`
@@ -141,16 +149,19 @@ Default limits:
 ## Security
 
 ### CORS
+
 - Configurable allowed origins
 - Credentials supported for same-origin
 - Preflight caching: 24 hours
 
 ### HMAC Validation
+
 - SHA-256 signatures required for webhooks
 - 5-minute timestamp tolerance
 - Constant-time comparison
 
 ### Data Privacy
+
 - IP anonymization available
 - No PII logging
 - EU data residency
@@ -158,11 +169,13 @@ Default limits:
 ## Queue Processing
 
 ### Event Queue
+
 - Analytics events batched by type
 - 100 events per batch to ClickHouse
 - Automatic retries with exponential backoff
 
 ### Submission Queue
+
 - Individual submission processing
 - Idempotency via session keys
 - Dead letter queue for failures
@@ -170,17 +183,20 @@ Default limits:
 ## Monitoring
 
 ### Metrics
+
 - Request count by endpoint
 - Queue depth and processing time
 - Error rates by type
 - Geographic distribution
 
 ### Health Check
+
 ```bash
 curl https://ingest.forms.eu/health
 ```
 
 ### Logs
+
 - Structured JSON logging
 - Correlation IDs for tracing
 - Error sampling for high volume
@@ -188,6 +204,7 @@ curl https://ingest.forms.eu/health
 ## Deployment
 
 ### Production Deployment
+
 ```bash
 # Deploy to production
 pnpm deploy
@@ -197,6 +214,7 @@ wrangler tail
 ```
 
 ### Rollback
+
 ```bash
 # List deployments
 wrangler deployments list
@@ -208,11 +226,13 @@ wrangler rollback
 ## Error Handling
 
 ### Client Errors (4xx)
+
 - `400`: Validation errors with details
 - `429`: Rate limit exceeded
 - `401`: Invalid HMAC signature
 
 ### Server Errors (5xx)
+
 - Automatic retries for transient failures
 - Dead letter queue for persistent failures
 - Graceful degradation
@@ -220,15 +240,18 @@ wrangler rollback
 ## Performance
 
 ### Latency Targets
+
 - P50: < 25ms
 - P95: < 50ms
 - P99: < 100ms
 
 ### Throughput
+
 - 10,000+ events/second per worker
 - Horizontal scaling via Cloudflare
 
 ### Optimization
+
 - Minimal dependencies (300KB total)
 - Streaming request/response bodies
 - Early validation and rejection

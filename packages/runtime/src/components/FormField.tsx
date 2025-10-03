@@ -95,7 +95,9 @@ export const FormField = memo(function FormField({
                   value={option}
                   checked={Array.isArray(value) && (value as string[]).includes(option)}
                   onChange={(e) => {
-                    const stringValues = Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
+                    const stringValues = Array.isArray(value)
+                      ? value.filter((v): v is string => typeof v === "string")
+                      : [];
                     const newValue = e.target.checked
                       ? [...stringValues, option]
                       : stringValues.filter((v) => v !== option);

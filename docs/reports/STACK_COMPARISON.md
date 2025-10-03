@@ -6,17 +6,17 @@
 
 ### 🔍 **Scripts Analysés**:
 
-| Script | Backend | Marketing<br/>(3000) | Builder<br/>(3001) | Runtime<br/>(3002) | Ctrl+C Fix |
-|--------|---------|---------|---------|---------|------------|
-| `start-simple.sh` | ✅ Django | ❌ | ✅ | ❌ | ✅ |
-| `start-full-stack-fixed.sh` | ✅ Django | ✅ | ✅ | ✅ | ✅ |
-| `start-complete-stack.sh` | ✅ Django | ✅ | ✅ | ✅ | ✅ |
+| Script                      | Backend   | Marketing<br/>(3000) | Builder<br/>(3001) | Runtime<br/>(3002) | Ctrl+C Fix |
+| --------------------------- | --------- | -------------------- | ------------------ | ------------------ | ---------- |
+| `start-simple.sh`           | ✅ Django | ❌                   | ✅                 | ❌                 | ✅         |
+| `start-full-stack-fixed.sh` | ✅ Django | ✅                   | ✅                 | ✅                 | ✅         |
+| `start-complete-stack.sh`   | ✅ Django | ✅                   | ✅                 | ✅                 | ✅         |
 
 ### 📱 **Applications du Stack Complet**:
 
 1. **Backend Django** (port 8000)
    - API REST complète
-   - Admin panel 
+   - Admin panel
    - JWT Authentication
    - Webhooks et intégrations
 
@@ -26,7 +26,7 @@
    - Features
    - Documentation publique
 
-3. **Form Builder** (port 3001) 
+3. **Form Builder** (port 3001)
    - Interface de création
    - Drag & drop des blocs
    - Éditeur de logique
@@ -40,21 +40,27 @@
 ## 🎯 **Scripts Recommandés**:
 
 ### ✅ **Pour le Stack COMPLET**: `./start-complete-stack.sh`
+
 ```bash
 ./start-complete-stack.sh
 ```
+
 **Lance TOUT**:
+
 - ✅ Django API (8000)
-- ✅ Marketing (3000) 
+- ✅ Marketing (3000)
 - ✅ Builder (3001)
 - ✅ Runtime Demo (3002)
 - ✅ Ctrl+C fonctionne parfaitement
 
 ### ✅ **Pour développement rapide**: `./start-simple.sh`
+
 ```bash
-./start-simple.sh  
+./start-simple.sh
 ```
+
 **Lance l'essentiel**:
+
 - ✅ Django API (8000)
 - ✅ Builder (3001) - principal app
 - ❌ Marketing et Runtime (pas nécessaires pour dev)
@@ -63,6 +69,7 @@
 ## 🚀 **Workflow Complet Recommandé**:
 
 1. **Lancer le stack complet**:
+
    ```bash
    ./start-complete-stack.sh
    ```
@@ -70,7 +77,7 @@
 2. **Tester le flow marketing → builder**:
    - Visitez http://localhost:3000 (Marketing)
    - Cliquez "Get Started" → redirige vers Builder
-   - Créez un formulaire sur http://localhost:3001 
+   - Créez un formulaire sur http://localhost:3001
    - Testez la preview sur http://localhost:3002
 
 3. **Backend & API**:
@@ -81,20 +88,23 @@
 ## 🔧 **Détails Techniques**:
 
 ### Pourquoi `pnpm dev` lance tout ?
+
 ```bash
-# pnpm dev → turbo dev → lance tous les apps/ 
+# pnpm dev → turbo dev → lance tous les apps/
 turbo.json: "dev": { "persistent": true }
 ```
 
 ### Structure Frontend:
+
 ```
 apps/
 ├── marketing/    (port 3000)
-├── builder/      (port 3001) 
+├── builder/      (port 3001)
 └── runtime-demo/ (port 3002)
 ```
 
 ### Ce que fait Turbo:
+
 - **Parallel execution** des 3 apps Next.js
 - **Hot reload** pour chaque app
 - **Port allocation** automatique
@@ -102,9 +112,10 @@ apps/
 ## 🎯 **Réponse Finale**:
 
 **OUI**, mes scripts lancent bien **TOUT LE STACK** :
-- ✅ **Backend Django** complet 
+
+- ✅ **Backend Django** complet
 - ✅ **Frontend Marketing** (landing page)
-- ✅ **Frontend Builder** (app principale)  
+- ✅ **Frontend Builder** (app principale)
 - ✅ **Frontend Runtime** (preview)
 - ✅ **Ctrl+C fonctionne** maintenant !
 

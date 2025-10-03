@@ -37,9 +37,7 @@ describe("SignupPage", () => {
     render(<SignupPage />);
 
     expect(screen.getByText("Create your account")).toBeInTheDocument();
-    expect(
-      screen.getByText("Start building beautiful forms in minutes")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Start building beautiful forms in minutes")).toBeInTheDocument();
     expect(screen.getByLabelText("Full Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();

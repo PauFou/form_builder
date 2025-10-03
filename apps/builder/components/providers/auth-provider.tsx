@@ -50,8 +50,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       checkAuth();
     } else if (!token && !isAuthenticated && !pathname?.startsWith("/auth/")) {
       // In development, allow access without authentication
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Dev mode: Allowing unauthenticated access');
+      if (process.env.NODE_ENV === "development") {
+        console.log("Dev mode: Allowing unauthenticated access");
         // Don't redirect in development
       } else {
         // No token, not authenticated, and not on auth page - redirect to login

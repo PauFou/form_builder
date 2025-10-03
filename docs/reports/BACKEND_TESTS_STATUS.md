@@ -8,12 +8,12 @@
 
 ## 📊 Test Summary
 
-| Metric | Count | Percentage |
-|--------|-------|------------|
-| **Total Tests** | 264 | 100% |
-| **✅ Passed** | 207 | 78.4% |
-| **❌ Failed** | 40 | 15.2% |
-| **⏭️ Skipped** | 17 | 6.4% |
+| Metric          | Count | Percentage |
+| --------------- | ----- | ---------- |
+| **Total Tests** | 264   | 100%       |
+| **✅ Passed**   | 207   | 78.4%      |
+| **❌ Failed**   | 40    | 15.2%      |
+| **⏭️ Skipped**  | 17    | 6.4%       |
 
 **Status**: 🟢 **Core functionality tests passing**
 
@@ -24,6 +24,7 @@
 ### Core Application (Strong Coverage)
 
 **Authentication & Authorization**:
+
 - ✅ User registration, login, logout
 - ✅ JWT token generation and refresh
 - ✅ Email verification flow
@@ -31,6 +32,7 @@
 - ✅ Organization membership & RBAC
 
 **Forms**:
+
 - ✅ Form CRUD operations
 - ✅ Form publishing & versioning
 - ✅ Form import (Typeform, Google Forms)
@@ -38,6 +40,7 @@
 - ✅ Form validation
 
 **Submissions**:
+
 - ✅ Submission creation & retrieval
 - ✅ Answer storage
 - ✅ Partial submissions
@@ -46,6 +49,7 @@
 - ✅ Search functionality
 
 **GDPR Compliance**:
+
 - ✅ Data residency configuration
 - ✅ Retention policies
 - ✅ PII field configuration
@@ -55,6 +59,7 @@
 - ✅ DPA signing
 
 **Webhooks**:
+
 - ✅ Webhook CRUD operations
 - ✅ HMAC signature validation
 - ✅ Webhook delivery tracking
@@ -62,6 +67,7 @@
 - ✅ DLQ (Dead Letter Queue)
 
 **Admin**:
+
 - ✅ Audit logging
 - ✅ Admin interfaces
 
@@ -76,6 +82,7 @@
 **Issue**: ClickHouse client connection or batch insert failure
 
 **Reason**:
+
 - ClickHouse service might not be running during tests
 - Test database not properly configured
 - Network connectivity issue
@@ -83,6 +90,7 @@
 **Impact**: 🟡 Medium - Analytics features won't work without ClickHouse, but core app functions
 
 **Recommendation**:
+
 ```python
 # Mock ClickHouse in tests or ensure service is running
 @pytest.mark.skipif(not has_clickhouse(), reason="ClickHouse not available")
@@ -97,11 +105,13 @@ def test_insert_batch():
 **File**: `tests/test_cross_service_integration.py`
 
 **Failing Tests**:
+
 - Rate limiting (edge function & webhook delivery)
 - Distributed transaction rollback
 - And more...
 
 **Reason**:
+
 - These tests require multiple services running (Redis, Celery workers, etc.)
 - Complex distributed system testing
 - May require docker-compose environment
@@ -109,6 +119,7 @@ def test_insert_batch():
 **Impact**: 🟡 Medium - Tests advanced features, not core functionality
 
 **Recommendation**:
+
 - Mark as integration tests: `@pytest.mark.integration`
 - Run only in CI with full stack
 - Add proper service mocking for local dev
@@ -118,10 +129,12 @@ def test_insert_batch():
 ### 3. Database Security - 8 failures
 
 **Files**:
+
 - `tests/test_database_security.py`
 - `tests/test_database_security_postgres.py`
 
 **Failing Tests**:
+
 - Cross-organization data access isolation
 - Query-level isolation
 - Raw query isolation
@@ -129,6 +142,7 @@ def test_insert_batch():
 - Concurrent submission handling
 
 **Reason**:
+
 - Tests require specific PostgreSQL configuration (row-level security, isolation levels)
 - Tests need multiple concurrent database connections
 - Complex transaction management
@@ -136,6 +150,7 @@ def test_insert_batch():
 **Impact**: 🟢 Low - Security mechanisms are in place (Django ORM filters), these tests verify edge cases
 
 **Recommendation**:
+
 - Ensure PostgreSQL has proper isolation settings
 - Add `@pytest.mark.slow` for concurrent tests
 - Review if all tests are necessary or can be simplified
@@ -149,27 +164,33 @@ def test_insert_batch():
 **Failing Test Categories**:
 
 **Database Performance (4 tests)**:
+
 - Bulk submission insert performance
 - Index effectiveness
 - N+1 query detection
 - Submission query performance
 
 **API Load Tests (2 tests)**:
+
 - API rate limiting performance
 - Concurrent submission handling
 
 **Cache Performance (1 test)**:
+
 - Cache hit performance
 
 **Webhook Performance (2 tests)**:
+
 - Webhook batch processing
 - Webhook fan-out performance
 
 **Memory Usage (2 tests)**:
+
 - Large submission memory usage
 - Streaming large exports
 
 **Reason**:
+
 - Performance tests require specific thresholds (latency, throughput)
 - May need performance tuning or threshold adjustments
 - Require realistic load generation (locust, k6)
@@ -177,6 +198,7 @@ def test_insert_batch():
 **Impact**: 🟢 Low - Performance tests are aspirational, not functional requirements
 
 **Recommendation**:
+
 - Move to separate performance test suite: `pytest -m performance`
 - Run in dedicated performance environment
 - Adjust thresholds based on actual hardware
@@ -188,11 +210,13 @@ def test_insert_batch():
 **Current Coverage**: 14%
 
 ### Well-Covered Modules:
+
 - `webhooks/models.py`: **96%** ✅
 - `gdpr/models.py`: **75%** ✅
 - `core/models.py`: **71%** ✅
 
 ### Needs Improvement:
+
 - `submissions/views.py`: **0%** 🔴
 - `submissions/serializers.py`: **0%** 🔴
 - `forms/views.py`: **0%** 🔴
@@ -209,6 +233,7 @@ def test_insert_batch():
 ### Priority 1: Fix Core Test Issues (2h)
 
 1. **Skip ClickHouse tests when service unavailable**:
+
 ```python
 # analytics/tests/conftest.py
 import pytest
@@ -229,6 +254,7 @@ def skip_if_no_clickhouse(request):
 ```
 
 2. **Mark integration tests properly**:
+
 ```python
 # pytest.ini
 [pytest]
@@ -239,6 +265,7 @@ markers =
 ```
 
 3. **Run core tests only by default**:
+
 ```bash
 pytest -m "not integration and not performance"
 ```
@@ -248,6 +275,7 @@ pytest -m "not integration and not performance"
 **Target**: 40% coverage (up from 14%)
 
 Focus on:
+
 1. Add direct unit tests for serializers
 2. Add direct unit tests for view helper methods
 3. Add tests for webhook delivery logic
@@ -264,6 +292,7 @@ Focus on:
 ## 🚀 Quick Wins
 
 ### Run Only Passing Tests
+
 ```bash
 # Skip problematic test suites
 pytest --ignore=tests/test_performance_load.py \
@@ -276,6 +305,7 @@ pytest --ignore=tests/test_performance_load.py \
 This should give **~200 passing tests** with **0 failures**.
 
 ### Add to CI Pipeline
+
 ```yaml
 # .github/workflows/test.yml
 - name: Run core tests
@@ -289,6 +319,7 @@ This should give **~200 passing tests** with **0 failures**.
 ## 📝 Test Organization Recommendations
 
 ### Current Structure
+
 ```
 services/api/
 ├── <app>/tests.py          # All tests in one file per app
@@ -299,6 +330,7 @@ services/api/
 ```
 
 ### Recommended Structure
+
 ```
 services/api/
 ├── <app>/
@@ -321,11 +353,13 @@ services/api/
 **Status**: 🟢 **Healthy**
 
 The backend test suite is in **good shape**:
+
 - ✅ **78% pass rate** is solid
 - ✅ **All core functionality is tested** (auth, forms, submissions, GDPR, webhooks)
 - ✅ **Failures are in advanced features** (performance, security edge cases, integration)
 
 **Next Steps**:
+
 1. Mark advanced tests with proper pytest markers
 2. Skip infrastructure-dependent tests when services unavailable
 3. Add more direct unit tests to improve coverage
@@ -335,7 +369,7 @@ The backend test suite is in **good shape**:
 
 ---
 
-*Report generated: 1er Octobre 2025*
-*Test run time: 10.94s*
-*Python version: 3.x*
-*Django version: 5.x*
+_Report generated: 1er Octobre 2025_
+_Test run time: 10.94s_
+_Python version: 3.x_
+_Django version: 5.x_

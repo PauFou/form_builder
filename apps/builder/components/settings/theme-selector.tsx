@@ -34,9 +34,7 @@ export function ThemeSelector() {
     <Card>
       <CardHeader>
         <CardTitle>Theme</CardTitle>
-        <CardDescription>
-          Choose your preferred theme or let the system decide
-        </CardDescription>
+        <CardDescription>Choose your preferred theme or let the system decide</CardDescription>
       </CardHeader>
       <CardContent>
         <RadioGroup
@@ -50,9 +48,7 @@ export function ThemeSelector() {
               <div
                 key={themeOption.value}
                 className={`flex items-center space-x-3 rounded-lg border p-4 cursor-pointer transition-colors hover:bg-accent/5 ${
-                  theme === themeOption.value
-                    ? "border-primary bg-accent/10"
-                    : "border-border"
+                  theme === themeOption.value ? "border-primary bg-accent/10" : "border-border"
                 }`}
               >
                 <RadioGroupItem
@@ -62,15 +58,10 @@ export function ThemeSelector() {
                 />
                 <Icon className="h-5 w-5 text-muted-foreground" />
                 <div className="flex-1">
-                  <Label
-                    htmlFor={themeOption.value}
-                    className="font-medium cursor-pointer"
-                  >
+                  <Label htmlFor={themeOption.value} className="font-medium cursor-pointer">
                     {themeOption.label}
                   </Label>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {themeOption.description}
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">{themeOption.description}</p>
                 </div>
               </div>
             );

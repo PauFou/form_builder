@@ -47,10 +47,10 @@ export default function LoginPage() {
       router.push("/forms");
     } catch (error: any) {
       let message = "Invalid email or password";
-      
-      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+
+      if (error.code === "ERR_NETWORK" || error.message === "Network Error") {
         message = "Unable to connect to server. Please check if the backend is running.";
-      } else if (error.code === 'ERR_CONNECTION_REFUSED') {
+      } else if (error.code === "ERR_CONNECTION_REFUSED") {
         message = "Server connection refused. Please ensure the API is running on port 8000.";
       } else if (error.response?.status === 401) {
         message = "Invalid email or password. Please try again.";
@@ -63,7 +63,7 @@ export default function LoginPage() {
       } else if (error.message) {
         message = error.message;
       }
-      
+
       setError(message);
       toast({
         title: "Login failed",
@@ -79,7 +79,7 @@ export default function LoginPage() {
       <div className="aurora-blur-1" />
       <div className="aurora-blur-2" />
       <div className="aurora-pulse" />
-      
+
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -140,17 +140,20 @@ export default function LoginPage() {
                 {error && (
                   <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
                     {error}
-                    {(error.includes("Unable to connect") || error.includes("connection refused")) && (
+                    {(error.includes("Unable to connect") ||
+                      error.includes("connection refused")) && (
                       <div className="mt-2 text-xs text-muted-foreground">
                         <p>To start the backend server, run:</p>
-                        <code className="bg-background/50 px-1 py-0.5 rounded font-mono">./start-simple.sh</code>
+                        <code className="bg-background/50 px-1 py-0.5 rounded font-mono">
+                          ./start-simple.sh
+                        </code>
                       </div>
                     )}
                   </div>
                 )}
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 text-base font-medium" 
+                <Button
+                  type="submit"
+                  className="w-full h-12 text-base font-medium"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -202,14 +205,17 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <div className="flex items-center justify-between w-full text-sm">
-              <Link href="/auth/forgot-password" className="text-muted-foreground hover:text-primary">
+              <Link
+                href="/auth/forgot-password"
+                className="text-muted-foreground hover:text-primary"
+              >
                 Forgot password?
               </Link>
               <Link href="/auth/signup" className="text-muted-foreground hover:text-primary">
                 Create account
               </Link>
             </div>
-            
+
             {/* Dev Helper */}
             {process.env.NODE_ENV === "development" && (
               <div className="w-full pt-4 border-t">

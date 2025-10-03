@@ -7,14 +7,14 @@
 
 ## 📊 Résumé par Catégorie
 
-| Catégorie | Fichiers | Action | Destination |
-|-----------|----------|--------|-------------|
-| **Documentation** | 19 | ✅ Conserver | `docs/reports/` |
-| **Scripts de test temporaires** | 44 | 🗑️ Supprimer | - |
-| **Composants expérimentaux** | 28 | 🔍 Évaluer | Garder utiles |
-| **Scripts de démarrage** | 4 | ✅ Conserver | Racine |
-| **Code fonctionnel** | 18 | ✅ Conserver | En place |
-| **Fichiers obsolètes** | 24 | 🗑️ Supprimer | - |
+| Catégorie                       | Fichiers | Action       | Destination     |
+| ------------------------------- | -------- | ------------ | --------------- |
+| **Documentation**               | 19       | ✅ Conserver | `docs/reports/` |
+| **Scripts de test temporaires** | 44       | 🗑️ Supprimer | -               |
+| **Composants expérimentaux**    | 28       | 🔍 Évaluer   | Garder utiles   |
+| **Scripts de démarrage**        | 4        | ✅ Conserver | Racine          |
+| **Code fonctionnel**            | 18       | ✅ Conserver | En place        |
+| **Fichiers obsolètes**          | 24       | 🗑️ Supprimer | -               |
 
 **Total**: 137 fichiers
 
@@ -25,6 +25,7 @@
 ### → Déplacer vers `docs/reports/`
 
 **Audits & Analyses**:
+
 ```
 ✅ AUDIT_COMPLET_01_OCT_2025.md
 ✅ COMPREHENSIVE_AUDIT_RESULTS.md
@@ -33,6 +34,7 @@
 ```
 
 **Rapports de Problèmes Résolus**:
+
 ```
 ✅ RAPPORT_PROBLEMES_FORMS_PAGE.md
 ✅ SOLUTION_BOUTONS_FORMS.md
@@ -47,6 +49,7 @@
 ```
 
 **Documentation Technique**:
+
 ```
 ✅ GUIDE_DEMARRAGE_RAPIDE.md → Garder à la racine
 ✅ MIGRATION_PORTS_COMPLETE.md
@@ -56,6 +59,7 @@
 ```
 
 **Builder Diagnostics**:
+
 ```
 ✅ apps/builder/DIAGNOSTIC_BUTTONS_FORMS.md
 ✅ apps/builder/RAPPORT_FINAL_BOUTONS.md
@@ -66,6 +70,7 @@
 ## 2. Scripts de Test Temporaires à Supprimer (44 fichiers)
 
 ### E2E Tests Debug (32 fichiers)
+
 ```bash
 🗑️ e2e/comprehensive-app-audit.spec.js
 🗑️ e2e/comprehensive-saas-audit.spec.js
@@ -105,6 +110,7 @@
 ```
 
 ### Builder E2E Tests (4 fichiers)
+
 ```bash
 🗑️ apps/builder/e2e/test-buttons-final.spec.js
 🗑️ apps/builder/e2e/test-dialog-buttons-auth.spec.js
@@ -113,6 +119,7 @@
 ```
 
 ### Test Scripts Python (5 fichiers)
+
 ```bash
 🗑️ create_dev_user.py
 🗑️ create_simple_test_user.py
@@ -124,11 +131,13 @@
 ```
 
 **Garder**:
+
 ```bash
 ✅ test_login_api.py  # Utile pour tests API manuels
 ```
 
 ### Test Scripts Shell/JS (8 fichiers)
+
 ```bash
 🗑️ test-all-pages-buttons.js
 🗑️ test-auth-and-theme.js
@@ -149,6 +158,7 @@
 ```
 
 ### Builder Test Scripts (2 fichiers)
+
 ```bash
 🗑️ apps/builder/check-forms-page.js
 🗑️ apps/builder/reset-dev-auth.js
@@ -161,6 +171,7 @@
 ### Builder - Composants UI
 
 **À Supprimer (prototypes obsolètes)**:
+
 ```bash
 🗑️ apps/builder/components/RobustDialog.tsx
 🗑️ apps/builder/components/SimpleDialog.tsx
@@ -173,6 +184,7 @@
 ```
 
 **À Conserver (fonctionnalités en développement)**:
+
 ```bash
 ✅ apps/builder/components/logic/visual-logic-editor.tsx
 ✅ apps/builder/components/providers/theme-provider.tsx
@@ -183,6 +195,7 @@
 ```
 
 **À Évaluer (dossiers)**:
+
 ```bash
 🔍 apps/builder/app/demo/  # Pages demo?
 🔍 apps/builder/app/forms/create/  # Fonctionnalité de création?
@@ -192,6 +205,7 @@
 ### Marketing - Composants
 
 **À Conserver**:
+
 ```bash
 ✅ apps/marketing/app/demo/  # Demo pages marketing
 ✅ apps/marketing/components/aurora-background.tsx
@@ -201,6 +215,7 @@
 ### Runtime - Styles
 
 **À Évaluer**:
+
 ```bash
 🔍 packages/runtime/src/styles/new-blocks.css
 🔍 packages/ui/src/components/form-blocks/
@@ -211,6 +226,7 @@
 ## 4. Scripts de Démarrage à Conserver (4 fichiers)
 
 **Garder à la racine**:
+
 ```bash
 ✅ start-complete-stack.sh  # Script principal
 ✅ start-dev-complete.sh    # Alternative dev
@@ -218,6 +234,7 @@
 ```
 
 **À Supprimer**:
+
 ```bash
 🗑️ start-full-stack-fixed.sh  # Doublon obsolète
 🗑️ start-simple.sh            # Redondant
@@ -228,6 +245,7 @@
 ## 5. Code Fonctionnel Backend (18 fichiers)
 
 ### Analytics (ClickHouse) - **CONSERVER**
+
 ```bash
 ✅ services/api/analytics/apps.py
 ✅ services/api/analytics/clickhouse_client.py
@@ -240,17 +258,20 @@
 ```
 
 ### Payments (Stripe) - **CONSERVER**
+
 ```bash
 ✅ services/api/payments/
 ```
 
 ### Webhooks - **CONSERVER**
+
 ```bash
 ✅ services/api/webhooks/delivery.py
 ✅ services/api/webhooks/signing.py
 ```
 
 ### Workers & Ingest - **CONSERVER**
+
 ```bash
 ✅ services/ingest/README.md
 ✅ services/ingest/package.json
@@ -261,6 +282,7 @@
 ```
 
 ### Debug Utils - **À ÉVALUER**
+
 ```bash
 🔍 services/api/debug_env.py  # Utile en dev?
 ```
@@ -270,17 +292,20 @@
 ## 6. Fichiers Obsolètes (24 fichiers)
 
 **Test Dialogs Obsolètes**:
+
 ```bash
 🗑️ apps/builder/app/forms/test-dialog.tsx
 🗑️ apps/builder/app/forms/test-dialog/
 ```
 
 **Documentation Protocole**:
+
 ```bash
 🗑️ manual-test-protocol.md  # Peut être déplacé vers docs/
 ```
 
 **Docker (vide ou non utilisé)**:
+
 ```bash
 🔍 docker/  # À vérifier si contient quelque chose
 ```
@@ -290,12 +315,14 @@
 ## 🎯 Plan d'Action
 
 ### Phase 1: Créer Structure docs/ (1 min)
+
 ```bash
 mkdir -p docs/reports/resolved
 mkdir -p docs/reports/analysis
 ```
 
 ### Phase 2: Déplacer Documentation (2 min)
+
 ```bash
 # Audits & Analyses
 mv AUDIT_COMPLET_01_OCT_2025.md docs/reports/analysis/
@@ -327,6 +354,7 @@ mv apps/builder/RAPPORT_FINAL_BOUTONS.md docs/reports/resolved/
 ```
 
 ### Phase 3: Supprimer Tests Debug (1 min)
+
 ```bash
 # E2E tests temporaires
 rm -rf e2e/comprehensive-*.spec.js
@@ -352,6 +380,7 @@ rm apps/builder/reset-dev-auth.js
 ```
 
 ### Phase 4: Supprimer Composants Obsolètes (30 sec)
+
 ```bash
 # Dialogs obsolètes
 rm apps/builder/components/RobustDialog.tsx
@@ -370,12 +399,14 @@ rm -rf apps/builder/app/forms/test-dialog/
 ```
 
 ### Phase 5: Nettoyer Scripts (10 sec)
+
 ```bash
 rm start-full-stack-fixed.sh start-simple.sh
 rm manual-test-protocol.md
 ```
 
 ### Phase 6: Évaluer Dossiers (manuel)
+
 - `apps/builder/app/demo/` - Vérifier si utilisé
 - `apps/builder/app/forms/create/` - Vérifier si fonctionnel
 - `apps/builder/components/settings/` - Vérifier si en développement
@@ -405,4 +436,4 @@ rm manual-test-protocol.md
 
 ---
 
-*Plan créé le 1er Octobre 2025*
+_Plan créé le 1er Octobre 2025_

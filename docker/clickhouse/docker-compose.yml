@@ -1,12 +1,12 @@
-version: '3.8'
+version: "3.8"
 
 services:
   clickhouse:
     image: clickhouse/clickhouse-server:23.12
     container_name: forms_clickhouse
     ports:
-      - "8123:8123"  # HTTP interface
-      - "9000:9000"  # Native client
+      - "8123:8123" # HTTP interface
+      - "9000:9000" # Native client
     volumes:
       - clickhouse_data:/var/lib/clickhouse
       - ./config.xml:/etc/clickhouse-server/config.d/custom.xml:ro

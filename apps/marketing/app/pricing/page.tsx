@@ -763,13 +763,21 @@ export default function PricingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="http://localhost:3301/auth/signup">
-                <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90">
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="bg-white text-primary hover:bg-white/90"
+                >
                   Start free trial
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link href="mailto:sales@skemya.com">
-                <Button size="lg" variant="outline" className="text-white border-white/50 hover:bg-white/10">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-white border-white/50 hover:bg-white/10"
+                >
                   Talk to sales
                 </Button>
               </Link>

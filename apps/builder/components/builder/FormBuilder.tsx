@@ -22,11 +22,7 @@ import {
   KeyboardSensor,
   CollisionDetection,
 } from "@dnd-kit/core";
-import {
-  DragStartEvent,
-  DragOverEvent,
-  DragEndEvent,
-} from "@dnd-kit/core";
+import { DragStartEvent, DragOverEvent, DragEndEvent } from "@dnd-kit/core";
 
 interface FormBuilderProps {
   formId: string;
@@ -42,9 +38,12 @@ export function FormBuilder({ formId }: FormBuilderProps) {
   const [overId, setOverId] = useState<string | null>(null);
   const [draggedItem, setDraggedItem] = useState<any>(null);
   const [draggedBlockType, setDraggedBlockType] = useState<string | null>(null);
-  const [dropPosition, setDropPosition] = useState<{ overId: string; isAbove: boolean } | null>(null);
+  const [dropPosition, setDropPosition] = useState<{ overId: string; isAbove: boolean } | null>(
+    null
+  );
 
-  const { form, selectedBlockId, addBlock, moveBlock, undo, redo, canUndo, canRedo } = useFormBuilderStore();
+  const { form, selectedBlockId, addBlock, moveBlock, undo, redo, canUndo, canRedo } =
+    useFormBuilderStore();
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -112,7 +111,7 @@ export function FormBuilder({ formId }: FormBuilderProps) {
 
   const handleDragOver = (event: DragOverEvent) => {
     const { over, active } = event;
-    setOverId(over?.id as string || null);
+    setOverId((over?.id as string) || null);
 
     if (!over || !active || active.id === over.id) {
       setDropPosition(null);
@@ -272,131 +271,133 @@ export function FormBuilder({ formId }: FormBuilderProps) {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-      <div className="h-screen bg-background flex flex-col overflow-hidden">
-        {/* Toolbar */}
-        <FormToolbar formId={formId} />
+        <div className="h-screen bg-background flex flex-col overflow-hidden">
+          {/* Toolbar */}
+          <FormToolbar formId={formId} />
 
-        {/* Main Content */}
-        <div className="flex-1 flex overflow-hidden">
-        {/* Left Panel - Block Library */}
-        <AnimatePresence mode="wait">
-          {!leftPanelCollapsed && (
-            <motion.aside
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 280, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="relative border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 overflow-hidden"
-            >
-              <div className="h-full flex flex-col overflow-hidden">
-                <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
-                  <h2 className="font-semibold">Add Fields</h2>
-                  <Button size="sm" variant="ghost" onClick={() => setLeftPanelCollapsed(true)}>
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                </div>
-                <BlockLibrary />
-              </div>
-            </motion.aside>
-          )}
-        </AnimatePresence>
-
-        {/* Collapsed Left Panel Button */}
-        {leftPanelCollapsed && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => setLeftPanelCollapsed(false)}
-              className="absolute left-2 top-4 z-10"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </motion.div>
-        )}
-
-        {/* Center - Canvas */}
-        <main className="flex-1 relative bg-muted/30 overflow-hidden h-full">
-          <div className="absolute top-4 right-4 z-10">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleFullScreenToggle}
-              className="bg-background/80 backdrop-blur-sm"
-            >
-              {fullScreenCanvas ? (
-                <Minimize2 className="h-4 w-4" />
-              ) : (
-                <Maximize2 className="h-4 w-4" />
+          {/* Main Content */}
+          <div className="flex-1 flex overflow-hidden">
+            {/* Left Panel - Block Library */}
+            <AnimatePresence mode="wait">
+              {!leftPanelCollapsed && (
+                <motion.aside
+                  initial={{ width: 0, opacity: 0 }}
+                  animate={{ width: 280, opacity: 1 }}
+                  exit={{ width: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="relative border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 overflow-hidden"
+                >
+                  <div className="h-full flex flex-col overflow-hidden">
+                    <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
+                      <h2 className="font-semibold">Add Fields</h2>
+                      <Button size="sm" variant="ghost" onClick={() => setLeftPanelCollapsed(true)}>
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <BlockLibrary />
+                  </div>
+                </motion.aside>
               )}
-            </Button>
-          </div>
-          <FormCanvas />
-        </main>
+            </AnimatePresence>
 
-        {/* Right Panel - Properties Inspector */}
-        <AnimatePresence mode="wait">
-          {!rightPanelCollapsed && selectedBlockId && (
-            <motion.aside
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 320, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="relative border-l bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 overflow-hidden"
-            >
-              <div className="h-full flex flex-col overflow-hidden">
-                <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
-                  <h2 className="font-semibold">Properties</h2>
-                  <Button size="sm" variant="ghost" onClick={() => setRightPanelCollapsed(true)}>
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-                <PropertiesPanel />
+            {/* Collapsed Left Panel Button */}
+            {leftPanelCollapsed && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setLeftPanelCollapsed(false)}
+                  className="absolute left-2 top-4 z-10"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </motion.div>
+            )}
+
+            {/* Center - Canvas */}
+            <main className="flex-1 relative bg-muted/30 overflow-hidden h-full">
+              <div className="absolute top-4 right-4 z-10">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleFullScreenToggle}
+                  className="bg-background/80 backdrop-blur-sm"
+                >
+                  {fullScreenCanvas ? (
+                    <Minimize2 className="h-4 w-4" />
+                  ) : (
+                    <Maximize2 className="h-4 w-4" />
+                  )}
+                </Button>
               </div>
-            </motion.aside>
-          )}
-        </AnimatePresence>
+              <FormCanvas />
+            </main>
 
-        {/* Collapsed Right Panel Button */}
-        {rightPanelCollapsed && selectedBlockId && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => setRightPanelCollapsed(false)}
-              className="absolute right-2 top-4 z-10"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-          </motion.div>
-        )}
+            {/* Right Panel - Properties Inspector */}
+            <AnimatePresence mode="wait">
+              {!rightPanelCollapsed && selectedBlockId && (
+                <motion.aside
+                  initial={{ width: 0, opacity: 0 }}
+                  animate={{ width: 320, opacity: 1 }}
+                  exit={{ width: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="relative border-l bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 overflow-hidden"
+                >
+                  <div className="h-full flex flex-col overflow-hidden">
+                    <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
+                      <h2 className="font-semibold">Properties</h2>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setRightPanelCollapsed(true)}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <PropertiesPanel />
+                  </div>
+                </motion.aside>
+              )}
+            </AnimatePresence>
+
+            {/* Collapsed Right Panel Button */}
+            {rightPanelCollapsed && selectedBlockId && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setRightPanelCollapsed(false)}
+                  className="absolute right-2 top-4 z-10"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              </motion.div>
+            )}
+          </div>
         </div>
-      </div>
 
-      <DragOverlay>
-        {draggedItem && draggedItem.type === "new-block" && (
-          <div className="bg-card shadow-lg rounded-lg p-4 border-2 border-primary cursor-grabbing">
-            <div className="font-medium">
-              {draggedItem.label || draggedItem.blockType}
+        <DragOverlay>
+          {draggedItem && draggedItem.type === "new-block" && (
+            <div className="bg-card shadow-lg rounded-lg p-4 border-2 border-primary cursor-grabbing">
+              <div className="font-medium">{draggedItem.label || draggedItem.blockType}</div>
             </div>
-          </div>
-        )}
-        {draggedItem && draggedItem.type === "block" && (
-          <div className="bg-card shadow-lg rounded-lg p-4 border-2 border-primary cursor-grabbing opacity-90">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                <div className="h-5 w-5 bg-primary/20 rounded" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-medium">
-                  {draggedItem.block?.question || draggedItem.block?.type?.replace(/_/g, " ")}
-                </h3>
+          )}
+          {draggedItem && draggedItem.type === "block" && (
+            <div className="bg-card shadow-lg rounded-lg p-4 border-2 border-primary cursor-grabbing opacity-90">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                  <div className="h-5 w-5 bg-primary/20 rounded" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-medium">
+                    {draggedItem.block?.question || draggedItem.block?.type?.replace(/_/g, " ")}
+                  </h3>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </DragOverlay>
-    </DndContext>
+          )}
+        </DragOverlay>
+      </DndContext>
     </>
   );
 }

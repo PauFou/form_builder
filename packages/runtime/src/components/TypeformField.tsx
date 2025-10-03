@@ -129,7 +129,9 @@ export const TypeformField = memo(function TypeformField({
           >
             {block.options?.map((option, index) => {
               const optionValue = option.value || option.text;
-              const stringValues = Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
+              const stringValues = Array.isArray(value)
+                ? value.filter((v): v is string => typeof v === "string")
+                : [];
 
               return (
                 <label key={option.id} className="typeform-checkbox-label">
@@ -274,8 +276,20 @@ export const TypeformField = memo(function TypeformField({
         );
 
       case "currency": {
-        const currencyValue = typeof value === "object" && value && "currency" in value && typeof value.currency === "string" ? value.currency : "USD";
-        const amountValue = typeof value === "object" && value && "amount" in value && typeof value.amount === "number" ? value.amount : 0;
+        const currencyValue =
+          typeof value === "object" &&
+          value &&
+          "currency" in value &&
+          typeof value.currency === "string"
+            ? value.currency
+            : "USD";
+        const amountValue =
+          typeof value === "object" &&
+          value &&
+          "amount" in value &&
+          typeof value.amount === "number"
+            ? value.amount
+            : 0;
 
         return (
           <div className="typeform-currency">
@@ -294,7 +308,9 @@ export const TypeformField = memo(function TypeformField({
               {...baseProps}
               type="number"
               value={amountValue}
-              onChange={(e) => onChange({ amount: parseFloat(e.target.value) || 0, currency: currencyValue })}
+              onChange={(e) =>
+                onChange({ amount: parseFloat(e.target.value) || 0, currency: currencyValue })
+              }
               className="typeform-input typeform-currency-input"
               placeholder="0.00"
               step="0.01"
@@ -330,7 +346,9 @@ export const TypeformField = memo(function TypeformField({
       }
 
       case "ranking": {
-        const items = Array.isArray(value) ? value : block.options?.map((o) => o.value || o.text) || [];
+        const items = Array.isArray(value)
+          ? value
+          : block.options?.map((o) => o.value || o.text) || [];
 
         return (
           <div className="typeform-ranking">
@@ -351,7 +369,9 @@ export const TypeformField = memo(function TypeformField({
       }
 
       case "matrix": {
-        const matrixValue = (typeof value === "object" && value && !Array.isArray(value) ? value : {}) as Record<string, string | string[]>;
+        const matrixValue = (
+          typeof value === "object" && value && !Array.isArray(value) ? value : {}
+        ) as Record<string, string | string[]>;
         const rows = Array.isArray(block.properties?.rows) ? block.properties.rows : [];
         const columns = Array.isArray(block.properties?.columns) ? block.properties.columns : [];
 
@@ -407,17 +427,15 @@ export const TypeformField = memo(function TypeformField({
         return (
           <div className="typeform-payment">
             <div className="typeform-payment-amount">
-              {block.properties?.currency || "$"}{block.properties?.amount || "0.00"}
+              {block.properties?.currency || "$"}
+              {block.properties?.amount || "0.00"}
             </div>
             <div className="typeform-payment-card">
-              <input
-                type="text"
-                placeholder="Card number"
-                className="typeform-input"
-                disabled
-              />
+              <input type="text" placeholder="Card number" className="typeform-input" disabled />
             </div>
-            <p className="typeform-payment-info">Payment processing will be available in production</p>
+            <p className="typeform-payment-info">
+              Payment processing will be available in production
+            </p>
           </div>
         );
       }

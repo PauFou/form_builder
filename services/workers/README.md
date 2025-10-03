@@ -15,6 +15,7 @@ Redis Queue (BullMQ)
 ## Workers
 
 ### Event Worker
+
 Processes analytics events and inserts them into ClickHouse.
 
 - **Queue**: `events`
@@ -26,6 +27,7 @@ Processes analytics events and inserts them into ClickHouse.
   - Automatic retry on ClickHouse errors
 
 ### Submission Worker
+
 Processes form submissions and triggers webhooks.
 
 - **Queue**: `submissions`
@@ -37,6 +39,7 @@ Processes form submissions and triggers webhooks.
   - Handles payment status updates from Stripe
 
 ### Webhook Worker
+
 Delivers webhooks with exponential backoff retry.
 
 - **Queue**: `webhooks`
@@ -49,6 +52,7 @@ Delivers webhooks with exponential backoff retry.
   - Detailed delivery logging
 
 ### Partial Worker
+
 Processes partial submissions (autosave).
 
 - **Queue**: `partials`
@@ -88,6 +92,7 @@ WEBHOOK_MAX_RETRIES=7
 ### Retry Configuration
 
 Default retry delays for webhooks:
+
 - Immediate (0s)
 - 30 seconds
 - 2 minutes
@@ -135,9 +140,9 @@ CMD ["npm", "start"]
 ### Monitor Queues
 
 ```typescript
-import { Queue, QueueEvents } from 'bullmq';
+import { Queue, QueueEvents } from "bullmq";
 
-const queue = new Queue('events');
+const queue = new Queue("events");
 const counts = await queue.getJobCounts();
 console.log(counts);
 // { active: 5, completed: 1000, failed: 2, ... }
@@ -146,7 +151,7 @@ console.log(counts);
 ### Retry Failed Jobs
 
 ```typescript
-const failedJobs = await queue.getJobs(['failed']);
+const failedJobs = await queue.getJobs(["failed"]);
 for (const job of failedJobs) {
   await job.retry();
 }
@@ -203,13 +208,14 @@ Structured JSON logging with Pino:
 Failed webhooks after all retries:
 
 ```typescript
-const dlq = new Queue('webhooks-dlq');
+const dlq = new Queue("webhooks-dlq");
 const failedJobs = await dlq.getJobs();
 ```
 
 ### Alerting
 
 Configure alerts for:
+
 - Queue depth > threshold
 - Error rate > 5%
 - Worker crashes
@@ -289,12 +295,12 @@ LOG_LEVEL=debug pnpm dev
 ### Manual Job Inspection
 
 ```typescript
-const job = await queue.getJob('123');
+const job = await queue.getJob("123");
 console.log({
   id: job.id,
   data: job.data,
   attempts: job.attemptsMade,
-  error: job.failedReason
+  error: job.failedReason,
 });
 ```
 

@@ -19,17 +19,20 @@ Les boutons "Create Form" et "Import" sur la page `/forms` ne fonctionnent pas c
 ## État actuel
 
 ### Ce qui fonctionne :
+
 - Le middleware redirige correctement vers la page de login
 - La page de login s'affiche correctement
 - Les imports TypeScript sont maintenant corrects
 
 ### Ce qui ne fonctionne pas :
+
 - Sans authentification valide, impossible d'accéder à `/forms`
 - Le code de développement (mock auth) ne semble pas s'exécuter avant la redirection du middleware
 
 ## Solutions possibles
 
 ### Option 1 : Ajouter `/forms` aux routes publiques (NON RECOMMANDÉ)
+
 ```typescript
 // Dans middleware.ts
 const publicRoutes = [
@@ -37,20 +40,24 @@ const publicRoutes = [
   "/forms", // Permettre l'accès sans auth
 ];
 ```
+
 ❌ Ceci compromettrait la sécurité
 
 ### Option 2 : Créer un utilisateur de test valide
+
 1. Utiliser les scripts Python existants pour créer un utilisateur dans la base de données
 2. Se connecter avec des identifiants valides
 3. Les boutons devraient alors fonctionner
 
 ### Option 3 : Mode développement avec bypass du middleware
+
 Modifier le middleware pour permettre un bypass en mode développement :
+
 ```typescript
 // Dans middleware.ts, ligne 21
 export function middleware(request: NextRequest) {
   // Dev mode bypass
-  if (process.env.NODE_ENV === 'development' && request.headers.get('x-dev-bypass') === 'true') {
+  if (process.env.NODE_ENV === "development" && request.headers.get("x-dev-bypass") === "true") {
     return NextResponse.next();
   }
   // ... reste du code
@@ -69,6 +76,7 @@ Pour vérifier si les boutons fonctionnent une fois authentifié :
 ## Logs pertinents
 
 Les logs Django montrent :
+
 - Tentatives de login échouées (401 Unauthorized)
 - Redirection automatique vers `/auth/login`
 - Après authentification réussie, les requêtes API fonctionnent (200 OK)

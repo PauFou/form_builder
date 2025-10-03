@@ -44,17 +44,20 @@ CLICKHOUSE_PASSWORD=your_secure_password
 ### Core Tables
 
 #### form_views
+
 - Tracks every form view/load
 - Includes device, browser, location, referrer data
 - Page load performance metrics
 
 #### form_interactions
+
 - Field-level interactions (focus, blur, change)
 - Step/page navigation events
 - Validation errors
 - Time spent on each field
 
 #### form_submissions
+
 - Complete and partial submissions
 - Completion rate and timing metrics
 - Drop-off analysis data
@@ -62,12 +65,14 @@ CLICKHOUSE_PASSWORD=your_secure_password
 ### Aggregated Tables
 
 #### form_performance_hourly
+
 - Pre-aggregated hourly metrics
 - Views, submissions, completion rates
 - Device breakdowns
 - Top countries and referrers
 
 #### field_analytics
+
 - Daily field-level performance
 - Completion rates, error rates
 - Time to complete distributions
@@ -103,6 +108,7 @@ POST /api/v1/analytics/events/batch/
 ### Analytics Queries
 
 #### Form Analytics
+
 ```http
 GET /api/v1/analytics/forms/{form_id}/analytics/
   ?start_date=2024-01-01
@@ -111,6 +117,7 @@ GET /api/v1/analytics/forms/{form_id}/analytics/
 ```
 
 #### Field Analytics
+
 ```http
 GET /api/v1/analytics/forms/{form_id}/analytics/fields/
   ?start_date=2024-01-01
@@ -118,6 +125,7 @@ GET /api/v1/analytics/forms/{form_id}/analytics/fields/
 ```
 
 #### Time Series
+
 ```http
 GET /api/v1/analytics/forms/{form_id}/analytics/time-series/
   ?metric=submissions
@@ -127,6 +135,7 @@ GET /api/v1/analytics/forms/{form_id}/analytics/time-series/
 ```
 
 #### Funnel Analysis
+
 ```http
 GET /api/v1/analytics/forms/{form_id}/analytics/funnel/
   ?start_date=2024-01-01
@@ -138,26 +147,26 @@ GET /api/v1/analytics/forms/{form_id}/analytics/funnel/
 ### Event Tracking Hook
 
 ```typescript
-import { useAnalytics } from '@/hooks/useAnalytics';
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 function FormComponent() {
   const { trackEvent } = useAnalytics();
-  
+
   // Track form view
   useEffect(() => {
-    trackEvent('view', {
+    trackEvent("view", {
       form_id: formId,
-      page_load_time_ms: performance.now()
+      page_load_time_ms: performance.now(),
     });
   }, []);
-  
+
   // Track field interactions
   const handleFieldChange = (fieldId: string, value: any) => {
-    trackEvent('interaction', {
+    trackEvent("interaction", {
       form_id: formId,
-      interaction_type: 'field_change',
+      interaction_type: "field_change",
       field_id: fieldId,
-      time_on_field_ms: getFieldTime(fieldId)
+      time_on_field_ms: getFieldTime(fieldId),
     });
   };
 }
@@ -174,7 +183,7 @@ function AnalyticsDashboard({ formId }) {
     endDate: '2024-01-31',
     metrics: ['views', 'submissions', 'completion_rate']
   });
-  
+
   return (
     <div>
       <MetricCard title="Views" value={data?.views.total_views} />

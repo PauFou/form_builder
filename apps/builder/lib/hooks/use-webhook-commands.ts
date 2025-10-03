@@ -17,7 +17,7 @@ export function useWebhookCommands() {
     queryFn: () => webhooksApi.getStats().catch(() => null),
     staleTime: 30000, // 30 seconds
     retry: false, // Don't retry on failure
-    enabled: typeof window !== 'undefined', // Only run in browser
+    enabled: typeof window !== "undefined", // Only run in browser
     throwOnError: false, // Don't throw errors
   });
 
@@ -36,7 +36,7 @@ export function useWebhookCommands() {
     },
     staleTime: 10000, // 10 seconds
     retry: false, // Don't retry on failure
-    enabled: typeof window !== 'undefined', // Only run in browser
+    enabled: typeof window !== "undefined", // Only run in browser
     throwOnError: false, // Don't throw errors
   });
 

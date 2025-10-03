@@ -12,20 +12,21 @@ interface ModernBadgeProps {
   animate?: boolean;
 }
 
-export function ModernBadge({ 
-  children, 
-  icon: Icon, 
+export function ModernBadge({
+  children,
+  icon: Icon,
   variant = "default",
   className = "",
-  animate = true 
+  animate = true,
 }: ModernBadgeProps) {
-  const baseClasses = "inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border text-sm font-medium transition-all duration-200";
-  
+  const baseClasses =
+    "inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm border text-sm font-medium transition-all duration-200";
+
   const variantClasses = {
     default: "bg-muted/50 border-border/50 text-muted-foreground",
     primary: "bg-primary/10 border-primary/30 text-primary",
     accent: "bg-accent/10 border-accent/30 text-accent",
-    success: "bg-green-500/10 border-green-500/30 text-green-600"
+    success: "bg-green-500/10 border-green-500/30 text-green-600",
   };
 
   const BadgeContent = (

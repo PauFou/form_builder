@@ -37,21 +37,16 @@ export function Navigation() {
               Pricing
             </Button>
           </Link>
-          
+
           <div className="h-8 w-px bg-border/50 mx-2" />
-          
+
           <Link href="http://localhost:3301/auth/login">
-            <Button
-              variant="outline"
-              className="font-medium h-10 px-6"
-            >
+            <Button variant="outline" className="font-medium h-10 px-6">
               Sign in
             </Button>
           </Link>
           <Link href="http://localhost:3301/auth/signup">
-            <Button 
-              className="btn-gradient font-medium h-10 px-6"
-            >
+            <Button className="btn-gradient font-medium h-10 px-6">
               Get started free
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

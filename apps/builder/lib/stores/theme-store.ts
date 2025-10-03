@@ -18,22 +18,22 @@ export const useThemeStore = create<ThemeState>()(
 
       setTheme: (theme: Theme) => {
         const root = document.documentElement;
-        
+
         // Remove existing theme classes
         root.classList.remove("light", "dark");
-        
+
         let isDark = false;
-        
+
         if (theme === "system") {
           // Use system preference
           isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         } else {
           isDark = theme === "dark";
         }
-        
+
         // Apply theme
         root.classList.add(isDark ? "dark" : "light");
-        
+
         set({ theme, isDark });
       },
 

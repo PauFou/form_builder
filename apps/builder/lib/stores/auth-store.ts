@@ -139,7 +139,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       setDevAuth: (user, organization) => {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           set({
             user,
             organization,
