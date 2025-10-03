@@ -111,9 +111,9 @@ export function BlockRenderer({ block, pageId, isDragging, index }: BlockRendere
       onClick={handleSelect}
       data-block-id={block.id}
       className={cn(
-        "group relative bg-card border rounded-lg p-4 cursor-pointer transition-all",
+        "group relative bg-card border rounded-lg p-4 cursor-pointer transition-all duration-200",
         isSelected && "ring-2 ring-primary border-primary",
-        showDragging && "opacity-0",
+        showDragging && "opacity-40 scale-95",
         !showDragging && "hover:border-primary/50 hover:shadow-sm"
       )}
     >

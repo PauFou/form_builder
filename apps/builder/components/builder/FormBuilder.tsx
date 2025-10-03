@@ -9,7 +9,6 @@ import { FormToolbar } from "./Toolbar/FormToolbar";
 import { BlockLibrary } from "./BlockLibrary/BlockLibrary";
 import { FormCanvas } from "./Canvas/FormCanvas";
 import { PropertiesPanel } from "./Inspector/PropertiesPanel";
-import { DropIndicator } from "./Canvas/DropIndicator";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 import {
   DndContext,
@@ -398,12 +397,6 @@ export function FormBuilder({ formId }: FormBuilderProps) {
         )}
       </DragOverlay>
     </DndContext>
-
-    {/* Smart drop indicator */}
-    <DropIndicator
-      overId={dropPosition?.overId || null}
-      isAbove={dropPosition?.isAbove || false}
-    />
     </>
   );
 }
