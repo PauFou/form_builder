@@ -39,7 +39,6 @@ import { motion } from "framer-motion";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 import type { Block } from "@skemya/contracts";
 import { LogicEditor } from "../logic/logic-editor";
-import { VisualLogicEditor } from "../logic/visual-logic-editor";
 
 const blockTypes = [
   { icon: Type, type: "short_text", label: "Short Text", category: "Text" },
