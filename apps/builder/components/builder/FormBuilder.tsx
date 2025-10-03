@@ -273,12 +273,12 @@ export function FormBuilder({ formId }: FormBuilderProps) {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="h-screen bg-background flex flex-col overflow-hidden">
         {/* Toolbar */}
         <FormToolbar formId={formId} />
 
         {/* Main Content */}
-        <div className="flex-1 flex overflow-hidden" style={{ height: 'calc(100vh - 64px)' }}>
+        <div className="flex-1 flex overflow-hidden">
         {/* Left Panel - Block Library */}
         <AnimatePresence mode="wait">
           {!leftPanelCollapsed && (

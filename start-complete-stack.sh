@@ -74,6 +74,48 @@ fi
 
 echo -e "${GREEN}✅ Environnement OK${NC}"
 
+# Nettoyage des ports avant démarrage
+echo -e "\n${YELLOW}🧹 Nettoyage des ports utilisés...${NC}"
+
+# Fonction pour vérifier si un port est utilisé
+check_port() {
+    local port=$1
+    local name=$2
+    if lsof -ti:$port > /dev/null 2>&1; then
+        echo -e "   ${YELLOW}⚠️  Port $port ($name) occupé - libération...${NC}"
+        lsof -ti:$port | xargs kill -9 2>/dev/null
+        sleep 0.5
+        if lsof -ti:$port > /dev/null 2>&1; then
+            echo -e "   ${RED}❌ Impossible de libérer le port $port${NC}"
+            return 1
+        else
+            echo -e "   ${GREEN}✅ Port $port libéré${NC}"
+        fi
+    else
+        echo -e "   ${GREEN}✅ Port $port ($name) disponible${NC}"
+    fi
+    return 0
+}
+
+# Libérer tous les ports concernés
+check_port 8888 "Django API"
+check_port 3300 "Marketing"
+check_port 3301 "Builder"
+check_port 3302 "Runtime Demo"
+
+# Tuer les processus résiduels
+echo -e "\n${YELLOW}🧹 Nettoyage des processus résiduels...${NC}"
+pkill -f "python manage.py runserver" 2>/dev/null && echo "   Killed: Django runserver" || true
+pkill -f "turbo dev" 2>/dev/null && echo "   Killed: turbo dev" || true
+pkill -9 -f "next-server" 2>/dev/null && echo "   Killed: next-server" || true
+
+# Nettoyage des caches Next.js
+echo -e "\n${YELLOW}🗑️  Nettoyage des caches...${NC}"
+rm -rf apps/builder/.next apps/marketing/.next apps/runtime-demo/.next .turbo 2>/dev/null
+echo -e "${GREEN}✅ Caches nettoyés${NC}"
+
+sleep 1
+
 echo -e "\n${BLUE}🔧 Préparation du Backend...${NC}"
 cd services/api
 
