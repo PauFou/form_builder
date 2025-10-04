@@ -33,6 +33,7 @@ import { FormToolbar } from "./Toolbar/FormToolbar";
 import { BlockLibrary } from "./BlockLibrary/BlockLibrary";
 import { FormCanvas } from "./Canvas/FormCanvas";
 import { PropertiesPanel } from "./Inspector/PropertiesPanel";
+import { DropIndicator } from "./Canvas/DropIndicator";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 import {
   DndContext,
@@ -167,19 +168,25 @@ export function FormBuilder({ formId }: FormBuilderProps) {
     const overData = over.data.current;
     const activeData = active.data.current;
 
-    // Only show drop indicator for blocks
-    if (overData?.type === "block" && activeData?.type === "block") {
-      const activeIndex = activeData.index;
-      const overIndex = overData.index;
+    // Show drop indicator for blocks and new blocks
+    if (overData?.type === "block") {
+      if (activeData?.type === "block") {
+        // Dragging existing block
+        const activeIndex = activeData.index;
+        const overIndex = overData.index;
+        const isAbove = activeIndex > overIndex;
 
-      // If dragging from below (higher index), insert before
-      // If dragging from above (lower index), insert after
-      const isAbove = activeIndex > overIndex;
-
-      setDropPosition({
-        overId: over.id as string,
-        isAbove,
-      });
+        setDropPosition({
+          overId: over.id as string,
+          isAbove,
+        });
+      } else if (activeData?.type === "new-block") {
+        // Dragging new block from library - always insert after
+        setDropPosition({
+          overId: over.id as string,
+          isAbove: false,
+        });
+      }
     } else {
       setDropPosition(null);
     }
@@ -451,6 +458,12 @@ export function FormBuilder({ formId }: FormBuilderProps) {
             </div>
           )}
         </DragOverlay>
+
+        {/* Drop Indicator */}
+        <DropIndicator
+          overId={dropPosition?.overId || null}
+          isAbove={dropPosition?.isAbove || false}
+        />
       </DndContext>
     </>
   );

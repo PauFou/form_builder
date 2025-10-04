@@ -35,7 +35,7 @@ export function DropIndicator({ overId, isAbove }: DropIndicatorProps) {
       }
 
       const rect = blockElement.getBoundingClientRect();
-      const top = isAbove ? rect.top : rect.bottom;
+      const top = isAbove ? rect.top - 2 : rect.bottom + 2;
 
       setIndicatorPosition({
         top,
@@ -63,18 +63,18 @@ export function DropIndicator({ overId, isAbove }: DropIndicatorProps) {
     <AnimatePresence>
       {indicatorPosition && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.1 }}
+          initial={{ opacity: 0, scaleX: 0.8 }}
+          animate={{ opacity: 1, scaleX: 1 }}
+          exit={{ opacity: 0, scaleX: 0.8 }}
+          transition={{ duration: 0.15 }}
           className="fixed z-50 pointer-events-none"
           style={{
-            top: indicatorPosition.top - 1,
+            top: indicatorPosition.top - 2,
             left: indicatorPosition.left,
             width: indicatorPosition.width,
           }}
         >
-          <div className="h-0.5 bg-primary rounded-full" />
+          <div className="h-1 bg-primary rounded-full shadow-lg" />
         </motion.div>
       )}
     </AnimatePresence>
