@@ -134,19 +134,26 @@ export function FormBuilder({ formId }: FormBuilderProps) {
     useSensor(KeyboardSensor)
   );
 
-  // Custom collision detection strategy optimized for vertical lists
+  // Custom collision detection strategy
   const collisionDetectionStrategy: CollisionDetection = (args) => {
-    // Use closestCenter for better precision with vertical block lists
-    // This finds the block whose center is closest to the cursor
+    // For dragging from library, use pointerWithin first for more accurate detection
+    // This detects based on actual cursor position rather than distance calculations
+    const pointerCollisions = pointerWithin(args);
+
+    // Filter to only get block collisions (not page containers)
+    const blockCollisions = pointerCollisions.filter(collision => {
+      const container = args.droppableContainers.find(c => c.id === collision.id);
+      return container?.data.current?.type === "block";
+    });
+
+    if (blockCollisions.length > 0) {
+      return blockCollisions;
+    }
+
+    // Fallback to closestCenter for edge cases
     const closestCenterCollisions = closestCenter(args);
     if (closestCenterCollisions.length > 0) {
       return closestCenterCollisions;
-    }
-
-    // Fallback to pointer within for edge cases
-    const pointerCollisions = pointerWithin(args);
-    if (pointerCollisions.length > 0) {
-      return pointerCollisions;
     }
 
     // Final fallback to rect intersection
