@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
@@ -20,8 +20,11 @@ interface BlockItemProps {
 }
 
 export function BlockItem({ block }: BlockItemProps) {
+  // Generate stable ID once per component instance
+  const draggableId = useMemo(() => `new-${block.type}-${Date.now()}`, [block.type]);
+
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: `new-${block.type}-${Date.now()}`,
+    id: draggableId,
     data: {
       type: "new-block",
       blockType: block.type,

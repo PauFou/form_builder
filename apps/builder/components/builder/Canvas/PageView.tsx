@@ -30,35 +30,33 @@ export function PageView({ page, isActive }: PageViewProps) {
     const blocks = [...page.blocks];
 
     // Only add ghost if dragging a new block over this page
-    if (active?.data.current?.type === "new-block" && over) {
+    if (active?.data.current?.type === "new-block" && over && active.data.current.blockType) {
       // Check both over.data.current (droppable) and over.data (sortable)
       const overData = over.data?.current || over.data;
 
+      // Create ghost block with all required Block properties
+      const createGhostBlock = () => ({
+        id: `__ghost__${active.id}`,
+        type: active.data.current!.blockType,
+        question: `New ${active.data.current!.blockType.replace(/_/g, " ")} question`,
+        description: "",
+        required: false,
+        settings: {},
+        validation: {},
+        __isGhost: true,
+      });
+
       // Check if we're over a block on this page
-      if (overData?.type === "block" && overData?.pageId === page.id) {
+      if ((overData as any)?.type === "block" && (overData as any)?.pageId === page.id) {
         const overIndex = blocks.findIndex((b: any) => b.id === over.id);
 
         if (overIndex !== -1) {
-          // Create a sortable ghost block that will participate in the sortable animations
-          const ghostBlock = {
-            id: `__ghost__${active.id}`,
-            type: active.data.current.blockType,
-            question: `New ${active.data.current.blockType.replace(/_/g, " ")} question`,
-            required: false,
-            __isGhost: true,
-          };
-          blocks.splice(overIndex + 1, 0, ghostBlock);
+          // Insert ghost AFTER the hovered block for smoother visual feedback
+          blocks.splice(overIndex + 1, 0, createGhostBlock() as any);
         }
-      } else if (overData?.type === "page" && overData?.pageId === page.id) {
-        // Over empty page area - could add ghost at start
-        const ghostBlock = {
-          id: `__ghost__${active.id}`,
-          type: active.data.current.blockType,
-          question: `New ${active.data.current.blockType.replace(/_/g, " ")} question`,
-          required: false,
-          __isGhost: true,
-        };
-        blocks.unshift(ghostBlock);
+      } else if ((overData as any)?.type === "page" && (overData as any)?.pageId === page.id) {
+        // Over empty page area - add ghost at start
+        blocks.unshift(createGhostBlock() as any);
       }
     }
 
