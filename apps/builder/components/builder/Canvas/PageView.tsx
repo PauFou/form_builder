@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { useDroppable } from "@dnd-kit/core";
+import { useDroppable, useDndContext } from "@dnd-kit/core";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { cn } from "../../../lib/utils";
@@ -15,6 +15,8 @@ interface PageViewProps {
 }
 
 export function PageView({ page, isActive }: PageViewProps) {
+  const { active, over } = useDndContext();
+
   const { setNodeRef } = useDroppable({
     id: `page-${page.id}`,
     data: {
@@ -23,7 +25,29 @@ export function PageView({ page, isActive }: PageViewProps) {
     },
   });
 
-  const blockIds = page.blocks.map((block: any) => block.id);
+  // Create an augmented block list with a ghost block during new-block drag
+  const blocksWithGhost = useMemo(() => {
+    const blocks = [...page.blocks];
+
+    // Only add ghost if dragging a new block over this page
+    if (active?.data.current?.type === "new-block" && over?.data.current?.pageId === page.id) {
+      const overIndex = blocks.findIndex((b: any) => b.id === over.id);
+
+      if (overIndex !== -1) {
+        // Insert ghost block after the hovered block
+        const ghostBlock = {
+          id: "__ghost__",
+          type: "ghost",
+          question: "",
+        };
+        blocks.splice(overIndex + 1, 0, ghostBlock);
+      }
+    }
+
+    return blocks;
+  }, [page.blocks, active, over, page.id]);
+
+  const blockIds = blocksWithGhost.map((block: any) => block.id);
 
   return (
     <div
@@ -48,9 +72,18 @@ export function PageView({ page, isActive }: PageViewProps) {
       {/* Blocks */}
       <SortableContext items={blockIds} strategy={verticalListSortingStrategy}>
         <div className="space-y-4">
-          {page.blocks.map((block: any, index: number) => (
-            <BlockRenderer key={block.id} block={block} pageId={page.id} index={index} />
-          ))}
+          {blocksWithGhost.map((block: any, index: number) => {
+            // Render a placeholder for the ghost block
+            if (block.id === "__ghost__") {
+              return (
+                <div
+                  key="__ghost__"
+                  className="h-24 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5 transition-all duration-200"
+                />
+              );
+            }
+            return <BlockRenderer key={block.id} block={block} pageId={page.id} index={index} />;
+          })}
 
           {/* Empty state */}
           {page.blocks.length === 0 && (
