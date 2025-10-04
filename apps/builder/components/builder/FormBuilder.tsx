@@ -134,15 +134,22 @@ export function FormBuilder({ formId }: FormBuilderProps) {
     useSensor(KeyboardSensor)
   );
 
-  // Custom collision detection strategy
+  // Custom collision detection strategy optimized for vertical lists
   const collisionDetectionStrategy: CollisionDetection = (args) => {
-    // First check if pointer is within any droppable
+    // Use closestCenter for better precision with vertical block lists
+    // This finds the block whose center is closest to the cursor
+    const closestCenterCollisions = closestCenter(args);
+    if (closestCenterCollisions.length > 0) {
+      return closestCenterCollisions;
+    }
+
+    // Fallback to pointer within for edge cases
     const pointerCollisions = pointerWithin(args);
     if (pointerCollisions.length > 0) {
       return pointerCollisions;
     }
 
-    // Fallback to rect intersection
+    // Final fallback to rect intersection
     return rectIntersection(args);
   };
 
