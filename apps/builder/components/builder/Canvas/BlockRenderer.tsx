@@ -64,6 +64,8 @@ const blockIcons: Record<string, React.ComponentType<any>> = {
 export function BlockRenderer({ block, pageId, isDragging, index }: BlockRendererProps) {
   const { selectBlock, selectedBlockId, duplicateBlock, deleteBlock } = useFormBuilderStore();
 
+  const isGhost = (block as any).__isGhost;
+
   const {
     attributes,
     listeners,
@@ -79,6 +81,7 @@ export function BlockRenderer({ block, pageId, isDragging, index }: BlockRendere
       pageId,
       index,
     },
+    disabled: isGhost, // Disable sortable for ghost blocks
   });
 
   const style = {
@@ -88,20 +91,26 @@ export function BlockRenderer({ block, pageId, isDragging, index }: BlockRendere
 
   const Icon = blockIcons[block.type] || Type;
   const isSelected = selectedBlockId === block.id;
-  const showDragging = isDragging || isSortableDragging;
+  const showDragging = isDragging || isSortableDragging || isGhost;
 
   const handleSelect = () => {
-    selectBlock(block.id);
+    if (!isGhost) {
+      selectBlock(block.id);
+    }
   };
 
   const handleDuplicate = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    duplicateBlock(block.id);
+    if (!isGhost) {
+      e.stopPropagation();
+      duplicateBlock(block.id);
+    }
   };
 
   const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    deleteBlock(block.id);
+    if (!isGhost) {
+      e.stopPropagation();
+      deleteBlock(block.id);
+    }
   };
 
   return (
@@ -114,17 +123,20 @@ export function BlockRenderer({ block, pageId, isDragging, index }: BlockRendere
         "group relative bg-card border rounded-lg p-4 cursor-pointer transition-all duration-200",
         isSelected && "ring-2 ring-primary border-primary",
         showDragging && "opacity-40 scale-95",
-        !showDragging && "hover:border-primary/50 hover:shadow-sm"
+        !showDragging && "hover:border-primary/50 hover:shadow-sm",
+        isGhost && "pointer-events-none"
       )}
     >
       {/* Drag Handle */}
-      <div
-        className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-move z-10"
-        {...attributes}
-        {...listeners}
-      >
-        <GripVertical className="h-5 w-5 text-muted-foreground" />
-      </div>
+      {!isGhost && (
+        <div
+          className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-move z-10"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical className="h-5 w-5 text-muted-foreground" />
+        </div>
+      )}
 
       {/* Content */}
       <div className="pl-6">
@@ -151,22 +163,24 @@ export function BlockRenderer({ block, pageId, isDragging, index }: BlockRendere
           </div>
 
           {/* Actions */}
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-            <Button size="sm" variant="ghost" onClick={handleSelect} className="h-8 w-8 p-0">
-              <Settings className="h-4 w-4" />
-            </Button>
-            <Button size="sm" variant="ghost" onClick={handleDuplicate} className="h-8 w-8 p-0">
-              <Copy className="h-4 w-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleDelete}
-              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
+          {!isGhost && (
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+              <Button size="sm" variant="ghost" onClick={handleSelect} className="h-8 w-8 p-0">
+                <Settings className="h-4 w-4" />
+              </Button>
+              <Button size="sm" variant="ghost" onClick={handleDuplicate} className="h-8 w-8 p-0">
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleDelete}
+                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>

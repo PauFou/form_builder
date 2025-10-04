@@ -25,7 +25,7 @@ export function PageView({ page, isActive }: PageViewProps) {
     },
   });
 
-  // Create an augmented block list with a ghost block during new-block drag
+  // Create an augmented block list with a sortable ghost block during new-block drag
   const blocksWithGhost = useMemo(() => {
     const blocks = [...page.blocks];
 
@@ -34,11 +34,13 @@ export function PageView({ page, isActive }: PageViewProps) {
       const overIndex = blocks.findIndex((b: any) => b.id === over.id);
 
       if (overIndex !== -1) {
-        // Insert ghost block after the hovered block
+        // Create a sortable ghost block that will participate in the sortable animations
         const ghostBlock = {
-          id: "__ghost__",
-          type: "ghost",
-          question: "",
+          id: `__ghost__${active.id}`,
+          type: active.data.current.blockType,
+          question: `New ${active.data.current.blockType.replace(/_/g, " ")} question`,
+          required: false,
+          __isGhost: true,
         };
         blocks.splice(overIndex + 1, 0, ghostBlock);
       }
@@ -72,18 +74,15 @@ export function PageView({ page, isActive }: PageViewProps) {
       {/* Blocks */}
       <SortableContext items={blockIds} strategy={verticalListSortingStrategy}>
         <div className="space-y-4">
-          {blocksWithGhost.map((block: any, index: number) => {
-            // Render a placeholder for the ghost block
-            if (block.id === "__ghost__") {
-              return (
-                <div
-                  key="__ghost__"
-                  className="h-24 rounded-lg border-2 border-dashed border-primary/50 bg-primary/5 transition-all duration-200"
-                />
-              );
-            }
-            return <BlockRenderer key={block.id} block={block} pageId={page.id} index={index} />;
-          })}
+          {blocksWithGhost.map((block: any, index: number) => (
+            <BlockRenderer
+              key={block.id}
+              block={block}
+              pageId={page.id}
+              index={index}
+              isDragging={block.__isGhost}
+            />
+          ))}
 
           {/* Empty state */}
           {page.blocks.length === 0 && (
