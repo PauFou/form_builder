@@ -30,11 +30,27 @@ export function PageView({ page, isActive }: PageViewProps) {
     const blocks = [...page.blocks];
 
     // Only add ghost if dragging a new block over this page
-    if (active?.data.current?.type === "new-block" && over?.data.current?.pageId === page.id) {
-      const overIndex = blocks.findIndex((b: any) => b.id === over.id);
+    if (active?.data.current?.type === "new-block" && over) {
+      // Check both over.data.current (droppable) and over.data (sortable)
+      const overData = over.data?.current || over.data;
 
-      if (overIndex !== -1) {
-        // Create a sortable ghost block that will participate in the sortable animations
+      // Check if we're over a block on this page
+      if (overData?.type === "block" && overData?.pageId === page.id) {
+        const overIndex = blocks.findIndex((b: any) => b.id === over.id);
+
+        if (overIndex !== -1) {
+          // Create a sortable ghost block that will participate in the sortable animations
+          const ghostBlock = {
+            id: `__ghost__${active.id}`,
+            type: active.data.current.blockType,
+            question: `New ${active.data.current.blockType.replace(/_/g, " ")} question`,
+            required: false,
+            __isGhost: true,
+          };
+          blocks.splice(overIndex + 1, 0, ghostBlock);
+        }
+      } else if (overData?.type === "page" && overData?.pageId === page.id) {
+        // Over empty page area - could add ghost at start
         const ghostBlock = {
           id: `__ghost__${active.id}`,
           type: active.data.current.blockType,
@@ -42,7 +58,7 @@ export function PageView({ page, isActive }: PageViewProps) {
           required: false,
           __isGhost: true,
         };
-        blocks.splice(overIndex + 1, 0, ghostBlock);
+        blocks.unshift(ghostBlock);
       }
     }
 
