@@ -2,7 +2,31 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Maximize2, Minimize2 } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  Minimize2,
+  Type,
+  AlignLeft,
+  Mail,
+  Phone,
+  Hash,
+  Calendar,
+  Clock,
+  Upload,
+  PenTool,
+  MapPin,
+  CreditCard,
+  List,
+  CheckSquare,
+  ToggleLeft,
+  Star,
+  Minus,
+  FileText,
+  LayoutGrid,
+  ChevronDown,
+} from "lucide-react";
 import { cn } from "../../lib/utils";
 import { Button } from "@skemya/ui";
 import { FormToolbar } from "./Toolbar/FormToolbar";
@@ -27,6 +51,28 @@ import { DragStartEvent, DragOverEvent, DragEndEvent } from "@dnd-kit/core";
 interface FormBuilderProps {
   formId: string;
 }
+
+const blockIcons: Record<string, React.ComponentType<any>> = {
+  short_text: Type,
+  long_text: AlignLeft,
+  email: Mail,
+  phone: Phone,
+  number: Hash,
+  date: Calendar,
+  time: Clock,
+  file_upload: Upload,
+  signature: PenTool,
+  address: MapPin,
+  payment: CreditCard,
+  single_select: List,
+  multi_select: CheckSquare,
+  dropdown: ChevronDown,
+  yes_no: ToggleLeft,
+  rating: Star,
+  section: Minus,
+  page_break: LayoutGrid,
+  description: FileText,
+};
 
 export function FormBuilder({ formId }: FormBuilderProps) {
   const [leftPanelCollapsed, setLeftPanelCollapsed] = useState(false);
@@ -377,11 +423,19 @@ export function FormBuilder({ formId }: FormBuilderProps) {
         </div>
 
         <DragOverlay>
-          {draggedItem && draggedItem.type === "new-block" && (
-            <div className="bg-card shadow-lg rounded-lg p-4 border-2 border-primary cursor-grabbing">
-              <div className="font-medium">{draggedItem.label || draggedItem.blockType}</div>
-            </div>
-          )}
+          {draggedItem && draggedItem.type === "new-block" && (() => {
+            const Icon = blockIcons[draggedItem.blockType] || Type;
+            return (
+              <div className="bg-card shadow-lg rounded-lg p-3 border-2 border-primary cursor-grabbing opacity-90">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="font-medium text-sm">{draggedItem.label || draggedItem.blockType}</div>
+                </div>
+              </div>
+            );
+          })()}
           {draggedItem && draggedItem.type === "block" && (
             <div className="bg-card shadow-lg rounded-lg p-4 border-2 border-primary cursor-grabbing opacity-90">
               <div className="flex items-start gap-3">
