@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { useDroppable, useDndContext } from "@dnd-kit/core";
+import { useDroppable } from "@dnd-kit/core";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { cn } from "../../../lib/utils";
@@ -12,11 +12,14 @@ import type { Page } from "@skemya/contracts";
 interface PageViewProps {
   page: Page;
   isActive: boolean;
+  dragState: {
+    activeId: string | null;
+    overId: string | null;
+    draggedItem: any;
+  };
 }
 
-export function PageView({ page, isActive }: PageViewProps) {
-  const { active, over } = useDndContext();
-
+export function PageView({ page, isActive, dragState }: PageViewProps) {
   const { setNodeRef } = useDroppable({
     id: `page-${page.id}`,
     data: {
@@ -25,45 +28,51 @@ export function PageView({ page, isActive }: PageViewProps) {
     },
   });
 
-  // Create an augmented block list with a sortable ghost block during new-block drag
+  // Create ghost block list using controlled drag state from FormBuilder
+  // This prevents infinite loops since dragState only updates during onDragOver events
   const blocksWithGhost = useMemo(() => {
     const blocks = [...page.blocks];
+    const { activeId, overId, draggedItem } = dragState;
 
-    // Only add ghost if dragging a new block over this page
-    if (active?.data.current?.type === "new-block" && over) {
-      // Check both over.data.current (droppable) and over.data (sortable)
-      const overData = over.data?.current || over.data;
+    // Only add ghost if dragging a new block from library
+    if (draggedItem?.type === "new-block" && overId && draggedItem.blockType) {
+      // Find if overId is a block on this page
+      const overBlock = blocks.find((b: any) => b.id === overId);
 
-      // Check if we're over a block on this page
-      if (overData?.type === "block" && overData?.pageId === page.id) {
-        const overIndex = blocks.findIndex((b: any) => b.id === over.id);
-
+      if (overBlock) {
+        // Over a block on this page - insert ghost after it
+        const overIndex = blocks.findIndex((b: any) => b.id === overId);
         if (overIndex !== -1) {
-          // Create a sortable ghost block that will participate in the sortable animations
           const ghostBlock = {
-            id: `__ghost__${active.id}`,
-            type: active.data.current.blockType,
-            question: `New ${active.data.current.blockType.replace(/_/g, " ")} question`,
+            id: `__ghost__${activeId}`,
+            type: draggedItem.blockType,
+            question: `New ${draggedItem.blockType.replace(/_/g, " ")} question`,
+            description: "",
             required: false,
+            settings: {},
+            validation: {},
             __isGhost: true,
           };
-          blocks.splice(overIndex + 1, 0, ghostBlock);
+          blocks.splice(overIndex + 1, 0, ghostBlock as any);
         }
-      } else if (overData?.type === "page" && overData?.pageId === page.id) {
-        // Over empty page area - could add ghost at start
+      } else if (overId === `page-${page.id}` && blocks.length === 0) {
+        // Over empty page - add ghost at start
         const ghostBlock = {
-          id: `__ghost__${active.id}`,
-          type: active.data.current.blockType,
-          question: `New ${active.data.current.blockType.replace(/_/g, " ")} question`,
+          id: `__ghost__${activeId}`,
+          type: draggedItem.blockType,
+          question: `New ${draggedItem.blockType.replace(/_/g, " ")} question`,
+          description: "",
           required: false,
+          settings: {},
+          validation: {},
           __isGhost: true,
         };
-        blocks.unshift(ghostBlock);
+        blocks.push(ghostBlock as any);
       }
     }
 
     return blocks;
-  }, [page.blocks, active, over, page.id]);
+  }, [page.blocks, dragState, page.id]);
 
   const blockIds = blocksWithGhost.map((block: any) => block.id);
 

@@ -20,8 +20,12 @@ interface BlockItemProps {
 }
 
 export function BlockItem({ block }: BlockItemProps) {
+  // Use useMemo to create a stable draggable ID across re-renders
+  // Without this, React re-renders during drag will generate a new ID, breaking @dnd-kit tracking
+  const draggableId = React.useMemo(() => `new-${block.type}-${Date.now()}`, [block.type]);
+
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: `new-${block.type}-${Date.now()}`,
+    id: draggableId,
     data: {
       type: "new-block",
       blockType: block.type,
