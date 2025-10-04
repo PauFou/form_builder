@@ -91,8 +91,7 @@ export function BlockRenderer({ block, pageId, isDragging, index }: BlockRendere
 
   const Icon = blockIcons[block.type] || Type;
   const isSelected = selectedBlockId === block.id;
-  const showDragging = isDragging || isSortableDragging;
-  const showGhost = isGhost;
+  const showDragging = isDragging || isSortableDragging || isGhost;
 
   const handleSelect = () => {
     if (!isGhost) {
@@ -124,9 +123,8 @@ export function BlockRenderer({ block, pageId, isDragging, index }: BlockRendere
         "group relative bg-card border rounded-lg p-4 cursor-pointer transition-all duration-200",
         isSelected && "ring-2 ring-primary border-primary",
         showDragging && "opacity-40 scale-95",
-        showGhost &&
-          "border-primary/50 bg-primary/5 border-2 border-dashed pointer-events-none animate-pulse",
-        !showDragging && !showGhost && "hover:border-primary/50 hover:shadow-sm"
+        !showDragging && "hover:border-primary/50 hover:shadow-sm",
+        isGhost && "pointer-events-none"
       )}
     >
       {/* Drag Handle */}
