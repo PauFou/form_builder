@@ -396,7 +396,7 @@ export function FormBuilder({ formId }: FormBuilderProps) {
                   )}
                 </Button>
               </div>
-              <FormCanvas />
+              <FormCanvas dropPosition={dropPosition} />
             </main>
 
             {/* Right Panel - Properties Inspector */}

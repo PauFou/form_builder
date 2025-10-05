@@ -37,6 +37,8 @@ interface BlockRendererProps {
   pageId?: string;
   isDragging?: boolean;
   index?: number;
+  showDropIndicator?: boolean;
+  dropAbove?: boolean;
 }
 
 const blockIcons: Record<string, React.ComponentType<any>> = {
@@ -61,7 +63,14 @@ const blockIcons: Record<string, React.ComponentType<any>> = {
   description: FileText,
 };
 
-export function BlockRenderer({ block, pageId, isDragging, index }: BlockRendererProps) {
+export function BlockRenderer({
+  block,
+  pageId,
+  isDragging,
+  index,
+  showDropIndicator,
+  dropAbove,
+}: BlockRendererProps) {
   const { selectBlock, selectedBlockId, duplicateBlock, deleteBlock } = useFormBuilderStore();
 
   const {
@@ -105,18 +114,32 @@ export function BlockRenderer({ block, pageId, isDragging, index }: BlockRendere
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      onClick={handleSelect}
-      data-block-id={block.id}
-      className={cn(
-        "group relative bg-card border rounded-lg p-4 cursor-pointer transition-all duration-200",
-        isSelected && "ring-2 ring-primary border-primary",
-        showDragging && "opacity-40 scale-95",
-        !showDragging && "hover:border-primary/50 hover:shadow-sm"
+    <div className="relative">
+      {/* Drop indicator */}
+      {showDropIndicator && (
+        <div
+          className={cn(
+            "absolute left-0 right-0 h-0.5 bg-primary z-20",
+            dropAbove ? "-top-2" : "-bottom-2"
+          )}
+        >
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary" />
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary" />
+        </div>
       )}
-    >
+
+      <div
+        ref={setNodeRef}
+        style={style}
+        onClick={handleSelect}
+        data-block-id={block.id}
+        className={cn(
+          "group relative bg-card border rounded-lg p-4 cursor-pointer transition-all duration-200",
+          isSelected && "ring-2 ring-primary border-primary",
+          showDragging && "opacity-40 scale-95",
+          !showDragging && "hover:border-primary/50 hover:shadow-sm"
+        )}
+      >
       {/* Drag Handle */}
       <div
         className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-move z-10"
@@ -168,6 +191,7 @@ export function BlockRenderer({ block, pageId, isDragging, index }: BlockRendere
             </Button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

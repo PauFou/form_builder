@@ -12,9 +12,10 @@ import type { Page } from "@skemya/contracts";
 interface PageViewProps {
   page: Page;
   isActive: boolean;
+  dropPosition: { overId: string; isAbove: boolean } | null;
 }
 
-export function PageView({ page, isActive }: PageViewProps) {
+export function PageView({ page, isActive, dropPosition }: PageViewProps) {
   const { setNodeRef } = useDroppable({
     id: `page-${page.id}`,
     data: {
@@ -55,6 +56,8 @@ export function PageView({ page, isActive }: PageViewProps) {
               block={block}
               pageId={page.id}
               index={index}
+              showDropIndicator={dropPosition?.overId === block.id}
+              dropAbove={dropPosition?.isAbove ?? false}
             />
           ))}
 
