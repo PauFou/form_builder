@@ -128,7 +128,7 @@ export function FormBuilder({ formId }: FormBuilderProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // Small distance to ensure accurate cursor offset tracking
+        distance: 3, // Minimal distance for responsive drag start while avoiding accidental clicks
       },
     }),
     useSensor(KeyboardSensor)
@@ -194,11 +194,29 @@ export function FormBuilder({ formId }: FormBuilderProps) {
           isAbove,
         });
       } else if (activeData?.type === "new-block") {
-        // Dragging new block from library - always insert after
-        setDropPosition({
-          overId: over.id as string,
-          isAbove: false,
-        });
+        // Dragging new block from library - calculate position based on cursor location
+        const activeRect = active.rect.current.translated;
+        const overRect = over.rect;
+
+        if (activeRect && overRect) {
+          // Calculate the Y center of both rectangles
+          const activeCenterY = activeRect.top + activeRect.height / 2;
+          const overCenterY = overRect.top + overRect.height / 2;
+
+          // If cursor center is above the target block center, insert above; otherwise insert below
+          const isAbove = activeCenterY < overCenterY;
+
+          setDropPosition({
+            overId: over.id as string,
+            isAbove,
+          });
+        } else {
+          // Fallback: insert after if we can't get rect data
+          setDropPosition({
+            overId: over.id as string,
+            isAbove: false,
+          });
+        }
       }
     } else {
       setDropPosition(null);
