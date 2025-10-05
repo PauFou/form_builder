@@ -128,7 +128,7 @@ export function FormBuilder({ formId }: FormBuilderProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 0, // Immediate drag activation
+        distance: 8, // Small distance to ensure accurate cursor offset tracking
       },
     }),
     useSensor(KeyboardSensor)
@@ -448,7 +448,7 @@ export function FormBuilder({ formId }: FormBuilderProps) {
           </div>
         </div>
 
-        <DragOverlay>
+        <DragOverlay dropAnimation={null}>
           {draggedItem &&
             draggedItem.type === "new-block" &&
             (() => {

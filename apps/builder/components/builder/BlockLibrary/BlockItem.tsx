@@ -34,7 +34,7 @@ export function BlockItem({ block }: BlockItemProps) {
   });
 
   const style = {
-    transform: CSS.Translate.toString(transform),
+    transform: CSS.Transform.toString(transform),
   };
 
   return (
