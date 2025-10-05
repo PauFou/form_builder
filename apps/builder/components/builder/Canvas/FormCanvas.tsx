@@ -11,15 +11,7 @@ import { PageView } from "./PageView";
 import { BlockRenderer } from "./BlockRenderer";
 // Use native crypto.randomUUID instead of uuid package
 
-interface FormCanvasProps {
-  dragState: {
-    activeId: string | null;
-    overId: string | null;
-    draggedItem: any;
-  };
-}
-
-export function FormCanvas({ dragState }: FormCanvasProps) {
+export function FormCanvas() {
   const { form, selectedPageId, selectPage, addPage } = useFormBuilderStore();
 
   if (!form) return null;
@@ -70,7 +62,7 @@ export function FormCanvas({ dragState }: FormCanvasProps) {
                 transition={{ duration: 0.2 }}
                 style={{ display: currentPageId === page.id ? "block" : "none" }}
               >
-                <PageView page={page} isActive={currentPageId === page.id} dragState={dragState} />
+                <PageView page={page} isActive={currentPageId === page.id} />
               </motion.div>
             ))}
           </AnimatePresence>

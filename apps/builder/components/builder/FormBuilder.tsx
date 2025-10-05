@@ -396,13 +396,7 @@ export function FormBuilder({ formId }: FormBuilderProps) {
                   )}
                 </Button>
               </div>
-              <FormCanvas
-                dragState={{
-                  activeId,
-                  overId,
-                  draggedItem,
-                }}
-              />
+              <FormCanvas />
             </main>
 
             {/* Right Panel - Properties Inspector */}
