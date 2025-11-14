@@ -7,6 +7,7 @@
 @import "./typeform.css";
 @import "./typeform-fields.css";
 @import "./new-blocks.css";
+@import "./grid-form-typeform.css";
 
 /* Ensure smooth font rendering */
 * {

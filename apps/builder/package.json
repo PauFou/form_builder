@@ -57,6 +57,7 @@
     "react-hotkeys-hook": "^5.1.0",
     "react-window": "^2.1.0",
     "react-window-infinite-loader": "^1.0.10",
+    "reactflow": "^11.11.4",
     "recharts": "^2.12.7",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",

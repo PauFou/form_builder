@@ -1,10 +1,16 @@
 """Centralized database configuration for different environments."""
 import os
 from decouple import config
+import dj_database_url
 
 
 def get_database_config():
     """Get database configuration based on environment."""
+    # Check for DATABASE_URL first (for Docker environments)
+    database_url = os.environ.get('DATABASE_URL')
+    if database_url:
+        return {'default': dj_database_url.parse(database_url)}
+
     # Base configuration
     # For tests, use 'test' as default database name
     is_test = os.environ.get('DJANGO_SETTINGS_MODULE') == 'api.settings_test'
@@ -12,7 +18,7 @@ def get_database_config():
     default_user = 'test' if is_test else 'forms_user'
     default_password = 'test' if is_test else 'secure_password'
     default_host = '127.0.0.1' if os.environ.get('CI') == 'true' else 'localhost'
-    
+
     db_config = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': config('POSTGRES_DB', default=default_db_name),

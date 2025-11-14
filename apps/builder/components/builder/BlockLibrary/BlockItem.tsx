@@ -42,26 +42,29 @@ export function BlockItem({ block }: BlockItemProps) {
       ref={setNodeRef}
       style={style}
       className={cn(
-        "relative flex items-center gap-3 p-3 rounded-lg border bg-card cursor-move transition-all duration-200",
-        "hover:border-primary/50 hover:shadow-sm",
-        isDragging && "opacity-40 scale-95"
+        "group relative flex items-center gap-3 p-3 rounded-xl border-2 bg-card cursor-move transition-all duration-200",
+        "border-border/50 hover:border-primary hover:shadow-md hover:bg-accent/5",
+        isDragging && "opacity-40 scale-95 shadow-lg"
       )}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{ scale: 1.03, y: -2 }}
+      whileTap={{ scale: 0.97 }}
       {...attributes}
       {...listeners}
     >
-      <div className="flex-shrink-0">
-        <GripVertical className="h-4 w-4 text-muted-foreground" />
+      {/* Grip handle - only visible on hover */}
+      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 -ml-1">
+        <GripVertical className="h-4 w-4 text-muted-foreground/60" />
       </div>
 
-      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-        <block.icon className="h-5 w-5 text-primary" />
+      {/* Icon container with improved styling */}
+      <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:from-primary/30 group-hover:to-primary/20 transition-all duration-200">
+        <block.icon className="h-6 w-6 text-primary group-hover:scale-110 transition-transform duration-200" />
       </div>
 
+      {/* Text content with improved hierarchy */}
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-sm">{block.label}</p>
-        <p className="text-xs text-muted-foreground truncate">{block.description}</p>
+        <p className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors duration-200">{block.label}</p>
+        <p className="text-xs text-muted-foreground/80 truncate">{block.description}</p>
       </div>
     </motion.div>
   );

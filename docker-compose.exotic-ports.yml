@@ -1,0 +1,259 @@
+version: "3.8"
+
+# 🚀 YouForm Clone - Exotic Ports Configuration
+# Ports chosen to avoid conflicts with commonly used services
+#
+# Services & Ports:
+# - PostgreSQL:    7337  (leet speak for "LEET")
+# - Redis:         9876  (sequential reverse)
+# - ClickHouse:    5147  (random high port)
+# - Builder App:   4242  (repeating pattern)
+# - Runtime:       8787  (repeating pattern)
+# - Django API:    3141  (pi digits)
+# - Analytics:     2718  (e digits)
+
+services:
+  # Database - PostgreSQL 16
+  postgres:
+    image: postgres:16-alpine
+    container_name: youform_postgres_exotic
+    ports:
+      - "7337:5432"  # External:Internal - LEET port!
+    environment:
+      POSTGRES_USER: forms_user
+      POSTGRES_PASSWORD: forms_password
+      POSTGRES_DB: forms_db
+    volumes:
+      - postgres_data_exotic:/var/lib/postgresql/data
+    networks:
+      - youform_exotic
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U forms_user -d forms_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Cache - Redis 7
+  redis:
+    image: redis:7-alpine
+    container_name: youform_redis_exotic
+    ports:
+      - "9876:6379"  # External:Internal - Reverse sequential
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data_exotic:/data
+    networks:
+      - youform_exotic
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Analytics Database - ClickHouse
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: youform_clickhouse_exotic
+    ports:
+      - "5147:8123"  # External:Internal - HTTP interface
+      - "5148:9000"  # External:Internal - Native interface
+    environment:
+      CLICKHOUSE_DB: forms_analytics
+      CLICKHOUSE_USER: forms_user
+      CLICKHOUSE_PASSWORD: forms_password
+    volumes:
+      - clickhouse_data_exotic:/var/lib/clickhouse
+    networks:
+      - youform_exotic
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Backend API - Django + DRF
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile.dev
+    container_name: youform_api_exotic
+    ports:
+      - "3141:8000"  # External:Internal - Pi digits!
+    environment:
+      # Database
+      DATABASE_URL: postgresql://forms_user:forms_password@postgres:5432/forms_db
+      # Redis
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      # ClickHouse
+      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_PORT: 8123
+      CLICKHOUSE_DB: forms_analytics
+      CLICKHOUSE_USER: forms_user
+      CLICKHOUSE_PASSWORD: forms_password
+      # Django
+      DJANGO_SECRET_KEY: dev-secret-key-change-in-production
+      DJANGO_DEBUG: "True"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,0.0.0.0
+      # CORS
+      CORS_ALLOWED_ORIGINS: http://localhost:4242,http://localhost:8787
+    volumes:
+      - ./services/api:/app
+      - api_media_exotic:/app/media
+    networks:
+      - youform_exotic
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    command: >
+      sh -c "
+        python manage.py migrate &&
+        python manage.py runserver 0.0.0.0:8000
+      "
+    restart: unless-stopped
+
+  # Celery Worker - Background tasks
+  celery:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile.dev
+    container_name: youform_celery_exotic
+    environment:
+      DATABASE_URL: postgresql://forms_user:forms_password@postgres:5432/forms_db
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_PORT: 8123
+      DJANGO_SECRET_KEY: dev-secret-key-change-in-production
+    volumes:
+      - ./services/api:/app
+    networks:
+      - youform_exotic
+    depends_on:
+      - postgres
+      - redis
+      - api
+    command: celery -A api worker -l info
+    restart: unless-stopped
+
+  # Builder App - Next.js 14
+  builder:
+    build:
+      context: .
+      dockerfile: ./apps/builder/Dockerfile.dev
+    container_name: youform_builder_exotic
+    ports:
+      - "4242:3000"  # External:Internal - Repeating pattern!
+    environment:
+      # API
+      NEXT_PUBLIC_API_URL: http://localhost:3141
+      # Runtime
+      NEXT_PUBLIC_RUNTIME_URL: http://localhost:8787
+      # Feature flags
+      NEXT_PUBLIC_ENABLE_ANALYTICS: "true"
+      NEXT_PUBLIC_ENABLE_LOGIC_BUILDER: "true"
+      # Node
+      NODE_ENV: development
+    volumes:
+      - ./apps/builder:/app/apps/builder
+      - ./packages:/app/packages
+      - /app/node_modules
+      - /app/apps/builder/node_modules
+      - /app/apps/builder/.next
+    networks:
+      - youform_exotic
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # Runtime Viewer - Lightweight embed
+  runtime:
+    build:
+      context: .
+      dockerfile: ./apps/runtime-demo/Dockerfile.dev
+    container_name: youform_runtime_exotic
+    ports:
+      - "8787:3001"  # External:Internal - Another repeating pattern!
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3141
+      NODE_ENV: development
+    networks:
+      - youform_exotic
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # Analytics Service - Real-time processing
+  analytics:
+    build:
+      context: ./services/analytics
+      dockerfile: Dockerfile
+    container_name: youform_analytics_exotic
+    ports:
+      - "2718:8080"  # External:Internal - Euler's number!
+    environment:
+      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_PORT: 8123
+      CLICKHOUSE_DB: forms_analytics
+      REDIS_URL: redis://redis:6379/3
+    volumes:
+      - ./services/analytics:/app
+    networks:
+      - youform_exotic
+    depends_on:
+      - clickhouse
+      - redis
+    restart: unless-stopped
+
+volumes:
+  postgres_data_exotic:
+    driver: local
+  redis_data_exotic:
+    driver: local
+  clickhouse_data_exotic:
+    driver: local
+  api_media_exotic:
+    driver: local
+
+networks:
+  youform_exotic:
+    driver: bridge
+    name: youform_exotic_network
+
+# 📝 Quick Reference
+#
+# Start all services:
+#   docker-compose -f docker-compose.exotic-ports.yml up -d
+#
+# Start specific services:
+#   docker-compose -f docker-compose.exotic-ports.yml up -d postgres redis builder
+#
+# View logs:
+#   docker-compose -f docker-compose.exotic-ports.yml logs -f [service_name]
+#
+# Stop all:
+#   docker-compose -f docker-compose.exotic-ports.yml down
+#
+# Stop and remove volumes:
+#   docker-compose -f docker-compose.exotic-ports.yml down -v
+#
+# Rebuild specific service:
+#   docker-compose -f docker-compose.exotic-ports.yml build --no-cache [service_name]
+#
+# Access services:
+#   Builder:     http://localhost:4242
+#   Runtime:     http://localhost:8787
+#   API:         http://localhost:3141
+#   Analytics:   http://localhost:2718
+#   PostgreSQL:  localhost:7337
+#   Redis:       localhost:9876
+#   ClickHouse:  localhost:5147 (HTTP), localhost:5148 (Native)

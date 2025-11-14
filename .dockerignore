@@ -1,0 +1,103 @@
+# Node
+**/node_modules
+**/.next
+**/out
+**/.turbo
+**/dist
+**/build
+**/.pnpm-store
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.husky
+
+# Testing
+**/coverage
+**/.nyc_output
+**/__tests__
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+**/test
+**/tests
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Docs
+*.md
+!README.md
+docs
+CHANGELOG.md
+
+# Logs
+**/logs
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Python
+**/__pycache__
+**/*.py[cod]
+**/*$py.class
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/venv
+**/.venv
+**/env
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# Temporary files
+**/tmp
+**/temp
+**/.cache
+
+# Screenshots and media (from Playwright)
+**/.playwright-mcp
+**/playwright-report
+**/test-results
+
+# Lock files (we copy them explicitly)
+# Keep pnpm-lock.yaml for now
+
+# Build artifacts
+**/e2e
+**/storybook-static
+
+# OS
+Thumbs.db
+desktop.ini
+
+# Large documentation
+IMPLEMENTATION_*.md
+YOUFORM_*.md
+IMPROVEMENTS_*.md

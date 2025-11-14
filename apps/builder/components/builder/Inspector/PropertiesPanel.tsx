@@ -1,35 +1,34 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
-import { Type, Settings, ShieldCheck, Eye, EyeOff, Info, X } from "lucide-react";
 import {
-  Input,
-  Label,
-  Switch,
-  Textarea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Button,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@skemya/ui";
+  Settings,
+  Bold,
+  Italic,
+  Link as LinkIcon,
+  Video,
+  Plus,
+  AlignLeft,
+  AlignCenter,
+  Eye,
+  EyeOff,
+} from "lucide-react";
+import { Input, Label, Textarea, Button, Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@skemya/ui";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
+import { cn } from "../../../lib/utils";
+import { RichTextToolbar } from "./RichTextToolbar";
+import { ImageUpload } from "./ImageUpload";
 
 export function PropertiesPanel() {
-  const { form, selectedBlockId, updateBlock, selectBlock } = useFormBuilderStore();
+  const { form, selectedBlockId, updateBlock } = useFormBuilderStore();
+  const descriptionRef = React.useRef<HTMLTextAreaElement>(null);
 
   if (!form || !selectedBlockId) {
     return (
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="text-center">
-          <Settings className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-          <p className="text-muted-foreground">Select a field to edit its properties</p>
+          <Settings className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+          <p className="text-sm text-gray-500">Select a block to edit its properties</p>
         </div>
       </div>
     );
@@ -39,340 +38,173 @@ export function PropertiesPanel() {
 
   if (!selectedBlock) return null;
 
-  const handleClose = () => {
-    selectBlock(null);
-  };
-
   const handleUpdate = (updates: any) => {
     updateBlock(selectedBlockId, updates);
   };
 
+  // Determine if this is a contact_info block (needs field management)
+  const isContactInfo = selectedBlock.type === "contact_info";
+
   return (
-    <div className="flex-1 overflow-y-auto">
-      <Tabs defaultValue="general" className="w-full">
-        <TabsList className="w-full grid grid-cols-3 h-9">
-          <TabsTrigger value="general" className="text-xs">
-            General
-          </TabsTrigger>
-          <TabsTrigger value="validation" className="text-xs">
-            Validation
-          </TabsTrigger>
-          <TabsTrigger value="appearance" className="text-xs">
-            Appearance
-          </TabsTrigger>
-        </TabsList>
+    <div className="flex-1 overflow-y-auto bg-white">
+      <Accordion type="multiple" defaultValue={["content", "design", "options"]} className="w-full">
+        {/* Content Section */}
+        <AccordionItem value="content" className="border-b border-gray-200">
+          <AccordionTrigger className="px-6 py-3 text-sm font-semibold text-gray-900 hover:no-underline hover:bg-gray-50">
+            Content
+          </AccordionTrigger>
+          <AccordionContent className="px-6 pb-4">
+            <div className="space-y-4">
+              {/* Question/Title */}
+              <div className="space-y-2">
+                <Label htmlFor="question" className="text-xs font-medium text-gray-700">
+                  {isContactInfo ? "Question" : "Title"}
+                </Label>
+                <Textarea
+                  id="question"
+                  value={selectedBlock.question || ""}
+                  onChange={(e) => handleUpdate({ question: e.target.value })}
+                  placeholder={isContactInfo ? "Please fill the following" : "Hey there 😊"}
+                  className="!border-gray-300 resize-none min-h-[60px] text-sm"
+                />
+              </div>
 
-        <TabsContent value="general" className="space-y-4 p-4">
-          {/* Field Type */}
-          <div className="space-y-2">
-            <Label className="text-xs">Field Type</Label>
-            <div className="flex items-center gap-2 p-2 rounded-md bg-muted">
-              <Type className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">
-                {selectedBlock.type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
-              </span>
+              {/* Description */}
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-xs font-medium text-gray-700">
+                  Description
+                </Label>
+
+                {/* Formatting Toolbar */}
+                <RichTextToolbar
+                  value={selectedBlock.description || ""}
+                  onChange={(newDescription) => handleUpdate({ description: newDescription })}
+                  textareaRef={descriptionRef}
+                />
+
+                <Textarea
+                  ref={descriptionRef}
+                  id="description"
+                  value={selectedBlock.description || ""}
+                  onChange={(e) => handleUpdate({ description: e.target.value })}
+                  placeholder="Add a description..."
+                  rows={3}
+                  className="!border-gray-300 resize-none mt-2 text-sm"
+                />
+              </div>
+
+              {/* Button Text */}
+              <div className="space-y-2">
+                <Label htmlFor="buttonText" className="text-xs font-medium text-gray-700">
+                  Button Text
+                </Label>
+                <Input
+                  id="buttonText"
+                  value={selectedBlock.buttonText || ""}
+                  onChange={(e) => handleUpdate({ buttonText: e.target.value })}
+                  placeholder="Next"
+                  className="!border-gray-300 text-sm"
+                />
+                <p className="text-xs text-gray-500">
+                  For submit button, set it from settings.{" "}
+                  <a href="#" className="text-blue-600 hover:underline">
+                    Learn more
+                  </a>
+                  .
+                </p>
+              </div>
             </div>
-          </div>
+          </AccordionContent>
+        </AccordionItem>
 
-          {/* Label */}
-          <div className="space-y-2">
-            <Label htmlFor="label" className="text-xs">
-              Label
-            </Label>
-            <Input
-              id="label"
-              value={selectedBlock.label || ""}
-              onChange={(e) => handleUpdate({ label: e.target.value })}
-              placeholder="Enter field label"
-            />
-          </div>
-
-          {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description" className="text-xs">
-              Description
-            </Label>
-            <Textarea
-              id="description"
-              value={selectedBlock.description || ""}
-              onChange={(e) => handleUpdate({ description: e.target.value })}
-              placeholder="Add help text for this field"
-              rows={3}
-              className="resize-none"
-            />
-          </div>
-
-          {/* Placeholder */}
-          {["short_text", "long_text", "email", "phone", "number"].includes(selectedBlock.type) && (
-            <div className="space-y-2">
-              <Label htmlFor="placeholder" className="text-xs">
-                Placeholder
-              </Label>
-              <Input
-                id="placeholder"
-                value={selectedBlock.settings?.placeholder || ""}
-                onChange={(e) =>
-                  handleUpdate({
-                    settings: { ...selectedBlock.settings, placeholder: e.target.value },
-                  })
-                }
-                placeholder="Enter placeholder text"
+        {/* Design Section */}
+        <AccordionItem value="design" className="border-b border-gray-200">
+          <AccordionTrigger className="px-6 py-3 text-sm font-semibold text-gray-900 hover:no-underline hover:bg-gray-50">
+            Design
+          </AccordionTrigger>
+          <AccordionContent className="px-6 pb-4">
+            <div className="space-y-4">
+              {/* Cover Image */}
+              <ImageUpload
+                value={(selectedBlock as any).coverImage}
+                onChange={(url) => handleUpdate({ coverImage: url })}
+                label="Cover Image"
               />
-            </div>
-          )}
 
-          {/* Options for choice fields */}
-          {["single_select", "multi_select", "dropdown"].includes(selectedBlock.type) && (
-            <div className="space-y-2">
-              <Label className="text-xs">Options</Label>
+              {/* Text Align - Only for statement blocks */}
+              {selectedBlock.type === "statement" && (
+                <div className="space-y-2">
+                  <Label className="text-xs font-medium text-gray-700">Text align</Label>
+                  <div className="flex gap-2">
+                    <button className="flex-1 p-2.5 hover:bg-gray-50 rounded border border-gray-200 transition-colors flex items-center justify-center bg-white">
+                      <AlignLeft className="w-4 h-4 text-gray-600" />
+                    </button>
+                    <button className="flex-1 p-2.5 hover:bg-gray-50 rounded border border-gray-200 transition-colors flex items-center justify-center bg-white">
+                      <AlignCenter className="w-4 h-4 text-gray-600" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Layout - Only for statement blocks */}
+              {selectedBlock.type === "statement" && (
+                <div className="space-y-2">
+                  <Label htmlFor="layout" className="text-xs font-medium text-gray-700">
+                    Layout
+                  </Label>
+                  <select
+                    id="layout"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-gray-400 bg-white"
+                    defaultValue="stack"
+                  >
+                    <option value="stack">Stack</option>
+                    <option value="split">Split</option>
+                    <option value="wallpaper">Wallpaper</option>
+                  </select>
+                </div>
+              )}
+
+              {/* Embed - Only for statement blocks */}
+              {selectedBlock.type === "statement" && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-medium text-gray-700">Embed</Label>
+                    <button className="w-6 h-6 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors bg-white">
+                      <Plus className="w-3.5 h-3.5 text-gray-600" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* Options Section - Contact Info Fields */}
+        {isContactInfo && (
+          <AccordionItem value="options" className="border-b border-gray-200">
+            <AccordionTrigger className="px-6 py-3 text-sm font-semibold text-gray-900 hover:no-underline hover:bg-gray-50">
+              Fields
+            </AccordionTrigger>
+            <AccordionContent className="px-6 pb-4">
               <div className="space-y-2">
-                {(selectedBlock.settings?.options || ["Option 1", "Option 2"]).map(
-                  (option: string, index: number) => (
-                    <div key={index} className="flex gap-2">
-                      <Input
-                        value={option}
-                        onChange={(e) => {
-                          const newOptions = [...(selectedBlock.settings?.options || [])];
-                          newOptions[index] = e.target.value;
-                          handleUpdate({
-                            settings: { ...selectedBlock.settings, options: newOptions },
-                          });
-                        }}
-                      />
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => {
-                          const newOptions = (selectedBlock.settings?.options || []).filter(
-                            (_: any, i: number) => i !== index
-                          );
-                          handleUpdate({
-                            settings: { ...selectedBlock.settings, options: newOptions },
-                          });
-                        }}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
+                {["First Name", "Last Name", "Email", "Phone Number", "Company"].map((fieldName, index) => (
+                  <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100">
+                    <span className="text-xs text-gray-700">{fieldName}</span>
+                    <div className="flex items-center gap-2">
+                      <button className="p-1.5 hover:bg-gray-100 rounded transition-colors">
+                        <Eye className="w-4 h-4 text-gray-600" />
+                      </button>
+                      <button className="p-1.5 hover:bg-gray-100 rounded transition-colors">
+                        <Settings className="w-4 h-4 text-gray-600" />
+                      </button>
                     </div>
-                  )
-                )}
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    const newOptions = [
-                      ...(selectedBlock.settings?.options || []),
-                      `Option ${(selectedBlock.settings?.options || []).length + 1}`,
-                    ];
-                    handleUpdate({
-                      settings: { ...selectedBlock.settings, options: newOptions },
-                    });
-                  }}
-                  className="w-full"
-                >
-                  Add Option
-                </Button>
+                  </div>
+                ))}
               </div>
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="validation" className="space-y-4 p-4">
-          {/* Required */}
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="required" className="text-xs font-medium">
-                Required
-              </Label>
-              <p className="text-xs text-muted-foreground">Make this field mandatory</p>
-            </div>
-            <Switch
-              id="required"
-              checked={selectedBlock.required || false}
-              onCheckedChange={(checked) => handleUpdate({ required: checked })}
-            />
-          </div>
-
-          {/* Min/Max Length for text fields */}
-          {["short_text", "long_text"].includes(selectedBlock.type) && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="minLength" className="text-xs">
-                  Min Length
-                </Label>
-                <Input
-                  id="minLength"
-                  type="number"
-                  value={selectedBlock.validation?.minLength || ""}
-                  onChange={(e) =>
-                    handleUpdate({
-                      validation: {
-                        ...selectedBlock.validation,
-                        minLength: parseInt(e.target.value) || undefined,
-                      },
-                    })
-                  }
-                  placeholder="No minimum"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="maxLength" className="text-xs">
-                  Max Length
-                </Label>
-                <Input
-                  id="maxLength"
-                  type="number"
-                  value={selectedBlock.validation?.maxLength || ""}
-                  onChange={(e) =>
-                    handleUpdate({
-                      validation: {
-                        ...selectedBlock.validation,
-                        maxLength: parseInt(e.target.value) || undefined,
-                      },
-                    })
-                  }
-                  placeholder="No maximum"
-                />
-              </div>
-            </>
-          )}
-
-          {/* Min/Max for number fields */}
-          {selectedBlock.type === "number" && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="min" className="text-xs">
-                  Min Value
-                </Label>
-                <Input
-                  id="min"
-                  type="number"
-                  value={selectedBlock.validation?.min || ""}
-                  onChange={(e) =>
-                    handleUpdate({
-                      validation: {
-                        ...selectedBlock.validation,
-                        min: parseFloat(e.target.value) || undefined,
-                      },
-                    })
-                  }
-                  placeholder="No minimum"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="max" className="text-xs">
-                  Max Value
-                </Label>
-                <Input
-                  id="max"
-                  type="number"
-                  value={selectedBlock.validation?.max || ""}
-                  onChange={(e) =>
-                    handleUpdate({
-                      validation: {
-                        ...selectedBlock.validation,
-                        max: parseFloat(e.target.value) || undefined,
-                      },
-                    })
-                  }
-                  placeholder="No maximum"
-                />
-              </div>
-            </>
-          )}
-
-          {/* Custom Error Message */}
-          <div className="space-y-2">
-            <Label htmlFor="errorMessage" className="text-xs">
-              Custom Error Message
-            </Label>
-            <Input
-              id="errorMessage"
-              value={selectedBlock.validation?.errorMessage || ""}
-              onChange={(e) =>
-                handleUpdate({
-                  validation: { ...selectedBlock.validation, errorMessage: e.target.value },
-                })
-              }
-              placeholder="Default error message will be used"
-            />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="appearance" className="space-y-4 p-4">
-          {/* Visibility */}
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="hidden" className="text-xs font-medium">
-                Hidden
-              </Label>
-              <p className="text-xs text-muted-foreground">Hide this field from respondents</p>
-            </div>
-            <Switch
-              id="hidden"
-              checked={selectedBlock.settings?.hidden || false}
-              onCheckedChange={(checked) =>
-                handleUpdate({
-                  settings: { ...selectedBlock.settings, hidden: checked },
-                })
-              }
-            />
-          </div>
-
-          {/* Size for text inputs */}
-          {["short_text", "long_text", "email", "phone", "number"].includes(selectedBlock.type) && (
-            <div className="space-y-2">
-              <Label htmlFor="size" className="text-xs">
-                Field Size
-              </Label>
-              <Select
-                value={selectedBlock.settings?.size || "medium"}
-                onValueChange={(value) =>
-                  handleUpdate({
-                    settings: { ...selectedBlock.settings, size: value },
-                  })
-                }
-              >
-                <SelectTrigger id="size">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="small">Small</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="large">Large</SelectItem>
-                  <SelectItem value="full">Full Width</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {/* Layout for choice fields */}
-          {["single_select", "multi_select"].includes(selectedBlock.type) && (
-            <div className="space-y-2">
-              <Label htmlFor="layout" className="text-xs">
-                Layout
-              </Label>
-              <Select
-                value={selectedBlock.settings?.layout || "vertical"}
-                onValueChange={(value) =>
-                  handleUpdate({
-                    settings: { ...selectedBlock.settings, layout: value },
-                  })
-                }
-              >
-                <SelectTrigger id="layout">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="vertical">Vertical</SelectItem>
-                  <SelectItem value="horizontal">Horizontal</SelectItem>
-                  <SelectItem value="grid">Grid</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+            </AccordionContent>
+          </AccordionItem>
+        )}
+      </Accordion>
     </div>
   );
 }

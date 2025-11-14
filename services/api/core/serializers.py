@@ -13,21 +13,37 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    password2 = serializers.CharField(write_only=True, required=True)
-    
+    password2 = serializers.CharField(write_only=True, required=False)  # Optional, will be auto-filled if missing
+    username = serializers.CharField(required=False)  # Optional, will be generated from email if missing
+
     class Meta:
         model = User
         fields = ["email", "username", "password", "password2", "first_name", "last_name"]
-        
+
     def validate(self, attrs):
+        # Auto-fill password2 if not provided
+        if 'password2' not in attrs or not attrs['password2']:
+            attrs['password2'] = attrs['password']
+
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError({"password": "Password fields didn't match."})
-        
+
         # Ensure email is lowercase
         attrs['email'] = attrs['email'].lower()
-        
+
+        # Auto-generate username from email if not provided
+        if 'username' not in attrs or not attrs['username']:
+            # Use email prefix as username, ensure uniqueness
+            base_username = attrs['email'].split('@')[0]
+            username = base_username
+            counter = 1
+            while User.objects.filter(username=username).exists():
+                username = f"{base_username}{counter}"
+                counter += 1
+            attrs['username'] = username
+
         return attrs
-    
+
     def create(self, validated_data):
         validated_data.pop('password2')
         user = User.objects.create_user(**validated_data)

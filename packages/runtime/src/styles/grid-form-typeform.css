@@ -1,0 +1,469 @@
+/* Grid Form Viewer - YouForm-Inspired Design */
+
+/* Container - Beige background like YouForm */
+.fr-grid-mode {
+  background: #FAF9F6;
+  min-height: 100vh;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Form wrapper - Maximum width with generous padding */
+.fr-form-grid {
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 4rem 2rem 2rem;
+  flex: 1;
+}
+
+/* Progress indicator - Minimal and elegant */
+.fr-progress-wrapper {
+  margin-bottom: 3rem;
+}
+
+.fr-page-indicator {
+  font-size: 0.8125rem;
+  color: #a0a0a0;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.02em;
+}
+
+/* Progress bar itself - YouForm style with teal/green */
+.fr-progress-bar {
+  height: 4px;
+  background: #e5e5e5;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.fr-progress-fill {
+  height: 100%;
+  background: #14b8a6;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Fields container - Generous spacing */
+.fr-grid-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+/* Individual field wrapper - Clean and spacious */
+.fr-grid-field-wrapper {
+  opacity: 0;
+  animation: smoothFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes smoothFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Field container - No visible container */
+.fr-field {
+  margin-bottom: 0;
+}
+
+/* Question number - Typeform style */
+.fr-question-number {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4a4a4a;
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+}
+
+.fr-question-number::after {
+  content: '→';
+  font-size: 1rem;
+  opacity: 0.5;
+}
+
+/* Labels - Large, bold questions like YouForm */
+.fr-field label,
+.fr-label {
+  display: block;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+/* Required indicator - Subtle */
+.fr-required {
+  color: #ff6b6b;
+  margin-left: 0.25rem;
+  font-size: 1.25rem;
+  font-weight: 300;
+}
+
+/* Description - Lighter and smaller */
+.fr-description {
+  font-size: 1rem;
+  color: #767676;
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+  font-weight: 300;
+}
+
+/* Input fields - Bottom border only, Typeform style */
+.fr-input,
+.fr-textarea,
+.fr-select {
+  width: 100%;
+  padding: 0.75rem 0;
+  font-size: 1.125rem;
+  font-weight: 300;
+  color: #1a1a1a;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid #e0e0e0;
+  border-radius: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  font-family: inherit;
+}
+
+.fr-input::placeholder,
+.fr-textarea::placeholder {
+  color: #c0c0c0;
+  font-weight: 300;
+}
+
+/* Focus state - Typeform black underline */
+.fr-input:focus,
+.fr-textarea:focus,
+.fr-select:focus {
+  border-bottom-color: #1a1a1a;
+  background: transparent;
+}
+
+/* Hover state - Subtle */
+.fr-input:hover:not(:focus),
+.fr-textarea:hover:not(:focus),
+.fr-select:hover:not(:focus) {
+  border-bottom-color: #b0b0b0;
+}
+
+/* Textarea specific */
+.fr-textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+  padding-top: 0.75rem;
+}
+
+/* Select - Custom styled */
+.fr-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%234a4a4a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.25rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+/* Checkbox & Radio groups - Typeform style */
+.fr-checkbox-group,
+.fr-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.fr-checkbox-label,
+.fr-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.125rem;
+  font-weight: 300;
+  color: #1a1a1a;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+
+.fr-checkbox-label:hover,
+.fr-radio-label:hover {
+  background: #fafafa;
+  border-color: #e0e0e0;
+}
+
+.fr-checkbox-label input[type="checkbox"],
+.fr-radio-label input[type="radio"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+  accent-color: #1a1a1a;
+}
+
+/* Error message - Typeform style */
+.fr-error {
+  margin-top: 0.5rem;
+  font-size: 0.9375rem;
+  color: #ff6b6b;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.fr-error::before {
+  content: '⚠';
+  font-size: 1rem;
+}
+
+/* Actions - Typeform minimal buttons */
+.fr-grid-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 3.5rem;
+  padding-top: 2rem;
+  border-top: none;
+  align-items: center;
+}
+
+.fr-btn {
+  padding: 0.875rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+  letter-spacing: -0.01em;
+}
+
+.fr-btn-primary {
+  background: #14b8a6;
+  color: #ffffff;
+  box-shadow: none;
+  min-width: 140px;
+  font-weight: 600;
+}
+
+.fr-btn-primary:hover:not(:disabled) {
+  background: #0f9888;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.25);
+}
+
+.fr-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.fr-btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.fr-btn-secondary {
+  background: transparent;
+  color: #4a4a4a;
+  border: 1px solid #e0e0e0;
+}
+
+.fr-btn-secondary:hover:not(:disabled) {
+  background: #fafafa;
+  border-color: #c0c0c0;
+}
+
+/* Key hint - Typeform style */
+.fr-key-hint {
+  font-size: 0.875rem;
+  color: #a0a0a0;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.fr-key-hint kbd {
+  padding: 0.25rem 0.5rem;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-family: ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Error summary - Minimal */
+.fr-error-summary {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #fff5f5;
+  border-left: 3px solid #ff6b6b;
+  border-radius: 4px;
+}
+
+.fr-error-summary h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #d63031;
+  margin: 0 0 1rem 0;
+}
+
+.fr-error-summary ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.fr-error-summary li {
+  font-size: 0.9375rem;
+}
+
+.fr-error-summary a {
+  color: #d63031;
+  text-decoration: none;
+  font-weight: 400;
+}
+
+.fr-error-summary a:hover {
+  text-decoration: underline;
+}
+
+/* Status indicators - Subtle */
+.fr-status {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+
+.fr-offline-badge,
+.fr-syncing-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: #fafafa;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  font-size: 0.8125rem;
+  color: #767676;
+}
+
+.fr-offline-notice {
+  font-size: 0.75rem;
+  color: #a0a0a0;
+  margin-top: 0.625rem;
+  font-weight: 300;
+}
+
+/* Complete screen - YouForm style */
+.fr-complete {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 6rem 2rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.fr-complete h2 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.fr-complete p {
+  font-size: 1.25rem;
+  color: #767676;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* Responsive - Mobile first */
+@media (max-width: 768px) {
+  .fr-form-grid {
+    padding: 2.5rem 1.5rem 2rem;
+  }
+
+  .fr-grid-fields {
+    gap: 2.5rem;
+  }
+
+  .fr-field label,
+  .fr-label {
+    font-size: 1.5rem;
+  }
+
+  .fr-description {
+    font-size: 0.9375rem;
+  }
+
+  .fr-input,
+  .fr-textarea,
+  .fr-select {
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+
+  .fr-grid-actions {
+    flex-direction: column-reverse;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+  }
+
+  .fr-btn {
+    width: 100%;
+  }
+
+  .fr-key-hint {
+    display: none;
+  }
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .fr-form-grid {
+    max-width: 640px;
+    padding: 3.5rem 2rem;
+  }
+}
+
+/* Large screens - More breathing room */
+@media (min-width: 1200px) {
+  .fr-form-grid {
+    max-width: 800px;
+    padding: 5rem 3rem 3rem;
+  }
+
+  .fr-grid-fields {
+    gap: 4rem;
+  }
+
+  .fr-field label,
+  .fr-label {
+    font-size: 2.25rem;
+  }
+}

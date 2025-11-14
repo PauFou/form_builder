@@ -1,0 +1,40 @@
+# Builder App - Development Dockerfile (Optimized)
+FROM node:20-alpine
+
+# Install pnpm (version 9+)
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Set working directory
+WORKDIR /app
+
+# Copy workspace configuration
+COPY pnpm-workspace.yaml ./
+COPY .npmrc* ./
+
+# Set environment to skip Playwright browser download
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+
+# Copy package files for dependency installation
+COPY package.json pnpm-lock.yaml ./
+COPY apps/builder/package.json ./apps/builder/
+COPY packages/ui/package.json ./packages/ui/
+COPY packages/config/package.json ./packages/config/
+COPY packages/runtime/package.json ./packages/runtime/
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile --prefer-offline
+
+# Copy source code (only what's needed)
+COPY apps/builder ./apps/builder
+COPY packages/ui ./packages/ui
+COPY packages/config ./packages/config
+COPY turbo.json ./
+
+# Expose port
+EXPOSE 3000
+
+# Set environment
+ENV NODE_ENV=development
+
+# Start development server
+CMD ["pnpm", "--filter", "@skemya/builder", "dev", "--port", "3000", "--hostname", "0.0.0.0"]

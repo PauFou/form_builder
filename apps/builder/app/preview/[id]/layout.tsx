@@ -1,4 +1,5 @@
 import "./preview.css";
+import "@skemya/runtime/styles";
 
 export const metadata = {
   title: "Skemya Form",

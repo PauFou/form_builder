@@ -31,7 +31,7 @@ export function PageView({ page, isActive, dropPosition }: PageViewProps) {
     <div
       ref={setNodeRef}
       className={cn(
-        "min-h-[400px] transition-opacity",
+        "min-h-[500px] bg-white rounded-lg border-2 border-dashed border-gray-300 p-12 transition-opacity",
         isActive ? "opacity-100" : "opacity-0 pointer-events-none"
       )}
     >

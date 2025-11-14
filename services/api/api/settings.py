@@ -149,11 +149,18 @@ SIMPLE_JWT = {
 }
 
 # CORS
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3300",  # Marketing
-    "http://localhost:3301",  # Builder
-    "http://localhost:3302",  # Runtime Demo
-]
+# Read from environment variable first (for Docker), fallback to defaults
+cors_origins_env = os.environ.get('CORS_ALLOWED_ORIGINS', '')
+if cors_origins_env:
+    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins_env.split(',')]
+else:
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3300",  # Marketing
+        "http://localhost:3301",  # Builder (local dev)
+        "http://localhost:3302",  # Runtime Demo (local dev)
+        "http://localhost:4242",  # Builder (Docker exotic port)
+        "http://localhost:8787",  # Runtime Demo (Docker exotic port)
+    ]
 CORS_ALLOW_CREDENTIALS = True
 
 # Celery

@@ -160,6 +160,11 @@ export function GridFormViewer({ schema, config, className = "" }: GridFormViewe
                 animationDelay: `${index * 50}ms`,
               }}
             >
+              {/* Question number - Typeform style */}
+              <div className="fr-question-number">
+                {(currentPage * 10) + index + 1}
+              </div>
+
               <FormField
                 block={block}
                 value={state.values[block.id]}

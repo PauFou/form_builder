@@ -86,5 +86,13 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    // Plugin pour supporter les data-state variants de Radix UI
+    function ({ matchVariant }) {
+      matchVariant('data-state', (value) => {
+        return `&[data-state="${value}"]`;
+      });
+    },
+  ],
 };

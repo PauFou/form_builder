@@ -26,7 +26,7 @@
     "test:complete:full": "bash scripts/test-complete.sh full",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
-    "postinstall": "playwright install --with-deps chromium",
+    "postinstall": "test -n \"$PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD\" || playwright install --with-deps chromium",
     "clean": "turbo clean && rm -rf node_modules",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

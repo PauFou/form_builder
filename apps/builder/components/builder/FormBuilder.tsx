@@ -1,12 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
-  ChevronLeft,
-  ChevronRight,
-  Maximize2,
-  Minimize2,
   Type,
   AlignLeft,
   Mail,
@@ -26,14 +21,18 @@ import {
   FileText,
   LayoutGrid,
   ChevronDown,
+  HelpCircle,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
-import { Button } from "@skemya/ui";
 import { FormToolbar } from "./Toolbar/FormToolbar";
-import { BlockLibrary } from "./BlockLibrary/BlockLibrary";
+import { BlocksList } from "./BlocksList/BlocksList";
 import { FormCanvas } from "./Canvas/FormCanvas";
 import { PropertiesPanel } from "./Inspector/PropertiesPanel";
+import { ShareTab } from "./Share/ShareTab";
+import { IntegrateTab } from "./Integrate/IntegrateTab";
+import { ResultsTab } from "./Results/ResultsTab";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
+import { useAutoSave } from "../../lib/hooks/useAutoSave";
 import {
   DndContext,
   DragOverlay,
@@ -75,9 +74,7 @@ const blockIcons: Record<string, React.ComponentType<any>> = {
 };
 
 export function FormBuilder({ formId }: FormBuilderProps) {
-  const [leftPanelCollapsed, setLeftPanelCollapsed] = useState(false);
-  const [rightPanelCollapsed, setRightPanelCollapsed] = useState(false);
-  const [fullScreenCanvas, setFullScreenCanvas] = useState(false);
+  const [activeTab, setActiveTab] = useState<"build" | "integrate" | "share" | "results">("build");
 
   // Drag & Drop state
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -90,6 +87,17 @@ export function FormBuilder({ formId }: FormBuilderProps) {
 
   const { form, selectedBlockId, addBlock, moveBlock, undo, redo, canUndo, canRedo } =
     useFormBuilderStore();
+
+  // Auto-save
+  useAutoSave(formId, true);
+
+  // Mock published state - in production this would come from the form data
+  const [isPublished, setIsPublished] = useState(false);
+  const shareUrl = `https://youform.app/f/${formId}`;
+
+  const handlePublish = () => {
+    setIsPublished(true);
+  };
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -110,13 +118,6 @@ export function FormBuilder({ formId }: FormBuilderProps) {
       if ((e.metaKey || e.ctrlKey) && e.key === "s") {
         e.preventDefault();
         // Save is handled by auto-save in toolbar
-      }
-
-      // Toggle panels: Cmd+\ / Ctrl+\
-      if ((e.metaKey || e.ctrlKey) && e.key === "\\") {
-        e.preventDefault();
-        setLeftPanelCollapsed((prev) => !prev);
-        setRightPanelCollapsed((prev) => !prev);
       }
     };
 
@@ -324,16 +325,6 @@ export function FormBuilder({ formId }: FormBuilderProps) {
     }
   };
 
-  const handleFullScreenToggle = () => {
-    setFullScreenCanvas(!fullScreenCanvas);
-    if (!fullScreenCanvas) {
-      setLeftPanelCollapsed(true);
-      setRightPanelCollapsed(true);
-    } else {
-      setLeftPanelCollapsed(false);
-      setRightPanelCollapsed(false);
-    }
-  };
 
   if (!form) {
     return (
@@ -357,107 +348,45 @@ export function FormBuilder({ formId }: FormBuilderProps) {
       >
         <div className="h-screen bg-background flex flex-col overflow-hidden">
           {/* Toolbar */}
-          <FormToolbar formId={formId} />
+          <FormToolbar formId={formId} activeTab={activeTab} onTabChange={setActiveTab} />
 
-          {/* Main Content */}
-          <div className="flex-1 flex overflow-hidden">
-            {/* Left Panel - Block Library */}
-            <AnimatePresence mode="wait">
-              {!leftPanelCollapsed && (
-                <motion.aside
-                  initial={{ width: 0, opacity: 0 }}
-                  animate={{ width: 280, opacity: 1 }}
-                  exit={{ width: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="relative border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 overflow-hidden"
-                >
-                  <div className="h-full flex flex-col overflow-hidden">
-                    <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
-                      <h2 className="font-semibold">Add Fields</h2>
-                      <Button size="sm" variant="ghost" onClick={() => setLeftPanelCollapsed(true)}>
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <BlockLibrary />
-                  </div>
-                </motion.aside>
-              )}
-            </AnimatePresence>
+          {/* Main Content - Show different content based on active tab */}
+          {activeTab === "results" ? (
+            <ResultsTab formId={formId} />
+          ) : activeTab === "integrate" ? (
+            <IntegrateTab formId={formId} />
+          ) : activeTab === "share" ? (
+            <ShareTab
+              formId={formId}
+              isPublished={isPublished}
+              shareUrl={shareUrl}
+              onPublish={handlePublish}
+            />
+          ) : (
+            <div className="flex-1 flex overflow-hidden">
+              {/* Left Panel - Blocks List - FIXED 246px from YouForm reference */}
+              <aside className="w-[246px] flex-shrink-0 border-r bg-gray-50 overflow-hidden">
+                <BlocksList />
+              </aside>
 
-            {/* Collapsed Left Panel Button */}
-            {leftPanelCollapsed && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setLeftPanelCollapsed(false)}
-                  className="absolute left-2 top-4 z-10"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </motion.div>
-            )}
+              {/* Center - Canvas - FLEX 1 */}
+              <main className="flex-1 relative bg-white overflow-hidden">
+                <FormCanvas dropPosition={dropPosition} />
+              </main>
 
-            {/* Center - Canvas */}
-            <main className="flex-1 relative bg-muted/30 overflow-hidden h-full">
-              <div className="absolute top-4 right-4 z-10">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={handleFullScreenToggle}
-                  className="bg-background/80 backdrop-blur-sm"
-                >
-                  {fullScreenCanvas ? (
-                    <Minimize2 className="h-4 w-4" />
-                  ) : (
-                    <Maximize2 className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              <FormCanvas dropPosition={dropPosition} />
-            </main>
+              {/* Right Panel - Properties Inspector - FIXED 360px from YouForm reference */}
+              <aside className="w-[360px] flex-shrink-0 border-l bg-white overflow-hidden">
+                <PropertiesPanel />
+              </aside>
+            </div>
+          )}
 
-            {/* Right Panel - Properties Inspector */}
-            <AnimatePresence mode="wait">
-              {!rightPanelCollapsed && selectedBlockId && (
-                <motion.aside
-                  initial={{ width: 0, opacity: 0 }}
-                  animate={{ width: 320, opacity: 1 }}
-                  exit={{ width: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="relative border-l bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 overflow-hidden"
-                >
-                  <div className="h-full flex flex-col overflow-hidden">
-                    <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
-                      <h2 className="font-semibold">Properties</h2>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setRightPanelCollapsed(true)}
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <PropertiesPanel />
-                  </div>
-                </motion.aside>
-              )}
-            </AnimatePresence>
-
-            {/* Collapsed Right Panel Button */}
-            {rightPanelCollapsed && selectedBlockId && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setRightPanelCollapsed(false)}
-                  className="absolute right-2 top-4 z-10"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-              </motion.div>
-            )}
-          </div>
+          {/* Floating Help Button */}
+          {activeTab === "build" && (
+            <button className="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-lg flex items-center justify-center z-50 transition-colors">
+              <HelpCircle className="w-6 h-6" />
+            </button>
+          )}
         </div>
 
         <DragOverlay dropAnimation={null}>
