@@ -87,86 +87,30 @@ function DashboardStats({ forms }: { forms: FormWithStats[] }) {
   }, [forms]);
 
   return (
-    <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4 mb-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0, type: "spring", stiffness: 300, damping: 20 }}
-        whileHover={{ y: -4, transition: { duration: 0.2 } }}
-        className="group relative bg-gradient-to-br from-white to-orange-50/30 border border-orange-200/50 rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:border-orange-300 transition-all duration-300 overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-semibold text-gray-700 tracking-wide uppercase">Total Forms</span>
-            <div className="p-2.5 bg-orange-500/10 rounded-xl group-hover:bg-orange-500/20 transition-colors">
-              <FileText className="h-5 w-5 text-orange-600" />
-            </div>
-          </div>
-          <div className="text-4xl font-bold text-gray-900 mb-1">{stats.totalForms}</div>
-          <p className="text-sm text-gray-500">{stats.publishedForms} published</p>
-        </div>
-      </motion.div>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+      <div className="bg-white border border-gray-200 rounded-lg p-5 hover:border-indigo-300 transition-colors">
+        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Total Forms</div>
+        <div className="text-3xl font-semibold text-gray-900">{stats.totalForms}</div>
+        <div className="text-sm text-gray-500 mt-1">{stats.publishedForms} published</div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, type: "spring", stiffness: 300, damping: 20 }}
-        whileHover={{ y: -4, transition: { duration: 0.2 } }}
-        className="group relative bg-gradient-to-br from-white to-teal-50/30 border border-teal-200/50 rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:border-teal-300 transition-all duration-300 overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-semibold text-gray-700 tracking-wide uppercase">Submissions</span>
-            <div className="p-2.5 bg-teal-500/10 rounded-xl group-hover:bg-teal-500/20 transition-colors">
-              <Users className="h-5 w-5 text-teal-600" />
-            </div>
-          </div>
-          <div className="text-4xl font-bold text-gray-900 mb-1">{stats.totalSubmissions}</div>
-          <p className="text-sm text-gray-500">All time responses</p>
-        </div>
-      </motion.div>
+      <div className="bg-white border border-gray-200 rounded-lg p-5 hover:border-indigo-300 transition-colors">
+        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Submissions</div>
+        <div className="text-3xl font-semibold text-gray-900">{stats.totalSubmissions}</div>
+        <div className="text-sm text-gray-500 mt-1">All time responses</div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, type: "spring", stiffness: 300, damping: 20 }}
-        whileHover={{ y: -4, transition: { duration: 0.2 } }}
-        className="group relative bg-gradient-to-br from-white to-yellow-50/30 border border-yellow-200/50 rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:border-yellow-300 transition-all duration-300 overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-semibold text-gray-700 tracking-wide uppercase">Total Views</span>
-            <div className="p-2.5 bg-yellow-500/10 rounded-xl group-hover:bg-yellow-500/20 transition-colors">
-              <Eye className="h-5 w-5 text-yellow-600" />
-            </div>
-          </div>
-          <div className="text-4xl font-bold text-gray-900 mb-1">{stats.totalViews}</div>
-          <p className="text-sm text-gray-500">Form impressions</p>
-        </div>
-      </motion.div>
+      <div className="bg-white border border-gray-200 rounded-lg p-5 hover:border-indigo-300 transition-colors">
+        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Total Views</div>
+        <div className="text-3xl font-semibold text-gray-900">{stats.totalViews}</div>
+        <div className="text-sm text-gray-500 mt-1">Form impressions</div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, type: "spring", stiffness: 300, damping: 20 }}
-        whileHover={{ y: -4, transition: { duration: 0.2 } }}
-        className="group relative bg-gradient-to-br from-white to-green-50/30 border border-green-200/50 rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:border-green-300 transition-all duration-300 overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-semibold text-gray-700 tracking-wide uppercase">Completion</span>
-            <div className="p-2.5 bg-green-500/10 rounded-xl group-hover:bg-green-500/20 transition-colors">
-              <TrendingUp className="h-5 w-5 text-green-600" />
-            </div>
-          </div>
-          <div className="text-4xl font-bold text-gray-900 mb-1">{stats.avgCompletionRate.toFixed(0)}%</div>
-          <p className="text-sm text-gray-500">Average rate</p>
-        </div>
-      </motion.div>
+      <div className="bg-white border border-gray-200 rounded-lg p-5 hover:border-indigo-300 transition-colors">
+        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Completion</div>
+        <div className="text-3xl font-semibold text-gray-900">{stats.avgCompletionRate.toFixed(0)}%</div>
+        <div className="text-sm text-gray-500 mt-1">Average rate</div>
+      </div>
     </div>
   );
 }
@@ -484,7 +428,7 @@ export default function FormsPage() {
 
   // Forms list view
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50/50">
+    <div className="min-h-screen bg-gray-50">
       <YouFormHeader showNavigation={false} />
       <div className="max-w-7xl mx-auto px-8 py-6">
         {/* Top bar */}
@@ -536,19 +480,19 @@ export default function FormsPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="relative group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search your forms..."
+                placeholder="Search forms..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2.5 w-80 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300/50 focus:border-gray-300 hover:border-gray-300 transition-all shadow-sm"
+                className="pl-9 pr-4 py-2 w-72 bg-white border border-gray-300 rounded-md text-sm placeholder:text-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-52 bg-white/80 backdrop-blur-sm border-gray-200 rounded-xl text-sm shadow-sm hover:border-gray-300 transition-colors">
+              <SelectTrigger className="w-48 bg-white border-gray-300 rounded-md text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -560,7 +504,7 @@ export default function FormsPage() {
 
             <button
               onClick={() => setCreateDialogOpen(true)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-sm font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-md transition-colors"
             >
               <Plus className="w-4 h-4" />
               New Form
@@ -582,24 +526,13 @@ export default function FormsPage() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {forms.map((form, index) => (
-              <motion.div
+              <div
                 key={form.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05, type: "spring", stiffness: 300, damping: 25 }}
-                whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                className="group relative bg-white/80 backdrop-blur-sm border border-gray-200/60 rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:border-gray-300 transition-all duration-300 cursor-pointer overflow-hidden"
+                className="group bg-white border border-gray-200 rounded-lg p-5 hover:border-indigo-300 transition-colors cursor-pointer"
                 onClick={() => router.push(`/forms/${form.id}/edit`)}
               >
-                {/* Subtle gradient overlay on hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                {/* Accent line */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-teal-500 to-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                <div className="relative z-10">
                 <div className="flex items-start justify-between mb-4">
                   <h3 className="text-lg font-normal text-gray-900 flex-1 line-clamp-2 leading-snug group-hover:text-gray-700 transition-colors">
                     {form.title}
@@ -667,21 +600,16 @@ export default function FormsPage() {
                   </DropdownMenu>
                 </div>
 
-                <div className="flex items-center gap-2 mt-4">
+                <div className="text-sm text-gray-500 mt-3">
                   {form.submission_count === 0 ? (
-                    <div className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100/80 text-gray-600 border border-gray-200">
-                      <Activity className="w-3 h-3 mr-1.5 opacity-50" />
-                      No responses
-                    </div>
+                    <span>No responses</span>
                   ) : (
-                    <div className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-teal-50 to-teal-100/50 text-teal-700 border border-teal-200/60">
-                      <Activity className="w-3 h-3 mr-1.5" />
+                    <span className="text-indigo-600 font-medium">
                       {form.submission_count} response{form.submission_count !== 1 ? "s" : ""}
-                    </div>
+                    </span>
                   )}
                 </div>
-                </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}
