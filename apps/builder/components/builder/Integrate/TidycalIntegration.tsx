@@ -13,11 +13,7 @@ interface TidycalIntegrationProps {
   onSave: (config: any) => Promise<void>;
 }
 
-export function TidycalIntegration({
-  formId,
-  integration,
-  onSave,
-}: TidycalIntegrationProps) {
+export function TidycalIntegration({ formId, integration, onSave }: TidycalIntegrationProps) {
   const [bookingLink, setBookingLink] = useState(integration?.booking_link || "");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -80,9 +76,7 @@ export function TidycalIntegration({
       <div className="space-y-4">
         {/* Instructions */}
         <div className="p-4 bg-cyan-50 border border-cyan-200 rounded-lg">
-          <h4 className="text-sm font-semibold text-cyan-900 mb-2">
-            How to connect Tidycal
-          </h4>
+          <h4 className="text-sm font-semibold text-cyan-900 mb-2">How to connect Tidycal</h4>
           <ol className="text-sm text-cyan-800 space-y-1 list-decimal list-inside">
             <li>Log in to your Tidycal account</li>
             <li>Go to your event type and copy the booking link</li>
@@ -102,9 +96,7 @@ export function TidycalIntegration({
             onChange={(e) => setBookingLink(e.target.value)}
             disabled={status === "connected"}
           />
-          <p className="text-xs text-gray-500">
-            Your Tidycal event booking link
-          </p>
+          <p className="text-xs text-gray-500">Your Tidycal event booking link</p>
         </div>
 
         {/* Save Button */}
@@ -122,12 +114,8 @@ export function TidycalIntegration({
             <div className="p-3 bg-green-50 border border-green-200 rounded-lg flex items-start gap-2">
               <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium text-green-900">
-                  Connected to Tidycal
-                </p>
-                <p className="text-xs text-green-700 mt-1">
-                  Booking link is ready to be embedded
-                </p>
+                <p className="text-sm font-medium text-green-900">Connected to Tidycal</p>
+                <p className="text-xs text-green-700 mt-1">Booking link is ready to be embedded</p>
                 <a
                   href={bookingLink}
                   target="_blank"

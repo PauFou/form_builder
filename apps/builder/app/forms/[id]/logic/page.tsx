@@ -69,9 +69,7 @@ export default function FormLogicPage() {
           <div className="border-l h-6 border-gray-300" />
           <div>
             <h1 className="text-lg font-semibold text-gray-900">Logic Editor</h1>
-            <p className="text-xs text-gray-500 mt-0.5">
-              Create conditional logic and branching
-            </p>
+            <p className="text-xs text-gray-500 mt-0.5">Create conditional logic and branching</p>
           </div>
         </div>
 
@@ -107,11 +105,7 @@ export default function FormLogicPage() {
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         {viewMode === "list" ? (
-          <RuleBuilder
-            blocks={blocks}
-            rules={logicRules}
-            onChange={handleUpdateLogic}
-          />
+          <RuleBuilder blocks={blocks} rules={logicRules} onChange={handleUpdateLogic} />
         ) : (
           <LogicGraphEditor
             formId={formId}

@@ -78,19 +78,77 @@ export function BlocksList() {
 
                 // YouForm block type color mapping
                 const getBlockColors = (type: string) => {
-                  const colorMap: Record<string, { bg: string; border: string; text: string; icon: string }> = {
-                    contact_info: { bg: 'bg-youform-blocks-contact', border: 'border-youform-blocks-contact-dark', text: 'text-purple-900', icon: 'text-purple-700' },
-                    short_text: { bg: 'bg-youform-blocks-text', border: 'border-youform-blocks-text-dark', text: 'text-blue-900', icon: 'text-blue-700' },
-                    long_text: { bg: 'bg-youform-blocks-longtext', border: 'border-youform-blocks-longtext-dark', text: 'text-yellow-900', icon: 'text-yellow-700' },
-                    phone_number: { bg: 'bg-youform-blocks-phone', border: 'border-youform-blocks-phone-dark', text: 'text-purple-900', icon: 'text-purple-700' },
-                    statement: { bg: 'bg-youform-blocks-statement', border: 'border-youform-blocks-statement-dark', text: 'text-pink-900', icon: 'text-pink-700' },
-                    number: { bg: 'bg-youform-blocks-number', border: 'border-youform-blocks-number-dark', text: 'text-red-900', icon: 'text-red-700' },
-                    website_url: { bg: 'bg-youform-blocks-url', border: 'border-youform-blocks-url-dark', text: 'text-cyan-900', icon: 'text-cyan-700' },
-                    single_select: { bg: 'bg-youform-blocks-select', border: 'border-youform-blocks-select-dark', text: 'text-green-900', icon: 'text-green-700' },
-                    multi_select: { bg: 'bg-youform-blocks-multiselect', border: 'border-youform-blocks-multiselect-dark', text: 'text-orange-900', icon: 'text-orange-700' },
-                    dropdown: { bg: 'bg-youform-blocks-dropdown', border: 'border-youform-blocks-dropdown-dark', text: 'text-indigo-900', icon: 'text-indigo-700' },
+                  const colorMap: Record<
+                    string,
+                    { bg: string; border: string; text: string; icon: string }
+                  > = {
+                    contact_info: {
+                      bg: "bg-youform-blocks-contact",
+                      border: "border-youform-blocks-contact-dark",
+                      text: "text-purple-900",
+                      icon: "text-purple-700",
+                    },
+                    short_text: {
+                      bg: "bg-youform-blocks-text",
+                      border: "border-youform-blocks-text-dark",
+                      text: "text-blue-900",
+                      icon: "text-blue-700",
+                    },
+                    long_text: {
+                      bg: "bg-youform-blocks-longtext",
+                      border: "border-youform-blocks-longtext-dark",
+                      text: "text-yellow-900",
+                      icon: "text-yellow-700",
+                    },
+                    phone_number: {
+                      bg: "bg-youform-blocks-phone",
+                      border: "border-youform-blocks-phone-dark",
+                      text: "text-purple-900",
+                      icon: "text-purple-700",
+                    },
+                    statement: {
+                      bg: "bg-youform-blocks-statement",
+                      border: "border-youform-blocks-statement-dark",
+                      text: "text-pink-900",
+                      icon: "text-pink-700",
+                    },
+                    number: {
+                      bg: "bg-youform-blocks-number",
+                      border: "border-youform-blocks-number-dark",
+                      text: "text-red-900",
+                      icon: "text-red-700",
+                    },
+                    website_url: {
+                      bg: "bg-youform-blocks-url",
+                      border: "border-youform-blocks-url-dark",
+                      text: "text-cyan-900",
+                      icon: "text-cyan-700",
+                    },
+                    single_select: {
+                      bg: "bg-youform-blocks-select",
+                      border: "border-youform-blocks-select-dark",
+                      text: "text-green-900",
+                      icon: "text-green-700",
+                    },
+                    multi_select: {
+                      bg: "bg-youform-blocks-multiselect",
+                      border: "border-youform-blocks-multiselect-dark",
+                      text: "text-orange-900",
+                      icon: "text-orange-700",
+                    },
+                    dropdown: {
+                      bg: "bg-youform-blocks-dropdown",
+                      border: "border-youform-blocks-dropdown-dark",
+                      text: "text-indigo-900",
+                      icon: "text-indigo-700",
+                    },
                     // Fallback for other types
-                    default: { bg: 'bg-purple-100', border: 'border-purple-200', text: 'text-purple-900', icon: 'text-purple-600' },
+                    default: {
+                      bg: "bg-purple-100",
+                      border: "border-purple-200",
+                      text: "text-purple-900",
+                      icon: "text-purple-600",
+                    },
                   };
 
                   return colorMap[type] || colorMap.default;

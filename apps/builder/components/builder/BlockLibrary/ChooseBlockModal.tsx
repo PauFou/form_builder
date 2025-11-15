@@ -1,7 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, User, AlignLeft, Phone, FileText, Hash, Link as LinkIcon, CheckSquare } from "lucide-react";
+import {
+  X,
+  User,
+  AlignLeft,
+  Phone,
+  FileText,
+  Hash,
+  Link as LinkIcon,
+  CheckSquare,
+} from "lucide-react";
 import { cn } from "../../../lib/utils";
 
 interface Block {
@@ -198,9 +207,7 @@ export function ChooseBlockModal({ isOpen, onClose, onSelectBlock }: ChooseBlock
                   )}
                 >
                   <Icon className={cn("w-5 h-5", block.textColor)} />
-                  <span className={cn("font-medium text-base", block.textColor)}>
-                    {block.name}
-                  </span>
+                  <span className={cn("font-medium text-base", block.textColor)}>{block.name}</span>
                 </button>
               );
             })}

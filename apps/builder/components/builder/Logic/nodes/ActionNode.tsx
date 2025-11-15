@@ -21,12 +21,8 @@ export function ActionNode({ data }: NodeProps) {
       <div className="flex items-center gap-2">
         <Icon className="w-4 h-4 text-green-600 flex-shrink-0" />
         <div className="flex-1 min-w-0">
-          <div className="text-xs font-medium text-green-900 truncate">
-            {data.label}
-          </div>
-          <div className="text-xs text-green-600 mt-0.5 capitalize">
-            {data.actionType}
-          </div>
+          <div className="text-xs font-medium text-green-900 truncate">{data.label}</div>
+          <div className="text-xs text-green-600 mt-0.5 capitalize">{data.actionType}</div>
         </div>
       </div>
 

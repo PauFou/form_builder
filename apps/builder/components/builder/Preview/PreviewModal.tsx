@@ -42,7 +42,12 @@ interface PreviewModalProps {
   mode?: "one-question" | "grid";
 }
 
-export function PreviewModal({ open, onOpenChange, formId, mode = "one-question" }: PreviewModalProps) {
+export function PreviewModal({
+  open,
+  onOpenChange,
+  formId,
+  mode = "one-question",
+}: PreviewModalProps) {
   const [selectedDevice, setSelectedDevice] = useState<DeviceType>("desktop");
   const [isFullscreen, setIsFullscreen] = useState(false);
   const currentDevice = devices[selectedDevice];
@@ -51,39 +56,47 @@ export function PreviewModal({ open, onOpenChange, formId, mode = "one-question"
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPortal>
         <DialogOverlay className="bg-black/60 backdrop-blur-sm" />
-        <div className={cn(
-          "fixed inset-0 z-50 flex items-center justify-center",
-          isFullscreen ? "p-0" : "p-4"
-        )}>
-          <div className={cn(
-            "relative w-full h-full bg-background overflow-hidden flex flex-col",
-            isFullscreen ? "max-w-full max-h-full rounded-none shadow-none" : "max-w-[95vw] max-h-[95vh] rounded-lg shadow-md border border-border/50"
-          )}>
+        <div
+          className={cn(
+            "fixed inset-0 z-50 flex items-center justify-center",
+            isFullscreen ? "p-0" : "p-4"
+          )}
+        >
+          <div
+            className={cn(
+              "relative w-full h-full bg-background overflow-hidden flex flex-col",
+              isFullscreen
+                ? "max-w-full max-h-full rounded-none shadow-none"
+                : "max-w-[95vw] max-h-[95vh] rounded-lg shadow-md border border-border/50"
+            )}
+          >
             {/* Header avec device switchers */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-border/30 bg-background">
               {/* Device Switchers */}
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-lg border">
-                  {(Object.entries(devices) as [DeviceType, DeviceConfig][]).map(([device, config]) => {
-                    const Icon = config.icon;
-                    const isActive = selectedDevice === device;
+                  {(Object.entries(devices) as [DeviceType, DeviceConfig][]).map(
+                    ([device, config]) => {
+                      const Icon = config.icon;
+                      const isActive = selectedDevice === device;
 
-                    return (
-                      <button
-                        key={device}
-                        onClick={() => setSelectedDevice(device)}
-                        className={cn(
-                          "flex items-center gap-2 px-4 py-2.5 rounded-md text-sm font-medium transition-all duration-200",
-                          isActive
-                            ? "bg-primary text-primary-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground hover:bg-background/80"
-                        )}
-                      >
-                        <Icon className="h-4 w-4" />
-                        <span className="hidden sm:inline">{config.label}</span>
-                      </button>
-                    );
-                  })}
+                      return (
+                        <button
+                          key={device}
+                          onClick={() => setSelectedDevice(device)}
+                          className={cn(
+                            "flex items-center gap-2 px-4 py-2.5 rounded-md text-sm font-medium transition-all duration-200",
+                            isActive
+                              ? "bg-primary text-primary-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground hover:bg-background/80"
+                          )}
+                        >
+                          <Icon className="h-4 w-4" />
+                          <span className="hidden sm:inline">{config.label}</span>
+                        </button>
+                      );
+                    }
+                  )}
                 </div>
 
                 {/* Device dimensions indicator */}
@@ -106,7 +119,9 @@ export function PreviewModal({ open, onOpenChange, formId, mode = "one-question"
                   ) : (
                     <Maximize2 className="h-5 w-5 text-muted-foreground" />
                   )}
-                  <span className="sr-only">{isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}</span>
+                  <span className="sr-only">
+                    {isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+                  </span>
                 </button>
 
                 <button
@@ -120,21 +135,27 @@ export function PreviewModal({ open, onOpenChange, formId, mode = "one-question"
             </div>
 
             {/* Preview Container */}
-            <div className={cn(
-              "flex-1 flex items-center justify-center bg-muted/5 overflow-auto",
-              isFullscreen ? "p-0" : "p-6"
-            )}>
+            <div
+              className={cn(
+                "flex-1 flex items-center justify-center bg-muted/5 overflow-auto",
+                isFullscreen ? "p-0" : "p-6"
+              )}
+            >
               <div
                 className={cn(
                   "bg-white overflow-hidden transition-all duration-500 ease-out",
                   isFullscreen ? "w-full h-full" : "rounded-md shadow-sm border border-border/30"
                 )}
-                style={isFullscreen ? undefined : {
-                  width: currentDevice.width,
-                  height: currentDevice.height,
-                  maxWidth: "100%",
-                  maxHeight: "100%",
-                }}
+                style={
+                  isFullscreen
+                    ? undefined
+                    : {
+                        width: currentDevice.width,
+                        height: currentDevice.height,
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                      }
+                }
               >
                 <iframe
                   src={`/preview/${formId}?mode=${mode}`}
@@ -154,7 +175,9 @@ export function PreviewModal({ open, onOpenChange, formId, mode = "one-question"
                 </span>
               </div>
               <div className="hidden sm:block text-[11px]">
-                Press <kbd className="px-1 py-0.5 bg-muted/30 rounded font-mono text-[10px]">ESC</kbd> to close
+                Press{" "}
+                <kbd className="px-1 py-0.5 bg-muted/30 rounded font-mono text-[10px]">ESC</kbd> to
+                close
               </div>
             </div>
           </div>

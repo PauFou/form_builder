@@ -2,7 +2,15 @@
 
 import React, { useState } from "react";
 import { Plus, Trash2, GitBranch } from "lucide-react";
-import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Input } from "@skemya/ui";
+import {
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Input,
+} from "@skemya/ui";
 import { cn } from "../../../lib/utils";
 
 interface LogicRule {
@@ -47,9 +55,7 @@ interface RuleBuilderProps {
 }
 
 export function RuleBuilder({ blocks, rules, onChange }: RuleBuilderProps) {
-  const [selectedRule, setSelectedRule] = useState<LogicRule | null>(
-    rules[0] || null
-  );
+  const [selectedRule, setSelectedRule] = useState<LogicRule | null>(rules[0] || null);
 
   const handleAddRule = () => {
     const newRule: LogicRule = {
@@ -74,9 +80,7 @@ export function RuleBuilder({ blocks, rules, onChange }: RuleBuilderProps) {
   const handleUpdateRule = (updates: Partial<LogicRule>) => {
     if (!selectedRule) return;
 
-    const updatedRules = rules.map((r) =>
-      r.id === selectedRule.id ? { ...r, ...updates } : r
-    );
+    const updatedRules = rules.map((r) => (r.id === selectedRule.id ? { ...r, ...updates } : r));
     onChange(updatedRules);
     setSelectedRule({ ...selectedRule, ...updates });
   };
@@ -96,10 +100,7 @@ export function RuleBuilder({ blocks, rules, onChange }: RuleBuilderProps) {
     });
   };
 
-  const handleUpdateCondition = (
-    conditionId: string,
-    updates: Partial<Condition>
-  ) => {
+  const handleUpdateCondition = (conditionId: string, updates: Partial<Condition>) => {
     if (!selectedRule) return;
 
     const updatedConditions = selectedRule.conditions.map((c) =>
@@ -247,9 +248,7 @@ export function RuleBuilder({ blocks, rules, onChange }: RuleBuilderProps) {
               <label className="text-xs font-medium text-gray-700">When this block changes</label>
               <Select
                 value={selectedRule.source_block_id}
-                onValueChange={(value) =>
-                  handleUpdateRule({ source_block_id: value })
-                }
+                onValueChange={(value) => handleUpdateRule({ source_block_id: value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a block" />
@@ -282,7 +281,10 @@ export function RuleBuilder({ blocks, rules, onChange }: RuleBuilderProps) {
               {selectedRule.conditions.length > 0 && (
                 <div className="space-y-3">
                   {selectedRule.conditions.map((condition, index) => (
-                    <div key={condition.id} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div
+                      key={condition.id}
+                      className="bg-gray-50 border border-gray-200 rounded-lg p-4"
+                    >
                       {index > 0 && (
                         <div className="flex items-center gap-2 mb-3">
                           <span className="text-xs font-medium text-gray-500">Match</span>
@@ -400,7 +402,10 @@ export function RuleBuilder({ blocks, rules, onChange }: RuleBuilderProps) {
               {selectedRule.actions.length > 0 && (
                 <div className="space-y-3">
                   {selectedRule.actions.map((action) => (
-                    <div key={action.id} className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div
+                      key={action.id}
+                      className="bg-green-50 border border-green-200 rounded-lg p-4"
+                    >
                       <div className="grid grid-cols-12 gap-2 items-start">
                         {/* Action Type */}
                         <div className="col-span-5">

@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Wrench,
@@ -11,10 +12,15 @@ import {
   Undo2,
   Redo2,
   ExternalLink,
+  CheckCircle,
+  AlertCircle,
+  Clock,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 import { PreviewModal } from "../Preview/PreviewModal";
+import { toast } from "react-hot-toast";
+import { formsApi } from "../../../lib/api/forms";
 
 interface FormToolbarProps {
   formId: string;
@@ -26,14 +32,66 @@ type Tab = "build" | "integrate" | "share" | "results";
 
 export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: FormToolbarProps) {
   const router = useRouter();
-  const { form, undo, redo, canUndo, canRedo } = useFormBuilderStore();
+  const { form, isDirty, undo, redo, canUndo, canRedo, updateForm, markClean } =
+    useFormBuilderStore();
   const [internalActiveTab, setInternalActiveTab] = useState<Tab>("build");
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleValue, setTitleValue] = useState(form?.title || "My Form");
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   // Use controlled tab if provided, otherwise use internal state
   const activeTab = controlledTab !== undefined ? controlledTab : internalActiveTab;
+
+  // Sync title with form state
+  useEffect(() => {
+    if (form?.title) {
+      setTitleValue(form.title);
+    }
+  }, [form?.title]);
+
+  // Auto-save when form is dirty
+  useEffect(() => {
+    if (isDirty && form) {
+      const timer = setTimeout(() => {
+        handleSave();
+      }, 2000); // 2 second debounce
+
+      return () => clearTimeout(timer);
+    }
+  }, [isDirty, form]);
+
+  const handleSave = async () => {
+    if (!form || isSaving) return;
+
+    setIsSaving(true);
+    try {
+      await formsApi.update(formId, {
+        title: form.title,
+        description: form.description,
+        pages: form.pages,
+        theme: form.theme,
+        logic: form.logic,
+        settings: form.settings,
+      });
+
+      setLastSaved(new Date());
+      markClean();
+    } catch (error) {
+      console.error("Failed to save form:", error);
+      toast.error("Failed to save form");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleTitleSubmit = () => {
+    if (titleValue.trim() && titleValue !== form?.title) {
+      updateForm({ title: titleValue.trim() });
+    }
+    setIsEditingTitle(false);
+  };
 
   const tabs = [
     { id: "build" as Tab, label: "Build", icon: Wrench },
@@ -46,11 +104,13 @@ export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: F
     router.push("/forms");
   };
 
-  const handlePreview = () => {
+  const handlePreview = async () => {
+    await handleSave();
     setIsPreviewOpen(true);
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
+    await handleSave();
     router.push(`/forms/${formId}/publish`);
   };
 
@@ -61,6 +121,9 @@ export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: F
       setInternalActiveTab(tabId);
     }
   };
+
+  // Save status indicator
+  const saveStatus = isSaving ? "saving" : isDirty ? "unsaved" : lastSaved ? "saved" : null;
 
   return (
     <>
@@ -103,14 +166,10 @@ export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: F
                   type="text"
                   value={titleValue}
                   onChange={(e) => setTitleValue(e.target.value)}
-                  onBlur={() => {
-                    setIsEditingTitle(false);
-                    // TODO: Save title to store
-                  }}
+                  onBlur={handleTitleSubmit}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      setIsEditingTitle(false);
-                      // TODO: Save title to store
+                      handleTitleSubmit();
                     }
                     if (e.key === "Escape") {
                       setTitleValue(form?.title || "My Form");
@@ -131,6 +190,37 @@ export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: F
                   {form?.title || "MY FORM"}
                 </span>
               )}
+
+              {/* Save Status Indicator */}
+              <AnimatePresence mode="wait">
+                {saveStatus && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="flex items-center gap-1.5 text-xs ml-2"
+                  >
+                    {saveStatus === "saving" && (
+                      <>
+                        <Clock className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
+                        <span className="text-blue-600">Saving...</span>
+                      </>
+                    )}
+                    {saveStatus === "saved" && (
+                      <>
+                        <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                        <span className="text-green-600">Saved</span>
+                      </>
+                    )}
+                    {saveStatus === "unsaved" && (
+                      <>
+                        <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
+                        <span className="text-amber-600">Unsaved</span>
+                      </>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 
@@ -145,9 +235,7 @@ export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: F
                   onClick={() => handleTabClick(tab.id)}
                   className={cn(
                     "flex items-center gap-2 px-2 py-2 text-base font-semibold text-black transition-colors rounded-md relative",
-                    isActive
-                      ? "bg-gray-100"
-                      : "hover:bg-gray-100"
+                    isActive ? "bg-gray-100" : "hover:bg-gray-100"
                   )}
                 >
                   <Icon className="w-5 h-5" />
@@ -166,9 +254,7 @@ export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: F
                 disabled={!canUndo()}
                 className={cn(
                   "p-2 rounded-md transition-colors",
-                  canUndo()
-                    ? "hover:bg-gray-100 text-gray-700"
-                    : "text-gray-300 cursor-not-allowed"
+                  canUndo() ? "hover:bg-gray-100 text-gray-700" : "text-gray-300 cursor-not-allowed"
                 )}
                 title="Undo"
               >
@@ -180,9 +266,7 @@ export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: F
                 disabled={!canRedo()}
                 className={cn(
                   "p-2 rounded-md transition-colors",
-                  canRedo()
-                    ? "hover:bg-gray-100 text-gray-700"
-                    : "text-gray-300 cursor-not-allowed"
+                  canRedo() ? "hover:bg-gray-100 text-gray-700" : "text-gray-300 cursor-not-allowed"
                 )}
                 title="Redo"
               >
@@ -211,11 +295,7 @@ export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: F
       </header>
 
       {/* Preview Modal */}
-      <PreviewModal
-        open={isPreviewOpen}
-        onOpenChange={setIsPreviewOpen}
-        formId={formId}
-      />
+      <PreviewModal open={isPreviewOpen} onOpenChange={setIsPreviewOpen} formId={formId} />
     </>
   );
 }

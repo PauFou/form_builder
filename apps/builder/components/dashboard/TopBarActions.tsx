@@ -38,9 +38,7 @@ export function NotificationBell() {
         <DropdownMenuLabel>Notifications</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {notifications.length === 0 ? (
-          <div className="p-8 text-center text-sm text-gray-500">
-            No notifications yet
-          </div>
+          <div className="p-8 text-center text-sm text-gray-500">No notifications yet</div>
         ) : (
           notifications.map((notification) => (
             <DropdownMenuItem key={notification.id} className="p-4">
@@ -72,9 +70,7 @@ export function GiftIcon() {
         <DropdownMenuLabel>Rewards & Referrals</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <div className="p-4 space-y-3">
-          <div className="text-sm text-gray-600">
-            Invite friends and earn rewards!
-          </div>
+          <div className="text-sm text-gray-600">Invite friends and earn rewards!</div>
           <DropdownMenuItem>
             <span className="text-sm">View Referrals</span>
           </DropdownMenuItem>

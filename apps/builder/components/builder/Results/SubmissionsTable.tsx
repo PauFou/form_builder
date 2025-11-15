@@ -53,9 +53,7 @@ export function SubmissionsTable({
   onAddTags,
   onExport,
 }: SubmissionsTableProps) {
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "completed_at", desc: true },
-  ]);
+  const [sorting, setSorting] = useState<SortingState>([{ id: "completed_at", desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState({});
 
@@ -131,17 +129,11 @@ export function SubmissionsTable({
 
         // Format answer based on block type
         if (Array.isArray(answer)) {
-          return (
-            <span className="text-sm text-gray-900">{answer.join(", ")}</span>
-          );
+          return <span className="text-sm text-gray-900">{answer.join(", ")}</span>;
         }
 
         if (typeof answer === "object") {
-          return (
-            <span className="text-sm text-gray-900">
-              {JSON.stringify(answer)}
-            </span>
-          );
+          return <span className="text-sm text-gray-900">{JSON.stringify(answer)}</span>;
         }
 
         const answerStr = String(answer);
@@ -194,9 +186,7 @@ export function SubmissionsTable({
                   {tag}
                 </span>
               ))}
-              {tags.length > 2 && (
-                <span className="text-xs text-gray-500">+{tags.length - 2}</span>
-              )}
+              {tags.length > 2 && <span className="text-xs text-gray-500">+{tags.length - 2}</span>}
             </div>
           );
         },
@@ -254,9 +244,7 @@ export function SubmissionsTable({
   });
 
   const selectedCount = Object.keys(rowSelection).length;
-  const selectedIds = table
-    .getSelectedRowModel()
-    .rows.map((row) => row.original.id);
+  const selectedIds = table.getSelectedRowModel().rows.map((row) => row.original.id);
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -264,8 +252,7 @@ export function SubmissionsTable({
       {selectedCount > 0 && (
         <div className="flex items-center justify-between px-4 py-3 bg-blue-50 border-b border-blue-200">
           <span className="text-sm font-medium text-blue-900">
-            {selectedCount} {selectedCount === 1 ? "submission" : "submissions"}{" "}
-            selected
+            {selectedCount} {selectedCount === 1 ? "submission" : "submissions"} selected
           </span>
           <div className="flex items-center gap-2">
             <Button
@@ -291,9 +278,7 @@ export function SubmissionsTable({
               size="youform-sm"
               onClick={() => {
                 if (
-                  confirm(
-                    `Delete ${selectedCount} submission${selectedCount === 1 ? "" : "s"}?`
-                  )
+                  confirm(`Delete ${selectedCount} submission${selectedCount === 1 ? "" : "s"}?`)
                 ) {
                   onDelete(selectedIds);
                 }
@@ -321,10 +306,7 @@ export function SubmissionsTable({
                   >
                     {header.isPlaceholder
                       ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </th>
                 ))}
               </tr>
@@ -354,9 +336,7 @@ export function SubmissionsTable({
         </table>
 
         {table.getRowModel().rows.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
-            No submissions found
-          </div>
+          <div className="text-center py-12 text-gray-500">No submissions found</div>
         )}
       </div>
 
@@ -365,15 +345,12 @@ export function SubmissionsTable({
         <div className="text-sm text-gray-700">
           Showing{" "}
           <span className="font-medium">
-            {table.getState().pagination.pageIndex *
-              table.getState().pagination.pageSize +
-              1}
+            {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}
           </span>{" "}
           to{" "}
           <span className="font-medium">
             {Math.min(
-              (table.getState().pagination.pageIndex + 1) *
-                table.getState().pagination.pageSize,
+              (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
               submissions.length
             )}
           </span>{" "}
@@ -390,8 +367,7 @@ export function SubmissionsTable({
             Previous
           </Button>
           <span className="text-sm text-gray-700">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
           </span>
           <Button
             variant="youform-secondary"

@@ -90,16 +90,11 @@ export function SubmissionsFilters({
             variant="youform-secondary"
             size="youform-sm"
             onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-            className={cn(
-              "gap-2",
-              showAdvancedFilters && "bg-gray-100"
-            )}
+            className={cn("gap-2", showAdvancedFilters && "bg-gray-100")}
           >
             <Filter className="w-4 h-4" />
             Filters
-            {hasActiveFilters && (
-              <span className="w-2 h-2 bg-blue-600 rounded-full" />
-            )}
+            {hasActiveFilters && <span className="w-2 h-2 bg-blue-600 rounded-full" />}
           </Button>
 
           {/* Export All */}

@@ -68,9 +68,7 @@ function CreateTokenModal({ isOpen, onClose, onCreate }: CreateTokenModalProps) 
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>
-            {createdToken ? "API Token Created" : "Create API Token"}
-          </DialogTitle>
+          <DialogTitle>{createdToken ? "API Token Created" : "Create API Token"}</DialogTitle>
         </DialogHeader>
 
         {!createdToken ? (
@@ -100,18 +98,11 @@ function CreateTokenModal({ isOpen, onClose, onCreate }: CreateTokenModalProps) 
             <div className="space-y-2">
               <Label>Your API Token</Label>
               <div className="flex items-center gap-2">
-                <Input
-                  value={createdToken}
-                  readOnly
-                  className="font-mono text-sm"
-                />
+                <Input value={createdToken} readOnly className="font-mono text-sm" />
                 <Button
                   size="sm"
                   onClick={handleCopy}
-                  className={cn(
-                    "flex-shrink-0",
-                    copied && "bg-green-600 hover:bg-green-700"
-                  )}
+                  className={cn("flex-shrink-0", copied && "bg-green-600 hover:bg-green-700")}
                 >
                   {copied ? (
                     <>
@@ -129,12 +120,8 @@ function CreateTokenModal({ isOpen, onClose, onCreate }: CreateTokenModalProps) 
             </div>
 
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h4 className="text-sm font-medium text-blue-900 mb-2">
-                API Documentation
-              </h4>
-              <p className="text-sm text-blue-800 mb-2">
-                Use this token in your API requests:
-              </p>
+              <h4 className="text-sm font-medium text-blue-900 mb-2">API Documentation</h4>
+              <p className="text-sm text-blue-800 mb-2">Use this token in your API requests:</p>
               <code className="block p-2 bg-blue-100 rounded text-xs font-mono">
                 Authorization: Bearer {"{"}your_token{"}"}
               </code>
@@ -248,9 +235,7 @@ export function ApiTokensSection() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-medium text-gray-900 mb-1">
-                      {token.name}
-                    </h4>
+                    <h4 className="text-sm font-medium text-gray-900 mb-1">{token.name}</h4>
                     <div className="flex items-center gap-2 mb-2">
                       <code className="text-xs font-mono text-gray-600 bg-gray-50 px-2 py-1 rounded">
                         {displayToken}
@@ -275,15 +260,9 @@ export function ApiTokensSection() {
                       </button>
                     </div>
                     <div className="flex items-center gap-4 text-xs text-gray-500">
-                      <span>
-                        Created:{" "}
-                        {new Date(token.created_at).toLocaleDateString()}
-                      </span>
+                      <span>Created: {new Date(token.created_at).toLocaleDateString()}</span>
                       {token.last_used && (
-                        <span>
-                          Last used:{" "}
-                          {new Date(token.last_used).toLocaleDateString()}
-                        </span>
+                        <span>Last used: {new Date(token.last_used).toLocaleDateString()}</span>
                       )}
                     </div>
                   </div>

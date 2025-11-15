@@ -10,7 +10,7 @@ const MockDiv = React.forwardRef<HTMLDivElement, any>(({ children, ...props }, r
     {children}
   </div>
 ));
-MockDiv.displayName = 'MockDiv';
+MockDiv.displayName = "MockDiv";
 
 jest.mock("framer-motion", () => ({
   motion: {

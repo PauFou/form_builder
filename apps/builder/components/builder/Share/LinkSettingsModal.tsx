@@ -85,9 +85,7 @@ export function LinkSettingsModal({
                 value={seoTitle}
                 onChange={(e) => setSeoTitle(e.target.value)}
               />
-              <p className="text-xs text-gray-500">
-                Appears in browser tab and search results
-              </p>
+              <p className="text-xs text-gray-500">Appears in browser tab and search results</p>
             </div>
 
             <div className="space-y-2">
@@ -143,14 +141,14 @@ export function LinkSettingsModal({
             <div className="space-y-2">
               <Label htmlFor="custom-slug">Custom Slug</Label>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500 whitespace-nowrap">
-                  youform.com/f/
-                </span>
+                <span className="text-sm text-gray-500 whitespace-nowrap">youform.com/f/</span>
                 <Input
                   id="custom-slug"
                   placeholder={formId}
                   value={customSlug}
-                  onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                  onChange={(e) =>
+                    setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))
+                  }
                   className="flex-1"
                 />
               </div>
@@ -167,9 +165,7 @@ export function LinkSettingsModal({
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <Label htmlFor="password-protected">Password Protection</Label>
-                <p className="text-sm text-gray-500">
-                  Require a password to access this form
-                </p>
+                <p className="text-sm text-gray-500">Require a password to access this form</p>
               </div>
               <Switch
                 id="password-protected"
@@ -199,21 +195,15 @@ export function LinkSettingsModal({
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <Label htmlFor="show-branding">Show Branding</Label>
-                <p className="text-sm text-gray-500">
-                  Display "Powered by YourForm" footer
-                </p>
+                <p className="text-sm text-gray-500">Display "Powered by YourForm" footer</p>
               </div>
-              <Switch
-                id="show-branding"
-                checked={showBranding}
-                onCheckedChange={setShowBranding}
-              />
+              <Switch id="show-branding" checked={showBranding} onCheckedChange={setShowBranding} />
             </div>
             {!showBranding && (
               <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-800">
-                  <span className="font-semibold">PRO</span> feature: Remove branding requires
-                  a PRO plan subscription.
+                  <span className="font-semibold">PRO</span> feature: Remove branding requires a PRO
+                  plan subscription.
                 </p>
               </div>
             )}

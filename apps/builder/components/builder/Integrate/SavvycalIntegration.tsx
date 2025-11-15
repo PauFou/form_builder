@@ -13,11 +13,7 @@ interface SavvycalIntegrationProps {
   onSave: (config: any) => Promise<void>;
 }
 
-export function SavvycalIntegration({
-  formId,
-  integration,
-  onSave,
-}: SavvycalIntegrationProps) {
+export function SavvycalIntegration({ formId, integration, onSave }: SavvycalIntegrationProps) {
   const [schedulingLink, setSchedulingLink] = useState(integration?.scheduling_link || "");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -80,9 +76,7 @@ export function SavvycalIntegration({
       <div className="space-y-4">
         {/* Instructions */}
         <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
-          <h4 className="text-sm font-semibold text-emerald-900 mb-2">
-            How to connect Savvycal
-          </h4>
+          <h4 className="text-sm font-semibold text-emerald-900 mb-2">How to connect Savvycal</h4>
           <ol className="text-sm text-emerald-800 space-y-1 list-decimal list-inside">
             <li>Go to your Savvycal dashboard</li>
             <li>Copy your scheduling link</li>
@@ -102,9 +96,7 @@ export function SavvycalIntegration({
             onChange={(e) => setSchedulingLink(e.target.value)}
             disabled={status === "connected"}
           />
-          <p className="text-xs text-gray-500">
-            Your personalized Savvycal scheduling link
-          </p>
+          <p className="text-xs text-gray-500">Your personalized Savvycal scheduling link</p>
         </div>
 
         {/* Save Button */}
@@ -122,9 +114,7 @@ export function SavvycalIntegration({
             <div className="p-3 bg-green-50 border border-green-200 rounded-lg flex items-start gap-2">
               <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium text-green-900">
-                  Connected to Savvycal
-                </p>
+                <p className="text-sm font-medium text-green-900">Connected to Savvycal</p>
                 <p className="text-xs text-green-700 mt-1">
                   Your scheduling link is ready to be embedded in your form
                 </p>
@@ -144,8 +134,8 @@ export function SavvycalIntegration({
             <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <h4 className="text-sm font-medium text-blue-900 mb-1">Next Steps</h4>
               <p className="text-xs text-blue-800">
-                Add a <strong>Scheduler</strong> block to your form to embed the Savvycal
-                calendar. Respondents will be able to book meetings directly from your form.
+                Add a <strong>Scheduler</strong> block to your form to embed the Savvycal calendar.
+                Respondents will be able to book meetings directly from your form.
               </p>
             </div>
           </div>

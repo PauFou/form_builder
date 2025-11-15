@@ -94,9 +94,7 @@ export function TemplateSelectionModal({
 
         {/* Header */}
         <div className="px-20 pt-14 pb-10 text-center">
-          <h1 className="text-5xl font-bold text-gray-900 mb-3">
-            Select a template
-          </h1>
+          <h1 className="text-5xl font-bold text-gray-900 mb-3">Select a template</h1>
           <button
             onClick={() => setShowTypeformImport(true)}
             className="text-base text-gray-600 underline hover:text-gray-900 transition-colors"
@@ -126,10 +124,12 @@ export function TemplateSelectionModal({
                 className="group bg-white rounded-xl border border-gray-200 hover:border-gray-400 transition-all overflow-hidden"
               >
                 {/* Preview Area */}
-                <div className={cn(
-                  "w-full h-56 flex items-center justify-center relative overflow-hidden",
-                  template.bgColor
-                )}>
+                <div
+                  className={cn(
+                    "w-full h-56 flex items-center justify-center relative overflow-hidden",
+                    template.bgColor
+                  )}
+                >
                   {template.isBlank ? (
                     <Plus className="w-20 h-20 text-gray-400" strokeWidth={1.5} />
                   ) : (

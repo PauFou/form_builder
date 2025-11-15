@@ -228,11 +228,7 @@ export function LogicGraphEditor({
             <Plus className="w-4 h-4" />
             Add Action
           </Button>
-          <Button
-            onClick={handleSave}
-            variant="youform-primary"
-            size="youform-sm"
-          >
+          <Button onClick={handleSave} variant="youform-primary" size="youform-sm">
             Save Logic
           </Button>
         </div>

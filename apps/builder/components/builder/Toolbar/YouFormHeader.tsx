@@ -42,9 +42,7 @@ export function YouFormHeader({ showNavigation = false }: YouFormHeaderProps) {
               </svg>
             </div>
             {/* YOUFORM text */}
-            <span className="text-xl font-bold text-black tracking-tight">
-              YOUFORM
-            </span>
+            <span className="text-xl font-bold text-black tracking-tight">YOUFORM</span>
           </div>
         </Link>
 

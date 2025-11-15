@@ -63,16 +63,18 @@ export function useAutoSave(formId: string, enabled: boolean = true) {
     return () => {
       if (isDirty && form && !isSavingRef.current) {
         // Fire and forget save on unmount
-        formsApi.update(formId, {
-          title: form.title,
-          description: form.description,
-          pages: form.pages,
-          logic: form.logic,
-          theme: form.theme,
-          settings: form.settings,
-        }).catch((error) => {
-          console.error("Failed to save on unmount:", error);
-        });
+        formsApi
+          .update(formId, {
+            title: form.title,
+            description: form.description,
+            pages: form.pages,
+            logic: form.logic,
+            theme: form.theme,
+            settings: form.settings,
+          })
+          .catch((error) => {
+            console.error("Failed to save on unmount:", error);
+          });
       }
     };
   }, [isDirty, form, formId]);

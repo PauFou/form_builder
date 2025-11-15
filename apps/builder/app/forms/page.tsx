@@ -53,9 +53,98 @@ import { TemplateSelectionModal } from "../../components/templates/TemplateSelec
 import { YouFormHeader } from "../../components/builder/Toolbar/YouFormHeader";
 
 import type { Form, User, Organization } from "@skemya/contracts";
+import { motion } from "framer-motion";
+import { FileText, TrendingUp, Activity } from "lucide-react";
 
 interface FormWithStats extends Form {
+  status?: "published" | "draft";
   submission_count?: number;
+  view_count?: number;
+  completion_rate?: number;
+  last_submission_at?: string;
+  updated_at?: string;
+  created_at?: string;
+}
+
+// Dashboard Stats Component with YouForm styling
+function DashboardStats({ forms }: { forms: FormWithStats[] }) {
+  const stats = React.useMemo(() => {
+    const published = forms.filter((f) => f.status === "published").length;
+    const totalSubmissions = forms.reduce((acc, f) => acc + (f.submission_count || 0), 0);
+    const totalViews = forms.reduce((acc, f) => acc + (f.view_count || 0), 0);
+    const avgCompletionRate =
+      forms.length > 0
+        ? forms.reduce((acc, f) => acc + (f.completion_rate || 0), 0) / forms.length
+        : 0;
+
+    return {
+      totalForms: forms.length,
+      publishedForms: published,
+      totalSubmissions,
+      totalViews,
+      avgCompletionRate,
+    };
+  }, [forms]);
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0 }}
+        className="bg-white border-2 border-black rounded-xl p-6 shadow-youform-card"
+      >
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-semibold text-gray-700">Total Forms</span>
+          <FileText className="h-5 w-5 text-orange-500" />
+        </div>
+        <div className="text-3xl font-bold text-black">{stats.totalForms}</div>
+        <p className="text-xs text-gray-600 mt-1">{stats.publishedForms} published</p>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="bg-white border-2 border-black rounded-xl p-6 shadow-youform-card"
+      >
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-semibold text-gray-700">Total Submissions</span>
+          <Users className="h-5 w-5 text-[#45AD94]" />
+        </div>
+        <div className="text-3xl font-bold text-black">{stats.totalSubmissions}</div>
+        <p className="text-xs text-gray-600 mt-1">All time responses</p>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="bg-white border-2 border-black rounded-xl p-6 shadow-youform-card"
+      >
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-semibold text-gray-700">Total Views</span>
+          <Eye className="h-5 w-5 text-[#FFE711]" />
+        </div>
+        <div className="text-3xl font-bold text-black">{stats.totalViews}</div>
+        <p className="text-xs text-gray-600 mt-1">Form impressions</p>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="bg-white border-2 border-black rounded-xl p-6 shadow-youform-card"
+      >
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-semibold text-gray-700">Avg. Completion</span>
+          <TrendingUp className="h-5 w-5 text-green-500" />
+        </div>
+        <div className="text-3xl font-bold text-black">{stats.avgCompletionRate.toFixed(0)}%</div>
+        <p className="text-xs text-gray-600 mt-1">Completion rate</p>
+      </motion.div>
+    </div>
+  );
 }
 
 function CreateFormDialog({ onSuccess }: { onSuccess?: () => void }) {
@@ -293,7 +382,10 @@ export default function FormsPage() {
           </div>
 
           {/* Empty state content */}
-          <div className="flex items-center justify-center" style={{ minHeight: "calc(100vh - 200px)" }}>
+          <div
+            className="flex items-center justify-center"
+            style={{ minHeight: "calc(100vh - 200px)" }}
+          >
             <div className="text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 mb-6 border-2 border-gray-400 rounded-full">
                 <Info className="w-7 h-7 text-gray-600" />
@@ -331,17 +423,20 @@ export default function FormsPage() {
             onClose={() => setCreateDialogOpen(false)}
             onSelectTemplate={(templateId) => {
               const orgId = organization?.id || "eaee0d9b-9065-42c4-a915-356f1c1f7a84";
-              formsApi.create({
-                title: "New Form",
-                description: "",
-                organization_id: orgId,
-              }).then((form) => {
-                queryClient.invalidateQueries({ queryKey: ["forms"] });
-                toast.success("Form created successfully");
-                router.push(`/forms/${form.id}/edit`);
-              }).catch(() => {
-                toast.error("Failed to create form");
-              });
+              formsApi
+                .create({
+                  title: "New Form",
+                  description: "",
+                  organization_id: orgId,
+                })
+                .then((form) => {
+                  queryClient.invalidateQueries({ queryKey: ["forms"] });
+                  toast.success("Form created successfully");
+                  router.push(`/forms/${form.id}/edit`);
+                })
+                .catch(() => {
+                  toast.error("Failed to create form");
+                });
             }}
           />
 
@@ -350,7 +445,9 @@ export default function FormsPage() {
               <DialogHeader>
                 <DialogTitle>Invite Team Members</DialogTitle>
               </DialogHeader>
-              <p className="mb-4 text-sm text-gray-600">Team invitation functionality coming soon!</p>
+              <p className="mb-4 text-sm text-gray-600">
+                Team invitation functionality coming soon!
+              </p>
               <div className="flex justify-end">
                 <Button onClick={() => setInviteDialogOpen(false)}>Close</Button>
               </div>
@@ -367,7 +464,7 @@ export default function FormsPage() {
       <YouFormHeader showNavigation={false} />
       <div className="max-w-7xl mx-auto px-8 py-6">
         {/* Top bar */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -449,6 +546,9 @@ export default function FormsPage() {
           </div>
         </div>
 
+        {/* Dashboard Stats */}
+        <DashboardStats forms={forms} />
+
         {/* Forms grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -461,10 +561,13 @@ export default function FormsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {forms.map((form) => (
-              <div
+            {forms.map((form, index) => (
+              <motion.div
                 key={form.id}
-                className="group bg-white border border-gray-200 rounded-xl p-6 shadow-youform-card hover:shadow-youform-card-hover hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="group bg-white border-2 border-black rounded-xl p-6 shadow-youform-card hover:shadow-youform-card-hover hover:border-orange-500 hover:-translate-y-1 transition-all duration-200 cursor-pointer"
                 onClick={() => router.push(`/forms/${form.id}/edit`)}
               >
                 <div className="flex items-start justify-between mb-4">
@@ -536,16 +639,16 @@ export default function FormsPage() {
 
                 <div className="flex items-center gap-2">
                   {form.submission_count === 0 ? (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                    <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-300">
                       No responses
                     </span>
                   ) : (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                    <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-[#45AD94]/10 text-[#45AD94] border border-[#45AD94]">
                       {form.submission_count} response{form.submission_count !== 1 ? "s" : ""}
                     </span>
                   )}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}
@@ -570,17 +673,20 @@ export default function FormsPage() {
           onClose={() => setCreateDialogOpen(false)}
           onSelectTemplate={(templateId) => {
             const orgId = organization?.id || "eaee0d9b-9065-42c4-a915-356f1c1f7a84";
-            formsApi.create({
-              title: "New Form",
-              description: "",
-              organization_id: orgId,
-            }).then((form) => {
-              queryClient.invalidateQueries({ queryKey: ["forms"] });
-              toast.success("Form created successfully");
-              router.push(`/forms/${form.id}/edit`);
-            }).catch(() => {
-              toast.error("Failed to create form");
-            });
+            formsApi
+              .create({
+                title: "New Form",
+                description: "",
+                organization_id: orgId,
+              })
+              .then((form) => {
+                queryClient.invalidateQueries({ queryKey: ["forms"] });
+                toast.success("Form created successfully");
+                router.push(`/forms/${form.id}/edit`);
+              })
+              .catch(() => {
+                toast.error("Failed to create form");
+              });
           }}
         />
 

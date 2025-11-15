@@ -13,11 +13,7 @@ interface TypeformImportModalProps {
 
 type ImportStep = "input" | "processing" | "success" | "error";
 
-export function TypeformImportModal({
-  isOpen,
-  onClose,
-  onImport,
-}: TypeformImportModalProps) {
+export function TypeformImportModal({ isOpen, onClose, onImport }: TypeformImportModalProps) {
   const [typeformUrl, setTypeformUrl] = useState("");
   const [step, setStep] = useState<ImportStep>("input");
   const [error, setError] = useState<string | null>(null);
@@ -75,9 +71,7 @@ export function TypeformImportModal({
           <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
             <Upload className="w-8 h-8 text-blue-600" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Import from Typeform
-          </h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">Import from Typeform</h2>
           <p className="text-base text-gray-600">
             Enter your Typeform URL to import all questions and logic
           </p>
@@ -112,9 +106,7 @@ export function TypeformImportModal({
               </div>
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-blue-900 mb-2">
-                  What will be imported?
-                </h4>
+                <h4 className="text-sm font-medium text-blue-900 mb-2">What will be imported?</h4>
                 <ul className="text-sm text-blue-800 space-y-1">
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4" />
@@ -140,9 +132,7 @@ export function TypeformImportModal({
           {step === "processing" && (
             <div className="py-12 text-center">
               <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-6" />
-              <h3 className="text-xl font-medium text-gray-900 mb-2">
-                Importing your Typeform...
-              </h3>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">Importing your Typeform...</h3>
               <p className="text-gray-600">
                 This may take a few moments. Please don't close this window.
               </p>
@@ -154,12 +144,8 @@ export function TypeformImportModal({
               <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
                 <CheckCircle2 className="w-8 h-8 text-green-600" />
               </div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">
-                Import successful!
-              </h3>
-              <p className="text-gray-600">
-                Your Typeform has been imported successfully.
-              </p>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">Import successful!</h3>
+              <p className="text-gray-600">Your Typeform has been imported successfully.</p>
             </div>
           )}
 
@@ -168,9 +154,7 @@ export function TypeformImportModal({
               <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-6">
                 <AlertCircle className="w-8 h-8 text-red-600" />
               </div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">
-                Import failed
-              </h3>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">Import failed</h3>
               <p className="text-gray-600 mb-6">{error}</p>
               <Button onClick={() => setStep("input")} variant="outline">
                 Try Again

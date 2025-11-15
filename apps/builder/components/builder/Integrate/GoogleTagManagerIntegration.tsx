@@ -28,9 +28,7 @@ export function GoogleTagManagerIntegration({
   const [trackViews, setTrackViews] = useState(integration?.track_views ?? true);
   const [trackStarts, setTrackStarts] = useState(integration?.track_starts ?? true);
   const [trackSteps, setTrackSteps] = useState(integration?.track_steps ?? false);
-  const [trackCompletions, setTrackCompletions] = useState(
-    integration?.track_completions ?? true
-  );
+  const [trackCompletions, setTrackCompletions] = useState(integration?.track_completions ?? true);
   const [isSaving, setIsSaving] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
 
@@ -230,9 +228,7 @@ export function GoogleTagManagerIntegration({
           <div className="p-3 bg-green-50 border border-green-200 rounded-lg flex items-start gap-2">
             <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-green-900">
-                Connected to GTM Container
-              </p>
+              <p className="text-sm font-medium text-green-900">Connected to GTM Container</p>
               <p className="text-xs text-green-700 mt-1">
                 Container ID: <code className="bg-green-100 px-1 rounded">{containerId}</code>
               </p>
@@ -253,9 +249,7 @@ export function GoogleTagManagerIntegration({
 
         {/* Data Layer Info */}
         <div className="pt-3 border-t border-gray-200">
-          <h4 className="text-xs font-medium text-gray-900 mb-2">
-            Data Layer Variables
-          </h4>
+          <h4 className="text-xs font-medium text-gray-900 mb-2">Data Layer Variables</h4>
           <div className="text-xs text-gray-600 space-y-1 font-mono bg-gray-50 p-2 rounded">
             <div>formId: "{formId}"</div>
             <div>event: "form_view | form_start | form_step | form_complete"</div>

@@ -22,7 +22,7 @@ import {
   Upload,
   CreditCard,
   Grid3x3,
-  Target
+  Target,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 
@@ -377,9 +377,7 @@ export function AddBlockModal({ isOpen, onClose, onSelectBlock }: AddBlockModalP
                   )}
                 >
                   <Icon className={cn("w-5 h-5", block.textColor)} />
-                  <span className={cn("font-medium text-base", block.textColor)}>
-                    {block.name}
-                  </span>
+                  <span className={cn("font-medium text-base", block.textColor)}>{block.name}</span>
                 </button>
               );
             })}

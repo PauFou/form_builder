@@ -15,16 +15,9 @@ interface MakeIntegrationProps {
   onTest?: () => Promise<void>;
 }
 
-export function MakeIntegration({
-  formId,
-  integration,
-  onSave,
-  onTest,
-}: MakeIntegrationProps) {
+export function MakeIntegration({ formId, integration, onSave, onTest }: MakeIntegrationProps) {
   const [webhookUrl, setWebhookUrl] = useState(integration?.webhook_url || "");
-  const [includePartials, setIncludePartials] = useState(
-    integration?.include_partials ?? false
-  );
+  const [includePartials, setIncludePartials] = useState(integration?.include_partials ?? false);
   const [isSaving, setIsSaving] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [testResult, setTestResult] = useState<"success" | "error" | null>(null);
@@ -98,9 +91,7 @@ export function MakeIntegration({
       <div className="space-y-4">
         {/* Instructions */}
         <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-          <h4 className="text-sm font-semibold text-purple-900 mb-2">
-            How to connect Make
-          </h4>
+          <h4 className="text-sm font-semibold text-purple-900 mb-2">How to connect Make</h4>
           <ol className="text-sm text-purple-800 space-y-1 list-decimal list-inside">
             <li>Create a new Scenario in Make</li>
             <li>Add "Webhooks" module and choose "Custom webhook"</li>
@@ -121,9 +112,7 @@ export function MakeIntegration({
             onChange={(e) => setWebhookUrl(e.target.value)}
             disabled={status === "connected"}
           />
-          <p className="text-xs text-gray-500">
-            The webhook URL from your Make scenario
-          </p>
+          <p className="text-xs text-gray-500">The webhook URL from your Make scenario</p>
         </div>
 
         {/* Include Partials Toggle */}
@@ -169,12 +158,7 @@ export function MakeIntegration({
 
             {/* Test Connection */}
             <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleTest}
-                disabled={isTesting}
-              >
+              <Button size="sm" variant="outline" onClick={handleTest} disabled={isTesting}>
                 {isTesting ? (
                   <>
                     <div className="w-4 h-4 border-2 border-gray-300 border-t-purple-600 rounded-full animate-spin mr-2" />
@@ -195,24 +179,22 @@ export function MakeIntegration({
                 </span>
               )}
 
-              {testResult === "error" && (
-                <span className="text-sm text-red-600">Test failed</span>
-              )}
+              {testResult === "error" && <span className="text-sm text-red-600">Test failed</span>}
             </div>
           </div>
         )}
 
         {/* Data Format */}
         <div className="pt-3 border-t border-gray-200">
-          <h4 className="text-xs font-medium text-gray-900 mb-2">
-            Webhook Payload Format
-          </h4>
+          <h4 className="text-xs font-medium text-gray-900 mb-2">Webhook Payload Format</h4>
           <div className="text-xs text-gray-600 space-y-1 font-mono bg-gray-50 p-3 rounded">
             <div>{"{"}</div>
             <div className="ml-2">"formId": "{formId}",</div>
             <div className="ml-2">"submissionId": "...",</div>
             <div className="ml-2">"completed": true,</div>
-            <div className="ml-2">"data": {"{"} ... {"}"}</div>
+            <div className="ml-2">
+              "data": {"{"} ... {"}"}
+            </div>
             <div>{"}"}</div>
           </div>
         </div>

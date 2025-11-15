@@ -179,9 +179,7 @@ export function IntegrationCard({
 
       {/* Connected Configuration */}
       {status === "connected" && children && (
-        <div className="p-4 border-t border-gray-200">
-          {children}
-        </div>
+        <div className="p-4 border-t border-gray-200">{children}</div>
       )}
     </div>
   );

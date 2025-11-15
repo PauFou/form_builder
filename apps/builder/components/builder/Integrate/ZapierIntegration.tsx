@@ -16,16 +16,9 @@ interface ZapierIntegrationProps {
   onTest?: () => Promise<void>;
 }
 
-export function ZapierIntegration({
-  formId,
-  integration,
-  onSave,
-  onTest,
-}: ZapierIntegrationProps) {
+export function ZapierIntegration({ formId, integration, onSave, onTest }: ZapierIntegrationProps) {
   const [webhookUrl, setWebhookUrl] = useState(integration?.webhook_url || "");
-  const [includePartials, setIncludePartials] = useState(
-    integration?.include_partials ?? false
-  );
+  const [includePartials, setIncludePartials] = useState(integration?.include_partials ?? false);
   const [isSaving, setIsSaving] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -108,9 +101,7 @@ export function ZapierIntegration({
       <div className="space-y-4">
         {/* Instructions */}
         <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h4 className="text-sm font-semibold text-blue-900 mb-2">
-            How to connect Zapier
-          </h4>
+          <h4 className="text-sm font-semibold text-blue-900 mb-2">How to connect Zapier</h4>
           <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
             <li>Create a new Zap in your Zapier account</li>
             <li>Choose "Webhooks by Zapier" as the trigger</li>
@@ -131,9 +122,7 @@ export function ZapierIntegration({
             onChange={(e) => setWebhookUrl(e.target.value)}
             disabled={status === "connected"}
           />
-          <p className="text-xs text-gray-500">
-            The webhook URL from your Zapier Zap
-          </p>
+          <p className="text-xs text-gray-500">The webhook URL from your Zapier Zap</p>
         </div>
 
         {/* Include Partials Toggle */}
@@ -179,12 +168,7 @@ export function ZapierIntegration({
 
             {/* Test Connection */}
             <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleTest}
-                disabled={isTesting}
-              >
+              <Button size="sm" variant="outline" onClick={handleTest} disabled={isTesting}>
                 {isTesting ? (
                   <>
                     <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mr-2" />
@@ -206,9 +190,7 @@ export function ZapierIntegration({
               )}
 
               {testResult === "error" && (
-                <span className="text-sm text-red-600">
-                  Test failed. Check your webhook URL.
-                </span>
+                <span className="text-sm text-red-600">Test failed. Check your webhook URL.</span>
               )}
             </div>
           </div>

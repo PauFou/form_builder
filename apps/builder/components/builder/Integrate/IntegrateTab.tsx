@@ -56,12 +56,21 @@ const integrations: Integration[] = [
     icon: (
       <div className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center">
         <svg viewBox="0 0 24 24" className="w-7 h-7">
-          <path fill="#E01E5A" d="M6 15a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2h2v2z"/>
-          <path fill="#36C5F0" d="M8 15a2 2 0 0 1 2-2a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2a2 2 0 0 1-2-2v-5z"/>
-          <path fill="#2EB67D" d="M10 6a2 2 0 0 1-2-2a2 2 0 0 1 2-2a2 2 0 0 1 2 2v2h-2z"/>
-          <path fill="#ECB22E" d="M10 8a2 2 0 0 1 2 2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2a2 2 0 0 1 2-2h5z"/>
-          <path fill="#E01E5A" d="M18 10a2 2 0 0 1 2-2a2 2 0 0 1 2 2a2 2 0 0 1-2 2h-2v-2z"/>
-          <path fill="#36C5F0" d="M16 10a2 2 0 0 1-2 2a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2a2 2 0 0 1 2 2v5z"/>
+          <path fill="#E01E5A" d="M6 15a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2h2v2z" />
+          <path
+            fill="#36C5F0"
+            d="M8 15a2 2 0 0 1 2-2a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2a2 2 0 0 1-2-2v-5z"
+          />
+          <path fill="#2EB67D" d="M10 6a2 2 0 0 1-2-2a2 2 0 0 1 2-2a2 2 0 0 1 2 2v2h-2z" />
+          <path
+            fill="#ECB22E"
+            d="M10 8a2 2 0 0 1 2 2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2a2 2 0 0 1 2-2h5z"
+          />
+          <path fill="#E01E5A" d="M18 10a2 2 0 0 1 2-2a2 2 0 0 1 2 2a2 2 0 0 1-2 2h-2v-2z" />
+          <path
+            fill="#36C5F0"
+            d="M16 10a2 2 0 0 1-2 2a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2a2 2 0 0 1 2 2v5z"
+          />
         </svg>
       </div>
     ),
@@ -126,7 +135,8 @@ const integrations: Integration[] = [
   {
     id: "google_tag_manager",
     name: "Google Tag Manager",
-    description: "Track your form by sending data to Google Analytics, Google Ads, Facebook Pixel and more.",
+    description:
+      "Track your form by sending data to Google Analytics, Google Ads, Facebook Pixel and more.",
     icon: (
       <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center">
         <Tag className="w-6 h-6 text-white" />
@@ -154,9 +164,7 @@ interface IntegrateTabProps {
 }
 
 export function IntegrateTab({ formId }: IntegrateTabProps) {
-  const [connectedIntegrations, setConnectedIntegrations] = React.useState<Set<string>>(
-    new Set()
-  );
+  const [connectedIntegrations, setConnectedIntegrations] = React.useState<Set<string>>(new Set());
 
   const handleConnect = (id: string) => {
     // Toggle connection status
@@ -198,9 +206,7 @@ export function IntegrateTab({ formId }: IntegrateTabProps) {
                   {integration.icon}
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-base font-semibold text-gray-900">
-                        {integration.name}
-                      </h3>
+                      <h3 className="text-base font-semibold text-gray-900">{integration.name}</h3>
                       {integration.isPro && (
                         <span className="px-2 py-0.5 bg-[#FF6B35] text-white text-xs font-bold rounded">
                           PRO

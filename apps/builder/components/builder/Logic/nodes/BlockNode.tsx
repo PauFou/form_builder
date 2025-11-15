@@ -20,9 +20,7 @@ export function BlockNode({ data }: NodeProps) {
     >
       <Handle type="target" position={Position.Top} className="w-3 h-3" />
 
-      <div className="text-xl font-medium text-gray-900">
-        {data.label}
-      </div>
+      <div className="text-xl font-medium text-gray-900">{data.label}</div>
 
       <Handle type="source" position={Position.Bottom} className="w-3 h-3" />
     </div>

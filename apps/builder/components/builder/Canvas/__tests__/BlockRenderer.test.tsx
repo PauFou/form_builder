@@ -14,7 +14,7 @@ const MockDiv = React.forwardRef<HTMLDivElement, any>(({ children, ...props }, r
     {children}
   </div>
 ));
-MockDiv.displayName = 'MockDiv';
+MockDiv.displayName = "MockDiv";
 
 jest.mock("framer-motion", () => ({
   motion: {
@@ -47,9 +47,7 @@ describe("BlockRenderer", () => {
   };
 
   it("renders block with question text", () => {
-    renderWithDndContext(
-      <BlockRenderer block={mockBlock} pageId="page-1" index={0} />
-    );
+    renderWithDndContext(<BlockRenderer block={mockBlock} pageId="page-1" index={0} />);
 
     expect(screen.getByText("What is your name?")).toBeInTheDocument();
   });
@@ -57,9 +55,7 @@ describe("BlockRenderer", () => {
   it("shows required indicator when block is required", () => {
     const requiredBlock = { ...mockBlock, required: true };
 
-    renderWithDndContext(
-      <BlockRenderer block={requiredBlock} pageId="page-1" index={0} />
-    );
+    renderWithDndContext(<BlockRenderer block={requiredBlock} pageId="page-1" index={0} />);
 
     // Look for asterisk or "required" text
     expect(screen.getByText(/\*/)).toBeInTheDocument();
@@ -84,9 +80,7 @@ describe("BlockRenderer", () => {
   it("calls selectBlock when clicked", async () => {
     const user = userEvent.setup();
 
-    renderWithDndContext(
-      <BlockRenderer block={mockBlock} pageId="page-1" index={0} />
-    );
+    renderWithDndContext(<BlockRenderer block={mockBlock} pageId="page-1" index={0} />);
 
     const blockElement = screen.getByText("What is your name?").closest("div");
     if (blockElement) {
@@ -104,9 +98,7 @@ describe("BlockRenderer", () => {
       required: false,
     };
 
-    renderWithDndContext(
-      <BlockRenderer block={emailBlock} pageId="page-1" index={0} />
-    );
+    renderWithDndContext(<BlockRenderer block={emailBlock} pageId="page-1" index={0} />);
 
     expect(screen.getByText("What is your email?")).toBeInTheDocument();
   });
@@ -158,9 +150,7 @@ describe("BlockRenderer", () => {
       required: false,
     };
 
-    renderWithDndContext(
-      <BlockRenderer block={emptyBlock} pageId="page-1" index={0} />
-    );
+    renderWithDndContext(<BlockRenderer block={emptyBlock} pageId="page-1" index={0} />);
 
     // Should show some default text or placeholder
     const blockElement = screen.getByText(/question|untitled|empty/i);

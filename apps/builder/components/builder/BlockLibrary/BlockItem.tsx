@@ -63,7 +63,9 @@ export function BlockItem({ block }: BlockItemProps) {
 
       {/* Text content with improved hierarchy */}
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors duration-200">{block.label}</p>
+        <p className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors duration-200">
+          {block.label}
+        </p>
         <p className="text-xs text-muted-foreground/80 truncate">{block.description}</p>
       </div>
     </motion.div>

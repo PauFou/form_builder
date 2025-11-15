@@ -142,8 +142,8 @@ export function FormBuilder({ formId }: FormBuilderProps) {
     const pointerCollisions = pointerWithin(args);
 
     // Filter to only get block collisions (not page containers)
-    const blockCollisions = pointerCollisions.filter(collision => {
-      const container = args.droppableContainers.find(c => c.id === collision.id);
+    const blockCollisions = pointerCollisions.filter((collision) => {
+      const container = args.droppableContainers.find((c) => c.id === collision.id);
       return container?.data.current?.type === "block";
     });
 
@@ -324,7 +324,6 @@ export function FormBuilder({ formId }: FormBuilderProps) {
       }
     }
   };
-
 
   if (!form) {
     return (

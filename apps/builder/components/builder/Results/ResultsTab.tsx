@@ -17,7 +17,10 @@ export function ResultsTab({ formId }: ResultsTabProps) {
   const [activeSubTab, setActiveSubTab] = useState<SubTab>("submissions");
   const [submissionFilter, setSubmissionFilter] = useState<"completed" | "partial">("completed");
   const [searchQuery, setSearchQuery] = useState("");
-  const [dateRange, setDateRange] = useState<{ start: string; end: string }>({ start: "", end: "" });
+  const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
+    start: "",
+    end: "",
+  });
   const [filterTags, setFilterTags] = useState<string[]>([]);
 
   // Mock data - in production this would come from API
@@ -186,9 +189,7 @@ export function ResultsTab({ formId }: ResultsTabProps) {
                 <div className="text-center py-20">
                   <p className="text-base text-gray-600">
                     No complete submissions yet. Please{" "}
-                    <button className="text-blue-600 hover:text-blue-700 underline">
-                      share
-                    </button>{" "}
+                    <button className="text-blue-600 hover:text-blue-700 underline">share</button>{" "}
                     your form to the world to start collecting submissions.
                   </p>
                 </div>

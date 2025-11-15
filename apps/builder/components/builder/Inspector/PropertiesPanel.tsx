@@ -13,7 +13,16 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { Input, Label, Textarea, Button, Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@skemya/ui";
+import {
+  Input,
+  Label,
+  Textarea,
+  Button,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@skemya/ui";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 import { cn } from "../../../lib/utils";
 import { RichTextToolbar } from "./RichTextToolbar";
@@ -187,19 +196,24 @@ export function PropertiesPanel() {
             </AccordionTrigger>
             <AccordionContent className="px-6 pb-4">
               <div className="space-y-2">
-                {["First Name", "Last Name", "Email", "Phone Number", "Company"].map((fieldName, index) => (
-                  <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100">
-                    <span className="text-xs text-gray-700">{fieldName}</span>
-                    <div className="flex items-center gap-2">
-                      <button className="p-1.5 hover:bg-gray-100 rounded transition-colors">
-                        <Eye className="w-4 h-4 text-gray-600" />
-                      </button>
-                      <button className="p-1.5 hover:bg-gray-100 rounded transition-colors">
-                        <Settings className="w-4 h-4 text-gray-600" />
-                      </button>
+                {["First Name", "Last Name", "Email", "Phone Number", "Company"].map(
+                  (fieldName, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between py-2 border-b border-gray-100"
+                    >
+                      <span className="text-xs text-gray-700">{fieldName}</span>
+                      <div className="flex items-center gap-2">
+                        <button className="p-1.5 hover:bg-gray-100 rounded transition-colors">
+                          <Eye className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <button className="p-1.5 hover:bg-gray-100 rounded transition-colors">
+                          <Settings className="w-4 h-4 text-gray-600" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                )}
               </div>
             </AccordionContent>
           </AccordionItem>

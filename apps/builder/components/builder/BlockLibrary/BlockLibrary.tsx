@@ -75,8 +75,18 @@ export function BlockLibrary() {
                   )}
                 >
                   <GripVertical className="w-3.5 h-3.5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                  <FileText className={cn("w-4 h-4 flex-shrink-0", isSelected ? "text-pink-600" : "text-gray-400")} />
-                  <span className={cn("text-sm flex-1 truncate", isSelected ? "text-pink-900 font-medium" : "text-gray-700")}>
+                  <FileText
+                    className={cn(
+                      "w-4 h-4 flex-shrink-0",
+                      isSelected ? "text-pink-600" : "text-gray-400"
+                    )}
+                  />
+                  <span
+                    className={cn(
+                      "text-sm flex-1 truncate",
+                      isSelected ? "text-pink-900 font-medium" : "text-gray-700"
+                    )}
+                  >
                     {index + 1}. {block.question || `${block.type} block`}
                   </span>
                 </button>
@@ -96,9 +106,7 @@ export function BlockLibrary() {
 
           <button className="w-full text-left px-3 py-2.5 rounded-md bg-pink-100 border border-pink-200 transition-all flex items-center gap-2">
             <FileText className="w-4 h-4 text-pink-600 flex-shrink-0" />
-            <span className="text-sm text-pink-900 flex-1 truncate">
-              Thank you! 🙏
-            </span>
+            <span className="text-sm text-pink-900 flex-1 truncate">Thank you! 🙏</span>
           </button>
         </div>
       </div>

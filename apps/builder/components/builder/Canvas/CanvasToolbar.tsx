@@ -12,7 +12,12 @@ interface CanvasToolbarProps {
   onOpenPreview?: () => void;
 }
 
-export function CanvasToolbar({ formId, onAddBlock, onOpenDesign, onOpenPreview }: CanvasToolbarProps) {
+export function CanvasToolbar({
+  formId,
+  onAddBlock,
+  onOpenDesign,
+  onOpenPreview,
+}: CanvasToolbarProps) {
   const router = useRouter();
 
   const handleLogic = () => {
@@ -66,10 +71,7 @@ export function CanvasToolbar({ formId, onAddBlock, onOpenDesign, onOpenPreview 
         >
           <Play className="w-4 h-4 text-gray-600" />
         </button>
-        <button
-          className="p-1.5 hover:bg-gray-100 rounded-md transition-colors"
-          title="Language"
-        >
+        <button className="p-1.5 hover:bg-gray-100 rounded-md transition-colors" title="Language">
           <Globe className="w-4 h-4 text-gray-600" />
         </button>
         <button

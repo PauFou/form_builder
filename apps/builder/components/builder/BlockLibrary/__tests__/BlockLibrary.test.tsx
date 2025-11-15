@@ -10,7 +10,7 @@ const MockDiv = React.forwardRef<HTMLDivElement, any>(({ children, ...props }, r
     {children}
   </div>
 ));
-MockDiv.displayName = 'MockDiv';
+MockDiv.displayName = "MockDiv";
 
 jest.mock("framer-motion", () => ({
   motion: {
@@ -20,9 +20,7 @@ jest.mock("framer-motion", () => ({
 
 // Mock BlockItem to simplify testing
 jest.mock("../BlockItem", () => ({
-  BlockItem: ({ block }: any) => (
-    <div data-testid={`block-item-${block.type}`}>{block.label}</div>
-  ),
+  BlockItem: ({ block }: any) => <div data-testid={`block-item-${block.type}`}>{block.label}</div>,
 }));
 
 describe("BlockLibrary", () => {
@@ -91,9 +89,7 @@ describe("BlockLibrary", () => {
     const user = userEvent.setup();
     renderWithDndContext(<BlockLibrary />);
 
-    const searchInput = screen.getByPlaceholderText(
-      "Search fields..."
-    ) as HTMLInputElement;
+    const searchInput = screen.getByPlaceholderText("Search fields...") as HTMLInputElement;
 
     // Type search query
     await user.type(searchInput, "email");

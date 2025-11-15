@@ -14,10 +14,10 @@ const MockDiv = React.forwardRef<HTMLDivElement, any>(({ children, ...props }, r
     {children}
   </div>
 ));
-MockDiv.displayName = 'MockDiv';
+MockDiv.displayName = "MockDiv";
 
 const AnimatePresence = ({ children }: any) => <>{children}</>;
-AnimatePresence.displayName = 'AnimatePresence';
+AnimatePresence.displayName = "AnimatePresence";
 
 jest.mock("framer-motion", () => ({
   motion: {
@@ -72,9 +72,7 @@ describe("FormCanvas", () => {
         {
           id: "page-1",
           title: "Page 1",
-          blocks: [
-            { id: "block-1", type: "short_text", question: "Question 1" },
-          ],
+          blocks: [{ id: "block-1", type: "short_text", question: "Question 1" }],
         },
       ],
     };

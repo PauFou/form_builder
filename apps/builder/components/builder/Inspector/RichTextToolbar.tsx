@@ -36,7 +36,8 @@ export function RichTextToolbar({ value, onChange, textareaRef }: RichTextToolba
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const selectedText = value.substring(start, end);
-    const newValue = value.substring(0, start) + before + selectedText + after + value.substring(end);
+    const newValue =
+      value.substring(0, start) + before + selectedText + after + value.substring(end);
 
     onChange(newValue);
 

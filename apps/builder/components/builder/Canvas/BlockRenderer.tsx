@@ -82,7 +82,8 @@ export function BlockRenderer({
   showDropIndicator,
   dropAbove,
 }: BlockRendererProps) {
-  const { selectBlock, selectedBlockId, duplicateBlock, deleteBlock, updateBlock } = useFormBuilderStore();
+  const { selectBlock, selectedBlockId, duplicateBlock, deleteBlock, updateBlock } =
+    useFormBuilderStore();
 
   const {
     attributes,
@@ -124,18 +125,23 @@ export function BlockRenderer({
     deleteBlock(block.id);
   };
 
-  const [editingField, setEditingField] = React.useState<'question' | 'description' | 'placeholder' | null>(null);
+  const [editingField, setEditingField] = React.useState<
+    "question" | "description" | "placeholder" | null
+  >(null);
   const [editValue, setEditValue] = React.useState("");
 
-  const handleEditStart = (field: 'question' | 'description' | 'placeholder', e: React.MouseEvent) => {
+  const handleEditStart = (
+    field: "question" | "description" | "placeholder",
+    e: React.MouseEvent
+  ) => {
     if (!isSelected) return;
     e.stopPropagation();
     setEditingField(field);
-    if (field === 'question') {
+    if (field === "question") {
       setEditValue(block.question || "");
-    } else if (field === 'description') {
+    } else if (field === "description") {
       setEditValue(block.description || "");
-    } else if (field === 'placeholder') {
+    } else if (field === "placeholder") {
       setEditValue(block.settings?.placeholder || "");
     }
   };
@@ -143,11 +149,11 @@ export function BlockRenderer({
   const handleEditSave = () => {
     if (editingField) {
       let updates: any = {};
-      if (editingField === 'question') {
+      if (editingField === "question") {
         updates = { question: editValue };
-      } else if (editingField === 'description') {
+      } else if (editingField === "description") {
         updates = { description: editValue };
-      } else if (editingField === 'placeholder') {
+      } else if (editingField === "placeholder") {
         updates = { settings: { ...block.settings, placeholder: editValue } };
       }
       updateBlock(block.id, updates);
@@ -161,10 +167,10 @@ export function BlockRenderer({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleEditSave();
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       handleEditCancel();
     }
   };
@@ -196,98 +202,111 @@ export function BlockRenderer({
           !showDragging && "hover:border-primary/50 hover:shadow-sm"
         )}
       >
-      {/* Drag Handle */}
-      <div
-        className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-move z-10"
-        {...attributes}
-        {...listeners}
-      >
-        <GripVertical className="h-5 w-5 text-muted-foreground" />
-      </div>
+        {/* Drag Handle */}
+        <div
+          className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-move z-10"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical className="h-5 w-5 text-muted-foreground" />
+        </div>
 
-      {/* Content */}
-      <div className="pl-6">
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-            <Icon className="h-5 w-5 text-muted-foreground" />
-          </div>
+        {/* Content */}
+        <div className="pl-6">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+              <Icon className="h-5 w-5 text-muted-foreground" />
+            </div>
 
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              {editingField === 'question' ? (
-                <input
-                  type="text"
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                {editingField === "question" ? (
+                  <input
+                    type="text"
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onBlur={handleEditSave}
+                    onKeyDown={handleKeyDown}
+                    autoFocus
+                    className="font-medium bg-background border border-primary rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-primary flex-1"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                ) : (
+                  <h3
+                    className={cn(
+                      "font-medium",
+                      isSelected &&
+                        "cursor-text hover:bg-muted/50 px-2 py-0.5 rounded transition-colors"
+                    )}
+                    onClick={(e) => handleEditStart("question", e)}
+                    title={isSelected ? "Click to edit" : ""}
+                  >
+                    {block.question ||
+                      `${block.type.replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase())}`}
+                  </h3>
+                )}
+                {block.required && <span className="text-xs text-destructive">*</span>}
+              </div>
+
+              {editingField === "description" ? (
+                <textarea
                   value={editValue}
                   onChange={(e) => setEditValue(e.target.value)}
                   onBlur={handleEditSave}
                   onKeyDown={handleKeyDown}
                   autoFocus
-                  className="font-medium bg-background border border-primary rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-primary flex-1"
+                  rows={2}
+                  className="w-full text-sm text-muted-foreground mt-1 bg-background border border-primary rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary resize-none"
                   onClick={(e) => e.stopPropagation()}
                 />
-              ) : (
-                <h3
+              ) : block.description || (isSelected && !block.description) ? (
+                <p
                   className={cn(
-                    "font-medium",
-                    isSelected && "cursor-text hover:bg-muted/50 px-2 py-0.5 rounded transition-colors"
+                    "text-sm text-muted-foreground mt-1",
+                    isSelected &&
+                      "cursor-text hover:bg-muted/50 px-2 py-1 rounded transition-colors min-h-[1.5rem]"
                   )}
-                  onClick={(e) => handleEditStart('question', e)}
-                  title={isSelected ? "Click to edit" : ""}
+                  onClick={(e) => handleEditStart("description", e)}
+                  title={isSelected ? "Click to edit description" : ""}
                 >
-                  {block.question ||
-                    `${block.type.replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase())}`}
-                </h3>
-              )}
-              {block.required && <span className="text-xs text-destructive">*</span>}
+                  {block.description || (isSelected ? "Add description..." : "")}
+                </p>
+              ) : null}
+
+              {/* Preview based on block type */}
+              <div className="mt-3">
+                {renderBlockPreview(
+                  block,
+                  isSelected,
+                  editingField,
+                  editValue,
+                  setEditValue,
+                  handleEditStart,
+                  handleEditSave,
+                  handleKeyDown
+                )}
+              </div>
             </div>
 
-            {editingField === 'description' ? (
-              <textarea
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                onBlur={handleEditSave}
-                onKeyDown={handleKeyDown}
-                autoFocus
-                rows={2}
-                className="w-full text-sm text-muted-foreground mt-1 bg-background border border-primary rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-                onClick={(e) => e.stopPropagation()}
-              />
-            ) : block.description || (isSelected && !block.description) ? (
-              <p
-                className={cn(
-                  "text-sm text-muted-foreground mt-1",
-                  isSelected && "cursor-text hover:bg-muted/50 px-2 py-1 rounded transition-colors min-h-[1.5rem]"
-                )}
-                onClick={(e) => handleEditStart('description', e)}
-                title={isSelected ? "Click to edit description" : ""}
+            {/* Actions */}
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+              <Button size="sm" variant="ghost" onClick={handleSelect} className="h-8 w-8 p-0">
+                <Settings className="h-4 w-4" />
+              </Button>
+              <Button size="sm" variant="ghost" onClick={handleDuplicate} className="h-8 w-8 p-0">
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleDelete}
+                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
               >
-                {block.description || (isSelected ? "Add description..." : "")}
-              </p>
-            ) : null}
-
-            {/* Preview based on block type */}
-            <div className="mt-3">{renderBlockPreview(block, isSelected, editingField, editValue, setEditValue, handleEditStart, handleEditSave, handleKeyDown)}</div>
-          </div>
-
-          {/* Actions */}
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-            <Button size="sm" variant="ghost" onClick={handleSelect} className="h-8 w-8 p-0">
-              <Settings className="h-4 w-4" />
-            </Button>
-            <Button size="sm" variant="ghost" onClick={handleDuplicate} className="h-8 w-8 p-0">
-              <Copy className="h-4 w-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleDelete}
-              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
       </div>
     </div>
   );
@@ -296,10 +315,13 @@ export function BlockRenderer({
 function renderBlockPreview(
   block: Block,
   isSelected: boolean = false,
-  editingField: 'question' | 'description' | 'placeholder' | null = null,
+  editingField: "question" | "description" | "placeholder" | null = null,
   editValue: string = "",
   setEditValue: (value: string) => void = () => {},
-  handleEditStart: (field: 'question' | 'description' | 'placeholder', e: React.MouseEvent) => void = () => {},
+  handleEditStart: (
+    field: "question" | "description" | "placeholder",
+    e: React.MouseEvent
+  ) => void = () => {},
   handleEditSave: () => void = () => {},
   handleKeyDown: (e: React.KeyboardEvent) => void = () => {}
 ) {
@@ -332,7 +354,7 @@ function renderBlockPreview(
     case "number":
       return (
         <div className="w-full max-w-md h-9 rounded-md border bg-background/50 flex items-center px-3">
-          {editingField === 'placeholder' ? (
+          {editingField === "placeholder" ? (
             <input
               type="text"
               value={editValue}
@@ -350,7 +372,7 @@ function renderBlockPreview(
                 "text-sm text-muted-foreground/60 w-full",
                 isSelected && "cursor-text hover:text-muted-foreground transition-colors"
               )}
-              onClick={(e) => handleEditStart('placeholder', e)}
+              onClick={(e) => handleEditStart("placeholder", e)}
               title={isSelected ? "Click to edit placeholder" : ""}
             >
               {block.settings?.placeholder || (isSelected ? "Add placeholder..." : "")}
@@ -362,7 +384,7 @@ function renderBlockPreview(
     case "long_text":
       return (
         <div className="w-full max-w-md h-20 rounded-md border bg-background/50 flex items-start p-3">
-          {editingField === 'placeholder' ? (
+          {editingField === "placeholder" ? (
             <textarea
               value={editValue}
               onChange={(e) => setEditValue(e.target.value)}
@@ -380,7 +402,7 @@ function renderBlockPreview(
                 "text-sm text-muted-foreground/60 w-full",
                 isSelected && "cursor-text hover:text-muted-foreground transition-colors"
               )}
-              onClick={(e) => handleEditStart('placeholder', e)}
+              onClick={(e) => handleEditStart("placeholder", e)}
               title={isSelected ? "Click to edit placeholder" : ""}
             >
               {block.settings?.placeholder || (isSelected ? "Add placeholder..." : "")}
@@ -483,7 +505,10 @@ function renderBlockPreview(
           <span className="text-xs text-muted-foreground">0</span>
           <div className="flex gap-1">
             {[...Array(11)].map((_, i) => (
-              <div key={i} className="w-8 h-8 rounded border bg-background/50 flex items-center justify-center text-xs text-muted-foreground">
+              <div
+                key={i}
+                className="w-8 h-8 rounded border bg-background/50 flex items-center justify-center text-xs text-muted-foreground"
+              >
                 {i}
               </div>
             ))}
@@ -498,7 +523,10 @@ function renderBlockPreview(
           <span className="text-xs text-muted-foreground">Not likely</span>
           <div className="flex gap-1">
             {[...Array(11)].map((_, i) => (
-              <div key={i} className="w-8 h-8 rounded border bg-background/50 flex items-center justify-center text-xs text-muted-foreground">
+              <div
+                key={i}
+                className="w-8 h-8 rounded border bg-background/50 flex items-center justify-center text-xs text-muted-foreground"
+              >
                 {i}
               </div>
             ))}
@@ -560,7 +588,9 @@ function renderBlockPreview(
           <div className="grid grid-cols-4 gap-2">
             <div></div>
             {["Option 1", "Option 2", "Option 3"].map((opt, idx) => (
-              <div key={idx} className="text-xs text-muted-foreground text-center">{opt}</div>
+              <div key={idx} className="text-xs text-muted-foreground text-center">
+                {opt}
+              </div>
             ))}
             {["Row 1", "Row 2"].map((row, rowIdx) => (
               <React.Fragment key={rowIdx}>

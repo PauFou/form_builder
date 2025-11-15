@@ -12,9 +12,7 @@ export function ConditionNode({ data }: NodeProps) {
       <div className="flex items-center gap-2">
         <GitBranch className="w-4 h-4 text-orange-600 flex-shrink-0" />
         <div className="flex-1 min-w-0">
-          <div className="text-xs font-medium text-orange-900 truncate">
-            {data.label}
-          </div>
+          <div className="text-xs font-medium text-orange-900 truncate">{data.label}</div>
           <div className="text-xs text-orange-600 mt-0.5">
             {data.operator && `${data.operator} ${data.value || "..."}`}
           </div>

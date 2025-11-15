@@ -21,9 +21,7 @@ export function FormPreview() {
 
   // Get the selected block or first block
   const blocks = form.pages[0].blocks;
-  const currentBlockIndex = selectedBlockId
-    ? blocks.findIndex((b) => b.id === selectedBlockId)
-    : 0;
+  const currentBlockIndex = selectedBlockId ? blocks.findIndex((b) => b.id === selectedBlockId) : 0;
   const currentBlock = blocks[currentBlockIndex >= 0 ? currentBlockIndex : 0];
 
   if (!currentBlock) {
@@ -57,25 +55,15 @@ function renderBlockContent(block: Block, currentIndex: number, totalBlocks: num
       {/* Cover Image/Icon */}
       {block.coverImage && (
         <div className="flex justify-center mb-8">
-          <img
-            src={block.coverImage}
-            alt="Cover"
-            className="w-48 h-48 rounded-3xl object-cover"
-          />
+          <img src={block.coverImage} alt="Cover" className="w-48 h-48 rounded-3xl object-cover" />
         </div>
       )}
 
       {/* Main Question/Title */}
-      <h1 className="text-5xl font-bold text-gray-900">
-        {block.question || "Hey there 😊"}
-      </h1>
+      <h1 className="text-5xl font-bold text-gray-900">{block.question || "Hey there 😊"}</h1>
 
       {/* Description */}
-      {block.description && (
-        <p className="text-lg text-gray-600">
-          {block.description}
-        </p>
-      )}
+      {block.description && <p className="text-lg text-gray-600">{block.description}</p>}
 
       {/* Button */}
       <button className="mt-8 px-8 py-3 bg-slate-700 hover:bg-slate-800 text-white rounded-md font-medium transition-colors text-base">

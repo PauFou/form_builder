@@ -27,13 +27,9 @@ export function TrialBanner({ daysLeft = 2, onDismiss }: TrialBannerProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4" />
-            <span className="text-sm font-medium">
-              {daysLeft}-day free trial
-            </span>
+            <span className="text-sm font-medium">{daysLeft}-day free trial</span>
             <span className="text-sm opacity-90">•</span>
-            <span className="text-sm opacity-90">
-              Unlock all features with Pro
-            </span>
+            <span className="text-sm opacity-90">Unlock all features with Pro</span>
           </div>
           <div className="flex items-center gap-4">
             <Link

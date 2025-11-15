@@ -112,7 +112,11 @@ export function AnalyticsCharts({ formId }: AnalyticsChartsProps) {
             <div className="w-4 h-4 rounded-full bg-blue-600 flex items-center justify-center">
               <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
           </div>
@@ -140,7 +144,11 @@ export function AnalyticsCharts({ formId }: AnalyticsChartsProps) {
             <span className="text-xs font-medium text-green-700">Submissions</span>
             <div className="w-4 h-4 rounded-full bg-green-600 flex items-center justify-center">
               <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
           </div>
@@ -168,7 +176,11 @@ export function AnalyticsCharts({ formId }: AnalyticsChartsProps) {
             <span className="text-xs font-medium text-pink-700">Completion Time</span>
             <div className="w-4 h-4 rounded-full bg-pink-600 flex items-center justify-center">
               <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
           </div>
@@ -181,11 +193,9 @@ export function AnalyticsCharts({ formId }: AnalyticsChartsProps) {
       <div className="bg-pink-50 rounded-lg p-6 flex items-start gap-4 border border-pink-100">
         <Lock className="w-6 h-6 text-pink-600 flex-shrink-0 mt-0.5" />
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">
-            Analytics are limited
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">Analytics are limited</h3>
           <p className="text-sm text-gray-600">
-            See trends and the drop-off rate for each question in your form.{' '}
+            See trends and the drop-off rate for each question in your form.{" "}
             <a
               href="https://help.youform.com/p/1p4zJnmzzWzbuL/Form-analytics-and-drop-off-rate"
               target="_blank"
@@ -244,10 +254,7 @@ export function AnalyticsCharts({ formId }: AnalyticsChartsProps) {
                 fontSize: "12px",
               }}
             />
-            <Legend
-              wrapperStyle={{ fontSize: "12px", paddingTop: "20px" }}
-              iconType="circle"
-            />
+            <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "20px" }} iconType="circle" />
             <Area
               type="monotone"
               dataKey="views"
@@ -272,7 +279,8 @@ export function AnalyticsCharts({ formId }: AnalyticsChartsProps) {
       <div className="bg-white rounded-lg border border-gray-200 p-6 relative">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Drop-off Rate</h2>
         <p className="text-sm text-gray-600 mb-6">
-          The drop-off rate shows the percentage of users who view a question but don't move past it.{' '}
+          The drop-off rate shows the percentage of users who view a question but don't move past
+          it.{" "}
           <a
             href="https://help.youform.com/p/1p4zJnmzzWzbuL/Form-analytics-and-drop-off-rate"
             target="_blank"
@@ -313,9 +321,7 @@ export function AnalyticsCharts({ formId }: AnalyticsChartsProps) {
                 </td>
                 <td className="py-4 text-gray-900">{block.views}</td>
                 <td className="py-4">
-                  <span className="font-semibold text-gray-900">
-                    {block.dropoff}%
-                  </span>
+                  <span className="font-semibold text-gray-900">{block.dropoff}%</span>
                 </td>
               </tr>
             ))}
