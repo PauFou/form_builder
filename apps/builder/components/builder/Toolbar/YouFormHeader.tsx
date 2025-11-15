@@ -17,20 +17,20 @@ export function YouFormHeader({ showNavigation = false }: YouFormHeaderProps) {
   const router = useRouter();
 
   return (
-    <header className="w-full bg-transparent">
-      <div className="max-w-[1200px] mx-auto px-20 py-8 flex items-center justify-between">
+    <header className="w-full bg-white/60 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-50">
+      <div className="max-w-[1200px] mx-auto px-20 py-6 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/forms" className="flex-shrink-0">
-          <div className="flex items-center gap-2">
-            {/* Logo icon - orange form icon */}
-            <div className="w-8 h-8 bg-orange-500 rounded-md flex items-center justify-center">
+        <Link href="/forms" className="flex-shrink-0 group">
+          <div className="flex items-center gap-3">
+            {/* Logo icon - modern gradient */}
+            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-200 group-hover:scale-105">
               <svg
-                width="20"
-                height="20"
+                width="22"
+                height="22"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="white"
-                strokeWidth="2"
+                strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
@@ -42,7 +42,9 @@ export function YouFormHeader({ showNavigation = false }: YouFormHeaderProps) {
               </svg>
             </div>
             {/* YOUFORM text */}
-            <span className="text-xl font-bold text-black tracking-tight">YOUFORM</span>
+            <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent tracking-tight">
+              YOUFORM
+            </span>
           </div>
         </Link>
 
@@ -71,19 +73,19 @@ export function YouFormHeader({ showNavigation = false }: YouFormHeaderProps) {
         )}
 
         {/* Right Section - Action Buttons */}
-        <div className="flex items-center gap-4">
-          {/* Log In Button - Bright Yellow */}
+        <div className="flex items-center gap-3">
+          {/* Log In Button - Modern Yellow */}
           <button
             onClick={() => router.push("/login")}
-            className="px-6 py-2 text-base font-normal text-black bg-[#FFE711] border-2 border-black rounded-md hover:bg-[#FFD700] transition-colors"
+            className="px-5 py-2.5 text-sm font-medium text-gray-900 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5"
           >
             Log In
           </button>
 
-          {/* Sign Up Button - Teal */}
+          {/* Sign Up Button - Modern Teal */}
           <button
             onClick={() => router.push("/signup")}
-            className="px-6 py-2 text-base font-normal text-black bg-[#45AD94] border-2 border-black rounded-md hover:bg-[#3D9A82] transition-colors"
+            className="px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5"
           >
             Sign Up
           </button>
