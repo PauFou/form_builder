@@ -88,26 +88,26 @@ function DashboardStats({ forms }: { forms: FormWithStats[] }) {
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-      <div className="bg-white border border-gray-200 rounded-lg p-5 hover:border-indigo-300 transition-colors">
-        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Total Forms</div>
+      <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-indigo-300 transition-colors">
+        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Total Forms</div>
         <div className="text-3xl font-semibold text-gray-900">{stats.totalForms}</div>
         <div className="text-sm text-gray-500 mt-1">{stats.publishedForms} published</div>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-lg p-5 hover:border-indigo-300 transition-colors">
-        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Submissions</div>
+      <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-indigo-300 transition-colors">
+        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Submissions</div>
         <div className="text-3xl font-semibold text-gray-900">{stats.totalSubmissions}</div>
         <div className="text-sm text-gray-500 mt-1">All time responses</div>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-lg p-5 hover:border-indigo-300 transition-colors">
-        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Total Views</div>
+      <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-indigo-300 transition-colors">
+        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Total Views</div>
         <div className="text-3xl font-semibold text-gray-900">{stats.totalViews}</div>
         <div className="text-sm text-gray-500 mt-1">Form impressions</div>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-lg p-5 hover:border-indigo-300 transition-colors">
-        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Completion</div>
+      <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-indigo-300 transition-colors">
+        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Completion</div>
         <div className="text-3xl font-semibold text-gray-900">{stats.avgCompletionRate.toFixed(0)}%</div>
         <div className="text-sm text-gray-500 mt-1">Average rate</div>
       </div>
@@ -430,9 +430,9 @@ export default function FormsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <YouFormHeader showNavigation={false} />
-      <div className="max-w-7xl mx-auto px-8 py-6">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Top bar */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -530,11 +530,11 @@ export default function FormsPage() {
             {forms.map((form, index) => (
               <div
                 key={form.id}
-                className="group bg-white border border-gray-200 rounded-lg p-5 hover:border-indigo-300 transition-colors cursor-pointer"
+                className="group bg-white border border-gray-200 rounded-lg p-6 hover:border-indigo-300 transition-colors cursor-pointer"
                 onClick={() => router.push(`/forms/${form.id}/edit`)}
               >
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-lg font-normal text-gray-900 flex-1 line-clamp-2 leading-snug group-hover:text-gray-700 transition-colors">
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-base font-medium text-gray-900 flex-1 line-clamp-2 leading-snug">
                     {form.title}
                   </h3>
                   <DropdownMenu>
@@ -600,7 +600,7 @@ export default function FormsPage() {
                   </DropdownMenu>
                 </div>
 
-                <div className="text-sm text-gray-500 mt-3">
+                <div className="text-sm text-gray-500">
                   {form.submission_count === 0 ? (
                     <span>No responses</span>
                   ) : (
