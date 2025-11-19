@@ -396,7 +396,7 @@ export default function FormsPage() {
           <div className="flex items-center gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-3.5 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                <button className="flex items-center gap-2 px-3.5 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors">
                   <Folder className="w-4 h-4 text-gray-500" />
                   <span className="text-sm text-gray-700">{organization?.name || "test"}</span>
                   <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -430,11 +430,19 @@ export default function FormsPage() {
                   <MoreVertical className="w-4 h-4 text-gray-600" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem>Workspace Settings</DropdownMenuItem>
-                <DropdownMenuItem>Manage Members</DropdownMenuItem>
+              <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuLabel className="text-xs text-gray-500 uppercase tracking-wider">
+                  For this workspace
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Leave Workspace</DropdownMenuItem>
+                <DropdownMenuItem>Rename</DropdownMenuItem>
+                <Link href="/analytics">
+                  <DropdownMenuItem>Analytics</DropdownMenuItem>
+                </Link>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-red-600 focus:text-red-600">
+                  Delete
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -447,12 +455,12 @@ export default function FormsPage() {
                 placeholder="Search forms..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 pr-4 py-2 w-72 bg-white border border-gray-300 rounded-md text-sm placeholder:text-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="pl-9 pr-4 py-2 w-72 bg-white border border-gray-300 rounded text-sm placeholder:text-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-48 bg-white border-gray-300 rounded-md text-sm">
+              <SelectTrigger className="w-48 bg-white border-gray-300 rounded text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -464,7 +472,7 @@ export default function FormsPage() {
 
             <button
               onClick={() => setCreateDialogOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-md transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded transition-colors"
             >
               <Plus className="w-4 h-4" />
               New Form
@@ -476,7 +484,7 @@ export default function FormsPage() {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="p-6 bg-white border border-gray-200 rounded">
+              <div key={i} className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                 <Skeleton className="h-6 w-3/4 mb-2" />
                 <Skeleton className="h-4 w-1/2" />
               </div>
@@ -487,11 +495,11 @@ export default function FormsPage() {
             {forms.map((form, index) => (
               <div
                 key={form.id}
-                className="group bg-white border border-gray-200 rounded overflow-hidden hover:border-indigo-300 transition-colors"
+                className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-indigo-300 transition-colors shadow-sm hover:shadow-md"
               >
-                {/* Title section - prominent */}
-                <div className="p-6 pb-4">
-                  <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 leading-tight">
+                {/* Title section - centered */}
+                <div className="p-6 pb-4 flex items-center justify-center min-h-[120px]">
+                  <h3 className="text-lg font-semibold text-gray-900 text-center line-clamp-3 leading-tight">
                     {form.title}
                   </h3>
                 </div>
