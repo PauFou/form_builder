@@ -245,10 +245,10 @@ export default function FormsPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navigation />
-        <div className="max-w-7xl mx-auto px-8 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
           {/* Top bar */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 px-3.5 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
@@ -298,31 +298,31 @@ export default function FormsPage() {
               </DropdownMenu>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
               <button
                 onClick={() => setCreateDialogOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-[#475569] hover:bg-[#334155] text-white text-sm font-medium rounded-md transition-colors"
+                className="flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto bg-[#475569] hover:bg-[#334155] text-white text-sm font-medium rounded-md transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                New Form
+                <span>New Form</span>
               </button>
             </div>
           </div>
 
           {/* Empty state content */}
           <div
-            className="flex items-center justify-center"
+            className="flex items-center justify-center px-4"
             style={{ minHeight: "calc(100vh - 200px)" }}
           >
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 mb-6 border-2 border-gray-400 rounded-full">
-                <Info className="w-7 h-7 text-gray-600" />
+            <div className="text-center max-w-md">
+              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 mb-4 sm:mb-6 border-2 border-gray-400 rounded-full">
+                <Info className="w-5 h-5 sm:w-7 sm:h-7 text-gray-600" />
               </div>
-              <h3 className="text-base font-medium text-gray-800 mb-2">
+              <h3 className="text-sm sm:text-base font-medium text-gray-800 mb-2">
                 No forms created in this workspace yet.
               </h3>
-              <p className="text-sm text-gray-600 mb-8">What would you like to do?</p>
-              <div className="flex items-center justify-center gap-3">
+              <p className="text-xs sm:text-sm text-gray-600 mb-6 sm:mb-8">What would you like to do?</p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
                 <Button
                   onClick={() => setCreateDialogOpen(true)}
                   variant="youform-secondary"
@@ -390,10 +390,10 @@ export default function FormsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
         {/* Top bar */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6 sm:mb-8">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full lg:w-auto">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 px-3.5 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors">
@@ -447,20 +447,20 @@ export default function FormsPage() {
             </DropdownMenu>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="relative">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full lg:w-auto">
+            <div className="relative flex-1 min-w-[200px] sm:flex-none sm:w-auto">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search forms..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 pr-4 py-2 h-10 w-72 bg-white border border-gray-300 rounded text-sm placeholder:text-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="pl-9 pr-4 py-2 h-10 w-full sm:w-64 lg:w-72 bg-white border border-gray-300 rounded text-sm placeholder:text-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-48 h-10 bg-white border-gray-300 rounded text-sm">
+              <SelectTrigger className="w-full sm:w-40 lg:w-48 h-10 bg-white border-gray-300 rounded text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="rounded">
@@ -472,17 +472,17 @@ export default function FormsPage() {
 
             <button
               onClick={() => setCreateDialogOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 h-10 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded transition-colors"
+              className="flex items-center justify-center gap-2 px-4 py-2 h-10 w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded transition-colors"
             >
               <Plus className="w-4 h-4" />
-              New Form
+              <span>New Form</span>
             </button>
           </div>
         </div>
 
         {/* Forms grid */}
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="p-6 bg-white border border-gray-200 rounded shadow-sm">
                 <Skeleton className="h-6 w-3/4 mb-2" />
@@ -491,15 +491,15 @@ export default function FormsPage() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {forms.map((form, index) => (
               <div
                 key={form.id}
                 className="group bg-white border border-gray-200 rounded overflow-hidden transition-shadow shadow-sm hover:shadow-md"
               >
                 {/* Title section - centered */}
-                <div className="p-6 pb-4 flex items-center justify-center min-h-[120px]">
-                  <h3 className="text-lg font-semibold text-gray-900 text-center line-clamp-3 leading-tight">
+                <div className="p-4 sm:p-6 pb-3 sm:pb-4 flex items-center justify-center min-h-[100px] sm:min-h-[120px]">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 text-center line-clamp-3 leading-tight">
                     {form.title}
                   </h3>
                 </div>
@@ -508,7 +508,7 @@ export default function FormsPage() {
                 <div className="border-t border-gray-200"></div>
 
                 {/* Bottom section - response count and menu */}
-                <div className="px-6 py-3 flex items-center justify-between">
+                <div className="px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
                   <div className="text-sm text-gray-600">
                     {form.submission_count === 0 ? (
                       <span>No responses</span>
