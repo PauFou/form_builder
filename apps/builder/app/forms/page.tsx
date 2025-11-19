@@ -402,7 +402,7 @@ export default function FormsPage() {
                   <ChevronDown className="w-4 h-4 text-gray-400" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuContent align="start" className="w-56 rounded">
                 <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
@@ -430,7 +430,7 @@ export default function FormsPage() {
                   <MoreVertical className="w-4 h-4 text-gray-600" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuContent align="start" className="w-56 rounded">
                 <DropdownMenuLabel className="text-xs text-gray-500 uppercase tracking-wider">
                   For this workspace
                 </DropdownMenuLabel>
@@ -455,15 +455,15 @@ export default function FormsPage() {
                 placeholder="Search forms..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 pr-4 py-2 w-72 bg-white border border-gray-300 rounded text-sm placeholder:text-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="pl-9 pr-4 py-2 h-10 w-72 bg-white border border-gray-300 rounded text-sm placeholder:text-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-48 bg-white border-gray-300 rounded text-sm">
+              <SelectTrigger className="w-48 h-10 bg-white border-gray-300 rounded text-sm">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded">
                 <SelectItem value="created">Created (old → new)</SelectItem>
                 <SelectItem value="updated">Last Updated</SelectItem>
                 <SelectItem value="name">Name (A-Z)</SelectItem>
@@ -472,7 +472,7 @@ export default function FormsPage() {
 
             <button
               onClick={() => setCreateDialogOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded transition-colors"
+              className="flex items-center gap-2 px-4 py-2 h-10 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded transition-colors"
             >
               <Plus className="w-4 h-4" />
               New Form
@@ -484,7 +484,7 @@ export default function FormsPage() {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div key={i} className="p-6 bg-white border border-gray-200 rounded shadow-sm">
                 <Skeleton className="h-6 w-3/4 mb-2" />
                 <Skeleton className="h-4 w-1/2" />
               </div>
@@ -495,7 +495,7 @@ export default function FormsPage() {
             {forms.map((form, index) => (
               <div
                 key={form.id}
-                className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-indigo-300 transition-colors shadow-sm hover:shadow-md"
+                className="group bg-white border border-gray-200 rounded overflow-hidden transition-shadow shadow-sm hover:shadow-md"
               >
                 {/* Title section - centered */}
                 <div className="p-6 pb-4 flex items-center justify-center min-h-[120px]">
@@ -528,7 +528,7 @@ export default function FormsPage() {
                         <MoreVertical className="w-4 h-4 text-gray-500" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-52">
+                    <DropdownMenuContent align="end" className="w-52 rounded">
                       <DropdownMenuItem asChild>
                         <Link href={`/forms/${form.id}/edit`}>
                           <Edit className="w-4 h-4 mr-2" />
