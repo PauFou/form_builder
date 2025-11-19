@@ -402,7 +402,7 @@ export default function FormsPage() {
                   <ChevronDown className="w-4 h-4 text-gray-400" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 rounded">
+              <DropdownMenuContent align="start" className="w-56 rounded" sideOffset={5} avoidCollisions={true}>
                 <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
@@ -430,7 +430,7 @@ export default function FormsPage() {
                   <MoreVertical className="w-4 h-4 text-gray-600" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 rounded">
+              <DropdownMenuContent align="start" className="w-56 rounded" sideOffset={5} avoidCollisions={true}>
                 <DropdownMenuLabel className="text-xs text-gray-500 uppercase tracking-wider">
                   For this workspace
                 </DropdownMenuLabel>
@@ -463,7 +463,7 @@ export default function FormsPage() {
               <SelectTrigger className="w-full sm:w-40 lg:w-48 h-10 bg-white border-gray-300 rounded text-sm">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="rounded">
+              <SelectContent className="rounded" sideOffset={5} avoidCollisions={true}>
                 <SelectItem value="created">Created (old → new)</SelectItem>
                 <SelectItem value="updated">Last Updated</SelectItem>
                 <SelectItem value="name">Name (A-Z)</SelectItem>
@@ -495,7 +495,8 @@ export default function FormsPage() {
             {forms.map((form, index) => (
               <div
                 key={form.id}
-                className="group bg-white border border-gray-200 rounded overflow-hidden transition-shadow shadow-sm hover:shadow-md"
+                className="group bg-white border border-gray-200 rounded overflow-hidden transition-shadow shadow-sm hover:shadow-md cursor-pointer"
+                onClick={() => router.push(`/forms/${form.id}/edit`)}
               >
                 {/* Title section - centered */}
                 <div className="p-4 sm:p-6 pb-3 sm:pb-4 flex items-center justify-center min-h-[100px] sm:min-h-[120px]">
@@ -508,7 +509,7 @@ export default function FormsPage() {
                 <div className="border-t border-gray-200"></div>
 
                 {/* Bottom section - response count and menu */}
-                <div className="px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
+                <div className="px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
                   <div className="text-sm text-gray-600">
                     {form.submission_count === 0 ? (
                       <span>No responses</span>
@@ -521,14 +522,11 @@ export default function FormsPage() {
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button
-                        className="p-1 hover:bg-gray-100 rounded transition-colors"
-                        onClick={(e) => e.stopPropagation()}
-                      >
+                      <button className="p-1 hover:bg-gray-100 rounded transition-colors">
                         <MoreVertical className="w-4 h-4 text-gray-500" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-52 rounded">
+                    <DropdownMenuContent align="end" className="w-52 rounded" sideOffset={5} avoidCollisions={true}>
                       <DropdownMenuItem asChild>
                         <Link href={`/forms/${form.id}/edit`}>
                           <Edit className="w-4 h-4 mr-2" />
