@@ -95,3 +95,4 @@ backup-*/
 e2e/screenshots/
 e2e/videos/
 test-results/
+a11y-results/
