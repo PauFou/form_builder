@@ -23,6 +23,8 @@ export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: F
   const [internalActiveTab, setInternalActiveTab] = useState<Tab>("build");
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
 
   // Use controlled tab if provided, otherwise use internal state
   const activeTab = controlledTab !== undefined ? controlledTab : internalActiveTab;
@@ -100,13 +102,35 @@ export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: F
     }
   };
 
+  const handleTitleClick = () => {
+    setIsEditingTitle(true);
+    setEditedTitle(form?.title || "");
+  };
+
+  const handleTitleBlur = () => {
+    setIsEditingTitle(false);
+    if (editedTitle.trim() && editedTitle !== form?.title) {
+      // Update form title via API
+      formsApi.update(formId, { title: editedTitle.trim() });
+    }
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleTitleBlur();
+    } else if (e.key === "Escape") {
+      setIsEditingTitle(false);
+      setEditedTitle(form?.title || "");
+    }
+  };
+
   return (
     <>
       <header className="w-full bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+        <div className="max-w-7xl mx-auto px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between relative">
-            {/* Left Section - Back Arrow + Undo/Redo */}
-            <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
+            {/* Left Section - Back Arrow + Title */}
+            <div className="flex items-center gap-3 lg:gap-4 flex-1">
               <button
                 onClick={handleBack}
                 className="p-2 hover:bg-gray-100 rounded transition-colors"
@@ -117,36 +141,45 @@ export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: F
 
               <div className="w-px h-5 sm:h-6 bg-gray-300" />
 
-              {/* Undo/Redo */}
-              <div className="flex items-center gap-1">
+              {/* Form Title - Editable */}
+              {isEditingTitle ? (
+                <input
+                  type="text"
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  onBlur={handleTitleBlur}
+                  onKeyDown={handleTitleKeyDown}
+                  className="px-2 py-1 text-sm font-medium text-gray-900 border border-indigo-600 rounded focus:outline-none focus:ring-1 focus:ring-indigo-600 min-w-[200px]"
+                  autoFocus
+                />
+              ) : (
                 <button
-                  onClick={() => canUndo() && undo()}
-                  disabled={!canUndo()}
-                  className={cn(
-                    "p-2 rounded transition-colors",
-                    canUndo()
-                      ? "hover:bg-gray-100 text-gray-700"
-                      : "text-gray-300 cursor-not-allowed"
-                  )}
-                  title="Undo (Cmd+Z)"
+                  onClick={handleTitleClick}
+                  className="px-2 py-1 text-sm font-medium text-gray-900 hover:bg-gray-100 rounded transition-colors"
                 >
-                  <Undo2 className="w-4 h-4" />
+                  {form?.title || "Untitled Form"}
                 </button>
+              )}
+            </div>
 
-                <button
-                  onClick={() => canRedo() && redo()}
-                  disabled={!canRedo()}
-                  className={cn(
-                    "p-2 rounded transition-colors",
-                    canRedo()
-                      ? "hover:bg-gray-100 text-gray-700"
-                      : "text-gray-300 cursor-not-allowed"
-                  )}
-                  title="Redo (Cmd+Shift+Z)"
-                >
-                  <Redo2 className="w-4 h-4" />
-                </button>
-              </div>
+            {/* Undo/Redo - Positioned between title and tabs */}
+            <div className="absolute left-1/4 -translate-x-1/2 hidden md:flex items-center gap-1">
+              <button
+                onClick={undo}
+                disabled={!canUndo}
+                className="p-2 hover:bg-gray-100 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Undo"
+              >
+                <Undo2 className="w-4 h-4 text-gray-700" />
+              </button>
+              <button
+                onClick={redo}
+                disabled={!canRedo}
+                className="p-2 hover:bg-gray-100 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Redo"
+              >
+                <Redo2 className="w-4 h-4 text-gray-700" />
+              </button>
             </div>
 
             {/* Center Section - Tab Selector (absolutely centered) */}

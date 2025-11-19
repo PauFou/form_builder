@@ -379,13 +379,6 @@ export function FormBuilder({ formId }: FormBuilderProps) {
               </aside>
             </div>
           )}
-
-          {/* Floating Help Button */}
-          {activeTab === "build" && (
-            <button className="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-lg flex items-center justify-center z-50 transition-colors">
-              <HelpCircle className="w-6 h-6" />
-            </button>
-          )}
         </div>
 
         <DragOverlay dropAnimation={null}>

@@ -4,20 +4,17 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-1 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground shadow-md hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:shadow-md",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-md hover:bg-destructive/90 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0",
+        default: "bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm",
+        destructive: "bg-red-600 text-white hover:bg-red-700 shadow-sm",
         outline:
-          "border-2 border-border bg-background hover:bg-primary/5 hover:text-primary hover:border-primary/50 active:bg-primary/10",
-        secondary:
-          "bg-muted text-foreground hover:bg-primary/5 hover:text-primary active:bg-primary/10",
-        ghost: "hover:bg-primary/5 hover:text-primary active:bg-primary/10",
-        link: "text-primary underline-offset-4 hover:underline hover:text-primary/80",
+          "border border-gray-300 bg-white hover:bg-gray-50 hover:border-gray-400 text-gray-700",
+        secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200",
+        ghost: "hover:bg-gray-100 text-gray-700",
+        link: "text-indigo-600 underline-offset-4 hover:underline hover:text-indigo-700",
         // YouForm specific variants
         "youform-primary":
           "bg-[#475569] text-white hover:bg-[#334155] rounded-md shadow-sm transition-colors",
@@ -31,10 +28,10 @@ const buttonVariants = cva(
           "text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300 rounded-md transition-colors",
       },
       size: {
-        default: "h-11 px-6 text-sm rounded-2xl",
-        sm: "h-9 px-4 text-xs rounded-xl",
-        lg: "h-12 px-8 text-base rounded-2xl",
-        icon: "h-10 w-10 rounded-xl",
+        default: "h-10 px-4 py-2 text-sm rounded",
+        sm: "h-8 px-3 py-1.5 text-xs rounded",
+        lg: "h-11 px-6 py-2.5 text-base rounded",
+        icon: "h-10 w-10 rounded",
         // YouForm specific sizes
         "youform-sm": "h-8 px-3 py-1.5 text-xs",
         "youform-default": "h-10 px-4 py-2 text-sm",
