@@ -11,17 +11,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@skemya/ui";
-import { LogIn, User, LogOut, Settings, Search, Command } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { LogIn, User, LogOut, Settings } from "lucide-react";
 import { useAuthStore } from "../../lib/stores/auth-store";
-import { useCommandPaletteTrigger } from "../providers/command-palette-provider";
-import { cn } from "../../lib/utils";
 
 export function Navigation() {
-  const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuthStore();
-  const { openCommandPalette } = useCommandPaletteTrigger();
 
   const handleLogout = async () => {
     await logout();
@@ -43,77 +38,6 @@ export function Navigation() {
         <div className="ml-auto flex items-center gap-2">
           {isAuthenticated ? (
             <>
-              {/* Global Search/Command Palette Trigger */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={openCommandPalette}
-                className="gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-              >
-                <Search className="h-4 w-4" />
-                <span className="hidden sm:inline">Search</span>
-                <div className="hidden md:flex items-center gap-1 ml-2">
-                  <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded border">⌘K</kbd>
-                </div>
-              </Button>
-              <div className="h-6 w-px bg-border" />
-              <Link href="/forms">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    "hover:bg-transparent hover:text-primary transition-colors",
-                    pathname === "/forms"
-                      ? "text-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  My Forms
-                </Button>
-              </Link>
-              <Link href="/templates">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    "hover:bg-transparent hover:text-primary transition-colors",
-                    pathname === "/templates"
-                      ? "text-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  Templates
-                </Button>
-              </Link>
-              <Link href="/integrations">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    "hover:bg-transparent hover:text-primary transition-colors",
-                    pathname === "/integrations"
-                      ? "text-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  Integrations
-                </Button>
-              </Link>
-              <Link href="/demo/grid-mode">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    "hover:bg-transparent hover:text-primary transition-colors",
-                    pathname?.startsWith("/demo")
-                      ? "text-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  Grid Demo
-                </Button>
-              </Link>
-              <div className="h-6 w-px bg-border mx-2" />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="gap-2 hover:bg-transparent group">

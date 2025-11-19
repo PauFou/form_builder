@@ -44,17 +44,22 @@ import {
   ChevronDown,
   Info,
   UserPlus,
+  ExternalLink,
+  Settings,
+  FolderInput,
+  Archive,
+  Pencil,
+  Link2,
+  FileText,
 } from "lucide-react";
 
 import { formsApi } from "../../lib/api/forms";
 import { apiClient } from "../../lib/api/axios-client";
 import { useAuthStore } from "../../lib/stores/auth-store";
 import { TemplateSelectionModal } from "../../components/templates/TemplateSelectionModal";
-import { YouFormHeader } from "../../components/builder/Toolbar/YouFormHeader";
+import { Navigation } from "../../components/shared/navigation";
 
 import type { Form, User, Organization } from "@skemya/contracts";
-import { motion } from "framer-motion";
-import { FileText, TrendingUp, Activity } from "lucide-react";
 
 interface FormWithStats extends Form {
   status?: "published" | "draft";
@@ -64,55 +69,6 @@ interface FormWithStats extends Form {
   last_submission_at?: string;
   updated_at?: string;
   created_at?: string;
-}
-
-// Dashboard Stats Component with YouForm styling
-function DashboardStats({ forms }: { forms: FormWithStats[] }) {
-  const stats = React.useMemo(() => {
-    const published = forms.filter((f) => f.status === "published").length;
-    const totalSubmissions = forms.reduce((acc, f) => acc + (f.submission_count || 0), 0);
-    const totalViews = forms.reduce((acc, f) => acc + (f.view_count || 0), 0);
-    const avgCompletionRate =
-      forms.length > 0
-        ? forms.reduce((acc, f) => acc + (f.completion_rate || 0), 0) / forms.length
-        : 0;
-
-    return {
-      totalForms: forms.length,
-      publishedForms: published,
-      totalSubmissions,
-      totalViews,
-      avgCompletionRate,
-    };
-  }, [forms]);
-
-  return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-      <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-indigo-300 transition-colors">
-        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Total Forms</div>
-        <div className="text-3xl font-semibold text-gray-900">{stats.totalForms}</div>
-        <div className="text-sm text-gray-500 mt-1">{stats.publishedForms} published</div>
-      </div>
-
-      <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-indigo-300 transition-colors">
-        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Submissions</div>
-        <div className="text-3xl font-semibold text-gray-900">{stats.totalSubmissions}</div>
-        <div className="text-sm text-gray-500 mt-1">All time responses</div>
-      </div>
-
-      <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-indigo-300 transition-colors">
-        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Total Views</div>
-        <div className="text-3xl font-semibold text-gray-900">{stats.totalViews}</div>
-        <div className="text-sm text-gray-500 mt-1">Form impressions</div>
-      </div>
-
-      <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-indigo-300 transition-colors">
-        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Completion</div>
-        <div className="text-3xl font-semibold text-gray-900">{stats.avgCompletionRate.toFixed(0)}%</div>
-        <div className="text-sm text-gray-500 mt-1">Average rate</div>
-      </div>
-    </div>
-  );
 }
 
 function CreateFormDialog({ onSuccess }: { onSuccess?: () => void }) {
@@ -288,7 +244,7 @@ export default function FormsPage() {
   if (!isLoading && forms.length === 0 && searchQuery === "") {
     return (
       <div className="min-h-screen bg-gray-50">
-        <YouFormHeader showNavigation={false} />
+        <Navigation />
         <div className="max-w-7xl mx-auto px-8 py-6">
           {/* Top bar */}
           <div className="flex items-center justify-between mb-8">
@@ -325,15 +281,19 @@ export default function FormsPage() {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <button className="p-2 hover:bg-gray-100 rounded transition-colors">
                     <MoreVertical className="w-4 h-4 text-gray-600" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
-                  <DropdownMenuItem>Workspace Settings</DropdownMenuItem>
-                  <DropdownMenuItem>Manage Members</DropdownMenuItem>
+                  <DropdownMenuItem>Rename Workspace</DropdownMenuItem>
+                  <Link href="/analytics">
+                    <DropdownMenuItem>Analytics</DropdownMenuItem>
+                  </Link>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>Leave Workspace</DropdownMenuItem>
+                  <DropdownMenuItem className="text-red-600 focus:text-red-600">
+                    Delete Workspace
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -429,7 +389,7 @@ export default function FormsPage() {
   // Forms list view
   return (
     <div className="min-h-screen bg-gray-50">
-      <YouFormHeader showNavigation={false} />
+      <Navigation />
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Top bar */}
         <div className="flex items-center justify-between mb-8">
@@ -512,14 +472,11 @@ export default function FormsPage() {
           </div>
         </div>
 
-        {/* Dashboard Stats */}
-        <DashboardStats forms={forms} />
-
         {/* Forms grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="p-6 bg-white border border-gray-200 rounded-xl">
+              <div key={i} className="p-6 bg-white border border-gray-200 rounded">
                 <Skeleton className="h-6 w-3/4 mb-2" />
                 <Skeleton className="h-4 w-1/2" />
               </div>
@@ -530,65 +487,91 @@ export default function FormsPage() {
             {forms.map((form, index) => (
               <div
                 key={form.id}
-                className="group bg-white border border-gray-200 rounded-lg p-6 hover:border-indigo-300 transition-colors cursor-pointer"
-                onClick={() => router.push(`/forms/${form.id}/edit`)}
+                className="group bg-white border border-gray-200 rounded overflow-hidden hover:border-indigo-300 transition-colors"
               >
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-base font-medium text-gray-900 flex-1 line-clamp-2 leading-snug">
+                {/* Title section - prominent */}
+                <div className="p-6 pb-4">
+                  <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 leading-tight">
                     {form.title}
                   </h3>
+                </div>
+
+                {/* Separator */}
+                <div className="border-t border-gray-200"></div>
+
+                {/* Bottom section - response count and menu */}
+                <div className="px-6 py-3 flex items-center justify-between">
+                  <div className="text-sm text-gray-600">
+                    {form.submission_count === 0 ? (
+                      <span>No responses</span>
+                    ) : (
+                      <span className="text-gray-900 font-medium">
+                        {form.submission_count} response{form.submission_count !== 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </div>
+
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className="p-0.5 hover:bg-gray-100 rounded transition-colors -mt-1 opacity-0 group-hover:opacity-100"
+                        className="p-1 hover:bg-gray-100 rounded transition-colors"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <MoreVertical className="w-4 h-4 text-gray-400" />
+                        <MoreVertical className="w-4 h-4 text-gray-500" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuContent align="end" className="w-52">
                       <DropdownMenuItem asChild>
                         <Link href={`/forms/${form.id}/edit`}>
                           <Edit className="w-4 h-4 mr-2" />
-                          Edit Form
+                          Build
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleShare(form)}>
+                        <Link2 className="w-4 h-4 mr-2" />
+                        Copy Link
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/forms/${form.id}/share`}>
+                          <Share2 className="w-4 h-4 mr-2" />
+                          Share Page
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href={`/preview/${form.id}`} target="_blank">
-                          <Eye className="w-4 h-4 mr-2" />
-                          Preview
+                        <Link href={`/forms/${form.id}/settings`}>
+                          <Settings className="w-4 h-4 mr-2" />
+                          Settings Page
                         </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/forms/${form.id}/submissions`}>
+                          <FileText className="w-4 h-4 mr-2" />
+                          Submissions
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => {}}>
+                        <Pencil className="w-4 h-4 mr-2" />
+                        Rename
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => duplicateMutation.mutate(form.id)}>
                         <Copy className="w-4 h-4 mr-2" />
                         Duplicate
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleShare(form)}>
-                        <Share2 className="w-4 h-4 mr-2" />
-                        Share Link
+                      <DropdownMenuItem onClick={() => {}}>
+                        <FolderInput className="w-4 h-4 mr-2" />
+                        Move to Workspace
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <Link href={`/forms/${form.id}/analytics`}>
-                          <BarChart3 className="w-4 h-4 mr-2" />
-                          Analytics
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/forms/${form.id}/responses`}>
-                          <Users className="w-4 h-4 mr-2" />
-                          Responses
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleExport(form.id)}>
-                        <FileDown className="w-4 h-4 mr-2" />
-                        Export CSV
+                      <DropdownMenuItem onClick={() => {}}>
+                        <Archive className="w-4 h-4 mr-2" />
+                        {form.status === "published" ? "Close" : "Archive"}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        className="text-red-600"
+                        className="text-red-600 focus:text-red-600"
                         onClick={() => {
-                          if (confirm("Are you sure you want to delete this form?")) {
+                          if (confirm(`Are you sure you want to delete "${form.title}"? This will permanently delete the form and all ${form.submission_count || 0} submissions. This cannot be undone.`)) {
                             deleteMutation.mutate(form.id);
                           }
                         }}
@@ -598,16 +581,6 @@ export default function FormsPage() {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                </div>
-
-                <div className="text-sm text-gray-500">
-                  {form.submission_count === 0 ? (
-                    <span>No responses</span>
-                  ) : (
-                    <span className="text-indigo-600 font-medium">
-                      {form.submission_count} response{form.submission_count !== 1 ? "s" : ""}
-                    </span>
-                  )}
                 </div>
               </div>
             ))}
