@@ -321,7 +321,9 @@ export default function FormsPage() {
               <h3 className="text-sm sm:text-base font-medium text-gray-800 mb-2">
                 No forms created in this workspace yet.
               </h3>
-              <p className="text-xs sm:text-sm text-gray-600 mb-6 sm:mb-8">What would you like to do?</p>
+              <p className="text-xs sm:text-sm text-gray-600 mb-6 sm:mb-8">
+                What would you like to do?
+              </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
                 <Button
                   onClick={() => setCreateDialogOpen(true)}
@@ -402,7 +404,12 @@ export default function FormsPage() {
                   <ChevronDown className="w-4 h-4 text-gray-400" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 rounded" sideOffset={5} avoidCollisions={true}>
+              <DropdownMenuContent
+                align="start"
+                className="w-56 rounded"
+                sideOffset={5}
+                avoidCollisions={true}
+              >
                 <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
@@ -430,7 +437,12 @@ export default function FormsPage() {
                   <MoreVertical className="w-4 h-4 text-gray-600" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 rounded" sideOffset={5} avoidCollisions={true}>
+              <DropdownMenuContent
+                align="start"
+                className="w-56 rounded"
+                sideOffset={5}
+                avoidCollisions={true}
+              >
                 <DropdownMenuLabel className="text-xs text-gray-500 uppercase tracking-wider">
                   For this workspace
                 </DropdownMenuLabel>
@@ -509,7 +521,10 @@ export default function FormsPage() {
                 <div className="border-t border-gray-200"></div>
 
                 {/* Bottom section - response count and menu */}
-                <div className="px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <div className="text-sm text-gray-600">
                     {form.submission_count === 0 ? (
                       <span>No responses</span>
@@ -526,7 +541,12 @@ export default function FormsPage() {
                         <MoreVertical className="w-4 h-4 text-gray-500" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-52 rounded" sideOffset={5} avoidCollisions={true}>
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-52 rounded"
+                      sideOffset={5}
+                      avoidCollisions={true}
+                    >
                       <DropdownMenuItem asChild>
                         <Link href={`/forms/${form.id}/edit`}>
                           <Edit className="w-4 h-4 mr-2" />
@@ -577,7 +597,11 @@ export default function FormsPage() {
                       <DropdownMenuItem
                         className="text-red-600 focus:text-red-600"
                         onClick={() => {
-                          if (confirm(`Are you sure you want to delete "${form.title}"? This will permanently delete the form and all ${form.submission_count || 0} submissions. This cannot be undone.`)) {
+                          if (
+                            confirm(
+                              `Are you sure you want to delete "${form.title}"? This will permanently delete the form and all ${form.submission_count || 0} submissions. This cannot be undone.`
+                            )
+                          ) {
                             deleteMutation.mutate(form.id);
                           }
                         }}

@@ -169,6 +169,7 @@ pnpm --filter @skemya/marketing dev
 ### Making Changes
 
 1. **Create Feature Branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -176,6 +177,7 @@ pnpm --filter @skemya/marketing dev
 2. **Make Changes** - Follow [Coding Standards](#coding-standards)
 
 3. **Test Locally**
+
    ```bash
    # Quick validation
    pnpm test:quick
@@ -185,6 +187,7 @@ pnpm --filter @skemya/marketing dev
    ```
 
 4. **Commit Changes**
+
    ```bash
    # Husky pre-commit hooks will run automatically
    git add .
@@ -210,6 +213,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/):
 - `perf:` - Performance improvement
 
 **Examples**:
+
 ```bash
 git commit -m "feat(builder): add drag & drop for blocks"
 git commit -m "fix(api): correct form validation logic"
@@ -302,7 +306,7 @@ export const useFormBuilderStore = create<FormBuilderState>()(
 
     addBlock: (block, pageId, index) => {
       set((state) => {
-        const page = state.form?.pages.find(p => p.id === pageId);
+        const page = state.form?.pages.find((p) => p.id === pageId);
         if (page) {
           if (index !== undefined) {
             page.blocks.splice(index, 0, block);
@@ -398,6 +402,7 @@ export const formsApi = {
 ### Component Best Practices
 
 1. **Use TypeScript strictly**
+
    ```typescript
    // ✅ Good
    interface ButtonProps {
@@ -411,6 +416,7 @@ export const formsApi = {
    ```
 
 2. **Extract reusable logic to hooks**
+
    ```typescript
    // hooks/use-form-autosave.ts
    export function useFormAutosave(formId: string) {
@@ -429,6 +435,7 @@ export const formsApi = {
    ```
 
 3. **Optimize re-renders**
+
    ```typescript
    // Use React.memo for expensive components
    const BlockRenderer = React.memo(({ block }) => {
@@ -767,6 +774,7 @@ docker-compose logs -f
 ### Common Issues
 
 **Issue**: `Module not found` errors
+
 ```bash
 # Solution: Clean install
 rm -rf node_modules
@@ -774,6 +782,7 @@ pnpm install
 ```
 
 **Issue**: Django migrations conflict
+
 ```bash
 # Solution: Reset migrations
 python manage.py migrate --fake-zero appname
@@ -781,6 +790,7 @@ python manage.py migrate appname
 ```
 
 **Issue**: Port already in use
+
 ```bash
 # Solution: Kill process
 lsof -ti:3301 | xargs kill -9
@@ -825,4 +835,4 @@ lsof -ti:3301 | xargs kill -9
 
 ---
 
-*Last updated: 2025-01-06*
+_Last updated: 2025-01-06_

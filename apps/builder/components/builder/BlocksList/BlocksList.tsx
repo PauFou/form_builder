@@ -146,7 +146,13 @@ function SortableBlockItem({
               <MoreVertical className="w-3.5 h-3.5 text-gray-500" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" side="right" className="w-40" sideOffset={5} avoidCollisions={true}>
+          <DropdownMenuContent
+            align="start"
+            side="right"
+            className="w-40"
+            sideOffset={5}
+            avoidCollisions={true}
+          >
             <DropdownMenuItem onClick={onDuplicate}>
               <Copy className="w-4 h-4 mr-2" />
               Duplicate
@@ -292,7 +298,10 @@ export function BlocksList() {
               onDragEnd={handleDragEnd}
               autoScroll={false}
             >
-              <SortableContext items={blocks.map((b: any) => b.id)} strategy={verticalListSortingStrategy}>
+              <SortableContext
+                items={blocks.map((b: any) => b.id)}
+                strategy={verticalListSortingStrategy}
+              >
                 <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-200px)] pr-2">
                   {blocks.map((block: any, index: number) => (
                     <SortableBlockItem

@@ -107,15 +107,15 @@ test.describe("Complete Form Builder Workflow", () => {
       await expect(page.locator('text="Properties"')).toBeVisible();
 
       // Update question text
-      const questionInput = page.locator(
-        '[data-testid="question-input"], input[name="question"]'
-      ).first();
+      const questionInput = page
+        .locator('[data-testid="question-input"], input[name="question"]')
+        .first();
       await questionInput.fill("What is your name?");
 
       // Make it required
-      const requiredToggle = page.locator(
-        '[data-testid="required-toggle"], input[type="checkbox"][name="required"]'
-      ).first();
+      const requiredToggle = page
+        .locator('[data-testid="required-toggle"], input[type="checkbox"][name="required"]')
+        .first();
       await requiredToggle.check();
 
       // Verify changes
@@ -127,21 +127,23 @@ test.describe("Complete Form Builder Workflow", () => {
     // ========================================
     await test.step("User publishes the form", async () => {
       // Click publish button
-      const publishButton = page.locator(
-        'button:has-text("Publish"), button[data-testid="publish-button"]'
-      ).first();
+      const publishButton = page
+        .locator('button:has-text("Publish"), button[data-testid="publish-button"]')
+        .first();
       await publishButton.click();
 
       // Confirm publish dialog if it appears
-      const confirmButton = page.locator('button:has-text("Confirm"), button:has-text("Publish")').last();
+      const confirmButton = page
+        .locator('button:has-text("Confirm"), button:has-text("Publish")')
+        .last();
       if (await confirmButton.isVisible()) {
         await confirmButton.click();
       }
 
       // Wait for success message
-      await expect(
-        page.locator('text=/Published|Success|Form is live/i')
-      ).toBeVisible({ timeout: 10000 });
+      await expect(page.locator("text=/Published|Success|Form is live/i")).toBeVisible({
+        timeout: 10000,
+      });
     });
 
     // ========================================
@@ -149,9 +151,9 @@ test.describe("Complete Form Builder Workflow", () => {
     // ========================================
     await test.step("User views the published form", async () => {
       // Click "View Form" or navigate to preview
-      const viewButton = page.locator(
-        'button:has-text("View"), button:has-text("Preview"), a:has-text("View Form")'
-      ).first();
+      const viewButton = page
+        .locator('button:has-text("View"), button:has-text("Preview"), a:has-text("View Form")')
+        .first();
 
       if (await viewButton.isVisible()) {
         await viewButton.click();
@@ -181,15 +183,13 @@ test.describe("Complete Form Builder Workflow", () => {
       await selectOption.click();
 
       // Submit the form
-      const submitButton = page.locator(
-        'button:has-text("Submit"), button[type="submit"]'
-      ).first();
+      const submitButton = page.locator('button:has-text("Submit"), button[type="submit"]').first();
       await submitButton.click();
 
       // Wait for thank you message
-      await expect(
-        page.locator('text=/Thank you|Submitted|Success/i')
-      ).toBeVisible({ timeout: 10000 });
+      await expect(page.locator("text=/Thank you|Submitted|Success/i")).toBeVisible({
+        timeout: 10000,
+      });
     });
 
     // ========================================
@@ -226,7 +226,7 @@ test.describe("Complete Form Builder Workflow", () => {
     await shortTextBlock.dragTo(canvas);
 
     // Save as draft (auto-save should work)
-    await expect(page.locator('text=/Saved|Auto-save/i')).toBeVisible({
+    await expect(page.locator("text=/Saved|Auto-save/i")).toBeVisible({
       timeout: 10000,
     });
 
@@ -253,7 +253,7 @@ test.describe("Complete Form Builder Workflow", () => {
     await duplicateButton.click();
 
     // Verify duplicate was created
-    await expect(page.locator('text=/Copy|Duplicate/i')).toBeVisible();
+    await expect(page.locator("text=/Copy|Duplicate/i")).toBeVisible();
   });
 
   test("user can delete a form", async ({ page }) => {
@@ -282,7 +282,9 @@ test.describe("Complete Form Builder Workflow", () => {
     await deleteButton.click();
 
     // Confirm deletion
-    const confirmButton = page.locator('button:has-text("Confirm"), button:has-text("Delete")').last();
+    const confirmButton = page
+      .locator('button:has-text("Confirm"), button:has-text("Delete")')
+      .last();
     await confirmButton.click();
 
     // Verify form is gone

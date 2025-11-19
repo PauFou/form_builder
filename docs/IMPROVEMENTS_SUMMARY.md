@@ -20,6 +20,7 @@ Ce document résume toutes les améliorations apportées au projet pour résoudr
 ### Résultats
 
 ✅ **100% des points d'attention résolus**
+
 - **+10 fichiers de tests** créés
 - **+250 tests** ajoutés (unitaires + E2E)
 - **Documentation complète** de 500+ lignes
@@ -33,6 +34,7 @@ Ce document résume toutes les améliorations apportées au projet pour résoudr
 ### Tests Ajoutés
 
 #### BlockLibrary Tests
+
 **Fichier**: `apps/builder/components/builder/BlockLibrary/__tests__/BlockItem.test.tsx`
 **Tests**: 8 tests
 
@@ -65,6 +67,7 @@ Ce document résume toutes les améliorations apportées au projet pour résoudr
 ```
 
 #### Canvas Tests
+
 **Fichier**: `apps/builder/components/builder/Canvas/__tests__/BlockRenderer.test.tsx`
 **Tests**: 10 tests
 
@@ -121,6 +124,7 @@ Ce document résume toutes les améliorations apportées au projet pour résoudr
 ```
 
 **Scénario Principal** (complete user workflow):
+
 1. **Sign up** - Création de compte utilisateur
 2. **Create form** - Création d'un nouveau formulaire
 3. **Add blocks** - Ajout de 3 types de blocks (text, email, select)
@@ -250,24 +254,28 @@ Ce document résume toutes les améliorations apportées au projet pour résoudr
 ### Contenu
 
 #### 1. Getting Started (100 lignes)
+
 - Prerequisites détaillés
 - Quick setup (10 étapes)
 - Verification steps
 - Troubleshooting setup
 
 #### 2. Architecture Overview (150 lignes)
+
 - High-level architecture diagram
 - Monorepo structure complète
 - Data flow diagrams
 - Component responsibilities
 
 #### 3. Development Workflow (80 lignes)
+
 - Daily development process
 - Branch strategy
 - Commit conventions (Conventional Commits)
 - PR template complet
 
 #### 4. Frontend Development (200 lignes)
+
 - Technology stack détaillé
 - Project structure
 - State management (Zustand examples)
@@ -277,6 +285,7 @@ Ce document résume toutes les améliorations apportées au projet pour résoudr
 - Performance optimization
 
 #### 5. Backend Development (150 lignes)
+
 - Django structure
 - Models exemples
 - ViewSets patterns
@@ -285,6 +294,7 @@ Ce document résume toutes les améliorations apportées au projet pour résoudr
 - Testing patterns
 
 #### 6. Testing Guide (100 lignes)
+
 - Frontend tests (Jest + RTL)
 - Backend tests (pytest)
 - E2E tests (Playwright)
@@ -292,17 +302,20 @@ Ce document résume toutes les améliorations apportées au projet pour résoudr
 - Example tests
 
 #### 7. Deployment (50 lignes)
+
 - Build process
 - Docker deployment
 - Environment variables
 - Production checklist
 
 #### 8. Troubleshooting (40 lignes)
+
 - Common issues
 - Solutions pratiques
 - Debug tips
 
 #### 9. Best Practices (60 lignes)
+
 - Code quality rules
 - Performance tips
 - Security guidelines
@@ -423,32 +436,32 @@ Ce document résume toutes les améliorations apportées au projet pour résoudr
 
 ### Tests
 
-| Catégorie | Avant | Après | Amélioration |
-|-----------|-------|-------|--------------|
-| **Tests Frontend** | ~67 | **106+** | +58% |
-| **Tests Backend** | ~15 | **80+** | +433% |
-| **Tests E2E** | 2 | **12** | +500% |
-| **Coverage Frontend** | 60% | **85%** | +25% |
-| **Coverage Backend** | 65% | **90%** | +25% |
-| **Fichiers de tests** | ~20 | **28+** | +40% |
+| Catégorie             | Avant | Après    | Amélioration |
+| --------------------- | ----- | -------- | ------------ |
+| **Tests Frontend**    | ~67   | **106+** | +58%         |
+| **Tests Backend**     | ~15   | **80+**  | +433%        |
+| **Tests E2E**         | 2     | **12**   | +500%        |
+| **Coverage Frontend** | 60%   | **85%**  | +25%         |
+| **Coverage Backend**  | 65%   | **90%**  | +25%         |
+| **Fichiers de tests** | ~20   | **28+**  | +40%         |
 
 ### Documentation
 
-| Type | Avant | Après | Amélioration |
-|------|-------|-------|--------------|
-| **Developer Guide** | 0 | **550 lignes** | ✅ Nouveau |
-| **Sections** | 0 | **9 sections** | ✅ Complet |
-| **Exemples de code** | 0 | **30+ exemples** | ✅ Détaillé |
-| **Diagrammes** | 0 | **2 diagrammes** | ✅ Visuel |
+| Type                 | Avant | Après            | Amélioration |
+| -------------------- | ----- | ---------------- | ------------ |
+| **Developer Guide**  | 0     | **550 lignes**   | ✅ Nouveau   |
+| **Sections**         | 0     | **9 sections**   | ✅ Complet   |
+| **Exemples de code** | 0     | **30+ exemples** | ✅ Détaillé  |
+| **Diagrammes**       | 0     | **2 diagrammes** | ✅ Visuel    |
 
 ### Intégrations
 
-| Service | Statut | Lignes | Fonctionnalités |
-|---------|--------|--------|-----------------|
-| **Stripe** | ✅ Complet | 400+ | Paiements, webhooks, refunds |
-| **Google Sheets** | ✅ Complet | 450+ | Export, sync, formatting |
-| **Slack** | ✅ Complet | 400+ | Notifications, Block Kit |
-| **ClickHouse** | ✅ Existant | 600+ | Analytics, funnels |
+| Service           | Statut      | Lignes | Fonctionnalités              |
+| ----------------- | ----------- | ------ | ---------------------------- |
+| **Stripe**        | ✅ Complet  | 400+   | Paiements, webhooks, refunds |
+| **Google Sheets** | ✅ Complet  | 450+   | Export, sync, formatting     |
+| **Slack**         | ✅ Complet  | 400+   | Notifications, Block Kit     |
+| **ClickHouse**    | ✅ Existant | 600+   | Analytics, funnels           |
 
 ---
 

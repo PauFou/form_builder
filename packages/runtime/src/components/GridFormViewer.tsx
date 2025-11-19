@@ -161,9 +161,7 @@ export function GridFormViewer({ schema, config, className = "" }: GridFormViewe
               }}
             >
               {/* Question number - Typeform style */}
-              <div className="fr-question-number">
-                {(currentPage * 10) + index + 1}
-              </div>
+              <div className="fr-question-number">{currentPage * 10 + index + 1}</div>
 
               <FormField
                 block={block}

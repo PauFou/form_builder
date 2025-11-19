@@ -2,7 +2,7 @@
 
 /* Container - Beige background like YouForm */
 .fr-grid-mode {
-  background: #FAF9F6;
+  background: #faf9f6;
   min-height: 100vh;
   padding: 0;
   display: flex;
@@ -88,7 +88,7 @@
 }
 
 .fr-question-number::after {
-  content: '→';
+  content: "→";
   font-size: 1rem;
   opacity: 0.5;
 }
@@ -230,7 +230,7 @@
 }
 
 .fr-error::before {
-  content: '⚠';
+  content: "⚠";
   font-size: 1rem;
 }
 

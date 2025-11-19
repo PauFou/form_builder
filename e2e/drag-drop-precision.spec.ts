@@ -36,17 +36,17 @@ test.describe("Drag & Drop Precision", () => {
     const canvas = page.locator('[data-testid="canvas"], .canvas, main').first();
 
     // Get initial block count
-    const initialCount = await page.locator('[data-block-id]').count();
+    const initialCount = await page.locator("[data-block-id]").count();
 
     // Drag block to canvas
     await shortTextBlock.dragTo(canvas);
 
     // Verify block was added
-    const newCount = await page.locator('[data-block-id]').count();
+    const newCount = await page.locator("[data-block-id]").count();
     expect(newCount).toBe(initialCount + 1);
 
     // Verify block content
-    await expect(page.locator('text=/New short text/i')).toBeVisible();
+    await expect(page.locator("text=/New short text/i")).toBeVisible();
   });
 
   test("drop indicator appears at correct position", async ({ page }) => {
@@ -65,7 +65,7 @@ test.describe("Drag & Drop Precision", () => {
 
     // Now drag a new block and hover over first block
     const block3 = page.locator('[data-testid="block-item-phone"]');
-    const firstBlockOnCanvas = page.locator('[data-block-id]').first();
+    const firstBlockOnCanvas = page.locator("[data-block-id]").first();
 
     // Start dragging
     await block3.hover();
@@ -78,7 +78,7 @@ test.describe("Drag & Drop Precision", () => {
       await page.mouse.move(box.x + box.width / 2, box.y + 10);
 
       // Look for drop indicator (blue line)
-      const indicator = page.locator('.border-primary, .bg-primary').first();
+      const indicator = page.locator(".border-primary, .bg-primary").first();
       await expect(indicator).toBeVisible({ timeout: 2000 });
     }
 
@@ -102,19 +102,19 @@ test.describe("Drag & Drop Precision", () => {
     }
 
     // Get initial order
-    const initialBlocks = await page.locator('[data-block-id]').all();
+    const initialBlocks = await page.locator("[data-block-id]").all();
     const initialCount = initialBlocks.length;
     expect(initialCount).toBe(3);
 
     // Drag third block to first position
-    const thirdBlock = page.locator('[data-block-id]').nth(2);
-    const firstBlock = page.locator('[data-block-id]').first();
+    const thirdBlock = page.locator("[data-block-id]").nth(2);
+    const firstBlock = page.locator("[data-block-id]").first();
 
     await thirdBlock.dragTo(firstBlock);
     await page.waitForTimeout(500);
 
     // Verify order changed
-    const finalBlocks = await page.locator('[data-block-id]').all();
+    const finalBlocks = await page.locator("[data-block-id]").all();
     expect(finalBlocks.length).toBe(3);
 
     // The block that was third should now be first (or second, depending on drop position)
@@ -132,7 +132,7 @@ test.describe("Drag & Drop Precision", () => {
 
     // Drag new block and position cursor carefully
     const newBlock = page.locator('[data-testid="block-item-phone"]');
-    const targetBlock = page.locator('[data-block-id]').first();
+    const targetBlock = page.locator("[data-block-id]").first();
 
     await newBlock.hover();
     await page.mouse.down();
@@ -149,7 +149,7 @@ test.describe("Drag & Drop Precision", () => {
       await page.waitForTimeout(500);
 
       // Verify new block is now first
-      const firstBlock = page.locator('[data-block-id]').first();
+      const firstBlock = page.locator("[data-block-id]").first();
       await expect(firstBlock).toContainText(/phone/i);
     }
   });
@@ -171,7 +171,7 @@ test.describe("Drag & Drop Precision", () => {
     await page.waitForTimeout(500);
 
     // Page 2 should be empty
-    const page2Blocks = await page.locator('[data-block-id]').count();
+    const page2Blocks = await page.locator("[data-block-id]").count();
     expect(page2Blocks).toBe(0);
 
     // Switch back to page 1
@@ -180,7 +180,7 @@ test.describe("Drag & Drop Precision", () => {
     await page.waitForTimeout(500);
 
     // Verify block is still on page 1
-    const page1Blocks = await page.locator('[data-block-id]').count();
+    const page1Blocks = await page.locator("[data-block-id]").count();
     expect(page1Blocks).toBe(1);
   });
 
@@ -191,7 +191,7 @@ test.describe("Drag & Drop Precision", () => {
     await page.locator('[data-testid="block-item-short_text"]').dragTo(canvas);
     await page.waitForTimeout(300);
 
-    const initialCount = await page.locator('[data-block-id]').count();
+    const initialCount = await page.locator("[data-block-id]").count();
     expect(initialCount).toBe(1);
 
     // Undo (Cmd+Z or Ctrl+Z)
@@ -199,7 +199,7 @@ test.describe("Drag & Drop Precision", () => {
     await page.waitForTimeout(500);
 
     // Block should be removed
-    const afterUndoCount = await page.locator('[data-block-id]').count();
+    const afterUndoCount = await page.locator("[data-block-id]").count();
     expect(afterUndoCount).toBe(0);
 
     // Redo (Cmd+Shift+Z or Ctrl+Shift+Z)
@@ -207,7 +207,7 @@ test.describe("Drag & Drop Precision", () => {
     await page.waitForTimeout(500);
 
     // Block should be back
-    const afterRedoCount = await page.locator('[data-block-id]').count();
+    const afterRedoCount = await page.locator("[data-block-id]").count();
     expect(afterRedoCount).toBe(1);
   });
 
@@ -244,7 +244,7 @@ test.describe("Drag & Drop Precision", () => {
       await page.mouse.up();
 
       // Block should not have been added to canvas
-      const blockCount = await page.locator('[data-block-id]').count();
+      const blockCount = await page.locator("[data-block-id]").count();
       expect(blockCount).toBe(0);
     }
   });

@@ -18,7 +18,7 @@ services:
     image: postgres:16-alpine
     container_name: youform_postgres_exotic
     ports:
-      - "7337:5432"  # External:Internal - LEET port!
+      - "7337:5432" # External:Internal - LEET port!
     environment:
       POSTGRES_USER: forms_user
       POSTGRES_PASSWORD: forms_password
@@ -39,7 +39,7 @@ services:
     image: redis:7-alpine
     container_name: youform_redis_exotic
     ports:
-      - "9876:6379"  # External:Internal - Reverse sequential
+      - "9876:6379" # External:Internal - Reverse sequential
     command: redis-server --appendonly yes
     volumes:
       - redis_data_exotic:/data
@@ -57,8 +57,8 @@ services:
     image: clickhouse/clickhouse-server:latest
     container_name: youform_clickhouse_exotic
     ports:
-      - "5147:8123"  # External:Internal - HTTP interface
-      - "5148:9000"  # External:Internal - Native interface
+      - "5147:8123" # External:Internal - HTTP interface
+      - "5148:9000" # External:Internal - Native interface
     environment:
       CLICKHOUSE_DB: forms_analytics
       CLICKHOUSE_USER: forms_user
@@ -81,7 +81,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: youform_api_exotic
     ports:
-      - "3141:8000"  # External:Internal - Pi digits!
+      - "3141:8000" # External:Internal - Pi digits!
     environment:
       # Database
       DATABASE_URL: postgresql://forms_user:forms_password@postgres:5432/forms_db
@@ -152,7 +152,7 @@ services:
       dockerfile: ./apps/builder/Dockerfile.dev
     container_name: youform_builder_exotic
     ports:
-      - "4242:3000"  # External:Internal - Repeating pattern!
+      - "4242:3000" # External:Internal - Repeating pattern!
     environment:
       # API
       NEXT_PUBLIC_API_URL: http://localhost:3141
@@ -182,7 +182,7 @@ services:
       dockerfile: ./apps/runtime-demo/Dockerfile.dev
     container_name: youform_runtime_exotic
     ports:
-      - "8787:3001"  # External:Internal - Another repeating pattern!
+      - "8787:3001" # External:Internal - Another repeating pattern!
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:3141
       NODE_ENV: development
@@ -199,7 +199,7 @@ services:
       dockerfile: Dockerfile
     container_name: youform_analytics_exotic
     ports:
-      - "2718:8080"  # External:Internal - Euler's number!
+      - "2718:8080" # External:Internal - Euler's number!
     environment:
       CLICKHOUSE_HOST: clickhouse
       CLICKHOUSE_PORT: 8123
@@ -228,7 +228,6 @@ networks:
   youform_exotic:
     driver: bridge
     name: youform_exotic_network
-
 # 📝 Quick Reference
 #
 # Start all services:

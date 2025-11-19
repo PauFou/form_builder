@@ -24,6 +24,7 @@
 #### Layout Analytics (actuellement INCOMPLET dans notre code)
 
 **YouForm Réel**:
+
 ```
 1. Header avec filtres:
    - Dropdown "All Time" (date range selector)
@@ -63,6 +64,7 @@
 ```
 
 **Notre Code Actuel (AnalyticsCharts.tsx)**:
+
 ```typescript
 // ❌ PROBLÈMES:
 1. Pas de header avec filtres date/device
@@ -77,11 +79,13 @@
 #### Corrections Nécessaires:
 
 **1. Stat Cards Position**:
+
 - ❌ Les 5 stat cards sont DÉJÀ en haut dans `ResultsTab.tsx` lines:107-159 ✅
 - Mais dans Analytics tab, YouForm les affiche AUSSI en haut du contenu analytics
 - **ACTION**: Garder comme c'est SAUF ajouter les filtres
 
 **2. Analytics Layout Complet**:
+
 ```typescript
 // NOUVEAU layout pour Analytics tab:
 <div className="flex-1 overflow-auto">
@@ -210,6 +214,7 @@
 #### General Settings
 
 **Layout**:
+
 ```
 Left Sidebar (fixed):
 - General (active: bg-gray-50)
@@ -225,6 +230,7 @@ Right Content:
 ```
 
 **Toggle Sections**:
+
 ```typescript
 1. Progress Bar
    - Checkbox: ✅ checked
@@ -247,6 +253,7 @@ Right Content:
 ```
 
 **Styles**:
+
 ```css
 /* Toggle switch */
 .toggle-checked {
@@ -277,6 +284,7 @@ Right Content:
 **Tabs**: "Email to Me" (active) | "Email to Responder"
 
 **Sections**:
+
 ```
 1. Receive Email Notifications
    - Toggle: ✅ on
@@ -301,6 +309,7 @@ Right Content:
 ```
 
 **Rich Text Toolbar**:
+
 ```html
 <div class="toolbar">
   <button><BoldIcon /></button>
@@ -312,6 +321,7 @@ Right Content:
 #### Link Settings
 
 **Layout**:
+
 ```
 Header: "Link Settings" + "Save" button (slate, top-right)
 
@@ -348,6 +358,7 @@ Footer link:
 ### 3. Logic Graph Page
 
 **Layout Complet**:
+
 ```
 Top Controls (left):
 - Button group: "Mouse" (active) | "Trackpad"
@@ -397,50 +408,50 @@ Click on a node to edit the logic."
 ```typescript
 const youformColors = {
   // Primary colors
-  orange: '#FF6B35',     // PRO badge sur buttons
-  proPink: '#ff6b9d',    // PRO badge dans settings (différent!)
-  slate: '#475569',      // Buttons primary
+  orange: "#FF6B35", // PRO badge sur buttons
+  proPink: "#ff6b9d", // PRO badge dans settings (différent!)
+  slate: "#475569", // Buttons primary
 
   // Analytics specific
-  analyticsPurple: '#a855f7',  // ⚠️ PAS blue! Trends chart
-  analyticsOverlay: 'rgba(0,0,0,0.05)', // Backdrop blur
+  analyticsPurple: "#a855f7", // ⚠️ PAS blue! Trends chart
+  analyticsOverlay: "rgba(0,0,0,0.05)", // Backdrop blur
 
   // Stat cards
   viewsColor: {
-    bg: '#eff6ff',      // blue-50
-    text: '#1e40af',    // blue-700
-    icon: '#2563eb',    // blue-600
+    bg: "#eff6ff", // blue-50
+    text: "#1e40af", // blue-700
+    icon: "#2563eb", // blue-600
   },
   startsColor: {
-    bg: '#f3e8ff',      // purple-50
-    text: '#6b21a8',    // purple-700
-    icon: '#7c3aed',    // purple-600
+    bg: "#f3e8ff", // purple-50
+    text: "#6b21a8", // purple-700
+    icon: "#7c3aed", // purple-600
   },
   submissionsColor: {
-    bg: '#f0fdf4',      // green-50
-    text: '#15803d',    // green-700
-    icon: '#16a34a',    // green-600
+    bg: "#f0fdf4", // green-50
+    text: "#15803d", // green-700
+    icon: "#16a34a", // green-600
   },
   rateColor: {
-    bg: '#fff7ed',      // orange-50
-    text: '#c2410c',    // orange-700
-    icon: '#ea580c',    // orange-600
+    bg: "#fff7ed", // orange-50
+    text: "#c2410c", // orange-700
+    icon: "#ea580c", // orange-600
   },
   timeColor: {
-    bg: '#fdf2f8',      // pink-50
-    text: '#9f1239',    // pink-700
-    icon: '#db2777',    // pink-600
+    bg: "#fdf2f8", // pink-50
+    text: "#9f1239", // pink-700
+    icon: "#db2777", // pink-600
   },
 
   // Settings
-  toggleOn: '#10b981',   // green-500
-  toggleOff: '#e5e7eb',  // gray-200
+  toggleOn: "#10b981", // green-500
+  toggleOff: "#e5e7eb", // gray-200
 
   // Logic nodes
-  nodeWelcome: '#fce7f3',    // pink-100
-  nodeQuestion: '#dbeafe',   // blue-100
-  nodeArrow: '#1f2937',      // gray-800
-}
+  nodeWelcome: "#fce7f3", // pink-100
+  nodeQuestion: "#dbeafe", // blue-100
+  nodeArrow: "#1f2937", // gray-800
+};
 ```
 
 ### Typography Précise
@@ -586,7 +597,7 @@ const youformColors = {
   border-radius: 1rem; /* rounded-2xl */
   border-width: 2px;
   min-width: 280px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 ```
 
@@ -595,50 +606,67 @@ const youformColors = {
 ## 📸 SCREENSHOTS ANALYSIS
 
 ### Dashboard (youform-dashboard-full.png)
+
 ✅ **DÉJÀ PARFAIT** - Aucun changement nécessaire
 
 ### Editor (youform-editor-full.png)
+
 ✅ **DÉJÀ PARFAIT** - Layout 3-panel correct
 
 ### Add Block Modal (youform-add-block-modal.png + contact-info-preview.png)
+
 ✅ **DÉJÀ PARFAIT** - Modal design correct
 
 ### Design Panel (youform-design-panel.png + bottom.png)
+
 ✅ **DÉJÀ PARFAIT** - Color pickers et layout corrects
 
 ### Share Tab (youform-share-tab-published.png)
+
 ✅ **DÉJÀ PARFAIT** - Success modal et embed codes corrects
 
 ### Integrate Tab (youform-integrate-tab.png)
+
 ✅ **DÉJÀ PARFAIT** - Galerie d'intégrations correcte
 
 ### Results - Submissions (youform-results-submissions-empty.png)
+
 ✅ **DÉJÀ PARFAIT** - Empty state correct
 
 ### Results - Summary (youform-results-summary.png)
+
 ✅ **DÉJÀ PARFAIT** - Empty state message correct
 
 ### Results - Analytics (youform-analytics-full.png)
+
 ⚠️ **NÉCESSITE CORRECTIONS MAJEURES** - Voir section 1 ci-dessus
 
 ### Settings - General (youform-settings-general.png)
+
 ⚠️ **NÉCESSITE CORRECTIONS MINEURES**:
+
 - PRO badge color: use pink (#ff6b9d) not orange
 - Toggle switch styling exact
 
 ### Settings - Email (youform-settings-email.png)
+
 ⚠️ **NÉCESSITE NOUVEAU COMPONENT**:
+
 - Rich text editor pour Email Body
 - Variable pills (@Form Name, @All Answers)
 - Tabs "Email to Me" / "Email to Responder"
 
 ### Settings - Link (youform-settings-link.png)
+
 ⚠️ **NÉCESSITE NOUVEAU COMPONENT**:
+
 - Preview card avec decorations (wavy borders)
 - File upload buttons (disabled state)
 
 ### Logic (youform-logic-page.png)
+
 ⚠️ **NÉCESSITE CORRECTIONS**:
+
 - Node colors: pink/blue pastels
 - Node borders: 2px solid
 - Canvas background: #fafafa
@@ -1294,10 +1322,12 @@ const edgeStyles = {
 ## 🎯 RÉSUMÉ DES CHANGEMENTS NÉCESSAIRES
 
 ### Fichiers à Créer:
+
 1. ✅ `apps/builder/components/builder/Settings/EmailSettings.tsx`
 2. ✅ `apps/builder/components/builder/Settings/LinkSettings.tsx`
 
 ### Fichiers à Modifier:
+
 1. ⚠️ `apps/builder/components/builder/Results/AnalyticsCharts.tsx` - **RÉÉCRIT COMPLET**
 2. ⚠️ `apps/builder/components/builder/Results/ResultsTab.tsx` - Ajuster analytics tab rendering
 3. ⚠️ `apps/builder/components/builder/Logic/LogicGraphEditor.tsx` - Styles nodes/edges
@@ -1305,6 +1335,7 @@ const edgeStyles = {
 5. ⚠️ `packages/ui/src/components/ui/switch.tsx` - Toggle styling exact
 
 ### Priorités:
+
 1. **URGENT**: Analytics Tab (affecte UX principale)
 2. **HIGH**: Settings Email/Link (fonctionnalités visible)
 3. **MEDIUM**: Logic Graph styling (cosmétique)
@@ -1314,14 +1345,14 @@ const edgeStyles = {
 
 ## 📈 SCORE DE PARITÉ MIS À JOUR
 
-| Component | Avant | Après Audit | Gap |
-|-----------|-------|-------------|-----|
-| Analytics Tab | 95% | **60%** | ⚠️ Layout complètement différent |
-| Settings Email | 0% | **0%** | ❌ Manquant |
-| Settings Link | 0% | **0%** | ❌ Manquant |
-| Settings General | 90% | **88%** | ⚠️ PRO badge color |
-| Logic Graph | 85% | **75%** | ⚠️ Node styling |
-| Everything Else | 98% | **98%** | ✅ Parfait |
+| Component        | Avant | Après Audit | Gap                              |
+| ---------------- | ----- | ----------- | -------------------------------- |
+| Analytics Tab    | 95%   | **60%**     | ⚠️ Layout complètement différent |
+| Settings Email   | 0%    | **0%**      | ❌ Manquant                      |
+| Settings Link    | 0%    | **0%**      | ❌ Manquant                      |
+| Settings General | 90%   | **88%**     | ⚠️ PRO badge color               |
+| Logic Graph      | 85%   | **75%**     | ⚠️ Node styling                  |
+| Everything Else  | 98%   | **98%**     | ✅ Parfait                       |
 
 **NOUVEAU SCORE GLOBAL**: **~85%** (baissé de 98% → 85%)
 

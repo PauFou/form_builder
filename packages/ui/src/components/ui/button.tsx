@@ -14,7 +14,8 @@ const buttonVariants = cva(
           "bg-destructive text-destructive-foreground shadow-md hover:bg-destructive/90 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0",
         outline:
           "border-2 border-border bg-background hover:bg-primary/5 hover:text-primary hover:border-primary/50 active:bg-primary/10",
-        secondary: "bg-muted text-foreground hover:bg-primary/5 hover:text-primary active:bg-primary/10",
+        secondary:
+          "bg-muted text-foreground hover:bg-primary/5 hover:text-primary active:bg-primary/10",
         ghost: "hover:bg-primary/5 hover:text-primary active:bg-primary/10",
         link: "text-primary underline-offset-4 hover:underline hover:text-primary/80",
         // YouForm specific variants
