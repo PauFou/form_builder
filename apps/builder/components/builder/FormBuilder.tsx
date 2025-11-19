@@ -364,7 +364,7 @@ export function FormBuilder({ formId }: FormBuilderProps) {
           ) : (
             <div className="flex-1 flex overflow-hidden">
               {/* Left Panel - Blocks List - FIXED 246px from YouForm reference */}
-              <aside className="w-[246px] flex-shrink-0 border-r bg-gray-50 overflow-hidden">
+              <aside className="w-[246px] flex-shrink-0 border-r bg-white overflow-hidden">
                 <BlocksList />
               </aside>
 

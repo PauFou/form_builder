@@ -1,17 +1,194 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, FileText, GripVertical } from "lucide-react";
+import {
+  Plus,
+  Type,
+  AlignLeft,
+  Mail,
+  Phone,
+  Hash,
+  Calendar,
+  MapPin,
+  ChevronDown,
+  CheckSquare,
+  List,
+  Star,
+  Upload,
+  CreditCard,
+  Users,
+  MessageSquare,
+  MoreVertical,
+  Copy,
+  Trash2,
+} from "lucide-react";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 import { cn } from "../../../lib/utils";
 import { AddBlockModal } from "./AddBlockModal";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@skemya/ui";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+// Icon mapping for block types
+const blockIcons: Record<string, React.ComponentType<any>> = {
+  short_text: Type,
+  long_text: AlignLeft,
+  email: Mail,
+  phone: Phone,
+  phone_number: Phone,
+  number: Hash,
+  date: Calendar,
+  address: MapPin,
+  dropdown: ChevronDown,
+  multi_select: CheckSquare,
+  single_select: List,
+  star_rating: Star,
+  rating: Star,
+  nps: Star,
+  opinion_scale: Star,
+  file_upload: Upload,
+  payment: CreditCard,
+  contact_info: Users,
+  statement: MessageSquare,
+  matrix: CheckSquare,
+  ranking: List,
+};
+
+interface SortableBlockItemProps {
+  block: any;
+  index: number;
+  isSelected: boolean;
+  onSelect: () => void;
+  onDuplicate: () => void;
+  onDelete: () => void;
+}
+
+function SortableBlockItem({
+  block,
+  index,
+  isSelected,
+  onSelect,
+  onDuplicate,
+  onDelete,
+}: SortableBlockItemProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: block.id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const Icon = blockIcons[block.type] || MessageSquare;
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "w-full rounded border transition-colors flex items-center group relative",
+        isSelected
+          ? "bg-indigo-50 border-indigo-200 shadow-sm"
+          : "bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm"
+      )}
+    >
+      {/* Draggable content - full width */}
+      <div
+        {...attributes}
+        {...listeners}
+        onClick={onSelect}
+        className="flex items-center gap-2.5 px-3 py-2.5 cursor-grab active:cursor-grabbing w-full"
+      >
+        <Icon className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />
+        <span
+          className={cn(
+            "text-xs flex-1 truncate",
+            isSelected ? "text-gray-900 font-medium" : "text-gray-700"
+          )}
+        >
+          {index + 1}. {block.question || `${block.type} block`}
+        </span>
+      </div>
+
+      {/* Three dots menu - absolute positioned */}
+      <div className="absolute right-1 top-1/2 -translate-y-1/2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              onClick={(e) => e.stopPropagation()}
+              className="p-1.5 hover:bg-gray-100 rounded transition-colors opacity-0 group-hover:opacity-100"
+            >
+              <MoreVertical className="w-3.5 h-3.5 text-gray-500" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" side="right" className="w-40" sideOffset={5} avoidCollisions={true}>
+            <DropdownMenuItem onClick={onDuplicate}>
+              <Copy className="w-4 h-4 mr-2" />
+              Duplicate
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={onDelete} className="text-red-600 focus:text-red-600">
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
+}
 
 export function BlocksList() {
-  const { form, selectedBlockId, selectBlock, addBlock } = useFormBuilderStore();
+  const { form, selectedBlockId, selectBlock, addBlock, moveBlock, deleteBlock } =
+    useFormBuilderStore();
   const [isAddBlockModalOpen, setIsAddBlockModalOpen] = useState(false);
+  const [activeBlock, setActiveBlock] = useState<any>(null);
 
   // Get blocks from the first page
   const blocks = form?.pages?.[0]?.blocks || [];
+  const pageId = form?.pages?.[0]?.id;
+
+  const handleDuplicateBlock = (block: any) => {
+    if (!pageId) return;
+    const duplicatedBlock = {
+      ...block,
+      id: crypto.randomUUID(),
+      question: `${block.question} (copy)`,
+    };
+    const blockIndex = blocks.findIndex((b: any) => b.id === block.id);
+    addBlock(duplicatedBlock, pageId, blockIndex + 1);
+  };
+
+  const handleDeleteBlock = (blockId: string) => {
+    if (confirm("Are you sure you want to delete this block?")) {
+      deleteBlock(blockId);
+    }
+  };
 
   const handleSelectBlock = (blockType: string) => {
     if (form?.pages?.[0]) {
@@ -55,144 +232,100 @@ export function BlocksList() {
     return questionMap[type] || "New question";
   };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const block = blocks.find((b: any) => b.id === event.active.id);
+    setActiveBlock(block);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveBlock(null);
+
+    // Allow drag anywhere but only process drop if over a valid target
+    if (!over || !pageId) {
+      // Dragged outside or no valid drop target - do nothing
+      return;
+    }
+
+    if (active.id !== over.id) {
+      const oldIndex = blocks.findIndex((block: any) => block.id === active.id);
+      const newIndex = blocks.findIndex((block: any) => block.id === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        moveBlock(active.id as string, pageId, newIndex);
+      }
+    }
+  };
+
   return (
     <>
-      <div className="flex flex-col h-full bg-gray-50 border-r">
+      <div className="flex flex-col h-full bg-white">
         {/* Blocks Section */}
         <div className="flex-1 overflow-hidden flex flex-col">
-          <div className="pt-4 px-2 border-b flex-shrink-0">
-            <div className="flex items-center justify-between mb-3">
+          <div className="p-4 pb-2">
+            <div className="flex items-center justify-between mb-4">
               <h4 className="text-sm font-semibold text-gray-900">Blocks</h4>
               <button
                 onClick={() => setIsAddBlockModalOpen(true)}
-                className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
+                className="p-1.5 rounded border border-gray-300 hover:bg-gray-50 transition-colors"
               >
-                <Plus className="w-3.5 h-3.5 text-gray-600" />
+                <Plus className="w-4 h-4 text-gray-600" />
               </button>
             </div>
 
-            {/* Block List */}
-            <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-250px)]">
-              {blocks.map((block, index) => {
-                const isSelected = block.id === selectedBlockId;
+            {/* Block List with Drag & Drop */}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              autoScroll={false}
+            >
+              <SortableContext items={blocks.map((b: any) => b.id)} strategy={verticalListSortingStrategy}>
+                <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-200px)] pr-2">
+                  {blocks.map((block: any, index: number) => (
+                    <SortableBlockItem
+                      key={block.id}
+                      block={block}
+                      index={index}
+                      isSelected={block.id === selectedBlockId}
+                      onSelect={() => selectBlock(block.id)}
+                      onDuplicate={() => handleDuplicateBlock(block)}
+                      onDelete={() => handleDeleteBlock(block.id)}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
 
-                // YouForm block type color mapping
-                const getBlockColors = (type: string) => {
-                  const colorMap: Record<
-                    string,
-                    { bg: string; border: string; text: string; icon: string }
-                  > = {
-                    contact_info: {
-                      bg: "bg-youform-blocks-contact",
-                      border: "border-youform-blocks-contact-dark",
-                      text: "text-purple-900",
-                      icon: "text-purple-700",
-                    },
-                    short_text: {
-                      bg: "bg-youform-blocks-text",
-                      border: "border-youform-blocks-text-dark",
-                      text: "text-blue-900",
-                      icon: "text-blue-700",
-                    },
-                    long_text: {
-                      bg: "bg-youform-blocks-longtext",
-                      border: "border-youform-blocks-longtext-dark",
-                      text: "text-yellow-900",
-                      icon: "text-yellow-700",
-                    },
-                    phone_number: {
-                      bg: "bg-youform-blocks-phone",
-                      border: "border-youform-blocks-phone-dark",
-                      text: "text-purple-900",
-                      icon: "text-purple-700",
-                    },
-                    statement: {
-                      bg: "bg-youform-blocks-statement",
-                      border: "border-youform-blocks-statement-dark",
-                      text: "text-pink-900",
-                      icon: "text-pink-700",
-                    },
-                    number: {
-                      bg: "bg-youform-blocks-number",
-                      border: "border-youform-blocks-number-dark",
-                      text: "text-red-900",
-                      icon: "text-red-700",
-                    },
-                    website_url: {
-                      bg: "bg-youform-blocks-url",
-                      border: "border-youform-blocks-url-dark",
-                      text: "text-cyan-900",
-                      icon: "text-cyan-700",
-                    },
-                    single_select: {
-                      bg: "bg-youform-blocks-select",
-                      border: "border-youform-blocks-select-dark",
-                      text: "text-green-900",
-                      icon: "text-green-700",
-                    },
-                    multi_select: {
-                      bg: "bg-youform-blocks-multiselect",
-                      border: "border-youform-blocks-multiselect-dark",
-                      text: "text-orange-900",
-                      icon: "text-orange-700",
-                    },
-                    dropdown: {
-                      bg: "bg-youform-blocks-dropdown",
-                      border: "border-youform-blocks-dropdown-dark",
-                      text: "text-indigo-900",
-                      icon: "text-indigo-700",
-                    },
-                    // Fallback for other types
-                    default: {
-                      bg: "bg-purple-100",
-                      border: "border-purple-200",
-                      text: "text-purple-900",
-                      icon: "text-purple-600",
-                    },
-                  };
-
-                  return colorMap[type] || colorMap.default;
-                };
-
-                const colors = getBlockColors(block.type);
-                const bgClass = isSelected
-                  ? `${colors.bg} border ${colors.border}`
-                  : `${colors.bg} border ${colors.border} hover:border-opacity-80`;
-                const iconClass = isSelected ? colors.icon : colors.icon;
-                const textClass = isSelected ? `${colors.text} font-medium` : colors.text;
-
-                return (
-                  <button
-                    key={block.id}
-                    onClick={() => selectBlock(block.id)}
-                    className={cn(
-                      "w-full text-left px-2 py-2 rounded-md transition-all flex items-center gap-2 group my-2",
-                      bgClass
-                    )}
-                  >
-                    <FileText className={cn("w-4 h-4 flex-shrink-0", iconClass)} />
-                    <span className={cn("text-xs flex-1 truncate", textClass)}>
-                      {index + 1}. {block.question || `${block.type} block`}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Thank you page Section */}
-          <div className="pt-4 px-2 pb-40 flex-shrink-0 border-t">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-semibold text-gray-900">Thank you page</h4>
-              <button className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors">
-                <Plus className="w-3.5 h-3.5 text-gray-600" />
-              </button>
-            </div>
-
-            <button className="w-full text-left px-2 py-2 rounded-md bg-pink-100 border border-pink-200 hover:border-pink-300 transition-all flex items-center gap-2 my-2">
-              <FileText className="w-4 h-4 text-pink-700 flex-shrink-0" />
-              <span className="text-xs text-pink-900 flex-1 truncate">Thank you! 🙏</span>
-            </button>
+              {/* Drag Overlay - follows cursor anywhere */}
+              <DragOverlay dropAnimation={null}>
+                {activeBlock ? (
+                  <div className="w-[246px] rounded border border-gray-200 bg-white shadow-sm">
+                    <div className="flex items-center gap-2.5 px-3 py-2.5">
+                      {(() => {
+                        const Icon = blockIcons[activeBlock.type] || MessageSquare;
+                        return <Icon className="w-3.5 h-3.5 text-gray-500 flex-shrink-0" />;
+                      })()}
+                      <span className="text-xs text-gray-700 truncate flex-1">
+                        {blocks.findIndex((b: any) => b.id === activeBlock.id) + 1}.{" "}
+                        {activeBlock.question || `${activeBlock.type} block`}
+                      </span>
+                    </div>
+                  </div>
+                ) : null}
+              </DragOverlay>
+            </DndContext>
           </div>
         </div>
       </div>
