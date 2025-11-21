@@ -1,3 +1,41 @@
+/* Contact Info Block Styles */
+.fr-contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.fr-contact-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.fr-contact-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.fr-contact-field-full {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.fr-contact-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+@media (max-width: 640px) {
+  .fr-contact-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Currency Block Styles */
 .typeform-currency {
   display: flex;

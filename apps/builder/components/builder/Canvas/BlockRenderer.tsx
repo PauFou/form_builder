@@ -328,13 +328,36 @@ function renderBlockPreview(
   switch (block.type) {
     case "contact_info":
       return (
-        <div className="space-y-3">
-          {["First Name", "Last Name", "Email", "Phone Number", "Company"].map((label, idx) => (
-            <div key={idx} className="space-y-1">
-              <label className="text-xs text-muted-foreground">{label}</label>
-              <div className="w-full max-w-md h-9 rounded-md border bg-background/50" />
+        <div className="space-y-3 w-full max-w-md">
+          {/* Row 1: First Name + Last Name */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">First Name</label>
+              <div className="w-full h-9 rounded-md border bg-background/50" />
             </div>
-          ))}
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">Last Name</label>
+              <div className="w-full h-9 rounded-md border bg-background/50" />
+            </div>
+          </div>
+
+          {/* Row 2: Email + Phone */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">Email</label>
+              <div className="w-full h-9 rounded-md border bg-background/50" />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">Phone Number</label>
+              <div className="w-full h-9 rounded-md border bg-background/50" />
+            </div>
+          </div>
+
+          {/* Row 3: Company (full width) */}
+          <div className="space-y-1">
+            <label className="text-xs text-muted-foreground">Company</label>
+            <div className="w-full h-9 rounded-md border bg-background/50" />
+          </div>
         </div>
       );
 

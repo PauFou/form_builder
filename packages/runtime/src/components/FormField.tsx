@@ -158,6 +158,104 @@ export const FormField = memo(function FormField({
           />
         );
 
+      case "contact_info": {
+        const contactValue =
+          typeof value === "object" && value !== null
+            ? (value as Record<string, string>)
+            : { firstName: "", lastName: "", email: "", phone: "", company: "" };
+
+        const handleContactChange = (field: string, fieldValue: string) => {
+          onChange({
+            ...contactValue,
+            [field]: fieldValue,
+          });
+        };
+
+        return (
+          <div className="fr-contact-info">
+            {/* Row 1: First Name + Last Name */}
+            <div className="fr-contact-row">
+              <div className="fr-contact-field">
+                <label htmlFor={`${block.id}-firstName`} className="fr-contact-label">
+                  First Name
+                </label>
+                <input
+                  id={`${block.id}-firstName`}
+                  type="text"
+                  value={contactValue.firstName || ""}
+                  onChange={(e) => handleContactChange("firstName", e.target.value)}
+                  onBlur={onBlur}
+                  className="fr-input"
+                  placeholder="John"
+                />
+              </div>
+              <div className="fr-contact-field">
+                <label htmlFor={`${block.id}-lastName`} className="fr-contact-label">
+                  Last Name
+                </label>
+                <input
+                  id={`${block.id}-lastName`}
+                  type="text"
+                  value={contactValue.lastName || ""}
+                  onChange={(e) => handleContactChange("lastName", e.target.value)}
+                  onBlur={onBlur}
+                  className="fr-input"
+                  placeholder="Doe"
+                />
+              </div>
+            </div>
+
+            {/* Row 2: Email + Phone */}
+            <div className="fr-contact-row">
+              <div className="fr-contact-field">
+                <label htmlFor={`${block.id}-email`} className="fr-contact-label">
+                  Email
+                </label>
+                <input
+                  id={`${block.id}-email`}
+                  type="email"
+                  value={contactValue.email || ""}
+                  onChange={(e) => handleContactChange("email", e.target.value)}
+                  onBlur={onBlur}
+                  className="fr-input"
+                  placeholder="john@example.com"
+                />
+              </div>
+              <div className="fr-contact-field">
+                <label htmlFor={`${block.id}-phone`} className="fr-contact-label">
+                  Phone Number
+                </label>
+                <input
+                  id={`${block.id}-phone`}
+                  type="tel"
+                  value={contactValue.phone || ""}
+                  onChange={(e) => handleContactChange("phone", e.target.value)}
+                  onBlur={onBlur}
+                  className="fr-input"
+                  placeholder="(201) 555-0123"
+                />
+              </div>
+            </div>
+
+            {/* Row 3: Company (full width) */}
+            <div className="fr-contact-field-full">
+              <label htmlFor={`${block.id}-company`} className="fr-contact-label">
+                Company
+              </label>
+              <input
+                id={`${block.id}-company`}
+                type="text"
+                value={contactValue.company || ""}
+                onChange={(e) => handleContactChange("company", e.target.value)}
+                onBlur={onBlur}
+                className="fr-input"
+                placeholder="Acme Inc"
+              />
+            </div>
+          </div>
+        );
+      }
+
       default:
         return (
           <input

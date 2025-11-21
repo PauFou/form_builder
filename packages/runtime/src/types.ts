@@ -145,7 +145,8 @@ export type BlockType =
   | "file_upload"
   | "signature"
   | "payment"
-  | "scheduler";
+  | "scheduler"
+  | "contact_info";
 
 export interface Block {
   id: string;
