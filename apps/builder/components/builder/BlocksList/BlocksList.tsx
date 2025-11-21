@@ -12,7 +12,7 @@ import {
   MapPin,
   ChevronDown,
   CheckSquare,
-  List,
+  Circle,
   Star,
   Upload,
   CreditCard,
@@ -21,6 +21,7 @@ import {
   MoreVertical,
   Copy,
   Trash2,
+  List,
 } from "lucide-react";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 import { cn } from "../../../lib/utils";
@@ -64,7 +65,7 @@ const blockIcons: Record<string, React.ComponentType<any>> = {
   address: MapPin,
   dropdown: ChevronDown,
   multi_select: CheckSquare,
-  single_select: List,
+  single_select: Circle,
   star_rating: Star,
   rating: Star,
   nps: Star,
@@ -141,24 +142,29 @@ function SortableBlockItem({
           <DropdownMenuTrigger asChild>
             <button
               onClick={(e) => e.stopPropagation()}
-              className="p-1.5 hover:bg-gray-100 rounded transition-colors opacity-0 group-hover:opacity-100"
+              className="p-1 hover:bg-gray-100 rounded transition-colors opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100 data-[state=open]:bg-indigo-50 data-[state=open]:text-indigo-600"
             >
-              <MoreVertical className="w-3.5 h-3.5 text-gray-500" />
+              <MoreVertical className="w-3.5 h-3.5" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            align="start"
-            side="right"
-            className="w-40"
-            sideOffset={5}
+            align="end"
+            side="bottom"
+            className="min-w-[140px] rounded shadow-md border-gray-300 py-1"
+            sideOffset={4}
             avoidCollisions={true}
           >
-            <DropdownMenuItem onClick={onDuplicate}>
-              <Copy className="w-4 h-4 mr-2" />
+            <DropdownMenuItem
+              onClick={onDuplicate}
+              className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+            >
+              <Copy className="w-4 h-4 mr-2 text-gray-500" />
               Duplicate
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onDelete} className="text-red-600 focus:text-red-600">
+            <DropdownMenuItem
+              onClick={onDelete}
+              className="px-3 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-600 focus:text-red-600 cursor-pointer"
+            >
               <Trash2 className="w-4 h-4 mr-2" />
               Delete
             </DropdownMenuItem>

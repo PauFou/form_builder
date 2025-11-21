@@ -9,6 +9,7 @@ import {
   FileText,
   Hash,
   Link as LinkIcon,
+  Circle,
   CheckSquare,
   List,
   ChevronDown,
@@ -141,7 +142,7 @@ const blocks: Block[] = [
   {
     id: "single_select",
     name: "Single Select Option",
-    icon: CheckSquare,
+    icon: Circle,
     bgColor: "bg-green-300",
     description:
       "Let users choose one option from multiple choices. Perfect for preferences or categories.",
@@ -158,10 +159,10 @@ const blocks: Block[] = [
   {
     id: "multi_select",
     name: "Multi Select Option",
-    icon: List,
-    bgColor: "bg-red-300",
+    icon: CheckSquare,
+    bgColor: "bg-teal-300",
     description: "Allow users to select multiple options. Great for interests, features, or tags.",
-    textColor: "text-red-900",
+    textColor: "text-teal-900",
     preview: {
       title: "Select all that apply",
       fields: [
@@ -525,12 +526,33 @@ export function AddBlockModal({ isOpen, onClose, onSelectBlock }: AddBlockModalP
                       </div>
                     </div>
                   ) : selectedBlock.id === "phone_number" ? (
-                    /* PHONE NUMBER */
-                    <div className="space-y-3">
-                      <div className="w-full px-2 py-1.5 border-b border-gray-300 text-xs text-gray-400">
-                        (___) ___-____
+                    /* PHONE NUMBER with country selector */
+                    <div className="space-y-3 text-left">
+                      <div className="flex items-center gap-2 max-w-[180px]">
+                        {/* Country selector */}
+                        <div className="flex items-center gap-1 px-2 py-1.5 border-b border-gray-300 bg-gray-50 rounded-t">
+                          <span className="text-sm">🇫🇷</span>
+                          <span className="text-xs text-gray-600">+33</span>
+                          <svg
+                            className="w-3 h-3 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        </div>
+                        {/* Phone input */}
+                        <div className="flex-1 px-0 py-1.5 border-b border-gray-300 text-xs text-gray-400">
+                          6 12 34 56 78
+                        </div>
                       </div>
-                      <div className="mt-3 px-3 py-1.5 h-8 bg-indigo-600 text-white text-xs font-medium rounded inline-flex items-center">
+                      <div className="px-3 py-1.5 h-8 bg-indigo-600 text-white text-xs font-medium rounded inline-flex items-center">
                         OK ✓
                       </div>
                     </div>
@@ -543,21 +565,35 @@ export function AddBlockModal({ isOpen, onClose, onSelectBlock }: AddBlockModalP
                     </div>
                   ) : selectedBlock.id === "number" ? (
                     /* NUMBER */
-                    <div className="space-y-3">
-                      <div className="w-full px-2 py-1.5 border-b border-gray-300 text-xs text-gray-400">
-                        0
+                    <div className="space-y-3 text-left">
+                      <div className="border-b border-gray-300 py-1.5 max-w-[180px]">
+                        <span className="text-xs text-gray-400">0</span>
                       </div>
-                      <div className="mt-3 px-3 py-1.5 h-8 bg-indigo-600 text-white text-xs font-medium rounded inline-flex items-center">
+                      <div className="px-3 py-1.5 h-8 bg-indigo-600 text-white text-xs font-medium rounded inline-flex items-center">
                         OK ✓
                       </div>
                     </div>
                   ) : selectedBlock.id === "website_url" ? (
                     /* WEBSITE URL */
-                    <div className="space-y-3">
-                      <div className="w-full px-2 py-1.5 border-b border-gray-300 text-xs text-gray-400">
-                        https://example.com
+                    <div className="space-y-3 text-left">
+                      <div className="flex items-center gap-2 border-b border-gray-300 py-1.5 max-w-[200px]">
+                        {/* Link icon */}
+                        <svg
+                          className="w-4 h-4 text-gray-400 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                          />
+                        </svg>
+                        <span className="text-xs text-gray-400">https://</span>
                       </div>
-                      <div className="mt-3 px-3 py-1.5 h-8 bg-indigo-600 text-white text-xs font-medium rounded inline-flex items-center">
+                      <div className="px-3 py-1.5 h-8 bg-indigo-600 text-white text-xs font-medium rounded inline-flex items-center">
                         OK ✓
                       </div>
                     </div>

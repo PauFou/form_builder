@@ -13,7 +13,7 @@ import {
   PenTool,
   MapPin,
   CreditCard,
-  List,
+  Circle,
   CheckSquare,
   ToggleLeft,
   Star,
@@ -63,7 +63,7 @@ const blockIcons: Record<string, React.ComponentType<any>> = {
   signature: PenTool,
   address: MapPin,
   payment: CreditCard,
-  single_select: List,
+  single_select: Circle,
   multi_select: CheckSquare,
   dropdown: ChevronDown,
   yes_no: ToggleLeft,
@@ -363,8 +363,8 @@ export function FormBuilder({ formId }: FormBuilderProps) {
             />
           ) : (
             <div className="flex-1 flex overflow-hidden">
-              {/* Left Panel - Blocks List - FIXED 246px from YouForm reference */}
-              <aside className="w-[246px] flex-shrink-0 border-r bg-white overflow-hidden">
+              {/* Left Panel - Blocks List */}
+              <aside className="w-[220px] flex-shrink-0 border-r bg-white overflow-hidden">
                 <BlocksList />
               </aside>
 
@@ -373,8 +373,8 @@ export function FormBuilder({ formId }: FormBuilderProps) {
                 <FormCanvas dropPosition={dropPosition} />
               </main>
 
-              {/* Right Panel - Properties Inspector - FIXED 360px from YouForm reference */}
-              <aside className="w-[360px] flex-shrink-0 border-l bg-white overflow-hidden">
+              {/* Right Panel - Properties Inspector */}
+              <aside className="w-[320px] flex-shrink-0 border-l bg-white overflow-hidden">
                 <PropertiesPanel />
               </aside>
             </div>

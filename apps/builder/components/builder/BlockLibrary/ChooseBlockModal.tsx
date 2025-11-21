@@ -9,7 +9,9 @@ import {
   FileText,
   Hash,
   Link as LinkIcon,
+  Circle,
   CheckSquare,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 
@@ -115,12 +117,42 @@ const blocks: Block[] = [
   },
   {
     id: "single_select",
-    name: "Single Select Op...",
-    icon: CheckSquare,
+    name: "Single Select",
+    icon: Circle,
     bgColor: "bg-green-300",
     textColor: "text-green-900",
     preview: {
       title: "Choose one option",
+      fields: [
+        { label: "Option 1", placeholder: "" },
+        { label: "Option 2", placeholder: "" },
+        { label: "Option 3", placeholder: "" },
+      ],
+    },
+  },
+  {
+    id: "multi_select",
+    name: "Multi Select",
+    icon: CheckSquare,
+    bgColor: "bg-teal-300",
+    textColor: "text-teal-900",
+    preview: {
+      title: "Select all that apply",
+      fields: [
+        { label: "Option 1", placeholder: "" },
+        { label: "Option 2", placeholder: "" },
+        { label: "Option 3", placeholder: "" },
+      ],
+    },
+  },
+  {
+    id: "dropdown",
+    name: "Dropdown",
+    icon: ChevronDown,
+    bgColor: "bg-indigo-300",
+    textColor: "text-indigo-900",
+    preview: {
+      title: "Select from dropdown",
       fields: [
         { label: "Option 1", placeholder: "" },
         { label: "Option 2", placeholder: "" },

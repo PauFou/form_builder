@@ -89,7 +89,7 @@ export function ImageUpload({ value, onChange, label = "Cover Image" }: ImageUpl
           <img
             src={value}
             alt="Cover"
-            className="w-full h-48 object-cover rounded-lg border border-gray-300"
+            className="w-full h-48 object-cover rounded border border-gray-300"
           />
           <button
             onClick={handleRemove}
@@ -112,7 +112,7 @@ export function ImageUpload({ value, onChange, label = "Cover Image" }: ImageUpl
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
         className={cn(
-          "w-full px-4 py-8 border-2 border-dashed rounded-lg text-sm text-gray-600 transition-all cursor-pointer",
+          "w-full px-4 py-8 border-2 border-dashed rounded text-sm text-gray-600 transition-all cursor-pointer",
           "flex flex-col items-center justify-center gap-3",
           isDragging
             ? "border-blue-500 bg-blue-50"
