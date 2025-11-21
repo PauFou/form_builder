@@ -57,10 +57,10 @@ export function FormCanvas({ dropPosition }: FormCanvasProps) {
         />
 
         {/* Canvas Content with dotted border (matching YouForm) */}
-        <div className="flex-1 overflow-y-auto bg-gray-50 p-3 scrollbar-none">
-          <div className="max-w-5xl mx-auto">
+        <div className="flex-1 overflow-y-auto bg-gray-50 p-3 scrollbar-none flex flex-col">
+          <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col">
             {/* Canvas with dotted border like YouForm */}
-            <div className="border-2 border-dashed border-gray-300 rounded bg-white min-h-[600px]">
+            <div className="border-2 border-dashed border-gray-300 rounded bg-white flex-1 min-h-[600px]">
               <FormPreview />
             </div>
           </div>

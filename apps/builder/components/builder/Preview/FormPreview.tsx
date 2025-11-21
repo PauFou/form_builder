@@ -77,8 +77,10 @@ export function FormPreview() {
   return (
     <div
       className={cn(
-        "w-full min-h-full bg-white",
-        needsFullContainer ? "" : "flex flex-col items-center py-12 px-8"
+        "w-full bg-white",
+        needsFullContainer
+          ? "h-full"
+          : "min-h-full flex flex-col items-center justify-center py-12 px-8"
       )}
       onDoubleClick={handleDoubleClick}
     >
@@ -555,51 +557,26 @@ function renderBlockContent(
     </>
   );
 
-  // WALLPAPER LAYOUT
+  // WALLPAPER LAYOUT - Same as stack but with background image
   if (layout === "wallpaper" && block.coverImage) {
     return (
       <div
-        className="relative w-full h-full flex items-center justify-center p-8"
+        className="relative w-full h-full"
         style={{
           backgroundImage: `url(${block.coverImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
-        {/* Content with white text */}
-        <div className={cn("relative z-10 w-full max-w-3xl space-y-6", alignmentClass)}>
-          <h1
-            className="text-3xl font-normal text-white cursor-pointer hover:text-indigo-200 transition-colors leading-tight drop-shadow-lg"
-            onClick={onTitleClick}
-          >
-            {block.question || "Hey there 😊"}
-          </h1>
-
-          {block.description && (
-            <div
-              className="text-base text-white cursor-pointer hover:text-indigo-200 transition-colors leading-relaxed drop-shadow-lg"
-              onClick={onDescriptionClick}
-              dangerouslySetInnerHTML={{ __html: block.description }}
-            />
+        {/* Semi-transparent overlay for better readability */}
+        <div className="absolute inset-0 bg-black/30" />
+        {/* Same content as stack layout */}
+        <div
+          className={cn(
+            "relative z-10 h-full flex flex-col items-center justify-center py-12 px-8"
           )}
-
-          <div
-            className={cn(
-              "mt-10",
-              textAlign === "left"
-                ? "flex justify-start"
-                : textAlign === "right"
-                  ? "flex justify-end"
-                  : "flex justify-center"
-            )}
-          >
-            <button
-              className="inline-flex items-center justify-center px-5 py-2.5 h-11 bg-white hover:bg-gray-100 text-gray-900 text-base font-medium rounded transition-colors shadow-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 cursor-pointer"
-              onClick={onButtonClick}
-            >
-              {buttonText}
-            </button>
-          </div>
+        >
+          <div className={cn("space-y-6 w-full max-w-3xl", alignmentClass)}>{textContent}</div>
         </div>
       </div>
     );
@@ -610,36 +587,32 @@ function renderBlockContent(
     // For split layout, use different alignment (no mx-auto for blocks needing left alignment)
     const splitAlignmentClass = needsLeftAlignment ? "text-left" : alignmentClass;
 
+    const imageElement = (
+      <div
+        className="w-1/2 flex-shrink-0 bg-cover bg-center"
+        style={{
+          backgroundImage: `url(${block.coverImage})`,
+        }}
+      />
+    );
+
+    const contentElement = (
+      <div className={cn("w-1/2 flex flex-col justify-center p-12 space-y-6", splitAlignmentClass)}>
+        {textContent}
+      </div>
+    );
+
     return (
-      <div className="flex items-stretch h-full w-full">
-        {/* Left side - Image or Content */}
+      <div className="flex h-full w-full" style={{ minHeight: "100%" }}>
         {imagePosition === "left" ? (
           <>
-            <div className="w-1/2 flex-shrink-0">
-              <img src={block.coverImage} alt="Cover" className="w-full h-full object-cover" />
-            </div>
-            <div
-              className={cn(
-                "w-1/2 flex flex-col justify-center p-12 space-y-6",
-                splitAlignmentClass
-              )}
-            >
-              {textContent}
-            </div>
+            {imageElement}
+            {contentElement}
           </>
         ) : (
           <>
-            <div
-              className={cn(
-                "w-1/2 flex flex-col justify-center p-12 space-y-6",
-                splitAlignmentClass
-              )}
-            >
-              {textContent}
-            </div>
-            <div className="w-1/2 flex-shrink-0">
-              <img src={block.coverImage} alt="Cover" className="w-full h-full object-cover" />
-            </div>
+            {contentElement}
+            {imageElement}
           </>
         )}
       </div>

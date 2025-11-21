@@ -18,7 +18,7 @@ import {
   CreditCard,
   Users,
   MessageSquare,
-  MoreVertical,
+  Settings,
   Copy,
   Trash2,
   List,
@@ -144,7 +144,7 @@ function SortableBlockItem({
               onClick={(e) => e.stopPropagation()}
               className="p-1 hover:bg-gray-100 rounded transition-colors opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100 data-[state=open]:bg-indigo-50 data-[state=open]:text-indigo-600"
             >
-              <MoreVertical className="w-3.5 h-3.5" />
+              <Settings className="w-3.5 h-3.5" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
