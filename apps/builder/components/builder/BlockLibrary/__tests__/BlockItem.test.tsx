@@ -2,21 +2,21 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { DndContext } from "@dnd-kit/core";
 import { Type } from "lucide-react";
-import { BlockItem } from "../BlockItem";
 
-// Mock framer-motion
-const MockDiv = React.forwardRef<HTMLDivElement, any>(({ children, ...props }, ref) => (
-  <div ref={ref} {...props}>
-    {children}
-  </div>
-));
-MockDiv.displayName = "MockDiv";
-
+// Mock framer-motion - must be before import
 jest.mock("framer-motion", () => ({
   motion: {
-    div: MockDiv,
+    div: React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+      ({ children, ...props }, ref) => (
+        <div ref={ref} {...props}>
+          {children}
+        </div>
+      )
+    ),
   },
 }));
+
+import { BlockItem } from "../BlockItem";
 
 describe("BlockItem", () => {
   const mockBlock = {
