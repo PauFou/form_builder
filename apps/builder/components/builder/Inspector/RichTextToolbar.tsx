@@ -14,44 +14,62 @@ export function RichTextToolbar({ value, onChange, textareaRef }: RichTextToolba
   const [selectedTextForLink, setSelectedTextForLink] = useState("");
   const [linkStartPos, setLinkStartPos] = useState(0);
   const [linkEndPos, setLinkEndPos] = useState(0);
+  const [isBoldActive, setIsBoldActive] = useState(false);
+  const [isItalicActive, setIsItalicActive] = useState(false);
+  const [isUnderlineActive, setIsUnderlineActive] = useState(false);
 
-  const wrapSelection = (tagName: string) => {
+  // Check active formatting at cursor position
+  React.useEffect(() => {
+    const editor = textareaRef?.current;
+    if (!editor) return;
+
+    const updateFormats = () => {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) return;
+
+      setIsBoldActive(document.queryCommandState("bold"));
+      setIsItalicActive(document.queryCommandState("italic"));
+      setIsUnderlineActive(document.queryCommandState("underline"));
+    };
+
+    editor.addEventListener("keyup", updateFormats);
+    editor.addEventListener("mouseup", updateFormats);
+    editor.addEventListener("focus", updateFormats);
+
+    return () => {
+      editor.removeEventListener("keyup", updateFormats);
+      editor.removeEventListener("mouseup", updateFormats);
+      editor.removeEventListener("focus", updateFormats);
+    };
+  }, [textareaRef]);
+
+  const toggleFormat = (command: "bold" | "italic" | "underline") => {
     const editor = textareaRef?.current;
     if (!editor) return;
 
     editor.focus();
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) return;
+    document.execCommand(command, false);
 
-    const range = selection.getRangeAt(0);
-    const selectedText = range.toString();
-
-    if (!selectedText) return;
-
-    // Create wrapper element
-    const wrapper = document.createElement(tagName);
-    wrapper.textContent = selectedText;
-
-    // Replace selection with wrapped content
-    range.deleteContents();
-    range.insertNode(wrapper);
-
-    // Update the value
     setTimeout(() => {
       onChange(editor.innerHTML);
+
+      // Update active states
+      setIsBoldActive(document.queryCommandState("bold"));
+      setIsItalicActive(document.queryCommandState("italic"));
+      setIsUnderlineActive(document.queryCommandState("underline"));
     }, 0);
   };
 
   const handleBold = () => {
-    wrapSelection("strong");
+    toggleFormat("bold");
   };
 
   const handleItalic = () => {
-    wrapSelection("em");
+    toggleFormat("italic");
   };
 
   const handleUnderline = () => {
-    wrapSelection("u");
+    toggleFormat("underline");
   };
 
   const handleLinkClick = () => {
@@ -197,26 +215,45 @@ export function RichTextToolbar({ value, onChange, textareaRef }: RichTextToolba
           <button
             type="button"
             onClick={handleBold}
-            className="p-2 hover:bg-gray-100 rounded border border-gray-300 transition-colors bg-white"
+            className={cn(
+              "p-2 rounded border transition-colors",
+              isBoldActive
+                ? "bg-indigo-100 border-indigo-600"
+                : "bg-white border-gray-300 hover:bg-gray-100"
+            )}
             title="Bold"
           >
-            <Bold className="w-4 h-4 text-gray-600" />
+            <Bold className={cn("w-4 h-4", isBoldActive ? "text-indigo-600" : "text-gray-600")} />
           </button>
           <button
             type="button"
             onClick={handleItalic}
-            className="p-2 hover:bg-gray-100 rounded border border-gray-300 transition-colors bg-white"
+            className={cn(
+              "p-2 rounded border transition-colors",
+              isItalicActive
+                ? "bg-indigo-100 border-indigo-600"
+                : "bg-white border-gray-300 hover:bg-gray-100"
+            )}
             title="Italic"
           >
-            <Italic className="w-4 h-4 text-gray-600" />
+            <Italic
+              className={cn("w-4 h-4", isItalicActive ? "text-indigo-600" : "text-gray-600")}
+            />
           </button>
           <button
             type="button"
             onClick={handleUnderline}
-            className="p-2 hover:bg-gray-100 rounded border border-gray-300 transition-colors bg-white"
+            className={cn(
+              "p-2 rounded border transition-colors",
+              isUnderlineActive
+                ? "bg-indigo-100 border-indigo-600"
+                : "bg-white border-gray-300 hover:bg-gray-100"
+            )}
             title="Underline"
           >
-            <Underline className="w-4 h-4 text-gray-600" />
+            <Underline
+              className={cn("w-4 h-4", isUnderlineActive ? "text-indigo-600" : "text-gray-600")}
+            />
           </button>
           <button
             type="button"

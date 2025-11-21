@@ -69,8 +69,10 @@ export function FormPreview() {
   };
 
   // Check if we're using split or wallpaper layout (they need full container)
+  // Only use full container if layout is split/wallpaper AND there's actually a cover image
   const layout = (currentBlock as any).layout || "stack";
-  const needsFullContainer = layout === "split" || layout === "wallpaper";
+  const hasCoverImage = !!(currentBlock as any).coverImage;
+  const needsFullContainer = hasCoverImage && (layout === "split" || layout === "wallpaper");
 
   return (
     <div
@@ -129,7 +131,7 @@ function renderBlockContent(
   // Render block-specific fields
   const renderBlockFields = () => {
     switch (block.type) {
-      case "contact_info":
+      case "contact_info": {
         // Get field settings from block
         const fields = (block as any).contactFields || {
           firstName: { label: "First Name", placeholder: "John", visible: true, required: false },
@@ -233,6 +235,7 @@ function renderBlockContent(
             )}
           </div>
         );
+      }
 
       default:
         return null;
