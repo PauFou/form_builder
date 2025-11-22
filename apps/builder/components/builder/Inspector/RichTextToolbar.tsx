@@ -189,13 +189,13 @@ export function RichTextToolbar({ value, onChange, textareaRef }: RichTextToolba
               }
             }}
             placeholder="Enter URL (https://...)"
-            className="flex-1 px-3 py-2 text-sm border border-indigo-600 rounded focus:outline-none focus:ring-1 focus:ring-indigo-600"
+            className="flex-1 px-3 py-2 text-sm border border-indigo-600 rounded focus:outline-none focus:ring-1 focus:ring-indigo-600 h-9"
             autoFocus
           />
           <button
             type="button"
             onClick={handleLinkConfirm}
-            className="p-2 hover:bg-green-100 rounded border border-green-600 transition-colors bg-white"
+            className="p-1.5 hover:bg-green-100 rounded border border-green-600 transition-colors bg-white"
             title="Confirm"
           >
             <Check className="w-4 h-4 text-green-600" />
@@ -203,7 +203,7 @@ export function RichTextToolbar({ value, onChange, textareaRef }: RichTextToolba
           <button
             type="button"
             onClick={handleLinkCancel}
-            className="p-2 hover:bg-red-100 rounded border border-red-600 transition-colors bg-white"
+            className="p-1.5 hover:bg-red-100 rounded border border-red-600 transition-colors bg-white"
             title="Cancel"
           >
             <X className="w-4 h-4 text-red-600" />
@@ -216,7 +216,7 @@ export function RichTextToolbar({ value, onChange, textareaRef }: RichTextToolba
             type="button"
             onClick={handleBold}
             className={cn(
-              "p-2 rounded border transition-colors",
+              "p-1.5 rounded border transition-colors",
               isBoldActive
                 ? "bg-indigo-100 border-indigo-600"
                 : "bg-white border-gray-300 hover:bg-gray-100"
@@ -229,7 +229,7 @@ export function RichTextToolbar({ value, onChange, textareaRef }: RichTextToolba
             type="button"
             onClick={handleItalic}
             className={cn(
-              "p-2 rounded border transition-colors",
+              "p-1.5 rounded border transition-colors",
               isItalicActive
                 ? "bg-indigo-100 border-indigo-600"
                 : "bg-white border-gray-300 hover:bg-gray-100"
@@ -244,7 +244,7 @@ export function RichTextToolbar({ value, onChange, textareaRef }: RichTextToolba
             type="button"
             onClick={handleUnderline}
             className={cn(
-              "p-2 rounded border transition-colors",
+              "p-1.5 rounded border transition-colors",
               isUnderlineActive
                 ? "bg-indigo-100 border-indigo-600"
                 : "bg-white border-gray-300 hover:bg-gray-100"
@@ -258,7 +258,7 @@ export function RichTextToolbar({ value, onChange, textareaRef }: RichTextToolba
           <button
             type="button"
             onClick={handleLinkClick}
-            className="p-2 hover:bg-gray-100 rounded border border-gray-300 transition-colors bg-white"
+            className="p-1.5 hover:bg-gray-100 rounded border border-gray-300 transition-colors bg-white"
             title="Insert Link"
           >
             <LinkIcon className="w-4 h-4 text-gray-600" />
@@ -266,7 +266,7 @@ export function RichTextToolbar({ value, onChange, textareaRef }: RichTextToolba
           <button
             type="button"
             onClick={handleVideo}
-            className="p-2 hover:bg-gray-100 rounded border border-gray-300 transition-colors bg-white"
+            className="p-1.5 hover:bg-gray-100 rounded border border-gray-300 transition-colors bg-white"
             title="Insert Video"
           >
             <Video className="w-4 h-4 text-gray-600" />

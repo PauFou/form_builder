@@ -40,7 +40,7 @@ export const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorPro
         onInput={handleInput}
         onPaste={handlePaste}
         className={cn(
-          "min-h-[80px] w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm",
+          "min-h-[60px] w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm",
           "focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600",
           "transition-colors overflow-y-auto",
           !value && "empty:before:content-[attr(data-placeholder)] empty:before:text-gray-400",

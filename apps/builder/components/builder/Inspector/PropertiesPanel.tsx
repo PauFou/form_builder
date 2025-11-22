@@ -109,27 +109,29 @@ export function PropertiesPanel() {
   const isPhone = selectedBlock.type === "phone" || selectedBlock.type === "phone_number";
   const isWebsite = selectedBlock.type === "website" || selectedBlock.type === "website_url";
   const isNumber = selectedBlock.type === "number";
+  const isDate = selectedBlock.type === "date";
+  const isStarRating = selectedBlock.type === "star_rating" || selectedBlock.type === "rating";
+  const isScheduler = selectedBlock.type === "scheduler";
   const isSingleSelect = selectedBlock.type === "single_select";
   const isMultiSelect = selectedBlock.type === "multi_select";
-  const isSelectBlock = isSingleSelect || isMultiSelect;
+  const isDropdown = selectedBlock.type === "dropdown";
+  const isSelectBlock = isSingleSelect || isMultiSelect || isDropdown;
   const needsLeftAlignment =
-    isContactInfo || isShortText || isLongText || isPhone || isWebsite || isNumber || isSelectBlock;
+    isContactInfo || isShortText || isLongText || isPhone || isWebsite || isNumber || isDate || isSelectBlock;
 
   return (
     <div className="flex flex-col h-full bg-white">
-      <div className="flex-1 overflow-y-auto px-3 py-4">
-        <div className="space-y-5">
+      <div className="flex-1 overflow-y-auto px-3 py-3">
+        <div className="space-y-3">
           {/* Type selector for Select blocks - at the very top */}
           {isSelectBlock && (
             <div className="space-y-2">
-              <Label htmlFor="selectType" className="text-base font-medium text-gray-900">
-                Type
-              </Label>
+              <Label htmlFor="selectType">Type</Label>
               <select
                 id="selectType"
-                value={(selectedBlock as any).selectType || "single_select"}
+                value={selectedBlock.type}
                 onChange={(e) => handleUpdate({ selectType: e.target.value, type: e.target.value })}
-                className="w-full px-3 py-2.5 border border-gray-300 rounded text-base focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 bg-white transition-colors"
+                className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 bg-white transition-colors h-9"
               >
                 <option value="single_select">Single Select</option>
                 <option value="multi_select">Multi Select</option>
@@ -140,7 +142,7 @@ export function PropertiesPanel() {
 
           {/* Question/Title */}
           <div ref={questionRef} className="space-y-2">
-            <Label htmlFor="question" className="text-base font-medium text-gray-900">
+            <Label htmlFor="question">
               {isContactInfo ? "Question" : "Title"}
             </Label>
             <Textarea
@@ -148,15 +150,13 @@ export function PropertiesPanel() {
               value={selectedBlock.question || ""}
               onChange={(e) => handleUpdate({ question: e.target.value })}
               placeholder={isContactInfo ? "Please fill the following" : "Hey there 😊"}
-              className="resize-none min-h-[70px] text-base"
+              className="resize-none min-h-[50px] text-sm"
             />
           </div>
 
           {/* Description */}
           <div ref={descRef} className="space-y-2">
-            <Label htmlFor="description" className="text-base font-medium text-gray-900">
-              Description
-            </Label>
+            <Label htmlFor="description">Description</Label>
 
             {/* Formatting Toolbar */}
             <RichTextToolbar
@@ -177,7 +177,7 @@ export function PropertiesPanel() {
           {/* Contact Info Fields */}
           {isContactInfo && (
             <div className="space-y-2">
-              <Label className="text-base font-medium text-gray-900">Fields</Label>
+              <Label>Fields</Label>
               <div className="space-y-2">
                 {(() => {
                   const fieldKeys = ["firstName", "lastName", "email", "phone", "company"];
@@ -258,7 +258,7 @@ export function PropertiesPanel() {
                               <span
                                 className={cn(
                                   "text-sm font-medium",
-                                  field.visible ? "text-gray-700" : "text-gray-400"
+                                  field.visible ? "text-gray-600" : "text-gray-400"
                                 )}
                               >
                                 {field.label}
@@ -295,7 +295,7 @@ export function PropertiesPanel() {
                                 <div>
                                   <Label
                                     htmlFor={`${fieldKey}-label`}
-                                    className="text-xs font-medium text-gray-700"
+                                    className="text-sm font-medium text-gray-700"
                                   >
                                     Field Label
                                   </Label>
@@ -313,7 +313,7 @@ export function PropertiesPanel() {
                                 <div>
                                   <Label
                                     htmlFor={`${fieldKey}-placeholder`}
-                                    className="text-xs font-medium text-gray-700"
+                                    className="text-sm font-medium text-gray-700"
                                   >
                                     Placeholder
                                   </Label>
@@ -349,7 +349,7 @@ export function PropertiesPanel() {
                                   </button>
                                   <Label
                                     htmlFor={`${fieldKey}-required`}
-                                    className="text-xs font-medium text-gray-700 cursor-pointer"
+                                    className="text-sm font-medium text-gray-700 cursor-pointer"
                                   >
                                     Required field
                                   </Label>
@@ -368,7 +368,7 @@ export function PropertiesPanel() {
 
           {/* Button Text */}
           <div ref={buttonTextRef} className="space-y-2">
-            <Label htmlFor="buttonText" className="text-base font-medium text-gray-900">
+            <Label htmlFor="buttonText">
               Button Text
             </Label>
             <Input
@@ -376,9 +376,9 @@ export function PropertiesPanel() {
               value={selectedBlock.buttonText || ""}
               onChange={(e) => handleUpdate({ buttonText: e.target.value })}
               placeholder="Next"
-              className="text-base"
+              className="text-sm"
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-sm text-gray-500">
               For submit button, set it from settings.{" "}
               <a href="#" className="text-indigo-600 hover:underline">
                 Learn more
@@ -392,7 +392,7 @@ export function PropertiesPanel() {
             <>
               {/* Placeholder */}
               <div className="space-y-2">
-                <Label htmlFor="placeholder" className="text-base font-medium text-gray-900">
+                <Label htmlFor="placeholder">
                   Placeholder
                 </Label>
                 <Input
@@ -400,33 +400,33 @@ export function PropertiesPanel() {
                   value={(selectedBlock as any).placeholder || ""}
                   onChange={(e) => handleUpdate({ placeholder: e.target.value })}
                   placeholder="Type your answer here..."
-                  className="text-base"
+                  className="text-sm"
                 />
               </div>
 
               {/* Required field */}
               <div className="space-y-2">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <button
                     role="checkbox"
                     aria-checked={selectedBlock.required || false}
                     onClick={() => handleUpdate({ required: !selectedBlock.required })}
                     className={cn(
-                      "w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
                       selectedBlock.required
                         ? "bg-indigo-600 border-indigo-600"
                         : "bg-white border-gray-300 hover:border-gray-400"
                     )}
                   >
                     {selectedBlock.required && (
-                      <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
                     )}
                   </button>
                   <div>
-                    <Label className="text-base font-medium text-gray-900 cursor-pointer">
+                    <Label className="cursor-pointer">
                       Required field
                     </Label>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-sm text-gray-500 mt-0.5">
                       If checked, users will be required to complete this field.
                     </p>
                   </div>
@@ -435,7 +435,7 @@ export function PropertiesPanel() {
 
               {/* Auto fill via URL parameter */}
               <div className="space-y-2">
-                <Label htmlFor="urlParam" className="text-base font-medium text-gray-900">
+                <Label htmlFor="urlParam">
                   Auto fill via URL parameter
                 </Label>
                 <Input
@@ -443,7 +443,7 @@ export function PropertiesPanel() {
                   value={(selectedBlock as any).urlParam || ""}
                   onChange={(e) => handleUpdate({ urlParam: e.target.value })}
                   placeholder="e.g email"
-                  className="text-base"
+                  className="text-sm"
                 />
               </div>
             </>
@@ -454,7 +454,7 @@ export function PropertiesPanel() {
             <>
               {/* Placeholder */}
               <div className="space-y-2">
-                <Label htmlFor="placeholder" className="text-base font-medium text-gray-900">
+                <Label htmlFor="placeholder">
                   Placeholder
                 </Label>
                 <Input
@@ -462,20 +462,20 @@ export function PropertiesPanel() {
                   value={(selectedBlock as any).placeholder || ""}
                   onChange={(e) => handleUpdate({ placeholder: e.target.value })}
                   placeholder="Type your answer here..."
-                  className="text-base"
+                  className="text-sm"
                 />
               </div>
 
               {/* Text box size */}
               <div className="space-y-2">
-                <Label htmlFor="textBoxSize" className="text-base font-medium text-gray-900">
+                <Label htmlFor="textBoxSize">
                   Text box size
                 </Label>
                 <select
                   id="textBoxSize"
                   value={(selectedBlock as any).textBoxSize || "small"}
                   onChange={(e) => handleUpdate({ textBoxSize: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded text-base focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 bg-white transition-colors"
+                  className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 bg-white transition-colors h-9"
                 >
                   <option value="small">Small</option>
                   <option value="medium">Medium</option>
@@ -485,27 +485,27 @@ export function PropertiesPanel() {
 
               {/* Required field */}
               <div className="space-y-2">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <button
                     role="checkbox"
                     aria-checked={selectedBlock.required || false}
                     onClick={() => handleUpdate({ required: !selectedBlock.required })}
                     className={cn(
-                      "w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
                       selectedBlock.required
                         ? "bg-indigo-600 border-indigo-600"
                         : "bg-white border-gray-300 hover:border-gray-400"
                     )}
                   >
                     {selectedBlock.required && (
-                      <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
                     )}
                   </button>
                   <div>
-                    <Label className="text-base font-medium text-gray-900 cursor-pointer">
+                    <Label className="cursor-pointer">
                       Required field
                     </Label>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-sm text-gray-500 mt-0.5">
                       If checked, users will be required to complete this field.
                     </p>
                   </div>
@@ -514,7 +514,7 @@ export function PropertiesPanel() {
 
               {/* Minimum characters */}
               <div className="space-y-2">
-                <Label htmlFor="minChars" className="text-base font-medium text-gray-900">
+                <Label htmlFor="minChars">
                   Minimum characters
                 </Label>
                 <Input
@@ -526,14 +526,14 @@ export function PropertiesPanel() {
                   }
                   onWheel={(e) => e.currentTarget.blur()}
                   placeholder="e.g 30"
-                  className="text-base"
+                  className="text-sm"
                 />
-                <p className="text-xs text-gray-500">Leave blank for no minimum limit.</p>
+                <p className="text-sm text-gray-500">Leave blank for no minimum limit.</p>
               </div>
 
               {/* Maximum characters */}
               <div className="space-y-2">
-                <Label htmlFor="maxChars" className="text-base font-medium text-gray-900">
+                <Label htmlFor="maxChars">
                   Maximum characters
                 </Label>
                 <Input
@@ -545,9 +545,9 @@ export function PropertiesPanel() {
                   }
                   onWheel={(e) => e.currentTarget.blur()}
                   placeholder="e.g 300"
-                  className="text-base"
+                  className="text-sm"
                 />
-                <p className="text-xs text-gray-500">Leave blank for no maximum limit.</p>
+                <p className="text-sm text-gray-500">Leave blank for no maximum limit.</p>
               </div>
             </>
           )}
@@ -557,14 +557,14 @@ export function PropertiesPanel() {
             <>
               {/* Default country */}
               <div className="space-y-2">
-                <Label htmlFor="defaultCountry" className="text-base font-medium text-gray-900">
+                <Label htmlFor="defaultCountry">
                   Default country
                 </Label>
                 <select
                   id="defaultCountry"
                   value={(selectedBlock as any).defaultCountry || "FR"}
                   onChange={(e) => handleUpdate({ defaultCountry: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded text-base focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 bg-white transition-colors"
+                  className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 bg-white transition-colors h-9"
                 >
                   <option value="FR">🇫🇷 France (+33)</option>
                   <option value="US">🇺🇸 United States (+1)</option>
@@ -583,34 +583,34 @@ export function PropertiesPanel() {
                   <option value="CN">🇨🇳 China (+86)</option>
                   <option value="IN">🇮🇳 India (+91)</option>
                 </select>
-                <p className="text-xs text-gray-500">
+                <p className="text-sm text-gray-500">
                   Users can change the country when filling the form.
                 </p>
               </div>
 
               {/* Required field */}
               <div className="space-y-2">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <button
                     role="checkbox"
                     aria-checked={selectedBlock.required || false}
                     onClick={() => handleUpdate({ required: !selectedBlock.required })}
                     className={cn(
-                      "w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
                       selectedBlock.required
                         ? "bg-indigo-600 border-indigo-600"
                         : "bg-white border-gray-300 hover:border-gray-400"
                     )}
                   >
                     {selectedBlock.required && (
-                      <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
                     )}
                   </button>
                   <div>
-                    <Label className="text-base font-medium text-gray-900 cursor-pointer">
+                    <Label className="cursor-pointer">
                       Required field
                     </Label>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-sm text-gray-500 mt-0.5">
                       If checked, users will be required to complete this field.
                     </p>
                   </div>
@@ -624,7 +624,7 @@ export function PropertiesPanel() {
             <>
               {/* Placeholder */}
               <div className="space-y-2">
-                <Label htmlFor="placeholder" className="text-base font-medium text-gray-900">
+                <Label htmlFor="placeholder">
                   Placeholder
                 </Label>
                 <Input
@@ -632,33 +632,33 @@ export function PropertiesPanel() {
                   value={(selectedBlock as any).placeholder || ""}
                   onChange={(e) => handleUpdate({ placeholder: e.target.value })}
                   placeholder="https://"
-                  className="text-base"
+                  className="text-sm"
                 />
               </div>
 
               {/* Required field */}
               <div className="space-y-2">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <button
                     role="checkbox"
                     aria-checked={selectedBlock.required || false}
                     onClick={() => handleUpdate({ required: !selectedBlock.required })}
                     className={cn(
-                      "w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
                       selectedBlock.required
                         ? "bg-indigo-600 border-indigo-600"
                         : "bg-white border-gray-300 hover:border-gray-400"
                     )}
                   >
                     {selectedBlock.required && (
-                      <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
                     )}
                   </button>
                   <div>
-                    <Label className="text-base font-medium text-gray-900 cursor-pointer">
+                    <Label className="cursor-pointer">
                       Required field
                     </Label>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-sm text-gray-500 mt-0.5">
                       If checked, users will be required to complete this field.
                     </p>
                   </div>
@@ -667,7 +667,7 @@ export function PropertiesPanel() {
 
               {/* Auto fill via URL parameter */}
               <div className="space-y-2">
-                <Label htmlFor="urlParam" className="text-base font-medium text-gray-900">
+                <Label htmlFor="urlParam">
                   Auto fill via URL parameter
                 </Label>
                 <Input
@@ -675,7 +675,7 @@ export function PropertiesPanel() {
                   value={(selectedBlock as any).urlParam || ""}
                   onChange={(e) => handleUpdate({ urlParam: e.target.value })}
                   placeholder="e.g website"
-                  className="text-base"
+                  className="text-sm"
                 />
               </div>
             </>
@@ -686,7 +686,7 @@ export function PropertiesPanel() {
             <>
               {/* Placeholder */}
               <div className="space-y-2">
-                <Label htmlFor="placeholder" className="text-base font-medium text-gray-900">
+                <Label htmlFor="placeholder">
                   Placeholder
                 </Label>
                 <Input
@@ -694,33 +694,33 @@ export function PropertiesPanel() {
                   value={(selectedBlock as any).placeholder || ""}
                   onChange={(e) => handleUpdate({ placeholder: e.target.value })}
                   placeholder="0"
-                  className="text-base"
+                  className="text-sm"
                 />
               </div>
 
               {/* Required field */}
               <div className="space-y-2">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <button
                     role="checkbox"
                     aria-checked={selectedBlock.required || false}
                     onClick={() => handleUpdate({ required: !selectedBlock.required })}
                     className={cn(
-                      "w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
                       selectedBlock.required
                         ? "bg-indigo-600 border-indigo-600"
                         : "bg-white border-gray-300 hover:border-gray-400"
                     )}
                   >
                     {selectedBlock.required && (
-                      <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
                     )}
                   </button>
                   <div>
-                    <Label className="text-base font-medium text-gray-900 cursor-pointer">
+                    <Label className="cursor-pointer">
                       Required field
                     </Label>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-sm text-gray-500 mt-0.5">
                       If checked, users will be required to complete this field.
                     </p>
                   </div>
@@ -729,7 +729,7 @@ export function PropertiesPanel() {
 
               {/* Minimum Number */}
               <div className="space-y-2">
-                <Label htmlFor="minNumber" className="text-base font-medium text-gray-900">
+                <Label htmlFor="minNumber">
                   Minimum Number
                 </Label>
                 <Input
@@ -741,13 +741,13 @@ export function PropertiesPanel() {
                   }
                   onWheel={(e) => e.currentTarget.blur()}
                   placeholder=""
-                  className="text-base"
+                  className="text-sm"
                 />
               </div>
 
               {/* Maximum Number */}
               <div className="space-y-2">
-                <Label htmlFor="maxNumber" className="text-base font-medium text-gray-900">
+                <Label htmlFor="maxNumber">
                   Maximum Number
                 </Label>
                 <Input
@@ -759,13 +759,13 @@ export function PropertiesPanel() {
                   }
                   onWheel={(e) => e.currentTarget.blur()}
                   placeholder=""
-                  className="text-base"
+                  className="text-sm"
                 />
               </div>
 
               {/* Auto fill via URL parameter */}
               <div className="space-y-2">
-                <Label htmlFor="urlParam" className="text-base font-medium text-gray-900">
+                <Label htmlFor="urlParam">
                   Auto fill via URL parameter
                 </Label>
                 <Input
@@ -773,8 +773,193 @@ export function PropertiesPanel() {
                   value={(selectedBlock as any).urlParam || ""}
                   onChange={(e) => handleUpdate({ urlParam: e.target.value })}
                   placeholder="e.g age"
-                  className="text-base"
+                  className="text-sm"
                 />
+              </div>
+            </>
+          )}
+
+          {/* Date specific fields */}
+          {isDate && (
+            <>
+              {/* Date format by country */}
+              <div className="space-y-2">
+                <Label htmlFor="dateFormat">
+                  Date format
+                </Label>
+                <select
+                  id="dateFormat"
+                  value={(selectedBlock as any).dateFormat || "FR"}
+                  onChange={(e) => handleUpdate({ dateFormat: e.target.value })}
+                  className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 bg-white transition-colors h-9"
+                >
+                  <option value="FR">🇫🇷 France (DD/MM/YYYY)</option>
+                  <option value="US">🇺🇸 United States (MM/DD/YYYY)</option>
+                  <option value="GB">🇬🇧 United Kingdom (DD/MM/YYYY)</option>
+                  <option value="DE">🇩🇪 Germany (DD.MM.YYYY)</option>
+                  <option value="JP">🇯🇵 Japan (YYYY/MM/DD)</option>
+                  <option value="CN">🇨🇳 China (YYYY-MM-DD)</option>
+                  <option value="ISO">🌍 ISO (YYYY-MM-DD)</option>
+                </select>
+              </div>
+
+              {/* Required field */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2.5">
+                  <button
+                    role="checkbox"
+                    aria-checked={selectedBlock.required || false}
+                    onClick={() => handleUpdate({ required: !selectedBlock.required })}
+                    className={cn(
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      selectedBlock.required
+                        ? "bg-indigo-600 border-indigo-600"
+                        : "bg-white border-gray-300 hover:border-gray-400"
+                    )}
+                  >
+                    {selectedBlock.required && (
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                    )}
+                  </button>
+                  <div>
+                    <Label className="cursor-pointer">
+                      Required field
+                    </Label>
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      If checked, users will be required to complete this field.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Auto fill via URL parameter */}
+              <div className="space-y-2">
+                <Label htmlFor="urlParam">
+                  Auto fill via URL parameter
+                </Label>
+                <Input
+                  id="urlParam"
+                  value={(selectedBlock as any).urlParam || ""}
+                  onChange={(e) => handleUpdate({ urlParam: e.target.value })}
+                  placeholder="e.g birthdate"
+                  className="text-sm"
+                />
+              </div>
+            </>
+          )}
+
+          {/* Star Rating specific fields */}
+          {isStarRating && (
+            <>
+              {/* Max Rating */}
+              <div className="space-y-2">
+                <Label htmlFor="maxRating">
+                  Max Rating
+                </Label>
+                <select
+                  id="maxRating"
+                  value={(selectedBlock as any).maxRating || 5}
+                  onChange={(e) => handleUpdate({ maxRating: parseInt(e.target.value) })}
+                  className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 bg-white transition-colors h-9"
+                >
+                  {[3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                    <option key={num} value={num}>
+                      {num}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Required field */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2.5">
+                  <button
+                    role="checkbox"
+                    aria-checked={selectedBlock.required || false}
+                    onClick={() => handleUpdate({ required: !selectedBlock.required })}
+                    className={cn(
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      selectedBlock.required
+                        ? "bg-indigo-600 border-indigo-600"
+                        : "bg-white border-gray-300 hover:border-gray-400"
+                    )}
+                  >
+                    {selectedBlock.required && (
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                    )}
+                  </button>
+                  <div>
+                    <Label className="cursor-pointer">
+                      Required field
+                    </Label>
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      If checked, users will be required to complete this field.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Auto fill via URL parameter */}
+              <div className="space-y-2">
+                <Label htmlFor="urlParam">
+                  Auto fill via URL parameter
+                </Label>
+                <Input
+                  id="urlParam"
+                  value={(selectedBlock as any).urlParam || ""}
+                  onChange={(e) => handleUpdate({ urlParam: e.target.value })}
+                  placeholder="e.g rating"
+                  className="text-sm"
+                />
+              </div>
+            </>
+          )}
+
+          {/* Scheduler specific fields */}
+          {isScheduler && (
+            <>
+              {/* Coming Soon Notice */}
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                    <span className="text-amber-600 text-lg">🚧</span>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-amber-800">Coming Soon</h4>
+                    <p className="text-sm text-amber-700 mt-1">
+                      Scheduler integration will support Calendly, Cal.com, and SavvyCal.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Required field */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2.5">
+                  <button
+                    role="checkbox"
+                    aria-checked={selectedBlock.required || false}
+                    onClick={() => handleUpdate({ required: !selectedBlock.required })}
+                    className={cn(
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      selectedBlock.required
+                        ? "bg-indigo-600 border-indigo-600"
+                        : "bg-white border-gray-300 hover:border-gray-400"
+                    )}
+                  >
+                    {selectedBlock.required && (
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                    )}
+                  </button>
+                  <div>
+                    <Label className="cursor-pointer">
+                      Required field
+                    </Label>
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      If checked, users will be required to complete this field.
+                    </p>
+                  </div>
+                </div>
               </div>
             </>
           )}
@@ -784,7 +969,7 @@ export function PropertiesPanel() {
             <>
               {/* Options */}
               <div className="space-y-2">
-                <Label className="text-base font-medium text-gray-900">Options</Label>
+                <Label>Options</Label>
                 <div className="space-y-1.5">
                   {(() => {
                     const options = (selectedBlock as any).options || [
@@ -925,7 +1110,7 @@ export function PropertiesPanel() {
                                         removeOptionImage(index);
                                         setOpenOptionMenu(null);
                                       }}
-                                      className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors"
+                                      className="w-full px-2.5 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors"
                                     >
                                       <X className="w-4 h-4 text-gray-500" />
                                       Remove image
@@ -937,7 +1122,7 @@ export function PropertiesPanel() {
                                           .getElementById(`option-image-${option.id}`)
                                           ?.click();
                                       }}
-                                      className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors"
+                                      className="w-full px-2.5 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors"
                                     >
                                       <Image className="w-4 h-4 text-gray-500" aria-hidden="true" />
                                       Add image
@@ -946,7 +1131,7 @@ export function PropertiesPanel() {
                                   {options.length > 1 && (
                                     <button
                                       onClick={() => removeOption(index)}
-                                      className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
+                                      className="w-full px-2.5 py-1.5 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
                                     >
                                       <Trash2 className="w-4 h-4" />
                                       Delete
@@ -959,12 +1144,12 @@ export function PropertiesPanel() {
                         ))}
                         <button
                           onClick={addOption}
-                          className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 text-sm font-medium mt-2"
+                          className="flex items-center gap-1.5 text-indigo-600 hover:text-indigo-700 text-sm font-medium mt-1.5"
                         >
                           <Plus className="w-4 h-4" />
                           Add option
                         </button>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-sm text-gray-500 mt-1">
                           For bulk insert just paste them above or insert here
                         </p>
                       </>
@@ -975,32 +1160,34 @@ export function PropertiesPanel() {
 
               {/* Checkbox options - smaller text */}
               <div className="space-y-3">
-                {/* "Other" option toggle */}
-                <div className="flex items-center gap-2.5">
-                  <button
-                    role="checkbox"
-                    aria-checked={(selectedBlock as any).allowOther || false}
-                    onClick={() => handleUpdate({ allowOther: !(selectedBlock as any).allowOther })}
-                    className={cn(
-                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
-                      (selectedBlock as any).allowOther
-                        ? "bg-indigo-600 border-indigo-600"
-                        : "bg-white border-gray-300 hover:border-gray-400"
-                    )}
-                  >
-                    {(selectedBlock as any).allowOther && (
-                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
-                    )}
-                  </button>
-                  <span className="text-sm text-gray-700 cursor-pointer">"Other" option</span>
-                  <div className="relative group">
-                    <HelpCircle className="w-3.5 h-3.5 text-gray-400 cursor-help" />
-                    <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 w-48 text-center z-50">
-                      Adds an "Other" field at the end where users can type a custom answer.
-                      <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
+                {/* "Other" option toggle - not for dropdown */}
+                {!isDropdown && (
+                  <div className="flex items-center gap-2.5">
+                    <button
+                      role="checkbox"
+                      aria-checked={(selectedBlock as any).allowOther || false}
+                      onClick={() => handleUpdate({ allowOther: !(selectedBlock as any).allowOther })}
+                      className={cn(
+                        "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                        (selectedBlock as any).allowOther
+                          ? "bg-indigo-600 border-indigo-600"
+                          : "bg-white border-gray-300 hover:border-gray-400"
+                      )}
+                    >
+                      {(selectedBlock as any).allowOther && (
+                        <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                      )}
+                    </button>
+                    <span className="text-sm text-gray-600 cursor-pointer">"Other" option</span>
+                    <div className="relative group">
+                      <HelpCircle className="w-3.5 h-3.5 text-gray-400 cursor-help" />
+                      <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 w-48 text-center z-50">
+                        Adds an "Other" field at the end where users can type a custom answer.
+                        <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 {/* Randomize options toggle */}
                 <div className="flex items-center gap-2.5">
@@ -1019,112 +1206,114 @@ export function PropertiesPanel() {
                       <Check className="w-3 h-3 text-white" strokeWidth={3} />
                     )}
                   </button>
-                  <span className="text-sm text-gray-700 cursor-pointer">Randomize options</span>
+                  <span className="text-sm text-gray-600 cursor-pointer">Randomize options</span>
                   <div className="relative group">
                     <HelpCircle className="w-3.5 h-3.5 text-gray-400 cursor-help" />
-                    <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 w-48 text-center z-50">
+                    <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 w-48 text-center z-50">
                       Shuffles option order for each respondent to avoid selection bias.
                       <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
                     </div>
                   </div>
                 </div>
 
-                {/* Horizontally align options toggle */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2.5">
-                    <button
-                      role="checkbox"
-                      aria-checked={(selectedBlock as any).horizontalAlign || false}
-                      onClick={() =>
-                        handleUpdate({ horizontalAlign: !(selectedBlock as any).horizontalAlign })
-                      }
-                      className={cn(
-                        "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
-                        (selectedBlock as any).horizontalAlign
-                          ? "bg-indigo-600 border-indigo-600"
-                          : "bg-white border-gray-300 hover:border-gray-400"
-                      )}
-                    >
-                      {(selectedBlock as any).horizontalAlign && (
-                        <Check className="w-3 h-3 text-white" strokeWidth={3} />
-                      )}
-                    </button>
-                    <span className="text-sm text-gray-700 cursor-pointer">
-                      Horizontally align options
-                    </span>
+                {/* Horizontally align options toggle - not for dropdown */}
+                {!isDropdown && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2.5">
+                      <button
+                        role="checkbox"
+                        aria-checked={(selectedBlock as any).horizontalAlign || false}
+                        onClick={() =>
+                          handleUpdate({ horizontalAlign: !(selectedBlock as any).horizontalAlign })
+                        }
+                        className={cn(
+                          "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                          (selectedBlock as any).horizontalAlign
+                            ? "bg-indigo-600 border-indigo-600"
+                            : "bg-white border-gray-300 hover:border-gray-400"
+                        )}
+                      >
+                        {(selectedBlock as any).horizontalAlign && (
+                          <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                        )}
+                      </button>
+                      <span className="text-sm text-gray-600 cursor-pointer">
+                        Horizontally align options
+                      </span>
+                    </div>
+                    {/* Desktop and Mobile columns per row - shown when horizontal align is enabled */}
+                    {(selectedBlock as any).horizontalAlign && (
+                      <div className="flex gap-3 ml-6">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <Monitor className="w-3.5 h-3.5 text-gray-500" />
+                            <span className="text-sm text-gray-600">Desktop</span>
+                          </div>
+                          <Input
+                            type="number"
+                            min={1}
+                            max={6}
+                            value={(selectedBlock as any).columnsDesktop || 2}
+                            onChange={(e) =>
+                              handleUpdate({ columnsDesktop: parseInt(e.target.value) || 2 })
+                            }
+                            onWheel={(e) => e.currentTarget.blur()}
+                            className="h-8 text-sm"
+                            placeholder="2"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <Smartphone className="w-3.5 h-3.5 text-gray-500" />
+                            <span className="text-sm text-gray-600">Mobile</span>
+                          </div>
+                          <Input
+                            type="number"
+                            min={1}
+                            max={4}
+                            value={(selectedBlock as any).columnsMobile || 1}
+                            onChange={(e) =>
+                              handleUpdate({ columnsMobile: parseInt(e.target.value) || 1 })
+                            }
+                            onWheel={(e) => e.currentTarget.blur()}
+                            className="h-8 text-sm"
+                            placeholder="1"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  {/* Desktop and Mobile columns per row - shown when horizontal align is enabled */}
-                  {(selectedBlock as any).horizontalAlign && (
-                    <div className="flex gap-3 ml-6">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <Monitor className="w-3.5 h-3.5 text-gray-500" />
-                          <span className="text-xs text-gray-600">Desktop</span>
-                        </div>
-                        <Input
-                          type="number"
-                          min={1}
-                          max={6}
-                          value={(selectedBlock as any).columnsDesktop || 2}
-                          onChange={(e) =>
-                            handleUpdate({ columnsDesktop: parseInt(e.target.value) || 2 })
-                          }
-                          onWheel={(e) => e.currentTarget.blur()}
-                          className="h-8 text-sm"
-                          placeholder="2"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <Smartphone className="w-3.5 h-3.5 text-gray-500" />
-                          <span className="text-xs text-gray-600">Mobile</span>
-                        </div>
-                        <Input
-                          type="number"
-                          min={1}
-                          max={4}
-                          value={(selectedBlock as any).columnsMobile || 1}
-                          onChange={(e) =>
-                            handleUpdate({ columnsMobile: parseInt(e.target.value) || 1 })
-                          }
-                          onWheel={(e) => e.currentTarget.blur()}
-                          className="h-8 text-sm"
-                          placeholder="1"
-                        />
-                      </div>
-                    </div>
-                  )}
+                )}
 
-                  {/* Required field - placed after Horizontally align options */}
-                  <div className="flex items-center gap-2.5">
-                    <button
-                      role="checkbox"
-                      aria-checked={selectedBlock.required || false}
-                      onClick={() => handleUpdate({ required: !selectedBlock.required })}
-                      className={cn(
-                        "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
-                        selectedBlock.required
-                          ? "bg-indigo-600 border-indigo-600"
-                          : "bg-white border-gray-300 hover:border-gray-400"
-                      )}
-                    >
-                      {selectedBlock.required && (
-                        <Check className="w-3 h-3 text-white" strokeWidth={3} />
-                      )}
-                    </button>
-                    <div>
-                      <span className="text-sm text-gray-700 cursor-pointer">Required field</span>
-                      <p className="text-xs text-gray-500">
-                        If checked, users will be required to complete this field.
-                      </p>
-                    </div>
+                {/* Required field */}
+                <div className="flex items-center gap-2.5">
+                  <button
+                    role="checkbox"
+                    aria-checked={selectedBlock.required || false}
+                    onClick={() => handleUpdate({ required: !selectedBlock.required })}
+                    className={cn(
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      selectedBlock.required
+                        ? "bg-indigo-600 border-indigo-600"
+                        : "bg-white border-gray-300 hover:border-gray-400"
+                    )}
+                  >
+                    {selectedBlock.required && (
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                    )}
+                  </button>
+                  <div>
+                    <span className="text-sm text-gray-600 cursor-pointer">Required field</span>
+                    <p className="text-sm text-gray-500">
+                      If checked, users will be required to complete this field.
+                    </p>
                   </div>
                 </div>
 
                 {/* Selection Limit - Only for Multi Select */}
                 {isMultiSelect && (
                   <div className="space-y-2 pt-2 border-t border-gray-100">
-                    <Label className="text-sm font-medium text-gray-900">Selection Limit</Label>
+                    <Label>Selection Limit</Label>
                     <div className="space-y-2">
                       {/* Unlimited */}
                       <label className="flex items-start gap-2 cursor-pointer">
@@ -1146,8 +1335,8 @@ export function PropertiesPanel() {
                           className="mt-0.5 w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
                         />
                         <div>
-                          <span className="text-sm text-gray-700">Unlimited</span>
-                          <p className="text-xs text-gray-500">Allow any number of options</p>
+                          <span className="text-sm text-gray-600">Unlimited</span>
+                          <p className="text-sm text-gray-500">Allow any number of options</p>
                         </div>
                       </label>
 
@@ -1168,8 +1357,8 @@ export function PropertiesPanel() {
                           className="mt-0.5 w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
                         />
                         <div className="flex-1">
-                          <span className="text-sm text-gray-700">Exact number</span>
-                          <p className="text-xs text-gray-500">Allow exactly this many options</p>
+                          <span className="text-sm text-gray-600">Exact number</span>
+                          <p className="text-sm text-gray-500">Allow exactly this many options</p>
                         </div>
                       </label>
                       {(selectedBlock as any).selectionLimit === "exact" && (
@@ -1205,14 +1394,14 @@ export function PropertiesPanel() {
                           className="mt-0.5 w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
                         />
                         <div className="flex-1">
-                          <span className="text-sm text-gray-700">Range</span>
-                          <p className="text-xs text-gray-500">Allow between min and max options</p>
+                          <span className="text-sm text-gray-600">Range</span>
+                          <p className="text-sm text-gray-500">Allow between min and max options</p>
                         </div>
                       </label>
                       {(selectedBlock as any).selectionLimit === "range" && (
                         <div className="ml-6 flex gap-2">
                           <div className="flex-1">
-                            <span className="text-xs text-gray-500 mb-1 block">Min</span>
+                            <span className="text-sm text-gray-500 mb-1 block">Min</span>
                             <Input
                               type="number"
                               min={1}
@@ -1226,7 +1415,7 @@ export function PropertiesPanel() {
                             />
                           </div>
                           <div className="flex-1">
-                            <span className="text-xs text-gray-500 mb-1 block">Max</span>
+                            <span className="text-sm text-gray-500 mb-1 block">Max</span>
                             <Input
                               type="number"
                               min={1}
@@ -1248,7 +1437,7 @@ export function PropertiesPanel() {
 
               {/* Auto fill via URL parameter */}
               <div className="space-y-2">
-                <Label htmlFor="urlParam" className="text-base font-medium text-gray-900">
+                <Label htmlFor="urlParam">
                   Auto fill via URL parameter
                 </Label>
                 <Input
@@ -1256,7 +1445,7 @@ export function PropertiesPanel() {
                   value={(selectedBlock as any).urlParam || ""}
                   onChange={(e) => handleUpdate({ urlParam: e.target.value })}
                   placeholder="e.g choice"
-                  className="text-base"
+                  className="text-sm"
                 />
               </div>
             </>
@@ -1265,7 +1454,7 @@ export function PropertiesPanel() {
           {/* Text Align - Hidden for blocks needing left alignment */}
           {!needsLeftAlignment && (
             <div className="space-y-2">
-              <Label className="text-base font-medium text-gray-900">Text align</Label>
+              <Label>Text align</Label>
               <div className="flex gap-2">
                 <button
                   type="button"
@@ -1332,7 +1521,7 @@ export function PropertiesPanel() {
 
           {/* Cover Image */}
           <div className="space-y-2">
-            <Label className="text-base font-medium text-gray-900">Cover Image</Label>
+            <Label>Cover Image</Label>
             <ImageUpload
               value={(selectedBlock as any).coverImage}
               onChange={(url) => handleUpdate({ coverImage: url })}
@@ -1343,7 +1532,7 @@ export function PropertiesPanel() {
           {/* Layout - Only show if cover image exists */}
           {(selectedBlock as any).coverImage && (
             <div className="space-y-2">
-              <Label htmlFor="layout" className="text-base font-medium text-gray-900">
+              <Label htmlFor="layout">
                 Layout
               </Label>
               <div className="flex gap-2">
@@ -1353,7 +1542,7 @@ export function PropertiesPanel() {
                     id="layout"
                     value={(selectedBlock as any).layout || "stack"}
                     onChange={(e) => handleUpdate({ layout: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded text-base focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 bg-white transition-colors"
+                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 bg-white transition-colors h-9"
                   >
                     <option value="stack">Stack</option>
                     <option value="split">Split</option>
@@ -1368,7 +1557,7 @@ export function PropertiesPanel() {
                       id="imagePosition"
                       value={(selectedBlock as any).imagePosition || "left"}
                       onChange={(e) => handleUpdate({ imagePosition: e.target.value })}
-                      className="w-full px-3 py-2.5 border border-gray-300 rounded text-base focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 bg-white transition-colors"
+                      className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 bg-white transition-colors h-9"
                     >
                       <option value="left">Left</option>
                       <option value="right">Right</option>

@@ -84,7 +84,7 @@ export function ImageUpload({ value, onChange, label = "Cover Image" }: ImageUpl
   if (value) {
     return (
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700">{label}</label>
+        <label className="text-sm font-medium text-gray-600">{label}</label>
         <div className="relative group">
           <img
             src={value}
@@ -105,15 +105,15 @@ export function ImageUpload({ value, onChange, label = "Cover Image" }: ImageUpl
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-700">{label}</label>
+      <label className="text-sm font-medium text-gray-600">{label}</label>
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
         className={cn(
-          "w-full px-4 py-8 border-2 border-dashed rounded text-sm text-gray-600 transition-all cursor-pointer",
-          "flex flex-col items-center justify-center gap-3",
+          "w-full px-4 py-6 border-2 border-dashed rounded text-sm text-gray-600 transition-all cursor-pointer",
+          "flex flex-col items-center justify-center gap-2",
           isDragging
             ? "border-blue-500 bg-blue-50"
             : "border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50",
@@ -122,19 +122,19 @@ export function ImageUpload({ value, onChange, label = "Cover Image" }: ImageUpl
       >
         {isUploading ? (
           <>
-            <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
-            <span className="font-medium">Uploading...</span>
+            <div className="w-7 h-7 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+            <span className="font-medium text-sm">Uploading...</span>
           </>
         ) : (
           <>
-            <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-              <Upload className="w-6 h-6 text-gray-500" />
+            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+              <Upload className="w-5 h-5 text-gray-500" />
             </div>
-            <div className="text-center">
+            <div className="text-center text-sm">
               <span className="font-medium text-gray-700">Click to upload</span>
               <span className="text-gray-500"> or drag and drop</span>
             </div>
-            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+            <p className="text-xs text-gray-400">PNG, JPG, GIF up to 5MB</p>
           </>
         )}
       </div>
