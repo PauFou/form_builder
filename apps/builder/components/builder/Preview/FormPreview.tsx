@@ -641,20 +641,33 @@ function renderBlockContent(
         return (
           <div className={containerClasses}>
             {/* Scale buttons */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               {scaleNumbers.map((num) => (
                 <button
                   key={num}
-                  className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded text-sm font-medium text-gray-600 hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+                  className="w-12 h-12 flex items-center justify-center border border-gray-300 rounded text-base font-medium text-gray-600 hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
                 >
                   {num}
                 </button>
               ))}
             </div>
-            {/* Labels below the scale */}
-            <div className="flex justify-between mt-2">
-              <span className="text-xs text-gray-500">{leftLabel}</span>
-              <span className="text-xs text-gray-500">{rightLabel}</span>
+            {/* Labels below the scale - aligned under first and last buttons */}
+            <div className="flex mt-2" style={{ width: `${scaleNumbers.length * 48 + (scaleNumbers.length - 1) * 6}px` }}>
+              <span
+                className="text-sm text-gray-500 text-left"
+                style={{ maxWidth: '45%', hyphens: 'auto', wordBreak: 'break-word' }}
+                lang="fr"
+              >
+                {leftLabel}
+              </span>
+              <span className="flex-1 min-w-4" />
+              <span
+                className="text-sm text-gray-500 text-right"
+                style={{ maxWidth: '45%', hyphens: 'auto', wordBreak: 'break-word' }}
+                lang="fr"
+              >
+                {rightLabel}
+              </span>
             </div>
           </div>
         );
@@ -678,6 +691,71 @@ function renderBlockContent(
         );
       }
 
+      case "ranking": {
+        const options = (block as any).options || [
+          { id: "1", label: "Option 1" },
+          { id: "2", label: "Option 2" },
+          { id: "3", label: "Option 3" },
+        ];
+        const randomize = (block as any).randomize || false;
+
+        // Shuffle options if randomize is enabled
+        let displayOptions = [...options];
+        if (randomize) {
+          displayOptions = displayOptions.sort(() => 0.5 - Math.random());
+        }
+
+        // In split layout, don't use mx-auto (parent already has padding)
+        const isSplitLayoutForField = layout === "split" && block.coverImage;
+        const containerClasses = isSplitLayoutForField
+          ? "w-full pointer-events-none select-none text-left"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+
+        return (
+          <div className={containerClasses}>
+            <div className="space-y-2">
+              {displayOptions.map((option: any, index: number) => (
+                <div
+                  key={option.id || index}
+                  className="flex items-center gap-3 px-4 py-3 border border-gray-200 rounded-lg bg-white hover:border-indigo-300 hover:bg-indigo-50/50 transition-colors cursor-grab group"
+                >
+                  {/* Rank number */}
+                  <div className="w-7 h-7 flex items-center justify-center bg-gray-100 rounded-full text-sm font-semibold text-gray-600 group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors">
+                    {index + 1}
+                  </div>
+                  {/* Drag handle icon */}
+                  <svg
+                    className="w-5 h-5 text-gray-400 group-hover:text-indigo-400 transition-colors"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M4 8h16M4 16h16"
+                    />
+                  </svg>
+                  {/* Option label */}
+                  <span className="text-gray-700 text-sm flex-1">{option.label}</span>
+                  {/* Move arrows indicator */}
+                  <div className="flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                    </svg>
+                    <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-gray-500 mt-3">Drag items to reorder</p>
+          </div>
+        );
+      }
+
       default:
         return null;
     }
@@ -693,12 +771,13 @@ function renderBlockContent(
   const isDate = block.type === "date";
   const isStarRating = block.type === "star_rating" || block.type === "rating";
   const isOpinionScale = block.type === "opinion_scale" || block.type === "nps";
+  const isRanking = block.type === "ranking";
   const isSingleSelect = block.type === "single_select";
   const isMultiSelect = block.type === "multi_select";
   const isDropdown = block.type === "dropdown";
   const isSelectBlock = isSingleSelect || isMultiSelect || isDropdown;
   const needsLeftAlignment =
-    isContactInfo || isShortText || isLongText || isPhone || isWebsite || isNumber || isDate || isStarRating || isOpinionScale || isSelectBlock;
+    isContactInfo || isShortText || isLongText || isPhone || isWebsite || isNumber || isDate || isStarRating || isOpinionScale || isRanking || isSelectBlock;
   const isSplitLayout = layout === "split" && block.coverImage;
 
   // Render text content

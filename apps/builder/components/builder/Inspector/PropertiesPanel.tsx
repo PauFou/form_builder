@@ -112,13 +112,14 @@ export function PropertiesPanel() {
   const isDate = selectedBlock.type === "date";
   const isStarRating = selectedBlock.type === "star_rating" || selectedBlock.type === "rating";
   const isOpinionScale = selectedBlock.type === "opinion_scale" || selectedBlock.type === "nps";
+  const isRanking = selectedBlock.type === "ranking";
   const isScheduler = selectedBlock.type === "scheduler";
   const isSingleSelect = selectedBlock.type === "single_select";
   const isMultiSelect = selectedBlock.type === "multi_select";
   const isDropdown = selectedBlock.type === "dropdown";
   const isSelectBlock = isSingleSelect || isMultiSelect || isDropdown;
   const needsLeftAlignment =
-    isContactInfo || isShortText || isLongText || isPhone || isWebsite || isNumber || isDate || isSelectBlock || isStarRating || isOpinionScale;
+    isContactInfo || isShortText || isLongText || isPhone || isWebsite || isNumber || isDate || isSelectBlock || isStarRating || isOpinionScale || isRanking;
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -1078,6 +1079,186 @@ export function PropertiesPanel() {
                     </p>
                   </div>
                 </div>
+              </div>
+            </>
+          )}
+
+          {/* Ranking specific fields */}
+          {isRanking && (
+            <>
+              {/* Options */}
+              <div className="space-y-2">
+                <Label>Options</Label>
+                <div className="space-y-1.5">
+                  {(() => {
+                    const options = (selectedBlock as any).options || [
+                      { id: "1", label: "Option 1" },
+                      { id: "2", label: "Option 2" },
+                      { id: "3", label: "Option 3" },
+                    ];
+
+                    const updateOption = (index: number, updates: any) => {
+                      const newOptions = [...options];
+                      newOptions[index] = { ...newOptions[index], ...updates };
+                      handleUpdate({ options: newOptions });
+                    };
+
+                    const addOption = () => {
+                      const newOptions = [
+                        ...options,
+                        { id: crypto.randomUUID(), label: `Option ${options.length + 1}` },
+                      ];
+                      handleUpdate({ options: newOptions });
+                    };
+
+                    const removeOption = (index: number) => {
+                      if (options.length > 2) {
+                        const newOptions = options.filter((_: any, i: number) => i !== index);
+                        handleUpdate({ options: newOptions });
+                        setOpenOptionMenu(null);
+                      }
+                    };
+
+                    const moveOption = (fromIndex: number, toIndex: number) => {
+                      if (toIndex < 0 || toIndex >= options.length) return;
+                      const newOptions = [...options];
+                      const [removed] = newOptions.splice(fromIndex, 1);
+                      newOptions.splice(toIndex, 0, removed);
+                      handleUpdate({ options: newOptions });
+                    };
+
+                    const handleDragStart = (e: React.DragEvent, index: number) => {
+                      setDraggedOptionIndex(index);
+                      e.dataTransfer.effectAllowed = "move";
+                    };
+
+                    const handleDragOver = (e: React.DragEvent, index: number) => {
+                      e.preventDefault();
+                      if (draggedOptionIndex === null || draggedOptionIndex === index) return;
+                      moveOption(draggedOptionIndex, index);
+                      setDraggedOptionIndex(index);
+                    };
+
+                    const handleDragEnd = () => {
+                      setDraggedOptionIndex(null);
+                    };
+
+                    return (
+                      <>
+                        {options.map((option: any, index: number) => (
+                          <div
+                            key={option.id || index}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, index)}
+                            onDragOver={(e) => handleDragOver(e, index)}
+                            onDragEnd={handleDragEnd}
+                            className={cn(
+                              "flex items-center gap-1 px-1.5 py-1 border border-gray-200 rounded bg-white group",
+                              draggedOptionIndex === index && "opacity-50"
+                            )}
+                          >
+                            {/* Drag handle */}
+                            <div className="cursor-grab active:cursor-grabbing p-0.5 text-gray-400 hover:text-gray-600 flex-shrink-0">
+                              <GripVertical className="w-3.5 h-3.5" />
+                            </div>
+                            {/* Option label input */}
+                            <Input
+                              value={option.label}
+                              onChange={(e) => updateOption(index, { label: e.target.value })}
+                              className="flex-1 min-w-0 text-sm border-0 shadow-none focus:ring-0 bg-transparent px-1.5 h-7"
+                              placeholder={`Option ${index + 1}`}
+                            />
+                            {/* Delete button */}
+                            {options.length > 2 && (
+                              <button
+                                onClick={() => removeOption(index)}
+                                className="p-1 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                        <button
+                          onClick={addOption}
+                          className="flex items-center gap-1.5 text-indigo-600 hover:text-indigo-700 text-sm font-medium mt-1.5"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add option
+                        </button>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {/* Checkbox options */}
+              <div className="space-y-3">
+                {/* Randomize options toggle */}
+                <div className="flex items-center gap-2.5">
+                  <button
+                    role="checkbox"
+                    aria-checked={(selectedBlock as any).randomize || false}
+                    onClick={() => handleUpdate({ randomize: !(selectedBlock as any).randomize })}
+                    className={cn(
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      (selectedBlock as any).randomize
+                        ? "bg-indigo-600 border-indigo-600"
+                        : "bg-white border-gray-300 hover:border-gray-400"
+                    )}
+                  >
+                    {(selectedBlock as any).randomize && (
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                    )}
+                  </button>
+                  <span className="text-sm text-gray-600 cursor-pointer">Randomize options</span>
+                  <div className="relative group">
+                    <HelpCircle className="w-3.5 h-3.5 text-gray-400 cursor-help" />
+                    <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 w-48 text-center z-50">
+                      Shuffles option order for each respondent to avoid selection bias.
+                      <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Required field */}
+                <div className="flex items-center gap-2.5">
+                  <button
+                    role="checkbox"
+                    aria-checked={selectedBlock.required || false}
+                    onClick={() => handleUpdate({ required: !selectedBlock.required })}
+                    className={cn(
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      selectedBlock.required
+                        ? "bg-indigo-600 border-indigo-600"
+                        : "bg-white border-gray-300 hover:border-gray-400"
+                    )}
+                  >
+                    {selectedBlock.required && (
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                    )}
+                  </button>
+                  <div>
+                    <span className="text-sm text-gray-600 cursor-pointer">Required field</span>
+                    <p className="text-sm text-gray-500">
+                      If checked, users will be required to complete this field.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Auto fill via URL parameter */}
+              <div className="space-y-2">
+                <Label htmlFor="urlParam">
+                  Auto fill via URL parameter
+                </Label>
+                <Input
+                  id="urlParam"
+                  value={(selectedBlock as any).urlParam || ""}
+                  onChange={(e) => handleUpdate({ urlParam: e.target.value })}
+                  placeholder="e.g ranking"
+                  className="text-sm"
+                />
               </div>
             </>
           )}

@@ -40,6 +40,7 @@ export function BlockLibrary() {
       star_rating: "Rate your experience",
       date: "Select a date",
       scheduler: "Book a meeting",
+      ranking: "Rank these options",
     };
     return questionMap[type] || "New question";
   };

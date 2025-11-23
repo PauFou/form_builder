@@ -15,6 +15,7 @@ import {
   Gauge,
   Star,
   Calendar,
+  ListOrdered,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 
@@ -205,6 +206,21 @@ const blocks: Block[] = [
     preview: {
       title: "Book a meeting",
       fields: [],
+    },
+  },
+  {
+    id: "ranking",
+    name: "Ranking",
+    icon: ListOrdered,
+    bgColor: "bg-lime-200",
+    textColor: "text-lime-900",
+    preview: {
+      title: "Rank these options",
+      fields: [
+        { label: "Option 1", placeholder: "" },
+        { label: "Option 2", placeholder: "" },
+        { label: "Option 3", placeholder: "" },
+      ],
     },
   },
 ];
