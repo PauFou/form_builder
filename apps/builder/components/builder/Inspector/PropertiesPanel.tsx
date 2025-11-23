@@ -117,7 +117,7 @@ export function PropertiesPanel() {
   const isDropdown = selectedBlock.type === "dropdown";
   const isSelectBlock = isSingleSelect || isMultiSelect || isDropdown;
   const needsLeftAlignment =
-    isContactInfo || isShortText || isLongText || isPhone || isWebsite || isNumber || isDate || isSelectBlock;
+    isContactInfo || isShortText || isLongText || isPhone || isWebsite || isNumber || isDate || isSelectBlock || isStarRating;
 
   return (
     <div className="flex flex-col h-full bg-white">

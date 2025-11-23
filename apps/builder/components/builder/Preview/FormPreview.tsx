@@ -601,7 +601,7 @@ function renderBlockContent(
               {Array.from({ length: maxRating }, (_, i) => (
                 <svg
                   key={i}
-                  className="w-12 h-12 text-gray-300 transition-colors cursor-pointer"
+                  className="w-10 h-10 text-gray-300 transition-colors cursor-pointer"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth={1}
