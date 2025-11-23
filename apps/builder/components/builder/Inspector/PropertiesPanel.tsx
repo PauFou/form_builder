@@ -111,13 +111,14 @@ export function PropertiesPanel() {
   const isNumber = selectedBlock.type === "number";
   const isDate = selectedBlock.type === "date";
   const isStarRating = selectedBlock.type === "star_rating" || selectedBlock.type === "rating";
+  const isOpinionScale = selectedBlock.type === "opinion_scale" || selectedBlock.type === "nps";
   const isScheduler = selectedBlock.type === "scheduler";
   const isSingleSelect = selectedBlock.type === "single_select";
   const isMultiSelect = selectedBlock.type === "multi_select";
   const isDropdown = selectedBlock.type === "dropdown";
   const isSelectBlock = isSingleSelect || isMultiSelect || isDropdown;
   const needsLeftAlignment =
-    isContactInfo || isShortText || isLongText || isPhone || isWebsite || isNumber || isDate || isSelectBlock || isStarRating;
+    isContactInfo || isShortText || isLongText || isPhone || isWebsite || isNumber || isDate || isSelectBlock || isStarRating || isOpinionScale;
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -909,6 +910,123 @@ export function PropertiesPanel() {
                   value={(selectedBlock as any).urlParam || ""}
                   onChange={(e) => handleUpdate({ urlParam: e.target.value })}
                   placeholder="e.g rating"
+                  className="text-sm"
+                />
+              </div>
+            </>
+          )}
+
+          {/* Opinion Scale / NPS specific fields */}
+          {isOpinionScale && (
+            <>
+              {/* Left Label */}
+              <div className="space-y-2">
+                <Label htmlFor="leftLabel">
+                  Left Label
+                </Label>
+                <Input
+                  id="leftLabel"
+                  value={(selectedBlock as any).leftLabel || ""}
+                  onChange={(e) => handleUpdate({ leftLabel: e.target.value })}
+                  placeholder="Not likely"
+                  className="text-sm"
+                />
+              </div>
+
+              {/* Right Label */}
+              <div className="space-y-2">
+                <Label htmlFor="rightLabel">
+                  Right Label
+                </Label>
+                <Input
+                  id="rightLabel"
+                  value={(selectedBlock as any).rightLabel || ""}
+                  onChange={(e) => handleUpdate({ rightLabel: e.target.value })}
+                  placeholder="Highly likely"
+                  className="text-sm"
+                />
+              </div>
+
+              {/* Start and End values in same row */}
+              <div className="flex gap-3">
+                {/* Start */}
+                <div className="flex-1 space-y-2">
+                  <Label htmlFor="scaleStart">
+                    Start
+                  </Label>
+                  <select
+                    id="scaleStart"
+                    value={(selectedBlock as any).scaleStart || 1}
+                    onChange={(e) => handleUpdate({ scaleStart: parseInt(e.target.value) })}
+                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 bg-white transition-colors h-9"
+                  >
+                    {[0, 1].map((num) => (
+                      <option key={num} value={num}>
+                        {num}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* End */}
+                <div className="flex-1 space-y-2">
+                  <Label htmlFor="scaleEnd">
+                    End
+                  </Label>
+                  <select
+                    id="scaleEnd"
+                    value={(selectedBlock as any).scaleEnd || 10}
+                    onChange={(e) => handleUpdate({ scaleEnd: parseInt(e.target.value) })}
+                    className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 bg-white transition-colors h-9"
+                  >
+                    {[5, 6, 7, 8, 9, 10].map((num) => (
+                      <option key={num} value={num}>
+                        {num}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Required field */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2.5">
+                  <button
+                    role="checkbox"
+                    aria-checked={selectedBlock.required || false}
+                    onClick={() => handleUpdate({ required: !selectedBlock.required })}
+                    className={cn(
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      selectedBlock.required
+                        ? "bg-indigo-600 border-indigo-600"
+                        : "bg-white border-gray-300 hover:border-gray-400"
+                    )}
+                  >
+                    {selectedBlock.required && (
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                    )}
+                  </button>
+                  <div>
+                    <Label className="cursor-pointer">
+                      Required field
+                    </Label>
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      If checked, users will be required to complete this field.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Auto fill via URL parameter */}
+              <div className="space-y-2">
+                <Label htmlFor="urlParam">
+                  Auto fill via URL parameter
+                </Label>
+                <Input
+                  id="urlParam"
+                  value={(selectedBlock as any).urlParam || ""}
+                  onChange={(e) => handleUpdate({ urlParam: e.target.value })}
+                  placeholder="e.g score"
                   className="text-sm"
                 />
               </div>

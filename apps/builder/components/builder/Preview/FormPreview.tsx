@@ -619,6 +619,47 @@ function renderBlockContent(
         );
       }
 
+      case "opinion_scale":
+      case "nps": {
+        const scaleStart = (block as any).scaleStart ?? 1;
+        const scaleEnd = (block as any).scaleEnd ?? 10;
+        const leftLabel = (block as any).leftLabel || "Not likely";
+        const rightLabel = (block as any).rightLabel || "Highly likely";
+
+        // Generate scale numbers array
+        const scaleNumbers = [];
+        for (let i = scaleStart; i <= scaleEnd; i++) {
+          scaleNumbers.push(i);
+        }
+
+        // In split layout, don't use mx-auto (parent already has padding)
+        const isSplitLayoutForField = layout === "split" && block.coverImage;
+        const containerClasses = isSplitLayoutForField
+          ? "w-full pointer-events-none select-none text-left"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+
+        return (
+          <div className={containerClasses}>
+            {/* Scale buttons */}
+            <div className="flex items-center gap-1">
+              {scaleNumbers.map((num) => (
+                <button
+                  key={num}
+                  className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded text-sm font-medium text-gray-600 hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+                >
+                  {num}
+                </button>
+              ))}
+            </div>
+            {/* Labels below the scale */}
+            <div className="flex justify-between mt-2">
+              <span className="text-xs text-gray-500">{leftLabel}</span>
+              <span className="text-xs text-gray-500">{rightLabel}</span>
+            </div>
+          </div>
+        );
+      }
+
       case "scheduler": {
         return (
           <div className="w-full max-w-2xl mx-auto px-8 pointer-events-none select-none">
@@ -651,12 +692,13 @@ function renderBlockContent(
   const isNumber = block.type === "number";
   const isDate = block.type === "date";
   const isStarRating = block.type === "star_rating" || block.type === "rating";
+  const isOpinionScale = block.type === "opinion_scale" || block.type === "nps";
   const isSingleSelect = block.type === "single_select";
   const isMultiSelect = block.type === "multi_select";
   const isDropdown = block.type === "dropdown";
   const isSelectBlock = isSingleSelect || isMultiSelect || isDropdown;
   const needsLeftAlignment =
-    isContactInfo || isShortText || isLongText || isPhone || isWebsite || isNumber || isDate || isStarRating || isSelectBlock;
+    isContactInfo || isShortText || isLongText || isPhone || isWebsite || isNumber || isDate || isStarRating || isOpinionScale || isSelectBlock;
   const isSplitLayout = layout === "split" && block.coverImage;
 
   // Render text content

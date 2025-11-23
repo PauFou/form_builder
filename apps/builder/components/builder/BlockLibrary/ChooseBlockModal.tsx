@@ -12,6 +12,9 @@ import {
   Circle,
   CheckSquare,
   ChevronDown,
+  Gauge,
+  Star,
+  Calendar,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 
@@ -158,6 +161,50 @@ const blocks: Block[] = [
         { label: "Option 2", placeholder: "" },
         { label: "Option 3", placeholder: "" },
       ],
+    },
+  },
+  {
+    id: "opinion_scale",
+    name: "Opinion Scale",
+    icon: Gauge,
+    bgColor: "bg-rose-200",
+    textColor: "text-rose-900",
+    preview: {
+      title: "How likely are you to recommend us?",
+      fields: [],
+    },
+  },
+  {
+    id: "star_rating",
+    name: "Star Rating",
+    icon: Star,
+    bgColor: "bg-amber-200",
+    textColor: "text-amber-900",
+    preview: {
+      title: "Rate your experience",
+      fields: [],
+    },
+  },
+  {
+    id: "date",
+    name: "Date",
+    icon: Calendar,
+    bgColor: "bg-sky-200",
+    textColor: "text-sky-900",
+    preview: {
+      title: "Select a date",
+      fields: [{ label: "", placeholder: "DD/MM/YYYY" }],
+    },
+  },
+  {
+    id: "scheduler",
+    name: "Scheduler",
+    icon: Calendar,
+    bgColor: "bg-violet-200",
+    textColor: "text-violet-900",
+    preview: {
+      title: "Book a meeting",
+      fields: [],
     },
   },
 ];

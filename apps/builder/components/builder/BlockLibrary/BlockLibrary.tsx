@@ -34,6 +34,12 @@ export function BlockLibrary() {
       number: "How many?",
       website_url: "What's your website?",
       single_select: "Choose one option",
+      multi_select: "Select all that apply",
+      dropdown: "Select from dropdown",
+      opinion_scale: "How likely are you to recommend us?",
+      star_rating: "Rate your experience",
+      date: "Select a date",
+      scheduler: "Book a meeting",
     };
     return questionMap[type] || "New question";
   };
