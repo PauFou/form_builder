@@ -1122,16 +1122,14 @@ export function PropertiesPanel() {
                               placeholder={`Option ${index + 1}`}
                             />
                             {/* Delete button - pushed to far right */}
-                            <div className="flex-shrink-0 w-6 flex justify-end">
-                              {options.length > 2 && (
-                                <button
-                                  onClick={() => removeOption(index)}
-                                  className="p-1 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-                                >
-                                  <X className="w-3.5 h-3.5" />
-                                </button>
-                              )}
-                            </div>
+                            {options.length > 2 && (
+                              <button
+                                onClick={() => removeOption(index)}
+                                className="flex-shrink-0 p-1 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            )}
                           </div>
                         ))}
                         <button
@@ -1596,16 +1594,14 @@ export function PropertiesPanel() {
                               className="flex-1 min-w-0 text-sm border-0 shadow-none focus:ring-0 bg-transparent px-1.5 h-7"
                               placeholder={`Option ${index + 1}`}
                             />
-                            <div className="flex-shrink-0 w-6 flex justify-end">
-                              {rows.length > 1 && (
-                                <button
-                                  onClick={() => removeRow(index)}
-                                  className="p-1 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-                                >
-                                  <X className="w-3.5 h-3.5" />
-                                </button>
-                              )}
-                            </div>
+                            {rows.length > 1 && (
+                              <button
+                                onClick={() => removeRow(index)}
+                                className="flex-shrink-0 p-1 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            )}
                           </div>
                         ))}
                         <button
@@ -1704,16 +1700,14 @@ export function PropertiesPanel() {
                               className="flex-1 min-w-0 text-sm border-0 shadow-none focus:ring-0 bg-transparent px-1.5 h-7"
                               placeholder={`${index + 1}`}
                             />
-                            <div className="flex-shrink-0 w-6 flex justify-end">
-                              {columns.length > 2 && (
-                                <button
-                                  onClick={() => removeColumn(index)}
-                                  className="p-1 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-                                >
-                                  <X className="w-3.5 h-3.5" />
-                                </button>
-                              )}
-                            </div>
+                            {columns.length > 2 && (
+                              <button
+                                onClick={() => removeColumn(index)}
+                                className="flex-shrink-0 p-1 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            )}
                           </div>
                         ))}
                         <button

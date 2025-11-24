@@ -5,9 +5,63 @@ import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 import { cn } from "../../../lib/utils";
 import type { Block } from "@skemya/contracts";
 import { toast } from "react-hot-toast";
+import { DEFAULT_DESIGN_SETTINGS, type DesignSettings } from "../Design/DesignPanel";
 
 export function FormPreview() {
   const { form, selectedBlockId, selectBlock } = useFormBuilderStore();
+
+  // Get design settings from form theme with deep merge for defaults
+  const themeFromForm = form?.theme as Partial<DesignSettings> | undefined;
+  const designSettings: DesignSettings = {
+    colors: {
+      ...DEFAULT_DESIGN_SETTINGS.colors,
+      ...(themeFromForm?.colors || {}),
+    },
+    alignment: themeFromForm?.alignment || DEFAULT_DESIGN_SETTINGS.alignment,
+    font: themeFromForm?.font || DEFAULT_DESIGN_SETTINGS.font,
+    fontSize: themeFromForm?.fontSize || DEFAULT_DESIGN_SETTINGS.fontSize,
+    cornerStyle: themeFromForm?.cornerStyle || DEFAULT_DESIGN_SETTINGS.cornerStyle,
+    backgroundImage: themeFromForm?.backgroundImage ?? DEFAULT_DESIGN_SETTINGS.backgroundImage,
+    logo: themeFromForm?.logo ?? DEFAULT_DESIGN_SETTINGS.logo,
+  };
+
+  // Compute styles from design settings
+  const getCornerRadius = () => {
+    switch (designSettings.cornerStyle) {
+      case "very_rounded": return "16px";
+      case "rounded": return "8px";
+      case "square": return "0px";
+      default: return "4px"; // normal
+    }
+  };
+
+  const getFontSizeScale = () => {
+    switch (designSettings.fontSize) {
+      case "small": return 0.8;
+      case "large": return 1.25;
+      default: return 1; // medium
+    }
+  };
+
+  // Load Google Font dynamically
+  React.useEffect(() => {
+    if (designSettings.font && designSettings.font !== "Inter") {
+      const fontName = designSettings.font.replace(/ /g, "+");
+      const linkId = `google-font-${fontName}`;
+
+      // Check if already loaded
+      if (!document.getElementById(linkId)) {
+        const link = document.createElement("link");
+        link.id = linkId;
+        link.rel = "stylesheet";
+        link.href = `https://fonts.googleapis.com/css2?family=${fontName}:wght@400;500;600;700&display=swap`;
+        document.head.appendChild(link);
+      }
+    }
+  }, [designSettings.font]);
+
+  const fontSizeScale = getFontSizeScale();
+  const cornerRadius = getCornerRadius();
 
   if (!form || !form.pages?.[0]?.blocks?.length) {
     return (
@@ -75,14 +129,32 @@ export function FormPreview() {
   const hasCoverImage = !!(currentBlock as any).coverImage;
   const needsFullContainer = hasCoverImage && (layout === "split" || layout === "wallpaper");
 
+  // Design styles object
+  const designStyles = {
+    backgroundColor: designSettings.colors.background,
+    fontFamily: designSettings.font,
+    questionColor: designSettings.colors.questions,
+    answerColor: designSettings.colors.answers,
+    buttonColor: designSettings.colors.buttons,
+    buttonTextColor: designSettings.colors.buttonText,
+    starRatingColor: designSettings.colors.starRating,
+    alignment: designSettings.alignment,
+    cornerRadius,
+    fontSizeScale,
+  };
+
   return (
     <div
       className={cn(
-        "w-full bg-white",
+        "w-full",
         needsFullContainer
           ? "h-full"
           : "min-h-full flex flex-col items-center justify-center py-12 px-8"
       )}
+      style={{
+        backgroundColor: designStyles.backgroundColor,
+        fontFamily: designStyles.fontFamily,
+      }}
       onDoubleClick={handleDoubleClick}
     >
       {/* Main content */}
@@ -93,7 +165,8 @@ export function FormPreview() {
           blocks.length,
           handleTitleClick,
           handleDescriptionClick,
-          handleButtonClick
+          handleButtonClick,
+          designStyles
         )
       ) : (
         <div className="w-full max-w-3xl">
@@ -103,12 +176,26 @@ export function FormPreview() {
             blocks.length,
             handleTitleClick,
             handleDescriptionClick,
-            handleButtonClick
+            handleButtonClick,
+            designStyles
           )}
         </div>
       )}
     </div>
   );
+}
+
+interface DesignStyles {
+  backgroundColor: string;
+  fontFamily: string;
+  questionColor: string;
+  answerColor: string;
+  buttonColor: string;
+  buttonTextColor: string;
+  starRatingColor: string;
+  alignment: "left" | "center" | "right";
+  cornerRadius: string;
+  fontSizeScale: number;
 }
 
 function renderBlockContent(
@@ -117,13 +204,14 @@ function renderBlockContent(
   totalBlocks: number,
   onTitleClick: (e: React.MouseEvent) => void,
   onDescriptionClick: (e: React.MouseEvent) => void,
-  onButtonClick: (e: React.MouseEvent) => void
+  onButtonClick: (e: React.MouseEvent) => void,
+  designStyles: DesignStyles
 ) {
   const isLastBlock = currentIndex === totalBlocks - 1;
   const buttonText = block.buttonText || (isLastBlock ? "Submit" : "Let's start");
 
-  // Get text alignment (default to center)
-  const textAlign = (block as any).textAlign || "center";
+  // Get text alignment from design settings (use block-level override if exists, otherwise use global)
+  const textAlign = (block as any).textAlign || designStyles.alignment || "center";
   const alignmentClass =
     textAlign === "left" ? "text-left" : textAlign === "right" ? "text-right" : "text-center";
 
@@ -133,6 +221,12 @@ function renderBlockContent(
 
   // Render block-specific fields
   const renderBlockFields = () => {
+    // Scaled font sizes for all elements
+    const labelSize = 14 * designStyles.fontSizeScale;
+    const inputSize = 16 * designStyles.fontSizeScale;
+    const smallSize = 12 * designStyles.fontSizeScale;
+    const optionSize = 14 * designStyles.fontSizeScale;
+
     switch (block.type) {
       case "contact_info": {
         // Get field settings from block
@@ -163,8 +257,8 @@ function renderBlockContent(
         // In split layout, don't use mx-auto px-12 (parent already has padding)
         const isSplitLayout = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayout
-          ? "space-y-5 w-full pointer-events-none select-none text-left"
-          : "space-y-5 w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "space-y-5 w-full pointer-events-none select-none"
+          : "space-y-5 w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
           <div className={containerClasses}>
@@ -173,22 +267,22 @@ function renderBlockContent(
               <div className={cn("grid gap-4", row1BothVisible ? "grid-cols-2" : "grid-cols-1")}>
                 {fields.firstName.visible && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                    <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
                       {fields.firstName.label}
                       {fields.firstName.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
-                    <div className="w-full px-0 py-2.5 border-b-2 border-gray-300 text-gray-400 text-base text-left">
+                    <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
                       {fields.firstName.placeholder}
                     </div>
                   </div>
                 )}
                 {fields.lastName.visible && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                    <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
                       {fields.lastName.label}
                       {fields.lastName.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
-                    <div className="w-full px-0 py-2.5 border-b-2 border-gray-300 text-gray-400 text-base text-left">
+                    <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
                       {fields.lastName.placeholder}
                     </div>
                   </div>
@@ -201,22 +295,22 @@ function renderBlockContent(
               <div className={cn("grid gap-4", row2BothVisible ? "grid-cols-2" : "grid-cols-1")}>
                 {fields.email.visible && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                    <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
                       {fields.email.label}
                       {fields.email.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
-                    <div className="w-full px-0 py-2.5 border-b-2 border-gray-300 text-gray-400 text-base text-left">
+                    <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
                       {fields.email.placeholder}
                     </div>
                   </div>
                 )}
                 {fields.phone.visible && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                    <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
                       {fields.phone.label}
                       {fields.phone.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
-                    <div className="w-full px-0 py-2.5 border-b-2 border-gray-300 text-gray-400 text-base text-left">
+                    <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
                       {fields.phone.placeholder}
                     </div>
                   </div>
@@ -227,11 +321,11 @@ function renderBlockContent(
             {/* Row 3: Company (full width) */}
             {fields.company.visible && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
                   {fields.company.label}
                   {fields.company.required && <span className="text-red-500 ml-1">*</span>}
                 </label>
-                <div className="w-full px-0 py-2.5 border-b-2 border-gray-300 text-gray-400 text-base text-left">
+                <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
                   {fields.company.placeholder}
                 </div>
               </div>
@@ -247,12 +341,12 @@ function renderBlockContent(
         // In split layout, don't use mx-auto px-12 (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full pointer-events-none select-none"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
           <div className={containerClasses}>
-            <div className="w-full px-0 py-2.5 border-b-2 border-gray-300 text-gray-400 text-base text-left">
+            <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
               {placeholder}
             </div>
           </div>
@@ -275,23 +369,24 @@ function renderBlockContent(
         // In split layout, don't use mx-auto px-12 (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full pointer-events-none select-none"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
           <div className={containerClasses}>
             <div
               className={cn(
-                "w-full px-3 py-2.5 border border-gray-300 rounded text-gray-400 text-base text-left",
+                "w-full px-3 py-2.5 border text-left",
                 heightClass
               )}
+              style={{ fontSize: `${inputSize}px`, borderRadius: designStyles.cornerRadius, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}
             >
               {placeholder}
             </div>
             {/* Character counter - only shown if maxCharacters is set */}
             {maxCharacters && (
-              <div className="text-right mt-1">
-                <span className="text-xs text-gray-400">0 / {maxCharacters}</span>
+              <div className={alignmentClass === "text-right" ? "text-right" : alignmentClass === "text-center" ? "text-center" : "text-left"} style={{ marginTop: "4px" }}>
+                <span style={{ color: designStyles.answerColor, opacity: 0.5, fontSize: `${smallSize}px` }}>0 / {maxCharacters}</span>
               </div>
             )}
           </div>
@@ -327,18 +422,19 @@ function renderBlockContent(
         // In split layout, don't use mx-auto (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full pointer-events-none select-none"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
           <div className={containerClasses}>
             <div className="flex items-center gap-2 max-w-[280px]">
               {/* Country selector */}
-              <div className="flex items-center gap-1.5 px-3 py-2.5 border-b-2 border-gray-300 bg-gray-50 rounded-t">
-                <span className="text-lg">{country.flag}</span>
-                <span className="text-sm text-gray-600">{country.code}</span>
+              <div className="flex items-center gap-1.5 px-3 py-2.5 border-b-2 bg-gray-50 rounded-t" style={{ borderColor: designStyles.answerColor }}>
+                <span style={{ fontSize: `${inputSize}px` }}>{country.flag}</span>
+                <span style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>{country.code}</span>
                 <svg
-                  className="w-4 h-4 text-gray-400"
+                  className="w-4 h-4"
+                  style={{ color: designStyles.answerColor, opacity: 0.5 }}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -352,7 +448,7 @@ function renderBlockContent(
                 </svg>
               </div>
               {/* Phone input */}
-              <div className="flex-1 px-0 py-2.5 border-b-2 border-gray-300 text-gray-400 text-base">
+              <div className="flex-1 px-0 py-2.5 border-b-2" style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
                 {country.format}
               </div>
             </div>
@@ -367,15 +463,16 @@ function renderBlockContent(
         // In split layout, don't use mx-auto (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full pointer-events-none select-none"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
           <div className={containerClasses}>
-            <div className="flex items-center gap-2 border-b-2 border-gray-300 py-2.5 max-w-sm">
+            <div className="flex items-center gap-2 border-b-2 py-2.5 max-w-sm" style={{ borderColor: designStyles.answerColor }}>
               {/* Link icon */}
               <svg
-                className="w-5 h-5 text-gray-400 flex-shrink-0"
+                className="w-5 h-5 flex-shrink-0"
+                style={{ color: designStyles.answerColor, opacity: 0.5 }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -388,7 +485,7 @@ function renderBlockContent(
                 />
               </svg>
               {/* URL input placeholder */}
-              <span className="text-gray-400 text-base">{placeholder}</span>
+              <span style={{ fontSize: `${inputSize}px`, color: designStyles.answerColor, opacity: 0.5 }}>{placeholder}</span>
             </div>
           </div>
         );
@@ -400,13 +497,13 @@ function renderBlockContent(
         // In split layout, don't use mx-auto (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full pointer-events-none select-none"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
           <div className={containerClasses}>
-            <div className="border-b-2 border-gray-300 py-2.5 max-w-[280px]">
-              <span className="text-gray-400 text-base">{placeholder}</span>
+            <div className="border-b-2 py-2.5 max-w-[280px]" style={{ borderColor: designStyles.answerColor }}>
+              <span style={{ fontSize: `${inputSize}px`, color: designStyles.answerColor, opacity: 0.5 }}>{placeholder}</span>
             </div>
           </div>
         );
@@ -432,9 +529,30 @@ function renderBlockContent(
 
         // In split layout, don't use mx-auto (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
+
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full pointer-events-none select-none"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
+
+        // Extract RGB from answerColor for shadow/border
+        const getColorWithOpacity = (color: string, opacity: number) => {
+          if (color.startsWith('#')) {
+            const r = parseInt(color.slice(1, 3), 16);
+            const g = parseInt(color.slice(3, 5), 16);
+            const b = parseInt(color.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+          }
+          if (color.startsWith('rgb')) {
+            const match = color.match(/\d+/g);
+            if (match && match.length >= 3) {
+              return `rgba(${match[0]}, ${match[1]}, ${match[2]}, ${opacity})`;
+            }
+          }
+          return color;
+        };
+
+        const optionBg = getColorWithOpacity(designStyles.answerColor, 0.05);
+        const optionBorder = getColorWithOpacity(designStyles.answerColor, 0.25);
 
         // All options with same width - inline-grid with 1fr columns
         // The inline-grid takes only the width of its content while 1fr ensures equal column widths
@@ -449,21 +567,28 @@ function renderBlockContent(
               {displayOptions.map((option: any, index: number) => (
                 <div
                   key={option.id || index}
-                  className={`flex ${option.image ? "flex-col" : "flex-row items-center"} gap-2 px-5 py-2.5 border border-gray-200 rounded bg-white hover:border-indigo-400 transition-colors`}
+                  className={`flex ${option.image ? "flex-col" : "flex-row items-center justify-center"} gap-2 px-5 transition-colors`}
+                  style={{
+                    borderRadius: designStyles.cornerRadius,
+                    minHeight: `${Math.round(44 * designStyles.fontSizeScale)}px`,
+                    backgroundColor: optionBg,
+                    border: `1px solid ${optionBorder}`,
+                  }}
                 >
                   {/* Option image */}
                   {option.image && (
-                    <div className="flex justify-center">
+                    <div className="flex justify-center pt-2.5">
                       <img
                         src={option.image}
                         alt={option.label}
-                        className="max-w-full max-h-40 object-contain rounded"
+                        className="max-w-full max-h-40 object-contain"
+                        style={{ borderRadius: designStyles.cornerRadius }}
                       />
                     </div>
                   )}
                   <span
-                    className="text-gray-700 text-sm"
-                    style={{ hyphens: "auto", wordBreak: "break-word" }}
+                    className="leading-tight"
+                    style={{ hyphens: "auto", wordBreak: "break-word", color: designStyles.answerColor, fontSize: `${optionSize}px` }}
                     lang="fr"
                   >
                     {option.label}
@@ -472,12 +597,21 @@ function renderBlockContent(
               ))}
               {/* "Other" option - shown at the end if enabled */}
               {allowOther && (
-                <div className="flex flex-col gap-2 px-5 py-2.5 border border-gray-200 rounded bg-white hover:border-indigo-400 transition-colors">
-                  <span className="text-gray-700 text-sm">Other</span>
+                <div
+                  className="flex flex-col gap-2 px-5 py-2.5 transition-colors"
+                  style={{
+                    borderRadius: designStyles.cornerRadius,
+                    minHeight: `${Math.round(44 * designStyles.fontSizeScale)}px`,
+                    backgroundColor: optionBg,
+                    border: `1px solid ${optionBorder}`,
+                  }}
+                >
+                  <span className="leading-tight" style={{ color: designStyles.answerColor, fontSize: `${optionSize}px` }}>Other</span>
                   <input
                     type="text"
                     placeholder="Type your answer..."
-                    className="w-full px-0 py-1 border-0 border-b border-gray-300 text-sm text-gray-400 bg-transparent focus:outline-none"
+                    className="w-full px-0 py-1 border-0 border-b text-gray-400 bg-transparent focus:outline-none text-left"
+                    style={{ fontSize: `${smallSize}px`, borderColor: optionBorder }}
                     disabled
                   />
                 </div>
@@ -503,19 +637,46 @@ function renderBlockContent(
         // In split layout, don't use mx-auto (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full pointer-events-none select-none"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
+
+        // Scale dropdown height
+        const dropdownHeight = Math.round(44 * designStyles.fontSizeScale);
+
+        // Get color with opacity for borders
+        const getColorWithOpacity = (color: string, opacity: number) => {
+          if (color.startsWith('#')) {
+            const r = parseInt(color.slice(1, 3), 16);
+            const g = parseInt(color.slice(3, 5), 16);
+            const b = parseInt(color.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+          }
+          if (color.startsWith('rgb')) {
+            const match = color.match(/\d+/g);
+            if (match && match.length >= 3) {
+              return `rgba(${match[0]}, ${match[1]}, ${match[2]}, ${opacity})`;
+            }
+          }
+          return color;
+        };
+
+        const borderColor = getColorWithOpacity(designStyles.answerColor, 0.3);
 
         return (
           <div className={containerClasses}>
             <select
-              className="w-full px-3 py-2 border border-gray-200 rounded text-sm text-gray-600 bg-white hover:border-gray-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors appearance-none cursor-pointer"
+              className="w-full px-3 border bg-white focus:outline-none transition-colors appearance-none cursor-pointer"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                 backgroundPosition: "right 0.5rem center",
                 backgroundRepeat: "no-repeat",
                 backgroundSize: "1.25em 1.25em",
                 paddingRight: "2rem",
+                borderRadius: designStyles.cornerRadius,
+                borderColor: borderColor,
+                color: designStyles.answerColor,
+                fontSize: `${optionSize}px`,
+                height: `${dropdownHeight}px`,
               }}
               disabled
             >
@@ -554,8 +715,31 @@ function renderBlockContent(
         // In split layout, don't use mx-auto (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full pointer-events-none select-none"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
+
+        // Scale input height and icon
+        const dateInputHeight = Math.round(44 * designStyles.fontSizeScale);
+        const dateIconSize = Math.round(16 * designStyles.fontSizeScale);
+
+        // Get color with opacity for borders
+        const getColorWithOpacity = (color: string, opacity: number) => {
+          if (color.startsWith('#')) {
+            const r = parseInt(color.slice(1, 3), 16);
+            const g = parseInt(color.slice(3, 5), 16);
+            const b = parseInt(color.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+          }
+          if (color.startsWith('rgb')) {
+            const match = color.match(/\d+/g);
+            if (match && match.length >= 3) {
+              return `rgba(${match[0]}, ${match[1]}, ${match[2]}, ${opacity})`;
+            }
+          }
+          return color;
+        };
+
+        const borderColor = getColorWithOpacity(designStyles.answerColor, 0.3);
 
         return (
           <div className={containerClasses}>
@@ -563,12 +747,19 @@ function renderBlockContent(
               <input
                 type="text"
                 placeholder={getPlaceholder()}
-                className="w-full px-3 py-2 pr-10 border border-gray-200 rounded text-sm text-gray-600 bg-white hover:border-gray-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+                className="w-full px-3 pr-10 border bg-white focus:outline-none transition-colors"
+                style={{
+                  borderRadius: designStyles.cornerRadius,
+                  borderColor: borderColor,
+                  color: designStyles.answerColor,
+                  fontSize: `${inputSize}px`,
+                  height: `${dateInputHeight}px`,
+                }}
                 disabled
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                 <svg
-                  className="w-4 h-4 text-gray-400"
+                  style={{ width: `${dateIconSize}px`, height: `${dateIconSize}px`, color: designStyles.answerColor, opacity: 0.5 }}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -593,8 +784,11 @@ function renderBlockContent(
         // In split layout, don't use mx-auto (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full pointer-events-none select-none"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
+
+        // Star size scales with font size (base: 40px at scale 1)
+        const starSize = Math.round(40 * designStyles.fontSizeScale);
 
         return (
           <div className={containerClasses}>
@@ -602,8 +796,13 @@ function renderBlockContent(
               {Array.from({ length: maxRating }, (_, i) => (
                 <svg
                   key={i}
-                  className="w-10 h-10 text-gray-300 transition-colors cursor-pointer"
-                  fill="none"
+                  className="transition-colors cursor-pointer group"
+                  style={{
+                    width: `${starSize}px`,
+                    height: `${starSize}px`,
+                    color: i < 2 ? designStyles.starRatingColor : "#d1d5db"
+                  }}
+                  fill={i < 2 ? "currentColor" : "none"}
                   stroke="currentColor"
                   strokeWidth={1}
                   viewBox="0 0 24 24"
@@ -636,17 +835,48 @@ function renderBlockContent(
         // In split layout, don't use mx-auto (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full pointer-events-none select-none"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
+
+        // Scale button size (base: 48px at scale 1)
+        const buttonSize = Math.round(48 * designStyles.fontSizeScale);
+        const gap = Math.round(6 * designStyles.fontSizeScale);
+
+        // Get color with opacity for borders
+        const getColorWithOpacity = (color: string, opacity: number) => {
+          if (color.startsWith('#')) {
+            const r = parseInt(color.slice(1, 3), 16);
+            const g = parseInt(color.slice(3, 5), 16);
+            const b = parseInt(color.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+          }
+          if (color.startsWith('rgb')) {
+            const match = color.match(/\d+/g);
+            if (match && match.length >= 3) {
+              return `rgba(${match[0]}, ${match[1]}, ${match[2]}, ${opacity})`;
+            }
+          }
+          return color;
+        };
+
+        const borderColor = getColorWithOpacity(designStyles.answerColor, 0.3);
 
         return (
           <div className={containerClasses}>
             {/* Scale buttons */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center" style={{ gap: `${gap}px` }}>
               {scaleNumbers.map((num) => (
                 <button
                   key={num}
-                  className="w-12 h-12 flex items-center justify-center border border-gray-300 rounded text-base font-medium text-gray-600 hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+                  className="flex items-center justify-center border font-medium transition-colors"
+                  style={{
+                    width: `${buttonSize}px`,
+                    height: `${buttonSize}px`,
+                    borderRadius: designStyles.cornerRadius,
+                    borderColor: borderColor,
+                    color: designStyles.answerColor,
+                    fontSize: `${inputSize}px`,
+                  }}
                 >
                   {num}
                 </button>
@@ -655,19 +885,19 @@ function renderBlockContent(
             {/* Labels below the scale - aligned under first and last buttons */}
             <div
               className="flex mt-2"
-              style={{ width: `${scaleNumbers.length * 48 + (scaleNumbers.length - 1) * 6}px` }}
+              style={{ width: `${scaleNumbers.length * buttonSize + (scaleNumbers.length - 1) * gap}px` }}
             >
               <span
-                className="text-sm text-gray-500 text-left"
-                style={{ maxWidth: "45%", hyphens: "auto", wordBreak: "break-word" }}
+                className="text-left"
+                style={{ maxWidth: "45%", hyphens: "auto", wordBreak: "break-word", color: designStyles.answerColor, fontSize: `${smallSize}px` }}
                 lang="fr"
               >
                 {leftLabel}
               </span>
               <span className="flex-1 min-w-4" />
               <span
-                className="text-sm text-gray-500 text-right"
-                style={{ maxWidth: "45%", hyphens: "auto", wordBreak: "break-word" }}
+                className="text-right"
+                style={{ maxWidth: "45%", hyphens: "auto", wordBreak: "break-word", color: designStyles.answerColor, fontSize: `${smallSize}px` }}
                 lang="fr"
               >
                 {rightLabel}
@@ -681,15 +911,15 @@ function renderBlockContent(
         // In split layout, don't use mx-auto (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full pointer-events-none select-none"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
           <div className={containerClasses}>
             <div className="p-8 bg-gray-50 border border-dashed border-gray-300 rounded">
               <div className="flex flex-col items-center justify-center text-center">
-                <p className="text-sm font-medium text-gray-500 mb-1">Coming Soon</p>
-                <p className="text-xs text-gray-400">Scheduler integration</p>
+                <p className="font-medium text-gray-500 mb-1" style={{ fontSize: `${labelSize}px` }}>Coming Soon</p>
+                <p className="text-gray-400" style={{ fontSize: `${smallSize}px` }}>Scheduler integration</p>
               </div>
             </div>
           </div>
@@ -700,15 +930,15 @@ function renderBlockContent(
         // In split layout, don't use mx-auto (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full pointer-events-none select-none"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
           <div className={containerClasses}>
             <div className="p-8 bg-gray-50 border border-dashed border-gray-300 rounded">
               <div className="flex flex-col items-center justify-center text-center">
-                <p className="text-sm font-medium text-gray-500 mb-1">Coming Soon</p>
-                <p className="text-xs text-gray-400">Payment integration</p>
+                <p className="font-medium text-gray-500 mb-1" style={{ fontSize: `${labelSize}px` }}>Coming Soon</p>
+                <p className="text-gray-400" style={{ fontSize: `${smallSize}px` }}>Payment integration</p>
               </div>
             </div>
           </div>
@@ -728,8 +958,12 @@ function renderBlockContent(
         // In split layout, don't use mx-auto (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full pointer-events-none select-none"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
+
+        // Scale badge and handle sizes
+        const badgeSize = Math.round(24 * designStyles.fontSizeScale);
+        const handleSize = Math.round(16 * designStyles.fontSizeScale);
 
         return (
           <div className={containerClasses}>
@@ -737,11 +971,21 @@ function renderBlockContent(
               {displayOptions.map((option: any, index: number) => (
                 <div
                   key={option.id || index}
-                  className="flex items-start gap-3 px-5 py-2.5 border border-gray-200 rounded bg-white hover:border-indigo-400 transition-colors cursor-grab"
+                  className="flex items-center gap-3 px-5 border border-gray-200 bg-white transition-colors cursor-grab"
+                  style={{ borderRadius: designStyles.cornerRadius, minHeight: `${Math.round(44 * designStyles.fontSizeScale)}px` }}
                 >
-                  {/* Rank number dropdown - fixed size, clickable for alternative ranking */}
+                  {/* Rank number dropdown - scaled size, clickable for alternative ranking */}
                   <div className="flex-shrink-0 relative group/rank">
-                    <span className="w-6 h-6 flex items-center justify-center bg-gray-100 rounded text-xs font-semibold text-gray-500 cursor-pointer hover:bg-indigo-100 hover:text-indigo-600 transition-colors">
+                    <span
+                      className="flex items-center justify-center bg-gray-100 font-semibold cursor-pointer transition-colors"
+                      style={{
+                        width: `${badgeSize}px`,
+                        height: `${badgeSize}px`,
+                        borderRadius: designStyles.cornerRadius,
+                        color: designStyles.answerColor,
+                        fontSize: `${smallSize}px`
+                      }}
+                    >
                       {index + 1}
                     </span>
                     {/* Small dropdown indicator */}
@@ -761,15 +1005,16 @@ function renderBlockContent(
                   </div>
                   {/* Option label - flex-1 to take remaining space */}
                   <span
-                    className="text-gray-700 text-sm flex-1 pt-0.5"
-                    style={{ hyphens: "auto", wordBreak: "break-word" }}
+                    className="flex-1 leading-tight"
+                    style={{ hyphens: "auto", wordBreak: "break-word", color: designStyles.answerColor, fontSize: `${optionSize}px` }}
                     lang="fr"
                   >
                     {option.label}
                   </span>
-                  {/* Drag handle - fixed size */}
+                  {/* Drag handle - scaled size */}
                   <svg
-                    className="w-4 h-4 text-gray-300 flex-shrink-0 mt-0.5"
+                    className="text-gray-300 flex-shrink-0"
+                    style={{ width: `${handleSize}px`, height: `${handleSize}px` }}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -792,19 +1037,37 @@ function renderBlockContent(
         // In split layout, don't use mx-auto (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full pointer-events-none select-none"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
+
+        // Scale signature canvas height
+        const canvasHeight = Math.round(240 * designStyles.fontSizeScale);
 
         return (
           <div className={containerClasses}>
             {/* Signature canvas area */}
             <div className="relative">
-              <div className="w-4/5 h-60 bg-white border border-gray-300 rounded flex items-center justify-center">
+              <div
+                className="w-4/5 bg-white border-2 border-dashed flex items-center justify-center"
+                style={{
+                  borderRadius: designStyles.cornerRadius,
+                  height: `${canvasHeight}px`,
+                  borderColor: designStyles.answerColor,
+                }}
+              >
                 {/* Placeholder text */}
-                <span className="text-gray-400 text-sm">Sign here</span>
+                <span style={{ color: designStyles.answerColor, opacity: 0.5, fontSize: `${inputSize}px` }}>Sign here</span>
               </div>
               {/* Clear button - shown at bottom left */}
-              <button className="absolute bottom-2 left-2 px-3 py-1 text-xs text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded transition-colors">
+              <button
+                className="absolute bottom-2 left-2 px-3 py-1 transition-colors"
+                style={{
+                  borderRadius: designStyles.cornerRadius,
+                  backgroundColor: designStyles.answerColor,
+                  color: "white",
+                  fontSize: `${smallSize}px`,
+                }}
+              >
                 Clear
               </button>
             </div>
@@ -818,36 +1081,63 @@ function renderBlockContent(
         // In split layout, don't use mx-auto (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full pointer-events-none select-none"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
+
+        // Scale icon size
+        const iconSize = Math.round(32 * designStyles.fontSizeScale);
+
+        // Extract RGB from answerColor for shadow
+        const getColorWithOpacity = (color: string, opacity: number) => {
+          if (color.startsWith('#')) {
+            const r = parseInt(color.slice(1, 3), 16);
+            const g = parseInt(color.slice(3, 5), 16);
+            const b = parseInt(color.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+          }
+          if (color.startsWith('rgb')) {
+            const match = color.match(/\d+/g);
+            if (match && match.length >= 3) {
+              return `rgba(${match[0]}, ${match[1]}, ${match[2]}, ${opacity})`;
+            }
+          }
+          return color;
+        };
+
+        const uploadBg = getColorWithOpacity(designStyles.answerColor, 0.03);
 
         return (
           <div className={containerClasses}>
             {/* Upload drop zone */}
-            <div className="w-full border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-indigo-400 transition-colors cursor-pointer">
+            <div
+              className="w-full border-2 border-dashed p-8 transition-colors cursor-pointer"
+              style={{
+                borderRadius: designStyles.cornerRadius,
+                borderColor: designStyles.answerColor,
+                backgroundColor: uploadBg,
+              }}
+            >
               <div className="flex flex-col items-center justify-center text-center">
                 {/* Upload icon */}
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                  <svg
-                    className="w-6 h-6 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    />
-                  </svg>
-                </div>
-                <p className="text-sm font-medium text-gray-700 mb-1">
+                <svg
+                  style={{ width: `${iconSize}px`, height: `${iconSize}px`, color: designStyles.answerColor, marginBottom: "16px" }}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  />
+                </svg>
+                <p className="font-medium mb-1" style={{ color: designStyles.answerColor, fontSize: `${labelSize}px` }}>
                   {allowMultiple
                     ? "Drop files here or click to upload"
                     : "Drop a file here or click to upload"}
                 </p>
-                <p className="text-xs text-gray-500">Max file size: 10MB</p>
+                <p style={{ color: designStyles.answerColor, opacity: 0.6, fontSize: `${smallSize}px` }}>Max file size: 10MB</p>
               </div>
             </div>
           </div>
@@ -871,47 +1161,110 @@ function renderBlockContent(
 
         const isSplitLayoutForField = layout === "split" && block.coverImage;
         const containerClasses = isSplitLayoutForField
-          ? "w-full pointer-events-none select-none text-left"
-          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+          ? "w-full select-none"
+          : "w-full max-w-2xl mx-auto px-8 select-none";
+
+        // Scale checkbox/radio size
+        const checkboxSize = Math.round(20 * designStyles.fontSizeScale);
+
+        // Extract RGB from answerColor for shadow
+        const getColorWithOpacity = (color: string, opacity: number) => {
+          // If hex color
+          if (color.startsWith('#')) {
+            const r = parseInt(color.slice(1, 3), 16);
+            const g = parseInt(color.slice(3, 5), 16);
+            const b = parseInt(color.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+          }
+          // If already rgb/rgba, modify opacity
+          if (color.startsWith('rgb')) {
+            const match = color.match(/\d+/g);
+            if (match && match.length >= 3) {
+              return `rgba(${match[0]}, ${match[1]}, ${match[2]}, ${opacity})`;
+            }
+          }
+          return color;
+        };
+
+        const rowShadowColor = getColorWithOpacity(designStyles.answerColor, 0.08);
+        const rowBorderColor = getColorWithOpacity(designStyles.answerColor, 0.15);
 
         return (
           <div className={containerClasses}>
-            <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-              <table className="border-collapse" style={{ minWidth: "max-content" }}>
-                <thead>
-                  <tr>
-                    <th className="p-2 text-left sticky left-0 bg-white z-10 min-w-[120px]"></th>
-                    {columns.map((col: { id: string; label: string }) => (
-                      <th
-                        key={col.id}
-                        className="p-2 text-center text-sm font-medium text-gray-600 min-w-[60px]"
-                      >
-                        {col.label}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((row: { id: string; label: string }) => (
-                    <tr key={row.id} className="border-t border-gray-200">
-                      <td className="p-3 text-sm text-gray-700 sticky left-0 bg-white z-10 min-w-[120px] whitespace-nowrap">
-                        {row.label}
-                      </td>
+            {/* Scrollable matrix container - pointer events enabled for scrolling */}
+            <div
+              className="overflow-x-auto space-y-3"
+              style={{
+                scrollbarWidth: "thin",
+                scrollbarColor: "#cbd5e1 transparent",
+              }}
+            >
+              {/* Header row */}
+              <div className="flex" style={{ minWidth: "max-content" }}>
+                <div className="min-w-[140px] w-[140px] flex-shrink-0" />
+                <div className="flex gap-3">
+                  {columns.map((col: { id: string; label: string }) => (
+                    <div
+                      key={col.id}
+                      className="min-w-[70px] text-center"
+                      style={{ fontSize: `${Math.round(labelSize * 1.1)}px`, color: designStyles.answerColor }}
+                    >
+                      {col.label}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Body rows - independent bars */}
+              <div className="space-y-2">
+                {rows.map((row: { id: string; label: string }) => (
+                  <div
+                    key={row.id}
+                    className="flex items-center"
+                    style={{
+                      minWidth: "max-content",
+                      backgroundColor: rowShadowColor,
+                      borderRadius: "4px",
+                      padding: "8px 12px",
+                      minHeight: "48px",
+                    }}
+                  >
+                    {/* Row label */}
+                    <div
+                      className="min-w-[140px] w-[140px] flex-shrink-0"
+                      style={{ fontSize: `${Math.round(labelSize * 1.1)}px`, color: designStyles.answerColor }}
+                    >
+                      {row.label}
+                    </div>
+                    {/* Checkboxes */}
+                    <div className="flex gap-3 items-center">
                       {columns.map((col: { id: string; label: string }) => (
-                        <td key={col.id} className="p-2 text-center">
+                        <div key={col.id} className="min-w-[70px] flex justify-center">
                           <span
                             className={cn(
-                              "w-5 h-5 border-2 border-gray-300 inline-flex items-center justify-center",
+                              "inline-flex items-center justify-center cursor-pointer transition-colors",
                               multipleSelection ? "rounded" : "rounded-full"
                             )}
+                            style={{
+                              width: `${checkboxSize}px`,
+                              height: `${checkboxSize}px`,
+                              border: `2px solid ${designStyles.answerColor}`,
+                              backgroundColor: "transparent",
+                            }}
                           />
-                        </td>
+                        </div>
                       ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
+            {/* Scroll hint when many columns */}
+            {columns.length > 5 && (
+              <p className="text-gray-400 mt-2 text-center" style={{ fontSize: `${smallSize}px` }}>
+                ← Scroll horizontally to see all columns →
+              </p>
+            )}
           </div>
         );
       }
@@ -956,15 +1309,25 @@ function renderBlockContent(
     isMatrix;
   const isSplitLayout = layout === "split" && block.coverImage;
 
+  // Font size based on scale
+  const baseFontSize = 30 * designStyles.fontSizeScale;
+  const descFontSize = 16 * designStyles.fontSizeScale;
+  const buttonFontSize = 16 * designStyles.fontSizeScale;
+
   // Render text content
   const textContent = (
     <>
       {/* Main Question/Title - Clickable */}
       <h1
         className={cn(
-          "text-3xl font-normal text-gray-900 cursor-pointer hover:text-indigo-600 transition-colors leading-tight",
-          needsLeftAlignment && !isSplitLayout && "w-full max-w-2xl mx-auto px-8 text-left"
+          "font-normal cursor-pointer hover:opacity-80 transition-opacity leading-tight",
+          needsLeftAlignment && !isSplitLayout && "w-full max-w-2xl mx-auto px-8",
+          alignmentClass
         )}
+        style={{
+          color: designStyles.questionColor,
+          fontSize: `${baseFontSize}px`,
+        }}
         onClick={onTitleClick}
       >
         {block.question || "Hey there 😊"}
@@ -974,9 +1337,14 @@ function renderBlockContent(
       {block.description && block.description.replace(/<[^>]*>/g, "").trim() !== "" && (
         <div
           className={cn(
-            "text-base text-gray-600 cursor-pointer hover:text-indigo-600 transition-colors leading-relaxed",
-            needsLeftAlignment && !isSplitLayout && "w-full max-w-2xl mx-auto px-8 text-left"
+            "cursor-pointer hover:opacity-80 transition-opacity leading-relaxed",
+            needsLeftAlignment && !isSplitLayout && "w-full max-w-2xl mx-auto px-8",
+            alignmentClass
           )}
+          style={{
+            color: designStyles.answerColor,
+            fontSize: `${descFontSize}px`,
+          }}
           onClick={onDescriptionClick}
           dangerouslySetInnerHTML={{ __html: block.description }}
         />
@@ -988,18 +1356,26 @@ function renderBlockContent(
       {/* Button - Clickable */}
       <div
         className={cn(
-          "mt-10",
-          needsLeftAlignment && !isSplitLayout
-            ? "w-full max-w-2xl mx-auto px-8 flex justify-start"
-            : textAlign === "left"
-              ? "flex justify-start"
-              : textAlign === "right"
-                ? "flex justify-end"
-                : "flex justify-center"
+          "mt-10 flex",
+          needsLeftAlignment && !isSplitLayout && "w-full max-w-2xl mx-auto px-8",
+          textAlign === "left"
+            ? "justify-start"
+            : textAlign === "right"
+              ? "justify-end"
+              : "justify-center"
         )}
       >
         <button
-          className="inline-flex items-center justify-center px-5 py-2.5 h-11 bg-indigo-600 hover:bg-indigo-700 text-white text-base font-medium rounded transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-1 cursor-pointer"
+          className="inline-flex items-center justify-center font-medium transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 cursor-pointer hover:opacity-90"
+          style={{
+            backgroundColor: designStyles.buttonColor,
+            color: designStyles.buttonTextColor,
+            borderRadius: designStyles.cornerRadius,
+            fontSize: `${buttonFontSize}px`,
+            height: `${Math.round(44 * designStyles.fontSizeScale)}px`,
+            paddingLeft: `${Math.round(20 * designStyles.fontSizeScale)}px`,
+            paddingRight: `${Math.round(20 * designStyles.fontSizeScale)}px`,
+          }}
           onClick={onButtonClick}
         >
           {buttonText}
@@ -1035,8 +1411,8 @@ function renderBlockContent(
 
   // SPLIT LAYOUT
   if (layout === "split" && block.coverImage) {
-    // For split layout, use different alignment (no mx-auto for blocks needing left alignment)
-    const splitAlignmentClass = needsLeftAlignment ? "text-left" : alignmentClass;
+    // For split layout, always respect the global alignment setting
+    const splitAlignmentClass = alignmentClass;
 
     const imageElement = (
       <div

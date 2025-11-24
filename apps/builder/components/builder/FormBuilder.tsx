@@ -31,6 +31,7 @@ import { PropertiesPanel } from "./Inspector/PropertiesPanel";
 import { ShareTab } from "./Share/ShareTab";
 import { IntegrateTab } from "./Integrate/IntegrateTab";
 import { ResultsTab } from "./Results/ResultsTab";
+import { DesignPanel } from "./Design/DesignPanel";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 import { useAutoSave } from "../../lib/hooks/useAutoSave";
 import {
@@ -95,8 +96,15 @@ export function FormBuilder({ formId }: FormBuilderProps) {
   const [isPublished, setIsPublished] = useState(false);
   const shareUrl = `https://youform.app/f/${formId}`;
 
+  // Design panel state
+  const [isDesignPanelOpen, setIsDesignPanelOpen] = useState(false);
+
   const handlePublish = () => {
     setIsPublished(true);
+  };
+
+  const handleOpenDesign = () => {
+    setIsDesignPanelOpen(true);
   };
 
   // Keyboard shortcuts
@@ -363,22 +371,28 @@ export function FormBuilder({ formId }: FormBuilderProps) {
             />
           ) : (
             <div className="flex-1 flex overflow-hidden">
-              {/* Left Panel - Blocks List */}
-              <aside className="w-[220px] flex-shrink-0 border-r bg-white overflow-hidden">
+              {/* Left Panel - Blocks List - Dynamic width based on screen */}
+              <aside className="w-[200px] min-w-[180px] xl:w-[240px] 2xl:w-[280px] flex-shrink-0 border-r bg-white overflow-hidden transition-all duration-200">
                 <BlocksList />
               </aside>
 
-              {/* Center - Canvas - FLEX 1 */}
-              <main className="flex-1 relative bg-white overflow-hidden">
-                <FormCanvas dropPosition={dropPosition} />
+              {/* Center - Canvas - Flexible, takes remaining space */}
+              <main className="flex-1 relative bg-gray-100 overflow-hidden min-w-0">
+                <FormCanvas dropPosition={dropPosition} onOpenDesign={handleOpenDesign} />
               </main>
 
               {/* Right Panel - Properties Inspector */}
-              <aside className="w-[320px] flex-shrink-0 border-l bg-white overflow-hidden">
+              <aside className="w-[280px] min-w-[260px] xl:w-[320px] 2xl:w-[360px] flex-shrink-0 border-l bg-white overflow-hidden transition-all duration-200">
                 <PropertiesPanel />
               </aside>
             </div>
           )}
+
+          {/* Design Panel Overlay */}
+          <DesignPanel
+            isOpen={isDesignPanelOpen}
+            onClose={() => setIsDesignPanelOpen(false)}
+          />
         </div>
 
         <DragOverlay dropAnimation={null}>

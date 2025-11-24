@@ -9,9 +9,10 @@ import { PreviewModal } from "../Preview/PreviewModal";
 
 interface FormCanvasProps {
   dropPosition: { overId: string; isAbove: boolean } | null;
+  onOpenDesign?: () => void;
 }
 
-export function FormCanvas({ dropPosition }: FormCanvasProps) {
+export function FormCanvas({ dropPosition, onOpenDesign }: FormCanvasProps) {
   const { form, addBlock } = useFormBuilderStore();
   const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -36,11 +37,6 @@ export function FormCanvas({ dropPosition }: FormCanvasProps) {
     }
   };
 
-  const handleOpenDesign = () => {
-    // TODO: Implement design panel
-    console.log("Open design panel");
-  };
-
   const handleOpenPreview = () => {
     setIsPreviewOpen(true);
   };
@@ -52,15 +48,15 @@ export function FormCanvas({ dropPosition }: FormCanvasProps) {
         <CanvasToolbar
           formId={form.id}
           onAddBlock={handleAddBlock}
-          onOpenDesign={handleOpenDesign}
+          onOpenDesign={onOpenDesign}
           onOpenPreview={handleOpenPreview}
         />
 
         {/* Canvas Content with dotted border (matching YouForm) */}
-        <div className="flex-1 overflow-y-auto bg-gray-50 p-3 scrollbar-none flex flex-col">
-          <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col">
-            {/* Canvas with dotted border like YouForm */}
-            <div className="border-2 border-dashed border-gray-300 rounded bg-white flex-1 min-h-[600px]">
+        <div className="flex-1 overflow-hidden bg-gray-100 p-2 sm:p-3 lg:p-4 flex flex-col min-h-0">
+          <div className="w-full max-w-full mx-auto flex-1 flex flex-col min-h-0">
+            {/* Canvas with dotted border - fixed height, scrolls internally without visible scrollbar */}
+            <div className="border-2 border-dashed border-gray-300 rounded bg-white flex-1 shadow-sm overflow-y-auto min-h-0 scrollbar-none">
               <FormPreview />
             </div>
           </div>
