@@ -19,7 +19,8 @@ type Tab = "build" | "integrate" | "share" | "results";
 
 export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: FormToolbarProps) {
   const router = useRouter();
-  const { form, isDirty, undo, redo, canUndo, canRedo, markClean } = useFormBuilderStore();
+  const { form, isDirty, undo, redo, canUndo, canRedo, markClean, updateForm } =
+    useFormBuilderStore();
   const [internalActiveTab, setInternalActiveTab] = useState<Tab>("build");
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -110,7 +111,9 @@ export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: F
   const handleTitleBlur = () => {
     setIsEditingTitle(false);
     if (editedTitle.trim() && editedTitle !== form?.title) {
-      // Update form title via API
+      // Update form title locally first for immediate UI update
+      updateForm({ title: editedTitle.trim() });
+      // Then persist to API
       formsApi.update(formId, { title: editedTitle.trim() });
     }
   };
@@ -127,7 +130,7 @@ export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: F
   return (
     <>
       <header className="w-full bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-3 sm:py-4">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <div className="flex items-center justify-between relative">
             {/* Left Section - Back Arrow + Title */}
             <div className="flex items-center gap-3 lg:gap-4 flex-1">

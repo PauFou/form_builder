@@ -31,19 +31,20 @@ export function FormPreview() {
 
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Show friendly toast notification
-    toast("💡 To edit the content, use the properties panel on the right!", {
+    // Show professional toast notification
+    toast("To edit the content, use the properties panel on the right.", {
       duration: 3000,
       position: "top-center",
       style: {
-        background: "#EEF2FF",
-        color: "#4338CA",
-        border: "1px solid #C7D2FE",
-        padding: "16px",
-        fontSize: "14px",
-        fontWeight: "500",
+        background: "#ffffff",
+        color: "#374151",
+        border: "1px solid #E5E7EB",
+        borderRadius: "4px",
+        padding: "12px 16px",
+        fontSize: "13px",
+        fontWeight: "400",
+        boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1)",
       },
-      icon: "✨",
     });
   };
 
@@ -652,10 +653,13 @@ function renderBlockContent(
               ))}
             </div>
             {/* Labels below the scale - aligned under first and last buttons */}
-            <div className="flex mt-2" style={{ width: `${scaleNumbers.length * 48 + (scaleNumbers.length - 1) * 6}px` }}>
+            <div
+              className="flex mt-2"
+              style={{ width: `${scaleNumbers.length * 48 + (scaleNumbers.length - 1) * 6}px` }}
+            >
               <span
                 className="text-sm text-gray-500 text-left"
-                style={{ maxWidth: '45%', hyphens: 'auto', wordBreak: 'break-word' }}
+                style={{ maxWidth: "45%", hyphens: "auto", wordBreak: "break-word" }}
                 lang="fr"
               >
                 {leftLabel}
@@ -663,7 +667,7 @@ function renderBlockContent(
               <span className="flex-1 min-w-4" />
               <span
                 className="text-sm text-gray-500 text-right"
-                style={{ maxWidth: '45%', hyphens: 'auto', wordBreak: 'break-word' }}
+                style={{ maxWidth: "45%", hyphens: "auto", wordBreak: "break-word" }}
                 lang="fr"
               >
                 {rightLabel}
@@ -674,17 +678,37 @@ function renderBlockContent(
       }
 
       case "scheduler": {
+        // In split layout, don't use mx-auto (parent already has padding)
+        const isSplitLayoutForField = layout === "split" && block.coverImage;
+        const containerClasses = isSplitLayoutForField
+          ? "w-full pointer-events-none select-none text-left"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+
         return (
-          <div className="w-full max-w-2xl mx-auto px-8 pointer-events-none select-none">
-            <div className="p-6 bg-gray-50 border border-dashed border-gray-300 rounded-lg">
+          <div className={containerClasses}>
+            <div className="p-8 bg-gray-50 border border-dashed border-gray-300 rounded">
               <div className="flex flex-col items-center justify-center text-center">
-                <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-3">
-                  <span className="text-2xl">🚧</span>
-                </div>
-                <h4 className="text-sm font-semibold text-gray-700 mb-1">Coming Soon</h4>
-                <p className="text-xs text-gray-500">
-                  Scheduler integration with Calendly, Cal.com, and SavvyCal
-                </p>
+                <p className="text-sm font-medium text-gray-500 mb-1">Coming Soon</p>
+                <p className="text-xs text-gray-400">Scheduler integration</p>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      case "payment": {
+        // In split layout, don't use mx-auto (parent already has padding)
+        const isSplitLayoutForField = layout === "split" && block.coverImage;
+        const containerClasses = isSplitLayoutForField
+          ? "w-full pointer-events-none select-none text-left"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+
+        return (
+          <div className={containerClasses}>
+            <div className="p-8 bg-gray-50 border border-dashed border-gray-300 rounded">
+              <div className="flex flex-col items-center justify-center text-center">
+                <p className="text-sm font-medium text-gray-500 mb-1">Coming Soon</p>
+                <p className="text-xs text-gray-400">Payment integration</p>
               </div>
             </div>
           </div>
@@ -697,13 +721,9 @@ function renderBlockContent(
           { id: "2", label: "Option 2" },
           { id: "3", label: "Option 3" },
         ];
-        const randomize = (block as any).randomize || false;
 
-        // Shuffle options if randomize is enabled
-        let displayOptions = [...options];
-        if (randomize) {
-          displayOptions = displayOptions.sort(() => 0.5 - Math.random());
-        }
+        // Note: randomize is applied only in live form, not in editor preview
+        const displayOptions = [...options];
 
         // In split layout, don't use mx-auto (parent already has padding)
         const isSplitLayoutForField = layout === "split" && block.coverImage;
@@ -713,19 +733,43 @@ function renderBlockContent(
 
         return (
           <div className={containerClasses}>
-            <div className="space-y-2">
+            <div className="inline-grid gap-2" style={{ gridTemplateColumns: "1fr" }}>
               {displayOptions.map((option: any, index: number) => (
                 <div
                   key={option.id || index}
-                  className="flex items-center gap-3 px-4 py-3 border border-gray-200 rounded-lg bg-white hover:border-indigo-300 hover:bg-indigo-50/50 transition-colors cursor-grab group"
+                  className="flex items-start gap-3 px-5 py-2.5 border border-gray-200 rounded bg-white hover:border-indigo-400 transition-colors cursor-grab"
                 >
-                  {/* Rank number */}
-                  <div className="w-7 h-7 flex items-center justify-center bg-gray-100 rounded-full text-sm font-semibold text-gray-600 group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors">
-                    {index + 1}
+                  {/* Rank number dropdown - fixed size, clickable for alternative ranking */}
+                  <div className="flex-shrink-0 relative group/rank">
+                    <span className="w-6 h-6 flex items-center justify-center bg-gray-100 rounded text-xs font-semibold text-gray-500 cursor-pointer hover:bg-indigo-100 hover:text-indigo-600 transition-colors">
+                      {index + 1}
+                    </span>
+                    {/* Small dropdown indicator */}
+                    <svg
+                      className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-2 h-2 text-gray-400 opacity-0 group-hover/rank:opacity-100 transition-opacity"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
                   </div>
-                  {/* Drag handle icon */}
+                  {/* Option label - flex-1 to take remaining space */}
+                  <span
+                    className="text-gray-700 text-sm flex-1 pt-0.5"
+                    style={{ hyphens: "auto", wordBreak: "break-word" }}
+                    lang="fr"
+                  >
+                    {option.label}
+                  </span>
+                  {/* Drag handle - fixed size */}
                   <svg
-                    className="w-5 h-5 text-gray-400 group-hover:text-indigo-400 transition-colors"
+                    className="w-4 h-4 text-gray-300 flex-shrink-0 mt-0.5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -733,25 +777,141 @@ function renderBlockContent(
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth={1.5}
+                      strokeWidth={2}
                       d="M4 8h16M4 16h16"
                     />
                   </svg>
-                  {/* Option label */}
-                  <span className="text-gray-700 text-sm flex-1">{option.label}</span>
-                  {/* Move arrows indicator */}
-                  <div className="flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                    </svg>
-                    <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-gray-500 mt-3">Drag items to reorder</p>
+          </div>
+        );
+      }
+
+      case "signature": {
+        // In split layout, don't use mx-auto (parent already has padding)
+        const isSplitLayoutForField = layout === "split" && block.coverImage;
+        const containerClasses = isSplitLayoutForField
+          ? "w-full pointer-events-none select-none text-left"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+
+        return (
+          <div className={containerClasses}>
+            {/* Signature canvas area */}
+            <div className="relative">
+              <div className="w-4/5 h-60 bg-white border border-gray-300 rounded flex items-center justify-center">
+                {/* Placeholder text */}
+                <span className="text-gray-400 text-sm">Sign here</span>
+              </div>
+              {/* Clear button - shown at bottom left */}
+              <button className="absolute bottom-2 left-2 px-3 py-1 text-xs text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded transition-colors">
+                Clear
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      case "file_upload": {
+        const allowMultiple = (block as any).allowMultiple || false;
+
+        // In split layout, don't use mx-auto (parent already has padding)
+        const isSplitLayoutForField = layout === "split" && block.coverImage;
+        const containerClasses = isSplitLayoutForField
+          ? "w-full pointer-events-none select-none text-left"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+
+        return (
+          <div className={containerClasses}>
+            {/* Upload drop zone */}
+            <div className="w-full border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-indigo-400 transition-colors cursor-pointer">
+              <div className="flex flex-col items-center justify-center text-center">
+                {/* Upload icon */}
+                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                  <svg
+                    className="w-6 h-6 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
+                  </svg>
+                </div>
+                <p className="text-sm font-medium text-gray-700 mb-1">
+                  {allowMultiple
+                    ? "Drop files here or click to upload"
+                    : "Drop a file here or click to upload"}
+                </p>
+                <p className="text-xs text-gray-500">Max file size: 10MB</p>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      case "matrix": {
+        const rows = (block as any).rows || [
+          { id: "1", label: "Option 1" },
+          { id: "2", label: "Option 2" },
+          { id: "3", label: "Option 3" },
+        ];
+        const columns = (block as any).columns || [
+          { id: "1", label: "1" },
+          { id: "2", label: "2" },
+          { id: "3", label: "3" },
+          { id: "4", label: "4" },
+          { id: "5", label: "5" },
+        ];
+        const multipleSelection = (block as any).multipleSelection || false;
+
+        const isSplitLayoutForField = layout === "split" && block.coverImage;
+        const containerClasses = isSplitLayoutForField
+          ? "w-full pointer-events-none select-none text-left"
+          : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none text-left";
+
+        return (
+          <div className={containerClasses}>
+            <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+              <table className="border-collapse" style={{ minWidth: "max-content" }}>
+                <thead>
+                  <tr>
+                    <th className="p-2 text-left sticky left-0 bg-white z-10 min-w-[120px]"></th>
+                    {columns.map((col: { id: string; label: string }) => (
+                      <th
+                        key={col.id}
+                        className="p-2 text-center text-sm font-medium text-gray-600 min-w-[60px]"
+                      >
+                        {col.label}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row: { id: string; label: string }) => (
+                    <tr key={row.id} className="border-t border-gray-200">
+                      <td className="p-3 text-sm text-gray-700 sticky left-0 bg-white z-10 min-w-[120px] whitespace-nowrap">
+                        {row.label}
+                      </td>
+                      {columns.map((col: { id: string; label: string }) => (
+                        <td key={col.id} className="p-2 text-center">
+                          <span
+                            className={cn(
+                              "w-5 h-5 border-2 border-gray-300 inline-flex items-center justify-center",
+                              multipleSelection ? "rounded" : "rounded-full"
+                            )}
+                          />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         );
       }
@@ -772,12 +932,28 @@ function renderBlockContent(
   const isStarRating = block.type === "star_rating" || block.type === "rating";
   const isOpinionScale = block.type === "opinion_scale" || block.type === "nps";
   const isRanking = block.type === "ranking";
+  const isSignature = block.type === "signature";
+  const isFileUpload = block.type === "file_upload";
+  const isMatrix = block.type === "matrix";
   const isSingleSelect = block.type === "single_select";
   const isMultiSelect = block.type === "multi_select";
   const isDropdown = block.type === "dropdown";
   const isSelectBlock = isSingleSelect || isMultiSelect || isDropdown;
   const needsLeftAlignment =
-    isContactInfo || isShortText || isLongText || isPhone || isWebsite || isNumber || isDate || isStarRating || isOpinionScale || isRanking || isSelectBlock;
+    isContactInfo ||
+    isShortText ||
+    isLongText ||
+    isPhone ||
+    isWebsite ||
+    isNumber ||
+    isDate ||
+    isStarRating ||
+    isOpinionScale ||
+    isRanking ||
+    isSignature ||
+    isFileUpload ||
+    isSelectBlock ||
+    isMatrix;
   const isSplitLayout = layout === "split" && block.coverImage;
 
   // Render text content
@@ -795,17 +971,16 @@ function renderBlockContent(
       </h1>
 
       {/* Description - Clickable */}
-      {block.description &&
-        block.description.replace(/<[^>]*>/g, "").trim() !== "" && (
-          <div
-            className={cn(
-              "text-base text-gray-600 cursor-pointer hover:text-indigo-600 transition-colors leading-relaxed",
-              needsLeftAlignment && !isSplitLayout && "w-full max-w-2xl mx-auto px-8 text-left"
-            )}
-            onClick={onDescriptionClick}
-            dangerouslySetInnerHTML={{ __html: block.description }}
-          />
-        )}
+      {block.description && block.description.replace(/<[^>]*>/g, "").trim() !== "" && (
+        <div
+          className={cn(
+            "text-base text-gray-600 cursor-pointer hover:text-indigo-600 transition-colors leading-relaxed",
+            needsLeftAlignment && !isSplitLayout && "w-full max-w-2xl mx-auto px-8 text-left"
+          )}
+          onClick={onDescriptionClick}
+          dangerouslySetInnerHTML={{ __html: block.description }}
+        />
+      )}
 
       {/* Block-specific fields */}
       {renderBlockFields()}

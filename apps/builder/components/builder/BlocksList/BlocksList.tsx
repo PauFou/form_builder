@@ -9,6 +9,7 @@ import {
   Phone,
   Hash,
   Calendar,
+  CalendarClock,
   MapPin,
   ChevronDown,
   CheckSquare,
@@ -18,10 +19,12 @@ import {
   CreditCard,
   Users,
   MessageSquare,
-  Settings,
+  MoreVertical,
   Copy,
   Trash2,
   List,
+  PenTool,
+  Grid3X3,
 } from "lucide-react";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 import { cn } from "../../../lib/utils";
@@ -70,12 +73,14 @@ const blockIcons: Record<string, React.ComponentType<any>> = {
   rating: Star,
   nps: Star,
   opinion_scale: Star,
-  file_upload: Upload,
   payment: CreditCard,
   contact_info: Users,
   statement: MessageSquare,
-  matrix: CheckSquare,
   ranking: List,
+  signature: PenTool,
+  file_upload: Upload,
+  scheduler: CalendarClock,
+  matrix: Grid3X3,
 };
 
 interface SortableBlockItemProps {
@@ -144,7 +149,7 @@ function SortableBlockItem({
               onClick={(e) => e.stopPropagation()}
               className="p-1 hover:bg-gray-100 rounded transition-colors opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100 data-[state=open]:bg-indigo-50 data-[state=open]:text-indigo-600"
             >
-              <Settings className="w-3.5 h-3.5" />
+              <MoreVertical className="w-3.5 h-3.5" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -238,7 +243,7 @@ export function BlocksList() {
       signature: "Please sign here",
       file_upload: "Upload your files",
       payment: "Payment details",
-      matrix: "Matrix question",
+      matrix: "How would you rate your experience?",
       nps: "How likely are you to recommend us to a friend?",
     };
     return questionMap[type] || "New question";

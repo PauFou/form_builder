@@ -44,6 +44,9 @@ export function PropertiesPanel() {
   // State for dragging options
   const [draggedOptionIndex, setDraggedOptionIndex] = useState<number | null>(null);
 
+  // State for file upload expanded category
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+
   // Close option menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -113,13 +116,29 @@ export function PropertiesPanel() {
   const isStarRating = selectedBlock.type === "star_rating" || selectedBlock.type === "rating";
   const isOpinionScale = selectedBlock.type === "opinion_scale" || selectedBlock.type === "nps";
   const isRanking = selectedBlock.type === "ranking";
+  const isSignature = selectedBlock.type === "signature";
+  const isFileUpload = selectedBlock.type === "file_upload";
   const isScheduler = selectedBlock.type === "scheduler";
+  const isMatrix = selectedBlock.type === "matrix";
   const isSingleSelect = selectedBlock.type === "single_select";
   const isMultiSelect = selectedBlock.type === "multi_select";
   const isDropdown = selectedBlock.type === "dropdown";
   const isSelectBlock = isSingleSelect || isMultiSelect || isDropdown;
   const needsLeftAlignment =
-    isContactInfo || isShortText || isLongText || isPhone || isWebsite || isNumber || isDate || isSelectBlock || isStarRating || isOpinionScale || isRanking;
+    isContactInfo ||
+    isShortText ||
+    isLongText ||
+    isPhone ||
+    isWebsite ||
+    isNumber ||
+    isDate ||
+    isSelectBlock ||
+    isStarRating ||
+    isOpinionScale ||
+    isRanking ||
+    isSignature ||
+    isFileUpload ||
+    isMatrix;
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -144,9 +163,7 @@ export function PropertiesPanel() {
 
           {/* Question/Title */}
           <div ref={questionRef} className="space-y-2">
-            <Label htmlFor="question">
-              {isContactInfo ? "Question" : "Title"}
-            </Label>
+            <Label htmlFor="question">{isContactInfo ? "Question" : "Title"}</Label>
             <Textarea
               id="question"
               value={selectedBlock.question || ""}
@@ -370,9 +387,7 @@ export function PropertiesPanel() {
 
           {/* Button Text */}
           <div ref={buttonTextRef} className="space-y-2">
-            <Label htmlFor="buttonText">
-              Button Text
-            </Label>
+            <Label htmlFor="buttonText">Button Text</Label>
             <Input
               id="buttonText"
               value={selectedBlock.buttonText || ""}
@@ -394,9 +409,7 @@ export function PropertiesPanel() {
             <>
               {/* Placeholder */}
               <div className="space-y-2">
-                <Label htmlFor="placeholder">
-                  Placeholder
-                </Label>
+                <Label htmlFor="placeholder">Placeholder</Label>
                 <Input
                   id="placeholder"
                   value={(selectedBlock as any).placeholder || ""}
@@ -425,9 +438,7 @@ export function PropertiesPanel() {
                     )}
                   </button>
                   <div>
-                    <Label className="cursor-pointer">
-                      Required field
-                    </Label>
+                    <Label className="cursor-pointer">Required field</Label>
                     <p className="text-sm text-gray-500 mt-0.5">
                       If checked, users will be required to complete this field.
                     </p>
@@ -437,9 +448,7 @@ export function PropertiesPanel() {
 
               {/* Auto fill via URL parameter */}
               <div className="space-y-2">
-                <Label htmlFor="urlParam">
-                  Auto fill via URL parameter
-                </Label>
+                <Label htmlFor="urlParam">Auto fill via URL parameter</Label>
                 <Input
                   id="urlParam"
                   value={(selectedBlock as any).urlParam || ""}
@@ -456,9 +465,7 @@ export function PropertiesPanel() {
             <>
               {/* Placeholder */}
               <div className="space-y-2">
-                <Label htmlFor="placeholder">
-                  Placeholder
-                </Label>
+                <Label htmlFor="placeholder">Placeholder</Label>
                 <Input
                   id="placeholder"
                   value={(selectedBlock as any).placeholder || ""}
@@ -470,9 +477,7 @@ export function PropertiesPanel() {
 
               {/* Text box size */}
               <div className="space-y-2">
-                <Label htmlFor="textBoxSize">
-                  Text box size
-                </Label>
+                <Label htmlFor="textBoxSize">Text box size</Label>
                 <select
                   id="textBoxSize"
                   value={(selectedBlock as any).textBoxSize || "small"}
@@ -504,9 +509,7 @@ export function PropertiesPanel() {
                     )}
                   </button>
                   <div>
-                    <Label className="cursor-pointer">
-                      Required field
-                    </Label>
+                    <Label className="cursor-pointer">Required field</Label>
                     <p className="text-sm text-gray-500 mt-0.5">
                       If checked, users will be required to complete this field.
                     </p>
@@ -516,9 +519,7 @@ export function PropertiesPanel() {
 
               {/* Minimum characters */}
               <div className="space-y-2">
-                <Label htmlFor="minChars">
-                  Minimum characters
-                </Label>
+                <Label htmlFor="minChars">Minimum characters</Label>
                 <Input
                   id="minChars"
                   type="number"
@@ -535,9 +536,7 @@ export function PropertiesPanel() {
 
               {/* Maximum characters */}
               <div className="space-y-2">
-                <Label htmlFor="maxChars">
-                  Maximum characters
-                </Label>
+                <Label htmlFor="maxChars">Maximum characters</Label>
                 <Input
                   id="maxChars"
                   type="number"
@@ -559,9 +558,7 @@ export function PropertiesPanel() {
             <>
               {/* Default country */}
               <div className="space-y-2">
-                <Label htmlFor="defaultCountry">
-                  Default country
-                </Label>
+                <Label htmlFor="defaultCountry">Default country</Label>
                 <select
                   id="defaultCountry"
                   value={(selectedBlock as any).defaultCountry || "FR"}
@@ -609,9 +606,7 @@ export function PropertiesPanel() {
                     )}
                   </button>
                   <div>
-                    <Label className="cursor-pointer">
-                      Required field
-                    </Label>
+                    <Label className="cursor-pointer">Required field</Label>
                     <p className="text-sm text-gray-500 mt-0.5">
                       If checked, users will be required to complete this field.
                     </p>
@@ -626,9 +621,7 @@ export function PropertiesPanel() {
             <>
               {/* Placeholder */}
               <div className="space-y-2">
-                <Label htmlFor="placeholder">
-                  Placeholder
-                </Label>
+                <Label htmlFor="placeholder">Placeholder</Label>
                 <Input
                   id="placeholder"
                   value={(selectedBlock as any).placeholder || ""}
@@ -657,9 +650,7 @@ export function PropertiesPanel() {
                     )}
                   </button>
                   <div>
-                    <Label className="cursor-pointer">
-                      Required field
-                    </Label>
+                    <Label className="cursor-pointer">Required field</Label>
                     <p className="text-sm text-gray-500 mt-0.5">
                       If checked, users will be required to complete this field.
                     </p>
@@ -669,9 +660,7 @@ export function PropertiesPanel() {
 
               {/* Auto fill via URL parameter */}
               <div className="space-y-2">
-                <Label htmlFor="urlParam">
-                  Auto fill via URL parameter
-                </Label>
+                <Label htmlFor="urlParam">Auto fill via URL parameter</Label>
                 <Input
                   id="urlParam"
                   value={(selectedBlock as any).urlParam || ""}
@@ -688,9 +677,7 @@ export function PropertiesPanel() {
             <>
               {/* Placeholder */}
               <div className="space-y-2">
-                <Label htmlFor="placeholder">
-                  Placeholder
-                </Label>
+                <Label htmlFor="placeholder">Placeholder</Label>
                 <Input
                   id="placeholder"
                   value={(selectedBlock as any).placeholder || ""}
@@ -719,9 +706,7 @@ export function PropertiesPanel() {
                     )}
                   </button>
                   <div>
-                    <Label className="cursor-pointer">
-                      Required field
-                    </Label>
+                    <Label className="cursor-pointer">Required field</Label>
                     <p className="text-sm text-gray-500 mt-0.5">
                       If checked, users will be required to complete this field.
                     </p>
@@ -731,9 +716,7 @@ export function PropertiesPanel() {
 
               {/* Minimum Number */}
               <div className="space-y-2">
-                <Label htmlFor="minNumber">
-                  Minimum Number
-                </Label>
+                <Label htmlFor="minNumber">Minimum Number</Label>
                 <Input
                   id="minNumber"
                   type="number"
@@ -749,9 +732,7 @@ export function PropertiesPanel() {
 
               {/* Maximum Number */}
               <div className="space-y-2">
-                <Label htmlFor="maxNumber">
-                  Maximum Number
-                </Label>
+                <Label htmlFor="maxNumber">Maximum Number</Label>
                 <Input
                   id="maxNumber"
                   type="number"
@@ -767,9 +748,7 @@ export function PropertiesPanel() {
 
               {/* Auto fill via URL parameter */}
               <div className="space-y-2">
-                <Label htmlFor="urlParam">
-                  Auto fill via URL parameter
-                </Label>
+                <Label htmlFor="urlParam">Auto fill via URL parameter</Label>
                 <Input
                   id="urlParam"
                   value={(selectedBlock as any).urlParam || ""}
@@ -786,9 +765,7 @@ export function PropertiesPanel() {
             <>
               {/* Date format by country */}
               <div className="space-y-2">
-                <Label htmlFor="dateFormat">
-                  Date format
-                </Label>
+                <Label htmlFor="dateFormat">Date format</Label>
                 <select
                   id="dateFormat"
                   value={(selectedBlock as any).dateFormat || "FR"}
@@ -824,9 +801,7 @@ export function PropertiesPanel() {
                     )}
                   </button>
                   <div>
-                    <Label className="cursor-pointer">
-                      Required field
-                    </Label>
+                    <Label className="cursor-pointer">Required field</Label>
                     <p className="text-sm text-gray-500 mt-0.5">
                       If checked, users will be required to complete this field.
                     </p>
@@ -836,9 +811,7 @@ export function PropertiesPanel() {
 
               {/* Auto fill via URL parameter */}
               <div className="space-y-2">
-                <Label htmlFor="urlParam">
-                  Auto fill via URL parameter
-                </Label>
+                <Label htmlFor="urlParam">Auto fill via URL parameter</Label>
                 <Input
                   id="urlParam"
                   value={(selectedBlock as any).urlParam || ""}
@@ -855,9 +828,7 @@ export function PropertiesPanel() {
             <>
               {/* Max Rating */}
               <div className="space-y-2">
-                <Label htmlFor="maxRating">
-                  Max Rating
-                </Label>
+                <Label htmlFor="maxRating">Max Rating</Label>
                 <select
                   id="maxRating"
                   value={(selectedBlock as any).maxRating || 5}
@@ -891,9 +862,7 @@ export function PropertiesPanel() {
                     )}
                   </button>
                   <div>
-                    <Label className="cursor-pointer">
-                      Required field
-                    </Label>
+                    <Label className="cursor-pointer">Required field</Label>
                     <p className="text-sm text-gray-500 mt-0.5">
                       If checked, users will be required to complete this field.
                     </p>
@@ -903,9 +872,7 @@ export function PropertiesPanel() {
 
               {/* Auto fill via URL parameter */}
               <div className="space-y-2">
-                <Label htmlFor="urlParam">
-                  Auto fill via URL parameter
-                </Label>
+                <Label htmlFor="urlParam">Auto fill via URL parameter</Label>
                 <Input
                   id="urlParam"
                   value={(selectedBlock as any).urlParam || ""}
@@ -922,9 +889,7 @@ export function PropertiesPanel() {
             <>
               {/* Left Label */}
               <div className="space-y-2">
-                <Label htmlFor="leftLabel">
-                  Left Label
-                </Label>
+                <Label htmlFor="leftLabel">Left Label</Label>
                 <Input
                   id="leftLabel"
                   value={(selectedBlock as any).leftLabel || ""}
@@ -936,9 +901,7 @@ export function PropertiesPanel() {
 
               {/* Right Label */}
               <div className="space-y-2">
-                <Label htmlFor="rightLabel">
-                  Right Label
-                </Label>
+                <Label htmlFor="rightLabel">Right Label</Label>
                 <Input
                   id="rightLabel"
                   value={(selectedBlock as any).rightLabel || ""}
@@ -952,9 +915,7 @@ export function PropertiesPanel() {
               <div className="flex gap-3">
                 {/* Start */}
                 <div className="flex-1 space-y-2">
-                  <Label htmlFor="scaleStart">
-                    Start
-                  </Label>
+                  <Label htmlFor="scaleStart">Start</Label>
                   <select
                     id="scaleStart"
                     value={(selectedBlock as any).scaleStart || 1}
@@ -971,9 +932,7 @@ export function PropertiesPanel() {
 
                 {/* End */}
                 <div className="flex-1 space-y-2">
-                  <Label htmlFor="scaleEnd">
-                    End
-                  </Label>
+                  <Label htmlFor="scaleEnd">End</Label>
                   <select
                     id="scaleEnd"
                     value={(selectedBlock as any).scaleEnd || 10}
@@ -1008,9 +967,7 @@ export function PropertiesPanel() {
                     )}
                   </button>
                   <div>
-                    <Label className="cursor-pointer">
-                      Required field
-                    </Label>
+                    <Label className="cursor-pointer">Required field</Label>
                     <p className="text-sm text-gray-500 mt-0.5">
                       If checked, users will be required to complete this field.
                     </p>
@@ -1020,9 +977,7 @@ export function PropertiesPanel() {
 
               {/* Auto fill via URL parameter */}
               <div className="space-y-2">
-                <Label htmlFor="urlParam">
-                  Auto fill via URL parameter
-                </Label>
+                <Label htmlFor="urlParam">Auto fill via URL parameter</Label>
                 <Input
                   id="urlParam"
                   value={(selectedBlock as any).urlParam || ""}
@@ -1071,9 +1026,7 @@ export function PropertiesPanel() {
                     )}
                   </button>
                   <div>
-                    <Label className="cursor-pointer">
-                      Required field
-                    </Label>
+                    <Label className="cursor-pointer">Required field</Label>
                     <p className="text-sm text-gray-500 mt-0.5">
                       If checked, users will be required to complete this field.
                     </p>
@@ -1168,15 +1121,17 @@ export function PropertiesPanel() {
                               className="flex-1 min-w-0 text-sm border-0 shadow-none focus:ring-0 bg-transparent px-1.5 h-7"
                               placeholder={`Option ${index + 1}`}
                             />
-                            {/* Delete button */}
-                            {options.length > 2 && (
-                              <button
-                                onClick={() => removeOption(index)}
-                                className="p-1 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-                              >
-                                <X className="w-3.5 h-3.5" />
-                              </button>
-                            )}
+                            {/* Delete button - pushed to far right */}
+                            <div className="flex-shrink-0 w-6 flex justify-end">
+                              {options.length > 2 && (
+                                <button
+                                  onClick={() => removeOption(index)}
+                                  className="p-1 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
                           </div>
                         ))}
                         <button
@@ -1249,9 +1204,7 @@ export function PropertiesPanel() {
 
               {/* Auto fill via URL parameter */}
               <div className="space-y-2">
-                <Label htmlFor="urlParam">
-                  Auto fill via URL parameter
-                </Label>
+                <Label htmlFor="urlParam">Auto fill via URL parameter</Label>
                 <Input
                   id="urlParam"
                   value={(selectedBlock as any).urlParam || ""}
@@ -1259,6 +1212,577 @@ export function PropertiesPanel() {
                   placeholder="e.g ranking"
                   className="text-sm"
                 />
+              </div>
+            </>
+          )}
+
+          {/* File Upload specific fields */}
+          {isFileUpload && (
+            <>
+              {/* Required field */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2.5">
+                  <button
+                    role="checkbox"
+                    aria-checked={selectedBlock.required || false}
+                    onClick={() => handleUpdate({ required: !selectedBlock.required })}
+                    className={cn(
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      selectedBlock.required
+                        ? "bg-indigo-600 border-indigo-600"
+                        : "bg-white border-gray-300 hover:border-gray-400"
+                    )}
+                  >
+                    {selectedBlock.required && (
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                    )}
+                  </button>
+                  <div>
+                    <Label className="cursor-pointer">Required field</Label>
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      If checked, users will be required to complete this field.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Allow multiple */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2.5">
+                  <button
+                    role="checkbox"
+                    aria-checked={(selectedBlock as any).allowMultiple || false}
+                    onClick={() =>
+                      handleUpdate({ allowMultiple: !(selectedBlock as any).allowMultiple })
+                    }
+                    className={cn(
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      (selectedBlock as any).allowMultiple
+                        ? "bg-indigo-600 border-indigo-600"
+                        : "bg-white border-gray-300 hover:border-gray-400"
+                    )}
+                  >
+                    {(selectedBlock as any).allowMultiple && (
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                    )}
+                  </button>
+                  <div>
+                    <Label className="cursor-pointer">Allow multiple</Label>
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      If checked, user will be able to upload multiple files.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Allowed File Types */}
+              <div className="space-y-2">
+                <Label>Allowed File Types</Label>
+                {(() => {
+                  const allowedTypes = (selectedBlock as any).allowedFileTypes || [];
+
+                  const fileCategories = [
+                    {
+                      id: "image",
+                      name: "Image",
+                      description: "All image files",
+                      types: [
+                        ".jpg",
+                        ".jpeg",
+                        ".png",
+                        ".gif",
+                        ".svg",
+                        ".heic",
+                        ".webp",
+                        ".bmp",
+                        ".psd",
+                      ],
+                    },
+                    {
+                      id: "video",
+                      name: "Video",
+                      description: "All video files",
+                      types: [".mp4", ".mov", ".webm"],
+                    },
+                    {
+                      id: "audio",
+                      name: "Audio",
+                      description: "All audio files",
+                      types: [".mp3", ".wav", ".m4a"],
+                    },
+                    {
+                      id: "text",
+                      name: "Text",
+                      description: "Text and markup files",
+                      types: [".txt", ".csv", ".html", ".xml"],
+                    },
+                    {
+                      id: "application",
+                      name: "Application",
+                      description: "Documents and other files",
+                      types: [
+                        ".pdf",
+                        ".doc",
+                        ".docx",
+                        ".xls",
+                        ".xlsx",
+                        ".ppt",
+                        ".pptx",
+                        ".zip",
+                        ".rar",
+                        ".json",
+                        ".gzip",
+                        ".odt",
+                        ".ttf",
+                        ".stl",
+                        ".dcm",
+                      ],
+                    },
+                  ];
+
+                  const toggleType = (type: string) => {
+                    const newTypes = allowedTypes.includes(type)
+                      ? allowedTypes.filter((t: string) => t !== type)
+                      : [...allowedTypes, type];
+                    handleUpdate({ allowedFileTypes: newTypes });
+                  };
+
+                  const isCategoryFullySelected = (category: (typeof fileCategories)[0]) =>
+                    category.types.every((type) => allowedTypes.includes(type));
+
+                  const toggleAllInCategory = (category: (typeof fileCategories)[0]) => {
+                    if (isCategoryFullySelected(category)) {
+                      // Deselect all
+                      const newTypes = allowedTypes.filter(
+                        (t: string) => !category.types.includes(t)
+                      );
+                      handleUpdate({ allowedFileTypes: newTypes });
+                    } else {
+                      // Select all
+                      const newTypes = Array.from(new Set([...allowedTypes, ...category.types]));
+                      handleUpdate({ allowedFileTypes: newTypes });
+                    }
+                  };
+
+                  const removeType = (type: string) => {
+                    handleUpdate({
+                      allowedFileTypes: allowedTypes.filter((t: string) => t !== type),
+                    });
+                  };
+
+                  return (
+                    <div className="space-y-2">
+                      {/* Dropdown */}
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setExpandedCategory(
+                              expandedCategory === "fileTypes" ? null : "fileTypes"
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded text-sm text-left bg-white hover:border-gray-400 transition-colors flex items-center justify-between"
+                        >
+                          <span className="text-gray-600">
+                            {allowedTypes.length === 0
+                              ? "All file types accepted"
+                              : `${allowedTypes.length} type${allowedTypes.length > 1 ? "s" : ""} selected`}
+                          </span>
+                          <svg
+                            className={cn(
+                              "w-4 h-4 text-gray-400 transition-transform",
+                              expandedCategory === "fileTypes" && "rotate-180"
+                            )}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        </button>
+
+                        {/* Dropdown menu */}
+                        {expandedCategory === "fileTypes" && (
+                          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-80 overflow-y-auto">
+                            {/* Helper text */}
+                            <div className="px-3 py-2 border-b border-gray-200">
+                              <p className="text-xs text-gray-500">
+                                Select file types that users can upload. Leave empty to allow all
+                                supported file types.
+                              </p>
+                            </div>
+
+                            {fileCategories.map((category) => (
+                              <div
+                                key={category.id}
+                                className="border-b border-gray-100 last:border-b-0"
+                              >
+                                {/* Category header */}
+                                <div className="px-3 py-2 bg-gray-50 flex items-center justify-between">
+                                  <div>
+                                    <span className="text-sm font-medium text-gray-700">
+                                      {category.name}
+                                    </span>
+                                    <p className="text-xs text-gray-500">{category.description}</p>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleAllInCategory(category)}
+                                    className="text-xs text-indigo-600 hover:text-indigo-700 font-medium whitespace-nowrap"
+                                  >
+                                    {isCategoryFullySelected(category)
+                                      ? "Deselect all"
+                                      : "Select all"}
+                                  </button>
+                                </div>
+                                {/* Types with checkboxes */}
+                                <div className="px-3 py-2 flex flex-wrap gap-x-4 gap-y-1">
+                                  {category.types.map((type) => (
+                                    <button
+                                      key={type}
+                                      type="button"
+                                      onClick={() => toggleType(type)}
+                                      className="flex items-center gap-1.5 cursor-pointer"
+                                    >
+                                      <span
+                                        className={cn(
+                                          "w-3.5 h-3.5 rounded border flex items-center justify-center transition-all flex-shrink-0",
+                                          allowedTypes.includes(type)
+                                            ? "bg-indigo-600 border-indigo-600"
+                                            : "bg-white border-gray-300 hover:border-gray-400"
+                                        )}
+                                      >
+                                        {allowedTypes.includes(type) && (
+                                          <Check
+                                            className="w-2.5 h-2.5 text-white"
+                                            strokeWidth={3}
+                                          />
+                                        )}
+                                      </span>
+                                      <span className="text-sm text-gray-700">{type}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Selected types as tags */}
+                      {allowedTypes.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {allowedTypes.map((type: string) => (
+                            <span
+                              key={type}
+                              className="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs rounded"
+                            >
+                              {type}
+                              <button
+                                type="button"
+                                onClick={() => removeType(type)}
+                                className="hover:text-indigo-900"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* PRO limit notice */}
+                      <div className="px-3 py-2 bg-amber-50 border border-amber-200 rounded">
+                        <p className="text-xs text-amber-700">
+                          Max file size: 10MB.{" "}
+                          <a href="#" className="font-medium underline hover:no-underline">
+                            Upgrade to PRO
+                          </a>{" "}
+                          for larger files.
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            </>
+          )}
+
+          {/* Matrix specific fields */}
+          {isMatrix && (
+            <>
+              {/* Rows */}
+              <div className="space-y-2">
+                <Label>Rows</Label>
+                <div className="space-y-1.5">
+                  {(() => {
+                    const rows = (selectedBlock as any).rows || [
+                      { id: "1", label: "Option 1" },
+                      { id: "2", label: "Option 2" },
+                      { id: "3", label: "Option 3" },
+                    ];
+
+                    const updateRow = (index: number, updates: { label: string }) => {
+                      const newRows = [...rows];
+                      newRows[index] = { ...newRows[index], ...updates };
+                      handleUpdate({ rows: newRows });
+                    };
+
+                    const addRow = () => {
+                      const newRows = [
+                        ...rows,
+                        { id: crypto.randomUUID(), label: `Option ${rows.length + 1}` },
+                      ];
+                      handleUpdate({ rows: newRows });
+                    };
+
+                    const removeRow = (index: number) => {
+                      if (rows.length > 1) {
+                        const newRows = rows.filter((_: unknown, i: number) => i !== index);
+                        handleUpdate({ rows: newRows });
+                      }
+                    };
+
+                    const moveRow = (fromIndex: number, toIndex: number) => {
+                      if (toIndex < 0 || toIndex >= rows.length) return;
+                      const newRows = [...rows];
+                      const [removed] = newRows.splice(fromIndex, 1);
+                      newRows.splice(toIndex, 0, removed);
+                      handleUpdate({ rows: newRows });
+                    };
+
+                    const handleDragStartRow = (e: React.DragEvent, index: number) => {
+                      setDraggedOptionIndex(index);
+                      e.dataTransfer.effectAllowed = "move";
+                      e.dataTransfer.setData("dragType", "row");
+                    };
+
+                    const handleDragOverRow = (e: React.DragEvent, index: number) => {
+                      e.preventDefault();
+                      if (draggedOptionIndex === null || draggedOptionIndex === index) return;
+                      if (e.dataTransfer.getData("dragType") !== "row") return;
+                      moveRow(draggedOptionIndex, index);
+                      setDraggedOptionIndex(index);
+                    };
+
+                    const handleDragEndRow = () => {
+                      setDraggedOptionIndex(null);
+                    };
+
+                    return (
+                      <>
+                        {rows.map((row: { id: string; label: string }, index: number) => (
+                          <div
+                            key={row.id || index}
+                            draggable
+                            onDragStart={(e) => handleDragStartRow(e, index)}
+                            onDragOver={(e) => handleDragOverRow(e, index)}
+                            onDragEnd={handleDragEndRow}
+                            className={cn(
+                              "flex items-center gap-1 px-1.5 py-1 border border-gray-200 rounded bg-white group",
+                              draggedOptionIndex === index && "opacity-50"
+                            )}
+                          >
+                            <div className="cursor-grab active:cursor-grabbing p-0.5 text-gray-400 hover:text-gray-600 flex-shrink-0">
+                              <GripVertical className="w-3.5 h-3.5" />
+                            </div>
+                            <Input
+                              value={row.label}
+                              onChange={(e) => updateRow(index, { label: e.target.value })}
+                              className="flex-1 min-w-0 text-sm border-0 shadow-none focus:ring-0 bg-transparent px-1.5 h-7"
+                              placeholder={`Option ${index + 1}`}
+                            />
+                            <div className="flex-shrink-0 w-6 flex justify-end">
+                              {rows.length > 1 && (
+                                <button
+                                  onClick={() => removeRow(index)}
+                                  className="p-1 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                        <button
+                          onClick={addRow}
+                          className="flex items-center gap-1.5 text-indigo-600 hover:text-indigo-700 text-sm font-medium mt-1.5"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Row
+                        </button>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {/* Columns */}
+              <div className="space-y-2">
+                <Label>Columns</Label>
+                <div className="space-y-1.5">
+                  {(() => {
+                    const columns = (selectedBlock as any).columns || [
+                      { id: "1", label: "1" },
+                      { id: "2", label: "2" },
+                      { id: "3", label: "3" },
+                      { id: "4", label: "4" },
+                      { id: "5", label: "5" },
+                    ];
+
+                    const updateColumn = (index: number, updates: { label: string }) => {
+                      const newColumns = [...columns];
+                      newColumns[index] = { ...newColumns[index], ...updates };
+                      handleUpdate({ columns: newColumns });
+                    };
+
+                    const addColumn = () => {
+                      const newColumns = [
+                        ...columns,
+                        { id: crypto.randomUUID(), label: `${columns.length + 1}` },
+                      ];
+                      handleUpdate({ columns: newColumns });
+                    };
+
+                    const removeColumn = (index: number) => {
+                      if (columns.length > 2) {
+                        const newColumns = columns.filter((_: unknown, i: number) => i !== index);
+                        handleUpdate({ columns: newColumns });
+                      }
+                    };
+
+                    const moveColumn = (fromIndex: number, toIndex: number) => {
+                      if (toIndex < 0 || toIndex >= columns.length) return;
+                      const newColumns = [...columns];
+                      const [removed] = newColumns.splice(fromIndex, 1);
+                      newColumns.splice(toIndex, 0, removed);
+                      handleUpdate({ columns: newColumns });
+                    };
+
+                    const handleDragStartCol = (e: React.DragEvent, index: number) => {
+                      setDraggedOptionIndex(index);
+                      e.dataTransfer.effectAllowed = "move";
+                      e.dataTransfer.setData("dragType", "column");
+                    };
+
+                    const handleDragOverCol = (e: React.DragEvent, index: number) => {
+                      e.preventDefault();
+                      if (draggedOptionIndex === null || draggedOptionIndex === index) return;
+                      if (e.dataTransfer.getData("dragType") !== "column") return;
+                      moveColumn(draggedOptionIndex, index);
+                      setDraggedOptionIndex(index);
+                    };
+
+                    const handleDragEndCol = () => {
+                      setDraggedOptionIndex(null);
+                    };
+
+                    return (
+                      <>
+                        {columns.map((col: { id: string; label: string }, index: number) => (
+                          <div
+                            key={col.id || index}
+                            draggable
+                            onDragStart={(e) => handleDragStartCol(e, index)}
+                            onDragOver={(e) => handleDragOverCol(e, index)}
+                            onDragEnd={handleDragEndCol}
+                            className={cn(
+                              "flex items-center gap-1 px-1.5 py-1 border border-gray-200 rounded bg-white group",
+                              draggedOptionIndex === index && "opacity-50"
+                            )}
+                          >
+                            <div className="cursor-grab active:cursor-grabbing p-0.5 text-gray-400 hover:text-gray-600 flex-shrink-0">
+                              <GripVertical className="w-3.5 h-3.5" />
+                            </div>
+                            <Input
+                              value={col.label}
+                              onChange={(e) => updateColumn(index, { label: e.target.value })}
+                              className="flex-1 min-w-0 text-sm border-0 shadow-none focus:ring-0 bg-transparent px-1.5 h-7"
+                              placeholder={`${index + 1}`}
+                            />
+                            <div className="flex-shrink-0 w-6 flex justify-end">
+                              {columns.length > 2 && (
+                                <button
+                                  onClick={() => removeColumn(index)}
+                                  className="p-1 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                        <button
+                          onClick={addColumn}
+                          className="flex items-center gap-1.5 text-indigo-600 hover:text-indigo-700 text-sm font-medium mt-1.5"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Column
+                        </button>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {/* Multiple selection */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2.5">
+                  <button
+                    role="checkbox"
+                    aria-checked={(selectedBlock as any).multipleSelection || false}
+                    onClick={() =>
+                      handleUpdate({ multipleSelection: !(selectedBlock as any).multipleSelection })
+                    }
+                    className={cn(
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      (selectedBlock as any).multipleSelection
+                        ? "bg-indigo-600 border-indigo-600"
+                        : "bg-white border-gray-300 hover:border-gray-400"
+                    )}
+                  >
+                    {(selectedBlock as any).multipleSelection && (
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                    )}
+                  </button>
+                  <div>
+                    <Label className="cursor-pointer">Multiple selection</Label>
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      Allow multiple selections per row. Selection buttons will appear as squares.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Required field */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2.5">
+                  <button
+                    role="checkbox"
+                    aria-checked={selectedBlock.required || false}
+                    onClick={() => handleUpdate({ required: !selectedBlock.required })}
+                    className={cn(
+                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
+                      selectedBlock.required
+                        ? "bg-indigo-600 border-indigo-600"
+                        : "bg-white border-gray-300 hover:border-gray-400"
+                    )}
+                  >
+                    {selectedBlock.required && (
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                    )}
+                  </button>
+                  <div>
+                    <Label className="cursor-pointer">Required field</Label>
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      If checked, users will be required to complete this field.
+                    </p>
+                  </div>
+                </div>
               </div>
             </>
           )}
@@ -1465,7 +1989,9 @@ export function PropertiesPanel() {
                     <button
                       role="checkbox"
                       aria-checked={(selectedBlock as any).allowOther || false}
-                      onClick={() => handleUpdate({ allowOther: !(selectedBlock as any).allowOther })}
+                      onClick={() =>
+                        handleUpdate({ allowOther: !(selectedBlock as any).allowOther })
+                      }
                       className={cn(
                         "w-4 h-4 rounded border-2 flex items-center justify-center transition-all flex-shrink-0",
                         (selectedBlock as any).allowOther
@@ -1736,9 +2262,7 @@ export function PropertiesPanel() {
 
               {/* Auto fill via URL parameter */}
               <div className="space-y-2">
-                <Label htmlFor="urlParam">
-                  Auto fill via URL parameter
-                </Label>
+                <Label htmlFor="urlParam">Auto fill via URL parameter</Label>
                 <Input
                   id="urlParam"
                   value={(selectedBlock as any).urlParam || ""}
@@ -1831,9 +2355,7 @@ export function PropertiesPanel() {
           {/* Layout - Only show if cover image exists */}
           {(selectedBlock as any).coverImage && (
             <div className="space-y-2">
-              <Label htmlFor="layout">
-                Layout
-              </Label>
+              <Label htmlFor="layout">Layout</Label>
               <div className="flex gap-2">
                 {/* Layout selector */}
                 <div className={(selectedBlock as any).layout === "split" ? "flex-1" : "w-full"}>

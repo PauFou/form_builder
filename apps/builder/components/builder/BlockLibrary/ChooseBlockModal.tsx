@@ -16,6 +16,11 @@ import {
   Star,
   Calendar,
   ListOrdered,
+  PenTool,
+  Upload,
+  CreditCard,
+  CalendarClock,
+  Grid3X3,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 
@@ -200,11 +205,22 @@ const blocks: Block[] = [
   {
     id: "scheduler",
     name: "Scheduler",
-    icon: Calendar,
+    icon: CalendarClock,
     bgColor: "bg-violet-200",
     textColor: "text-violet-900",
     preview: {
       title: "Book a meeting",
+      fields: [],
+    },
+  },
+  {
+    id: "payment",
+    name: "Payment",
+    icon: CreditCard,
+    bgColor: "bg-green-200",
+    textColor: "text-green-900",
+    preview: {
+      title: "Complete your payment",
       fields: [],
     },
   },
@@ -221,6 +237,39 @@ const blocks: Block[] = [
         { label: "Option 2", placeholder: "" },
         { label: "Option 3", placeholder: "" },
       ],
+    },
+  },
+  {
+    id: "matrix",
+    name: "Matrix",
+    icon: Grid3X3,
+    bgColor: "bg-fuchsia-200",
+    textColor: "text-fuchsia-900",
+    preview: {
+      title: "How would you rate your experience?",
+      fields: [],
+    },
+  },
+  {
+    id: "signature",
+    name: "Signature",
+    icon: PenTool,
+    bgColor: "bg-slate-200",
+    textColor: "text-slate-900",
+    preview: {
+      title: "Please sign here",
+      fields: [],
+    },
+  },
+  {
+    id: "file_upload",
+    name: "File Upload",
+    icon: Upload,
+    bgColor: "bg-emerald-200",
+    textColor: "text-emerald-900",
+    preview: {
+      title: "Please upload a file",
+      fields: [],
     },
   },
 ];

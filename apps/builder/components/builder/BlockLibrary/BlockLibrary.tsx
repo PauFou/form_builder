@@ -41,6 +41,10 @@ export function BlockLibrary() {
       date: "Select a date",
       scheduler: "Book a meeting",
       ranking: "Rank these options",
+      matrix: "How would you rate your experience?",
+      signature: "Please sign here",
+      file_upload: "Please upload a file",
+      payment: "Complete your payment",
     };
     return questionMap[type] || "New question";
   };
