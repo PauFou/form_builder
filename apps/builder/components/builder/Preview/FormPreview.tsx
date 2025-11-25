@@ -28,18 +28,25 @@ export function FormPreview() {
   // Compute styles from design settings
   const getCornerRadius = () => {
     switch (designSettings.cornerStyle) {
-      case "very_rounded": return "16px";
-      case "rounded": return "8px";
-      case "square": return "0px";
-      default: return "4px"; // normal
+      case "very_rounded":
+        return "16px";
+      case "rounded":
+        return "8px";
+      case "square":
+        return "0px";
+      default:
+        return "4px"; // normal
     }
   };
 
   const getFontSizeScale = () => {
     switch (designSettings.fontSize) {
-      case "small": return 0.8;
-      case "large": return 1.25;
-      default: return 1; // medium
+      case "small":
+        return 0.8;
+      case "large":
+        return 1.25;
+      default:
+        return 1; // medium
     }
   };
 
@@ -267,22 +274,44 @@ function renderBlockContent(
               <div className={cn("grid gap-4", row1BothVisible ? "grid-cols-2" : "grid-cols-1")}>
                 {fields.firstName.visible && (
                   <div>
-                    <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                    <label
+                      className={"block font-medium mb-2 text-left"}
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                    >
                       {fields.firstName.label}
                       {fields.firstName.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
-                    <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                    <div
+                      className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                      style={{
+                        fontSize: `${inputSize}px`,
+                        borderColor: designStyles.answerColor,
+                        color: designStyles.answerColor,
+                        opacity: 0.5,
+                      }}
+                    >
                       {fields.firstName.placeholder}
                     </div>
                   </div>
                 )}
                 {fields.lastName.visible && (
                   <div>
-                    <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                    <label
+                      className={"block font-medium mb-2 text-left"}
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                    >
                       {fields.lastName.label}
                       {fields.lastName.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
-                    <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                    <div
+                      className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                      style={{
+                        fontSize: `${inputSize}px`,
+                        borderColor: designStyles.answerColor,
+                        color: designStyles.answerColor,
+                        opacity: 0.5,
+                      }}
+                    >
                       {fields.lastName.placeholder}
                     </div>
                   </div>
@@ -295,22 +324,44 @@ function renderBlockContent(
               <div className={cn("grid gap-4", row2BothVisible ? "grid-cols-2" : "grid-cols-1")}>
                 {fields.email.visible && (
                   <div>
-                    <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                    <label
+                      className={"block font-medium mb-2 text-left"}
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                    >
                       {fields.email.label}
                       {fields.email.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
-                    <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                    <div
+                      className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                      style={{
+                        fontSize: `${inputSize}px`,
+                        borderColor: designStyles.answerColor,
+                        color: designStyles.answerColor,
+                        opacity: 0.5,
+                      }}
+                    >
                       {fields.email.placeholder}
                     </div>
                   </div>
                 )}
                 {fields.phone.visible && (
                   <div>
-                    <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                    <label
+                      className={"block font-medium mb-2 text-left"}
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                    >
                       {fields.phone.label}
                       {fields.phone.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
-                    <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                    <div
+                      className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                      style={{
+                        fontSize: `${inputSize}px`,
+                        borderColor: designStyles.answerColor,
+                        color: designStyles.answerColor,
+                        opacity: 0.5,
+                      }}
+                    >
                       {fields.phone.placeholder}
                     </div>
                   </div>
@@ -321,11 +372,22 @@ function renderBlockContent(
             {/* Row 3: Company (full width) */}
             {fields.company.visible && (
               <div>
-                <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                <label
+                  className={"block font-medium mb-2 text-left"}
+                  style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                >
                   {fields.company.label}
                   {fields.company.required && <span className="text-red-500 ml-1">*</span>}
                 </label>
-                <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                <div
+                  className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                  style={{
+                    fontSize: `${inputSize}px`,
+                    borderColor: designStyles.answerColor,
+                    color: designStyles.answerColor,
+                    opacity: 0.5,
+                  }}
+                >
                   {fields.company.placeholder}
                 </div>
               </div>
@@ -338,11 +400,21 @@ function renderBlockContent(
         // Get field settings from block
         const addressFields = (block as any).addressFields || {
           address: { label: "Address", placeholder: "123 Main St", visible: true, required: false },
-          address2: { label: "Address line 2", placeholder: "Apt 4B", visible: true, required: false },
+          address2: {
+            label: "Address line 2",
+            placeholder: "Apt 4B",
+            visible: true,
+            required: false,
+          },
           city: { label: "City", placeholder: "New York", visible: true, required: false },
           state: { label: "State", placeholder: "NY", visible: true, required: false },
           zip: { label: "Zip", placeholder: "10001", visible: true, required: false },
-          country: { label: "Country", placeholder: "United States", visible: true, required: false },
+          country: {
+            label: "Country",
+            placeholder: "United States",
+            visible: true,
+            required: false,
+          },
         };
 
         // Check visibility for rows
@@ -360,11 +432,22 @@ function renderBlockContent(
             {/* Row 1: Address (full width) */}
             {addressFields.address.visible && (
               <div>
-                <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                <label
+                  className={"block font-medium mb-2 text-left"}
+                  style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                >
                   {addressFields.address.label}
                   {addressFields.address.required && <span className="text-red-500 ml-1">*</span>}
                 </label>
-                <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                <div
+                  className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                  style={{
+                    fontSize: `${inputSize}px`,
+                    borderColor: designStyles.answerColor,
+                    color: designStyles.answerColor,
+                    opacity: 0.5,
+                  }}
+                >
                   {addressFields.address.placeholder}
                 </div>
               </div>
@@ -373,11 +456,22 @@ function renderBlockContent(
             {/* Row 2: Address line 2 (full width) */}
             {addressFields.address2.visible && (
               <div>
-                <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                <label
+                  className={"block font-medium mb-2 text-left"}
+                  style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                >
                   {addressFields.address2.label}
                   {addressFields.address2.required && <span className="text-red-500 ml-1">*</span>}
                 </label>
-                <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                <div
+                  className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                  style={{
+                    fontSize: `${inputSize}px`,
+                    borderColor: designStyles.answerColor,
+                    color: designStyles.answerColor,
+                    opacity: 0.5,
+                  }}
+                >
                   {addressFields.address2.placeholder}
                 </div>
               </div>
@@ -388,22 +482,44 @@ function renderBlockContent(
               <div className={cn("grid gap-4", row3BothVisible ? "grid-cols-2" : "grid-cols-1")}>
                 {addressFields.city.visible && (
                   <div>
-                    <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                    <label
+                      className={"block font-medium mb-2 text-left"}
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                    >
                       {addressFields.city.label}
                       {addressFields.city.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
-                    <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                    <div
+                      className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                      style={{
+                        fontSize: `${inputSize}px`,
+                        borderColor: designStyles.answerColor,
+                        color: designStyles.answerColor,
+                        opacity: 0.5,
+                      }}
+                    >
                       {addressFields.city.placeholder}
                     </div>
                   </div>
                 )}
                 {addressFields.state.visible && (
                   <div>
-                    <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                    <label
+                      className={"block font-medium mb-2 text-left"}
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                    >
                       {addressFields.state.label}
                       {addressFields.state.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
-                    <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                    <div
+                      className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                      style={{
+                        fontSize: `${inputSize}px`,
+                        borderColor: designStyles.answerColor,
+                        color: designStyles.answerColor,
+                        opacity: 0.5,
+                      }}
+                    >
                       {addressFields.state.placeholder}
                     </div>
                   </div>
@@ -414,11 +530,22 @@ function renderBlockContent(
             {/* Row 4: Zip (full width) */}
             {addressFields.zip.visible && (
               <div>
-                <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                <label
+                  className={"block font-medium mb-2 text-left"}
+                  style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                >
                   {addressFields.zip.label}
                   {addressFields.zip.required && <span className="text-red-500 ml-1">*</span>}
                 </label>
-                <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                <div
+                  className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                  style={{
+                    fontSize: `${inputSize}px`,
+                    borderColor: designStyles.answerColor,
+                    color: designStyles.answerColor,
+                    opacity: 0.5,
+                  }}
+                >
                   {addressFields.zip.placeholder}
                 </div>
               </div>
@@ -427,11 +554,22 @@ function renderBlockContent(
             {/* Row 5: Country (full width) */}
             {addressFields.country.visible && (
               <div>
-                <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                <label
+                  className={"block font-medium mb-2 text-left"}
+                  style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                >
                   {addressFields.country.label}
                   {addressFields.country.required && <span className="text-red-500 ml-1">*</span>}
                 </label>
-                <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                <div
+                  className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                  style={{
+                    fontSize: `${inputSize}px`,
+                    borderColor: designStyles.answerColor,
+                    color: designStyles.answerColor,
+                    opacity: 0.5,
+                  }}
+                >
                   {addressFields.country.placeholder}
                 </div>
               </div>
@@ -452,7 +590,15 @@ function renderBlockContent(
 
         return (
           <div className={containerClasses}>
-            <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+            <div
+              className={"w-full px-0 py-2.5 border-b-2 text-left"}
+              style={{
+                fontSize: `${inputSize}px`,
+                borderColor: designStyles.answerColor,
+                color: designStyles.answerColor,
+                opacity: 0.5,
+              }}
+            >
               {placeholder}
             </div>
           </div>
@@ -481,18 +627,38 @@ function renderBlockContent(
         return (
           <div className={containerClasses}>
             <div
-              className={cn(
-                "w-full px-3 py-2.5 border text-left",
-                heightClass
-              )}
-              style={{ fontSize: `${inputSize}px`, borderRadius: designStyles.cornerRadius, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}
+              className={cn("w-full px-3 py-2.5 border text-left", heightClass)}
+              style={{
+                fontSize: `${inputSize}px`,
+                borderRadius: designStyles.cornerRadius,
+                borderColor: designStyles.answerColor,
+                color: designStyles.answerColor,
+                opacity: 0.5,
+              }}
             >
               {placeholder}
             </div>
             {/* Character counter - only shown if maxCharacters is set */}
             {maxCharacters && (
-              <div className={alignmentClass === "text-right" ? "text-right" : alignmentClass === "text-center" ? "text-center" : "text-left"} style={{ marginTop: "4px" }}>
-                <span style={{ color: designStyles.answerColor, opacity: 0.5, fontSize: `${smallSize}px` }}>0 / {maxCharacters}</span>
+              <div
+                className={
+                  alignmentClass === "text-right"
+                    ? "text-right"
+                    : alignmentClass === "text-center"
+                      ? "text-center"
+                      : "text-left"
+                }
+                style={{ marginTop: "4px" }}
+              >
+                <span
+                  style={{
+                    color: designStyles.answerColor,
+                    opacity: 0.5,
+                    fontSize: `${smallSize}px`,
+                  }}
+                >
+                  0 / {maxCharacters}
+                </span>
               </div>
             )}
           </div>
@@ -535,9 +701,14 @@ function renderBlockContent(
           <div className={containerClasses}>
             <div className="flex items-center gap-2 max-w-[280px]">
               {/* Country selector */}
-              <div className="flex items-center gap-1.5 px-3 py-2.5 border-b-2 bg-gray-50 rounded-t" style={{ borderColor: designStyles.answerColor }}>
+              <div
+                className="flex items-center gap-1.5 px-3 py-2.5 border-b-2 bg-gray-50 rounded-t"
+                style={{ borderColor: designStyles.answerColor }}
+              >
                 <span style={{ fontSize: `${inputSize}px` }}>{country.flag}</span>
-                <span style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>{country.code}</span>
+                <span style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                  {country.code}
+                </span>
                 <svg
                   className="w-4 h-4"
                   style={{ color: designStyles.answerColor, opacity: 0.5 }}
@@ -554,7 +725,15 @@ function renderBlockContent(
                 </svg>
               </div>
               {/* Phone input */}
-              <div className="flex-1 px-0 py-2.5 border-b-2" style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+              <div
+                className="flex-1 px-0 py-2.5 border-b-2"
+                style={{
+                  fontSize: `${inputSize}px`,
+                  borderColor: designStyles.answerColor,
+                  color: designStyles.answerColor,
+                  opacity: 0.5,
+                }}
+              >
                 {country.format}
               </div>
             </div>
@@ -574,7 +753,10 @@ function renderBlockContent(
 
         return (
           <div className={containerClasses}>
-            <div className="flex items-center gap-2 border-b-2 py-2.5 max-w-sm" style={{ borderColor: designStyles.answerColor }}>
+            <div
+              className="flex items-center gap-2 border-b-2 py-2.5 max-w-sm"
+              style={{ borderColor: designStyles.answerColor }}
+            >
               {/* Link icon */}
               <svg
                 className="w-5 h-5 flex-shrink-0"
@@ -591,7 +773,15 @@ function renderBlockContent(
                 />
               </svg>
               {/* URL input placeholder */}
-              <span style={{ fontSize: `${inputSize}px`, color: designStyles.answerColor, opacity: 0.5 }}>{placeholder}</span>
+              <span
+                style={{
+                  fontSize: `${inputSize}px`,
+                  color: designStyles.answerColor,
+                  opacity: 0.5,
+                }}
+              >
+                {placeholder}
+              </span>
             </div>
           </div>
         );
@@ -608,8 +798,19 @@ function renderBlockContent(
 
         return (
           <div className={containerClasses}>
-            <div className="border-b-2 py-2.5 max-w-[280px]" style={{ borderColor: designStyles.answerColor }}>
-              <span style={{ fontSize: `${inputSize}px`, color: designStyles.answerColor, opacity: 0.5 }}>{placeholder}</span>
+            <div
+              className="border-b-2 py-2.5 max-w-[280px]"
+              style={{ borderColor: designStyles.answerColor }}
+            >
+              <span
+                style={{
+                  fontSize: `${inputSize}px`,
+                  color: designStyles.answerColor,
+                  opacity: 0.5,
+                }}
+              >
+                {placeholder}
+              </span>
             </div>
           </div>
         );
@@ -642,13 +843,13 @@ function renderBlockContent(
 
         // Extract RGB from answerColor for shadow/border
         const getColorWithOpacity = (color: string, opacity: number) => {
-          if (color.startsWith('#')) {
+          if (color.startsWith("#")) {
             const r = parseInt(color.slice(1, 3), 16);
             const g = parseInt(color.slice(3, 5), 16);
             const b = parseInt(color.slice(5, 7), 16);
             return `rgba(${r}, ${g}, ${b}, ${opacity})`;
           }
-          if (color.startsWith('rgb')) {
+          if (color.startsWith("rgb")) {
             const match = color.match(/\d+/g);
             if (match && match.length >= 3) {
               return `rgba(${match[0]}, ${match[1]}, ${match[2]}, ${opacity})`;
@@ -694,7 +895,12 @@ function renderBlockContent(
                   )}
                   <span
                     className="leading-tight"
-                    style={{ hyphens: "auto", wordBreak: "break-word", color: designStyles.answerColor, fontSize: `${optionSize}px` }}
+                    style={{
+                      hyphens: "auto",
+                      wordBreak: "break-word",
+                      color: designStyles.answerColor,
+                      fontSize: `${optionSize}px`,
+                    }}
                     lang="fr"
                   >
                     {option.label}
@@ -712,7 +918,12 @@ function renderBlockContent(
                     border: `1px solid ${optionBorder}`,
                   }}
                 >
-                  <span className="leading-tight" style={{ color: designStyles.answerColor, fontSize: `${optionSize}px` }}>Other</span>
+                  <span
+                    className="leading-tight"
+                    style={{ color: designStyles.answerColor, fontSize: `${optionSize}px` }}
+                  >
+                    Other
+                  </span>
                   <input
                     type="text"
                     placeholder="Type your answer..."
@@ -751,13 +962,13 @@ function renderBlockContent(
 
         // Get color with opacity for borders
         const getColorWithOpacity = (color: string, opacity: number) => {
-          if (color.startsWith('#')) {
+          if (color.startsWith("#")) {
             const r = parseInt(color.slice(1, 3), 16);
             const g = parseInt(color.slice(3, 5), 16);
             const b = parseInt(color.slice(5, 7), 16);
             return `rgba(${r}, ${g}, ${b}, ${opacity})`;
           }
-          if (color.startsWith('rgb')) {
+          if (color.startsWith("rgb")) {
             const match = color.match(/\d+/g);
             if (match && match.length >= 3) {
               return `rgba(${match[0]}, ${match[1]}, ${match[2]}, ${opacity})`;
@@ -830,13 +1041,13 @@ function renderBlockContent(
 
         // Get color with opacity for borders
         const getColorWithOpacity = (color: string, opacity: number) => {
-          if (color.startsWith('#')) {
+          if (color.startsWith("#")) {
             const r = parseInt(color.slice(1, 3), 16);
             const g = parseInt(color.slice(3, 5), 16);
             const b = parseInt(color.slice(5, 7), 16);
             return `rgba(${r}, ${g}, ${b}, ${opacity})`;
           }
-          if (color.startsWith('rgb')) {
+          if (color.startsWith("rgb")) {
             const match = color.match(/\d+/g);
             if (match && match.length >= 3) {
               return `rgba(${match[0]}, ${match[1]}, ${match[2]}, ${opacity})`;
@@ -865,7 +1076,12 @@ function renderBlockContent(
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                 <svg
-                  style={{ width: `${dateIconSize}px`, height: `${dateIconSize}px`, color: designStyles.answerColor, opacity: 0.5 }}
+                  style={{
+                    width: `${dateIconSize}px`,
+                    height: `${dateIconSize}px`,
+                    color: designStyles.answerColor,
+                    opacity: 0.5,
+                  }}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -906,7 +1122,7 @@ function renderBlockContent(
                   style={{
                     width: `${starSize}px`,
                     height: `${starSize}px`,
-                    color: i < 2 ? designStyles.starRatingColor : "#d1d5db"
+                    color: i < 2 ? designStyles.starRatingColor : "#d1d5db",
                   }}
                   fill={i < 2 ? "currentColor" : "none"}
                   stroke="currentColor"
@@ -950,13 +1166,13 @@ function renderBlockContent(
 
         // Get color with opacity for borders
         const getColorWithOpacity = (color: string, opacity: number) => {
-          if (color.startsWith('#')) {
+          if (color.startsWith("#")) {
             const r = parseInt(color.slice(1, 3), 16);
             const g = parseInt(color.slice(3, 5), 16);
             const b = parseInt(color.slice(5, 7), 16);
             return `rgba(${r}, ${g}, ${b}, ${opacity})`;
           }
-          if (color.startsWith('rgb')) {
+          if (color.startsWith("rgb")) {
             const match = color.match(/\d+/g);
             if (match && match.length >= 3) {
               return `rgba(${match[0]}, ${match[1]}, ${match[2]}, ${opacity})`;
@@ -991,11 +1207,19 @@ function renderBlockContent(
             {/* Labels below the scale - aligned under first and last buttons */}
             <div
               className="flex mt-2"
-              style={{ width: `${scaleNumbers.length * buttonSize + (scaleNumbers.length - 1) * gap}px` }}
+              style={{
+                width: `${scaleNumbers.length * buttonSize + (scaleNumbers.length - 1) * gap}px`,
+              }}
             >
               <span
                 className="text-left"
-                style={{ maxWidth: "45%", hyphens: "auto", wordBreak: "break-word", color: designStyles.answerColor, fontSize: `${smallSize}px` }}
+                style={{
+                  maxWidth: "45%",
+                  hyphens: "auto",
+                  wordBreak: "break-word",
+                  color: designStyles.answerColor,
+                  fontSize: `${smallSize}px`,
+                }}
                 lang="fr"
               >
                 {leftLabel}
@@ -1003,7 +1227,13 @@ function renderBlockContent(
               <span className="flex-1 min-w-4" />
               <span
                 className="text-right"
-                style={{ maxWidth: "45%", hyphens: "auto", wordBreak: "break-word", color: designStyles.answerColor, fontSize: `${smallSize}px` }}
+                style={{
+                  maxWidth: "45%",
+                  hyphens: "auto",
+                  wordBreak: "break-word",
+                  color: designStyles.answerColor,
+                  fontSize: `${smallSize}px`,
+                }}
                 lang="fr"
               >
                 {rightLabel}
@@ -1024,8 +1254,15 @@ function renderBlockContent(
           <div className={containerClasses}>
             <div className="p-8 bg-gray-50 border border-dashed border-gray-300 rounded">
               <div className="flex flex-col items-center justify-center text-center">
-                <p className="font-medium text-gray-500 mb-1" style={{ fontSize: `${labelSize}px` }}>Coming Soon</p>
-                <p className="text-gray-400" style={{ fontSize: `${smallSize}px` }}>Scheduler integration</p>
+                <p
+                  className="font-medium text-gray-500 mb-1"
+                  style={{ fontSize: `${labelSize}px` }}
+                >
+                  Coming Soon
+                </p>
+                <p className="text-gray-400" style={{ fontSize: `${smallSize}px` }}>
+                  Scheduler integration
+                </p>
               </div>
             </div>
           </div>
@@ -1043,8 +1280,15 @@ function renderBlockContent(
           <div className={containerClasses}>
             <div className="p-8 bg-gray-50 border border-dashed border-gray-300 rounded">
               <div className="flex flex-col items-center justify-center text-center">
-                <p className="font-medium text-gray-500 mb-1" style={{ fontSize: `${labelSize}px` }}>Coming Soon</p>
-                <p className="text-gray-400" style={{ fontSize: `${smallSize}px` }}>Payment integration</p>
+                <p
+                  className="font-medium text-gray-500 mb-1"
+                  style={{ fontSize: `${labelSize}px` }}
+                >
+                  Coming Soon
+                </p>
+                <p className="text-gray-400" style={{ fontSize: `${smallSize}px` }}>
+                  Payment integration
+                </p>
               </div>
             </div>
           </div>
@@ -1073,13 +1317,13 @@ function renderBlockContent(
 
         // Get color with opacity for ranking options
         const getColorWithOpacity = (color: string, opacity: number) => {
-          if (color.startsWith('#')) {
+          if (color.startsWith("#")) {
             const r = parseInt(color.slice(1, 3), 16);
             const g = parseInt(color.slice(3, 5), 16);
             const b = parseInt(color.slice(5, 7), 16);
             return `rgba(${r}, ${g}, ${b}, ${opacity})`;
           }
-          if (color.startsWith('rgb')) {
+          if (color.startsWith("rgb")) {
             const match = color.match(/\d+/g);
             if (match && match.length >= 3) {
               return `rgba(${match[0]}, ${match[1]}, ${match[2]}, ${opacity})`;
@@ -1102,7 +1346,7 @@ function renderBlockContent(
                     borderRadius: designStyles.cornerRadius,
                     minHeight: `${Math.round(44 * designStyles.fontSizeScale)}px`,
                     backgroundColor: optionBg,
-                    borderColor: optionBorder
+                    borderColor: optionBorder,
                   }}
                 >
                   {/* Rank number dropdown - scaled size, clickable for alternative ranking */}
@@ -1115,7 +1359,7 @@ function renderBlockContent(
                         borderRadius: designStyles.cornerRadius,
                         backgroundColor: getColorWithOpacity(designStyles.answerColor, 0.15),
                         color: designStyles.answerColor,
-                        fontSize: `${smallSize}px`
+                        fontSize: `${smallSize}px`,
                       }}
                     >
                       {index + 1}
@@ -1139,7 +1383,12 @@ function renderBlockContent(
                   {/* Option label - flex-1 to take remaining space */}
                   <span
                     className="flex-1 leading-tight"
-                    style={{ hyphens: "auto", wordBreak: "break-word", color: designStyles.answerColor, fontSize: `${optionSize}px` }}
+                    style={{
+                      hyphens: "auto",
+                      wordBreak: "break-word",
+                      color: designStyles.answerColor,
+                      fontSize: `${optionSize}px`,
+                    }}
                     lang="fr"
                   >
                     {option.label}
@@ -1147,7 +1396,12 @@ function renderBlockContent(
                   {/* Drag handle - scaled size */}
                   <svg
                     className="flex-shrink-0"
-                    style={{ width: `${handleSize}px`, height: `${handleSize}px`, color: designStyles.answerColor, opacity: 0.5 }}
+                    style={{
+                      width: `${handleSize}px`,
+                      height: `${handleSize}px`,
+                      color: designStyles.answerColor,
+                      opacity: 0.5,
+                    }}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -1189,7 +1443,15 @@ function renderBlockContent(
                 }}
               >
                 {/* Placeholder text */}
-                <span style={{ color: designStyles.answerColor, opacity: 0.5, fontSize: `${inputSize}px` }}>Sign here</span>
+                <span
+                  style={{
+                    color: designStyles.answerColor,
+                    opacity: 0.5,
+                    fontSize: `${inputSize}px`,
+                  }}
+                >
+                  Sign here
+                </span>
               </div>
               {/* Clear button - shown at bottom left */}
               <button
@@ -1222,13 +1484,13 @@ function renderBlockContent(
 
         // Extract RGB from answerColor for shadow
         const getColorWithOpacity = (color: string, opacity: number) => {
-          if (color.startsWith('#')) {
+          if (color.startsWith("#")) {
             const r = parseInt(color.slice(1, 3), 16);
             const g = parseInt(color.slice(3, 5), 16);
             const b = parseInt(color.slice(5, 7), 16);
             return `rgba(${r}, ${g}, ${b}, ${opacity})`;
           }
-          if (color.startsWith('rgb')) {
+          if (color.startsWith("rgb")) {
             const match = color.match(/\d+/g);
             if (match && match.length >= 3) {
               return `rgba(${match[0]}, ${match[1]}, ${match[2]}, ${opacity})`;
@@ -1253,7 +1515,12 @@ function renderBlockContent(
               <div className="flex flex-col items-center justify-center text-center">
                 {/* Upload icon */}
                 <svg
-                  style={{ width: `${iconSize}px`, height: `${iconSize}px`, color: designStyles.answerColor, marginBottom: "16px" }}
+                  style={{
+                    width: `${iconSize}px`,
+                    height: `${iconSize}px`,
+                    color: designStyles.answerColor,
+                    marginBottom: "16px",
+                  }}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -1265,12 +1532,23 @@ function renderBlockContent(
                     d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                   />
                 </svg>
-                <p className="font-medium mb-1" style={{ color: designStyles.answerColor, fontSize: `${labelSize}px` }}>
+                <p
+                  className="font-medium mb-1"
+                  style={{ color: designStyles.answerColor, fontSize: `${labelSize}px` }}
+                >
                   {allowMultiple
                     ? "Drop files here or click to upload"
                     : "Drop a file here or click to upload"}
                 </p>
-                <p style={{ color: designStyles.answerColor, opacity: 0.6, fontSize: `${smallSize}px` }}>Max file size: 10MB</p>
+                <p
+                  style={{
+                    color: designStyles.answerColor,
+                    opacity: 0.6,
+                    fontSize: `${smallSize}px`,
+                  }}
+                >
+                  Max file size: 10MB
+                </p>
               </div>
             </div>
           </div>
@@ -1303,14 +1581,14 @@ function renderBlockContent(
         // Extract RGB from answerColor for shadow
         const getColorWithOpacity = (color: string, opacity: number) => {
           // If hex color
-          if (color.startsWith('#')) {
+          if (color.startsWith("#")) {
             const r = parseInt(color.slice(1, 3), 16);
             const g = parseInt(color.slice(3, 5), 16);
             const b = parseInt(color.slice(5, 7), 16);
             return `rgba(${r}, ${g}, ${b}, ${opacity})`;
           }
           // If already rgb/rgba, modify opacity
-          if (color.startsWith('rgb')) {
+          if (color.startsWith("rgb")) {
             const match = color.match(/\d+/g);
             if (match && match.length >= 3) {
               return `rgba(${match[0]}, ${match[1]}, ${match[2]}, ${opacity})`;
@@ -1353,7 +1631,7 @@ function renderBlockContent(
                         fontSize: `${Math.round(labelSize * 1.1)}px`,
                         color: designStyles.answerColor,
                         whiteSpace: "nowrap",
-                        padding: "0 8px"
+                        padding: "0 8px",
                       }}
                     >
                       {col.label}
@@ -1388,10 +1666,7 @@ function renderBlockContent(
 
                     {/* Checkboxes for each column */}
                     {columns.map((col: { id: string; label: string }) => (
-                      <div
-                        key={col.id}
-                        className="flex items-center justify-center"
-                      >
+                      <div key={col.id} className="flex items-center justify-center">
                         <span
                           className={cn(
                             "inline-flex items-center justify-center cursor-pointer transition-colors",

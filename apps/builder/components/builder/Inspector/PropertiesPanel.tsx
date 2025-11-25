@@ -169,7 +169,13 @@ export function PropertiesPanel() {
               id="question"
               value={selectedBlock.question || ""}
               onChange={(e) => handleUpdate({ question: e.target.value })}
-              placeholder={isContactInfo ? "Please fill the following" : isAddress ? "Please enter your complete address" : "Hey there 😊"}
+              placeholder={
+                isContactInfo
+                  ? "Please fill the following"
+                  : isAddress
+                    ? "Please enter your complete address"
+                    : "Hey there 😊"
+              }
               className="resize-none min-h-[50px] text-sm"
             />
           </div>

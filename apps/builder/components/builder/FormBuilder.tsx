@@ -389,10 +389,7 @@ export function FormBuilder({ formId }: FormBuilderProps) {
           )}
 
           {/* Design Panel Overlay */}
-          <DesignPanel
-            isOpen={isDesignPanelOpen}
-            onClose={() => setIsDesignPanelOpen(false)}
-          />
+          <DesignPanel isOpen={isDesignPanelOpen} onClose={() => setIsDesignPanelOpen(false)} />
         </div>
 
         <DragOverlay dropAnimation={null}>

@@ -234,185 +234,186 @@ export function DesignPanel({ isOpen, onClose }: DesignPanelProps) {
 
         {/* Content - Scrollable */}
         <div className="flex-1 overflow-y-auto">
-        {/* Description */}
-        <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
-          <p className="text-xs text-gray-600 leading-relaxed">
-            Choose from handpicked designs, from your previous forms, or make it your own by adding your brand color and logo.
-          </p>
-        </div>
-
-        {/* Theme Gallery Button */}
-        <div className="px-4 py-3 border-b border-gray-200">
-          <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded transition-colors">
-            <Sparkles className="w-4 h-4" />
-            Open Theme Gallery
-          </button>
-        </div>
-
-        {/* Colors Section */}
-        <div className="px-4 py-4 border-b border-gray-200 space-y-3">
-          <ColorPicker
-            label="Background"
-            value={colors.background}
-            onChange={(v) => updateColor("background", v)}
-          />
-          <ColorPicker
-            label="Questions"
-            value={colors.questions}
-            onChange={(v) => updateColor("questions", v)}
-          />
-          <ColorPicker
-            label="Answers"
-            value={colors.answers}
-            onChange={(v) => updateColor("answers", v)}
-          />
-          <ColorPicker
-            label="Buttons"
-            value={colors.buttons}
-            onChange={(v) => updateColor("buttons", v)}
-          />
-          <ColorPicker
-            label="Button Text"
-            value={colors.buttonText}
-            onChange={(v) => updateColor("buttonText", v)}
-          />
-          <ColorPicker
-            label="Star Rating"
-            value={colors.starRating}
-            onChange={(v) => updateColor("starRating", v)}
-          />
-        </div>
-
-        {/* Auto-save Note */}
-        <div className="px-4 py-2 bg-amber-50 border-b border-gray-200">
-          <p className="text-xs text-amber-700">
-            Note: Any changes made in the Design tab will be saved & published automatically.
-          </p>
-        </div>
-
-        {/* Alignment */}
-        <div className="px-4 py-4 border-b border-gray-200">
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Alignment</label>
-          <div className="flex gap-1">
-            {[
-              { value: "left" as const, icon: AlignLeft },
-              { value: "center" as const, icon: AlignCenter },
-              { value: "right" as const, icon: AlignRight },
-            ].map(({ value, icon: Icon }) => (
-              <button
-                key={value}
-                onClick={() => setAlignment(value)}
-                className={cn(
-                  "flex-1 p-2 rounded border transition-colors",
-                  alignment === value
-                    ? "bg-indigo-50 border-indigo-300 text-indigo-600"
-                    : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50"
-                )}
-              >
-                <Icon className="w-4 h-4 mx-auto" />
-              </button>
-            ))}
+          {/* Description */}
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Choose from handpicked designs, from your previous forms, or make it your own by
+              adding your brand color and logo.
+            </p>
           </div>
-        </div>
 
-        {/* Font */}
-        <div className="px-4 py-4 border-b border-gray-200">
-          <div className="flex items-center justify-between mb-2">
-            <label className="text-sm font-medium text-gray-700">Font</label>
-            <button className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
-              + Custom font
+          {/* Theme Gallery Button */}
+          <div className="px-4 py-3 border-b border-gray-200">
+            <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded transition-colors">
+              <Sparkles className="w-4 h-4" />
+              Open Theme Gallery
             </button>
           </div>
-          <div className="relative">
-            <select
-              value={font}
-              onChange={(e) => setFont(e.target.value)}
-              className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-              style={{ fontFamily: font }}
-            >
-              {fonts.map((f) => (
-                <option key={f} value={f} style={{ fontFamily: f }}>
-                  {f}
-                </option>
+
+          {/* Colors Section */}
+          <div className="px-4 py-4 border-b border-gray-200 space-y-3">
+            <ColorPicker
+              label="Background"
+              value={colors.background}
+              onChange={(v) => updateColor("background", v)}
+            />
+            <ColorPicker
+              label="Questions"
+              value={colors.questions}
+              onChange={(v) => updateColor("questions", v)}
+            />
+            <ColorPicker
+              label="Answers"
+              value={colors.answers}
+              onChange={(v) => updateColor("answers", v)}
+            />
+            <ColorPicker
+              label="Buttons"
+              value={colors.buttons}
+              onChange={(v) => updateColor("buttons", v)}
+            />
+            <ColorPicker
+              label="Button Text"
+              value={colors.buttonText}
+              onChange={(v) => updateColor("buttonText", v)}
+            />
+            <ColorPicker
+              label="Star Rating"
+              value={colors.starRating}
+              onChange={(v) => updateColor("starRating", v)}
+            />
+          </div>
+
+          {/* Auto-save Note */}
+          <div className="px-4 py-2 bg-amber-50 border-b border-gray-200">
+            <p className="text-xs text-amber-700">
+              Note: Any changes made in the Design tab will be saved & published automatically.
+            </p>
+          </div>
+
+          {/* Alignment */}
+          <div className="px-4 py-4 border-b border-gray-200">
+            <label className="text-sm font-medium text-gray-700 mb-2 block">Alignment</label>
+            <div className="flex gap-1">
+              {[
+                { value: "left" as const, icon: AlignLeft },
+                { value: "center" as const, icon: AlignCenter },
+                { value: "right" as const, icon: AlignRight },
+              ].map(({ value, icon: Icon }) => (
+                <button
+                  key={value}
+                  onClick={() => setAlignment(value)}
+                  className={cn(
+                    "flex-1 p-2 rounded border transition-colors",
+                    alignment === value
+                      ? "bg-indigo-50 border-indigo-300 text-indigo-600"
+                      : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50"
+                  )}
+                >
+                  <Icon className="w-4 h-4 mx-auto" />
+                </button>
               ))}
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            </div>
           </div>
-        </div>
 
-        {/* Background Image */}
-        <div className="px-4 py-4 border-b border-gray-200">
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Background Image</label>
-          <button className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-gray-300 rounded text-sm text-gray-500 hover:border-gray-400 hover:text-gray-600 transition-colors">
-            <Image className="w-4 h-4" />
-            Select image
-          </button>
-        </div>
-
-        {/* Logo */}
-        <div className="px-4 py-4 border-b border-gray-200">
-          <div className="flex items-center gap-2 mb-2">
-            <label className="text-sm font-medium text-gray-700">Logo</label>
-            <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-amber-100 text-amber-700 rounded">
-              PRO
-            </span>
-          </div>
-          <button className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-gray-300 rounded text-sm text-gray-400 bg-gray-50 cursor-not-allowed">
-            <Lock className="w-4 h-4" />
-            Select your logo
-          </button>
-        </div>
-
-        {/* Corner Style */}
-        <div className="px-4 py-4 border-b border-gray-200">
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Corners</label>
-          <div className="grid grid-cols-4 gap-1">
-            {[
-              { value: "very_rounded" as const, label: "Very Round" },
-              { value: "rounded" as const, label: "Rounded" },
-              { value: "normal" as const, label: "Normal" },
-              { value: "square" as const, label: "Square" },
-            ].map(({ value, label }) => (
-              <button
-                key={value}
-                onClick={() => setCornerStyle(value)}
-                className={cn(
-                  "px-2 py-2 text-xs font-medium rounded border transition-colors",
-                  cornerStyle === value
-                    ? "bg-indigo-50 border-indigo-300 text-indigo-600"
-                    : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
-                )}
-              >
-                {label}
+          {/* Font */}
+          <div className="px-4 py-4 border-b border-gray-200">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium text-gray-700">Font</label>
+              <button className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
+                + Custom font
               </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Font Size */}
-        <div className="px-4 py-4">
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Font size</label>
-          <div className="flex gap-1">
-            {[
-              { value: "small" as const, label: "Small" },
-              { value: "medium" as const, label: "Medium" },
-              { value: "large" as const, label: "Large" },
-            ].map(({ value, label }) => (
-              <button
-                key={value}
-                onClick={() => setFontSize(value)}
-                className={cn(
-                  "flex-1 px-3 py-2 text-xs font-medium rounded border transition-colors",
-                  fontSize === value
-                    ? "bg-indigo-50 border-indigo-300 text-indigo-600"
-                    : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
-                )}
+            </div>
+            <div className="relative">
+              <select
+                value={font}
+                onChange={(e) => setFont(e.target.value)}
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+                style={{ fontFamily: font }}
               >
-                {label}
-              </button>
-            ))}
+                {fonts.map((f) => (
+                  <option key={f} value={f} style={{ fontFamily: f }}>
+                    {f}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            </div>
           </div>
-        </div>
+
+          {/* Background Image */}
+          <div className="px-4 py-4 border-b border-gray-200">
+            <label className="text-sm font-medium text-gray-700 mb-2 block">Background Image</label>
+            <button className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-gray-300 rounded text-sm text-gray-500 hover:border-gray-400 hover:text-gray-600 transition-colors">
+              <Image className="w-4 h-4" />
+              Select image
+            </button>
+          </div>
+
+          {/* Logo */}
+          <div className="px-4 py-4 border-b border-gray-200">
+            <div className="flex items-center gap-2 mb-2">
+              <label className="text-sm font-medium text-gray-700">Logo</label>
+              <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-amber-100 text-amber-700 rounded">
+                PRO
+              </span>
+            </div>
+            <button className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-dashed border-gray-300 rounded text-sm text-gray-400 bg-gray-50 cursor-not-allowed">
+              <Lock className="w-4 h-4" />
+              Select your logo
+            </button>
+          </div>
+
+          {/* Corner Style */}
+          <div className="px-4 py-4 border-b border-gray-200">
+            <label className="text-sm font-medium text-gray-700 mb-2 block">Corners</label>
+            <div className="grid grid-cols-4 gap-1">
+              {[
+                { value: "very_rounded" as const, label: "Very Round" },
+                { value: "rounded" as const, label: "Rounded" },
+                { value: "normal" as const, label: "Normal" },
+                { value: "square" as const, label: "Square" },
+              ].map(({ value, label }) => (
+                <button
+                  key={value}
+                  onClick={() => setCornerStyle(value)}
+                  className={cn(
+                    "px-2 py-2 text-xs font-medium rounded border transition-colors",
+                    cornerStyle === value
+                      ? "bg-indigo-50 border-indigo-300 text-indigo-600"
+                      : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Font Size */}
+          <div className="px-4 py-4">
+            <label className="text-sm font-medium text-gray-700 mb-2 block">Font size</label>
+            <div className="flex gap-1">
+              {[
+                { value: "small" as const, label: "Small" },
+                { value: "medium" as const, label: "Medium" },
+                { value: "large" as const, label: "Large" },
+              ].map(({ value, label }) => (
+                <button
+                  key={value}
+                  onClick={() => setFontSize(value)}
+                  className={cn(
+                    "flex-1 px-3 py-2 text-xs font-medium rounded border transition-colors",
+                    fontSize === value
+                      ? "bg-indigo-50 border-indigo-300 text-indigo-600"
+                      : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
