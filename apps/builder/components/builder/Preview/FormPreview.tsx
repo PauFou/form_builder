@@ -1233,8 +1233,8 @@ function renderBlockContent(
                   {columns.map((col: { id: string; label: string }) => (
                     <div
                       key={col.id}
-                      className="min-w-[100px] w-[100px] text-center flex items-center justify-center"
-                      style={{ fontSize: `${Math.round(labelSize * 1.1)}px`, color: designStyles.answerColor }}
+                      className="min-w-[100px] text-center flex items-center justify-center px-2"
+                      style={{ fontSize: `${Math.round(labelSize * 1.1)}px`, color: designStyles.answerColor, whiteSpace: "nowrap" }}
                     >
                       {col.label}
                     </div>
@@ -1266,7 +1266,7 @@ function renderBlockContent(
                     {/* Checkboxes */}
                     <div className="flex gap-3 items-center">
                       {columns.map((col: { id: string; label: string }) => (
-                        <div key={col.id} className="min-w-[100px] w-[100px] flex justify-center">
+                        <div key={col.id} className="min-w-[100px] flex justify-center px-2">
                           <span
                             className={cn(
                               "inline-flex items-center justify-center cursor-pointer transition-colors",
