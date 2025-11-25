@@ -107,6 +107,7 @@ export function PropertiesPanel() {
 
   // Determine block types for conditional rendering
   const isContactInfo = selectedBlock.type === "contact_info";
+  const isAddress = selectedBlock.type === "address";
   const isShortText = selectedBlock.type === "text" || selectedBlock.type === "short_text";
   const isLongText = selectedBlock.type === "long_text";
   const isPhone = selectedBlock.type === "phone" || selectedBlock.type === "phone_number";
@@ -163,12 +164,12 @@ export function PropertiesPanel() {
 
           {/* Question/Title */}
           <div ref={questionRef} className="space-y-2">
-            <Label htmlFor="question">{isContactInfo ? "Question" : "Title"}</Label>
+            <Label htmlFor="question">{isContactInfo || isAddress ? "Question" : "Title"}</Label>
             <Textarea
               id="question"
               value={selectedBlock.question || ""}
               onChange={(e) => handleUpdate({ question: e.target.value })}
-              placeholder={isContactInfo ? "Please fill the following" : "Hey there 😊"}
+              placeholder={isContactInfo ? "Please fill the following" : isAddress ? "Please enter your complete address" : "Hey there 😊"}
               className="resize-none min-h-[50px] text-sm"
             />
           </div>
@@ -259,6 +260,204 @@ export function PropertiesPanel() {
                       ...updates,
                     };
                     handleUpdate({ contactFields: newFields });
+                  };
+
+                  return (
+                    <>
+                      {fieldKeys.map((fieldKey) => {
+                        const field = currentFields[fieldKey];
+                        const isEditing = editingField === fieldKey;
+
+                        return (
+                          <div
+                            key={fieldKey}
+                            className="border border-gray-200 rounded-lg overflow-hidden"
+                          >
+                            {/* Field Header */}
+                            <div className="flex items-center justify-between p-3 bg-gray-50">
+                              <span
+                                className={cn(
+                                  "text-sm font-medium",
+                                  field.visible ? "text-gray-600" : "text-gray-400"
+                                )}
+                              >
+                                {field.label}
+                                {field.required && <span className="text-red-500 ml-1">*</span>}
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => toggleFieldVisibility(fieldKey)}
+                                  className="p-1.5 hover:bg-gray-200 rounded transition-colors"
+                                >
+                                  {field.visible ? (
+                                    <Eye className="w-4 h-4 text-gray-600" />
+                                  ) : (
+                                    <EyeOff className="w-4 h-4 text-gray-400" />
+                                  )}
+                                </button>
+                                <button
+                                  onClick={() => toggleFieldEditor(fieldKey)}
+                                  className={cn(
+                                    "p-1.5 rounded transition-colors",
+                                    isEditing
+                                      ? "bg-indigo-100 text-indigo-600"
+                                      : "hover:bg-gray-200 text-gray-600"
+                                  )}
+                                >
+                                  <Settings className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Expanded Editor */}
+                            {isEditing && (
+                              <div className="p-4 bg-white border-t border-gray-200 space-y-3">
+                                <div>
+                                  <Label
+                                    htmlFor={`${fieldKey}-label`}
+                                    className="text-sm font-medium text-gray-700"
+                                  >
+                                    Field Label
+                                  </Label>
+                                  <Input
+                                    id={`${fieldKey}-label`}
+                                    value={field.label}
+                                    onChange={(e) =>
+                                      updateFieldSettings(fieldKey, { label: e.target.value })
+                                    }
+                                    className="mt-1 text-base h-10"
+                                    placeholder="Enter field label"
+                                  />
+                                </div>
+
+                                <div>
+                                  <Label
+                                    htmlFor={`${fieldKey}-placeholder`}
+                                    className="text-sm font-medium text-gray-700"
+                                  >
+                                    Placeholder
+                                  </Label>
+                                  <Input
+                                    id={`${fieldKey}-placeholder`}
+                                    value={field.placeholder}
+                                    onChange={(e) =>
+                                      updateFieldSettings(fieldKey, { placeholder: e.target.value })
+                                    }
+                                    className="mt-1 text-base h-10"
+                                    placeholder="Enter placeholder text"
+                                  />
+                                </div>
+
+                                <div className="flex items-center gap-2 pt-2">
+                                  <button
+                                    id={`${fieldKey}-required`}
+                                    role="checkbox"
+                                    aria-checked={field.required}
+                                    onClick={() =>
+                                      updateFieldSettings(fieldKey, { required: !field.required })
+                                    }
+                                    className={cn(
+                                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-all",
+                                      field.required
+                                        ? "bg-indigo-600 border-indigo-600"
+                                        : "bg-white border-gray-300 hover:border-gray-400"
+                                    )}
+                                  >
+                                    {field.required && (
+                                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                                    )}
+                                  </button>
+                                  <Label
+                                    htmlFor={`${fieldKey}-required`}
+                                    className="text-sm font-medium text-gray-700 cursor-pointer"
+                                  >
+                                    Required field
+                                  </Label>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </>
+                  );
+                })()}
+              </div>
+            </div>
+          )}
+
+          {/* Address Fields */}
+          {isAddress && (
+            <div className="space-y-2">
+              <Label>Address Fields</Label>
+              <div className="space-y-2">
+                {(() => {
+                  const fieldKeys = ["address", "address2", "city", "state", "zip", "country"];
+                  const defaultFields = {
+                    address: {
+                      label: "Address",
+                      placeholder: "123 Main St",
+                      visible: true,
+                      required: false,
+                    },
+                    address2: {
+                      label: "Address line 2",
+                      placeholder: "Apt 4B",
+                      visible: true,
+                      required: false,
+                    },
+                    city: {
+                      label: "City",
+                      placeholder: "New York",
+                      visible: true,
+                      required: false,
+                    },
+                    state: {
+                      label: "State",
+                      placeholder: "NY",
+                      visible: true,
+                      required: false,
+                    },
+                    zip: {
+                      label: "Zip",
+                      placeholder: "10001",
+                      visible: true,
+                      required: false,
+                    },
+                    country: {
+                      label: "Country",
+                      placeholder: "United States",
+                      visible: true,
+                      required: false,
+                    },
+                  };
+                  const currentFields = (selectedBlock as any).addressFields || defaultFields;
+
+                  const toggleFieldVisibility = (fieldKey: string) => {
+                    const newFields = { ...currentFields };
+                    newFields[fieldKey] = {
+                      ...newFields[fieldKey],
+                      visible: !newFields[fieldKey].visible,
+                    };
+                    handleUpdate({ addressFields: newFields });
+                  };
+
+                  const toggleFieldEditor = (fieldKey: string) => {
+                    setEditingField(editingField === fieldKey ? null : fieldKey);
+                    if (editingField !== fieldKey) {
+                      const field = currentFields[fieldKey];
+                      setFieldLabel(field.label);
+                      setFieldPlaceholder(field.placeholder);
+                    }
+                  };
+
+                  const updateFieldSettings = (fieldKey: string, updates: any) => {
+                    const newFields = { ...currentFields };
+                    newFields[fieldKey] = {
+                      ...newFields[fieldKey],
+                      ...updates,
+                    };
+                    handleUpdate({ addressFields: newFields });
                   };
 
                   return (

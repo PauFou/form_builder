@@ -334,6 +334,112 @@ function renderBlockContent(
         );
       }
 
+      case "address": {
+        // Get field settings from block
+        const addressFields = (block as any).addressFields || {
+          address: { label: "Address", placeholder: "123 Main St", visible: true, required: false },
+          address2: { label: "Address line 2", placeholder: "Apt 4B", visible: true, required: false },
+          city: { label: "City", placeholder: "New York", visible: true, required: false },
+          state: { label: "State", placeholder: "NY", visible: true, required: false },
+          zip: { label: "Zip", placeholder: "10001", visible: true, required: false },
+          country: { label: "Country", placeholder: "United States", visible: true, required: false },
+        };
+
+        // Check visibility for rows
+        const row3Visible = addressFields.city.visible || addressFields.state.visible;
+        const row3BothVisible = addressFields.city.visible && addressFields.state.visible;
+
+        // In split layout, don't use mx-auto px-12 (parent already has padding)
+        const isSplitLayout = layout === "split" && block.coverImage;
+        const containerClasses = isSplitLayout
+          ? "space-y-5 w-full pointer-events-none select-none"
+          : "space-y-5 w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
+
+        return (
+          <div className={containerClasses}>
+            {/* Row 1: Address (full width) */}
+            {addressFields.address.visible && (
+              <div>
+                <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                  {addressFields.address.label}
+                  {addressFields.address.required && <span className="text-red-500 ml-1">*</span>}
+                </label>
+                <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                  {addressFields.address.placeholder}
+                </div>
+              </div>
+            )}
+
+            {/* Row 2: Address line 2 (full width) */}
+            {addressFields.address2.visible && (
+              <div>
+                <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                  {addressFields.address2.label}
+                  {addressFields.address2.required && <span className="text-red-500 ml-1">*</span>}
+                </label>
+                <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                  {addressFields.address2.placeholder}
+                </div>
+              </div>
+            )}
+
+            {/* Row 3: City + State */}
+            {row3Visible && (
+              <div className={cn("grid gap-4", row3BothVisible ? "grid-cols-2" : "grid-cols-1")}>
+                {addressFields.city.visible && (
+                  <div>
+                    <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                      {addressFields.city.label}
+                      {addressFields.city.required && <span className="text-red-500 ml-1">*</span>}
+                    </label>
+                    <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                      {addressFields.city.placeholder}
+                    </div>
+                  </div>
+                )}
+                {addressFields.state.visible && (
+                  <div>
+                    <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                      {addressFields.state.label}
+                      {addressFields.state.required && <span className="text-red-500 ml-1">*</span>}
+                    </label>
+                    <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                      {addressFields.state.placeholder}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Row 4: Zip (full width) */}
+            {addressFields.zip.visible && (
+              <div>
+                <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                  {addressFields.zip.label}
+                  {addressFields.zip.required && <span className="text-red-500 ml-1">*</span>}
+                </label>
+                <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                  {addressFields.zip.placeholder}
+                </div>
+              </div>
+            )}
+
+            {/* Row 5: Country (full width) */}
+            {addressFields.country.visible && (
+              <div>
+                <label className={"block font-medium mb-2 text-left"} style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}>
+                  {addressFields.country.label}
+                  {addressFields.country.required && <span className="text-red-500 ml-1">*</span>}
+                </label>
+                <div className={"w-full px-0 py-2.5 border-b-2 text-left"} style={{ fontSize: `${inputSize}px`, borderColor: designStyles.answerColor, color: designStyles.answerColor, opacity: 0.5 }}>
+                  {addressFields.country.placeholder}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
       case "text":
       case "short_text": {
         const placeholder = (block as any).placeholder || "Type your answer here...";
@@ -1319,8 +1425,9 @@ function renderBlockContent(
     }
   };
 
-  // Special handling for blocks that need left alignment: contact_info, short_text, long_text, phone
+  // Special handling for blocks that need left alignment: contact_info, address, short_text, long_text, phone
   const isContactInfo = block.type === "contact_info";
+  const isAddress = block.type === "address";
   const isShortText = block.type === "text" || block.type === "short_text";
   const isLongText = block.type === "long_text";
   const isPhone = block.type === "phone" || block.type === "phone_number";
@@ -1339,6 +1446,7 @@ function renderBlockContent(
   const isSelectBlock = isSingleSelect || isMultiSelect || isDropdown;
   const needsLeftAlignment =
     isContactInfo ||
+    isAddress ||
     isShortText ||
     isLongText ||
     isPhone ||
