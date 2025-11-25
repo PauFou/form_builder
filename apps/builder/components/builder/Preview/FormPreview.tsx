@@ -418,8 +418,10 @@ function renderBlockContent(
         };
 
         // Check visibility for rows
-        const row3Visible = addressFields.city.visible || addressFields.state.visible;
-        const row3BothVisible = addressFields.city.visible && addressFields.state.visible;
+        const row1Visible = addressFields.address.visible || addressFields.address2.visible;
+        const row1BothVisible = addressFields.address.visible && addressFields.address2.visible;
+        const row2Visible = addressFields.city.visible || addressFields.state.visible;
+        const row2BothVisible = addressFields.city.visible && addressFields.state.visible;
 
         // In split layout, don't use mx-auto px-12 (parent already has padding)
         const isSplitLayout = layout === "split" && block.coverImage;
@@ -429,68 +431,74 @@ function renderBlockContent(
 
         return (
           <div className={containerClasses}>
-            {/* Row 1: Address (full width) */}
-            {addressFields.address.visible && (
-              <div>
-                <label
-                  className={"block font-medium mb-2 text-left"}
-                  style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
-                >
-                  {addressFields.address.label}
-                  {addressFields.address.required && <span className="text-red-500 ml-1">*</span>}
-                </label>
-                <div
-                  className={"w-full px-0 py-2.5 border-b-2 text-left"}
-                  style={{
-                    fontSize: `${inputSize}px`,
-                    borderColor: designStyles.answerColor,
-                    color: designStyles.answerColor,
-                    opacity: 0.5,
-                  }}
-                >
-                  {addressFields.address.placeholder}
-                </div>
+            {/* Row 1: Address + Address line 2 */}
+            {row1Visible && (
+              <div className={cn("grid gap-4", row1BothVisible ? "grid-cols-2" : "grid-cols-1")}>
+                {addressFields.address.visible && (
+                  <div>
+                    <label
+                      className={`block font-medium mb-2 ${alignmentClass}`}
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                    >
+                      {addressFields.address.label}
+                      {addressFields.address.required && (
+                        <span className="text-red-500 ml-1">*</span>
+                      )}
+                    </label>
+                    <div
+                      className={`w-full px-0 py-2.5 border-b-2 ${alignmentClass}`}
+                      style={{
+                        fontSize: `${inputSize}px`,
+                        borderColor: designStyles.answerColor,
+                        color: designStyles.answerColor,
+                        opacity: 0.5,
+                      }}
+                    >
+                      {addressFields.address.placeholder}
+                    </div>
+                  </div>
+                )}
+                {addressFields.address2.visible && (
+                  <div>
+                    <label
+                      className={`block font-medium mb-2 ${alignmentClass}`}
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                    >
+                      {addressFields.address2.label}
+                      {addressFields.address2.required && (
+                        <span className="text-red-500 ml-1">*</span>
+                      )}
+                    </label>
+                    <div
+                      className={`w-full px-0 py-2.5 border-b-2 ${alignmentClass}`}
+                      style={{
+                        fontSize: `${inputSize}px`,
+                        borderColor: designStyles.answerColor,
+                        color: designStyles.answerColor,
+                        opacity: 0.5,
+                      }}
+                    >
+                      {addressFields.address2.placeholder}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
-            {/* Row 2: Address line 2 (full width) */}
-            {addressFields.address2.visible && (
-              <div>
-                <label
-                  className={"block font-medium mb-2 text-left"}
-                  style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
-                >
-                  {addressFields.address2.label}
-                  {addressFields.address2.required && <span className="text-red-500 ml-1">*</span>}
-                </label>
-                <div
-                  className={"w-full px-0 py-2.5 border-b-2 text-left"}
-                  style={{
-                    fontSize: `${inputSize}px`,
-                    borderColor: designStyles.answerColor,
-                    color: designStyles.answerColor,
-                    opacity: 0.5,
-                  }}
-                >
-                  {addressFields.address2.placeholder}
-                </div>
-              </div>
-            )}
-
-            {/* Row 3: City + State */}
-            {row3Visible && (
-              <div className={cn("grid gap-4", row3BothVisible ? "grid-cols-2" : "grid-cols-1")}>
+            {/* Row 2: City + State */}
+            {row2Visible && (
+              <div className={cn("grid gap-4", row2BothVisible ? "grid-cols-2" : "grid-cols-1")}>
                 {addressFields.city.visible && (
                   <div>
                     <label
-                      className={"block font-medium mb-2 text-left"}
+                      className={`block font-medium mb-2 ${alignmentClass}`}
                       style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
                     >
                       {addressFields.city.label}
                       {addressFields.city.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
                     <div
-                      className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                      className={`w-full px-0 py-2.5 border-b-2 ${alignmentClass}`}
                       style={{
                         fontSize: `${inputSize}px`,
                         borderColor: designStyles.answerColor,
@@ -505,14 +513,14 @@ function renderBlockContent(
                 {addressFields.state.visible && (
                   <div>
                     <label
-                      className={"block font-medium mb-2 text-left"}
+                      className={`block font-medium mb-2 ${alignmentClass}`}
                       style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
                     >
                       {addressFields.state.label}
                       {addressFields.state.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
                     <div
-                      className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                      className={`w-full px-0 py-2.5 border-b-2 ${alignmentClass}`}
                       style={{
                         fontSize: `${inputSize}px`,
                         borderColor: designStyles.answerColor,
@@ -527,18 +535,18 @@ function renderBlockContent(
               </div>
             )}
 
-            {/* Row 4: Zip (full width) */}
+            {/* Row 3: Zip (full width) */}
             {addressFields.zip.visible && (
               <div>
                 <label
-                  className={"block font-medium mb-2 text-left"}
+                  className={`block font-medium mb-2 ${alignmentClass}`}
                   style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
                 >
                   {addressFields.zip.label}
                   {addressFields.zip.required && <span className="text-red-500 ml-1">*</span>}
                 </label>
                 <div
-                  className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                  className={`w-full px-0 py-2.5 border-b-2 ${alignmentClass}`}
                   style={{
                     fontSize: `${inputSize}px`,
                     borderColor: designStyles.answerColor,
@@ -551,18 +559,18 @@ function renderBlockContent(
               </div>
             )}
 
-            {/* Row 5: Country (full width) */}
+            {/* Row 4: Country (full width) */}
             {addressFields.country.visible && (
               <div>
                 <label
-                  className={"block font-medium mb-2 text-left"}
+                  className={`block font-medium mb-2 ${alignmentClass}`}
                   style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
                 >
                   {addressFields.country.label}
                   {addressFields.country.required && <span className="text-red-500 ml-1">*</span>}
                 </label>
                 <div
-                  className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                  className={`w-full px-0 py-2.5 border-b-2 ${alignmentClass}`}
                   style={{
                     fontSize: `${inputSize}px`,
                     borderColor: designStyles.answerColor,
@@ -1721,7 +1729,6 @@ function renderBlockContent(
   const isSelectBlock = isSingleSelect || isMultiSelect || isDropdown;
   const needsLeftAlignment =
     isContactInfo ||
-    isAddress ||
     isShortText ||
     isLongText ||
     isPhone ||
