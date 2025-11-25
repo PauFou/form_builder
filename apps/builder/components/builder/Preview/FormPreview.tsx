@@ -1226,47 +1226,55 @@ function renderBlockContent(
                 scrollbarColor: "#cbd5e1 transparent",
               }}
             >
-              {/* Grid layout for perfect alignment */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: `140px repeat(${columns.length}, minmax(100px, auto))`,
-                  gap: "12px 12px",
-                  minWidth: "max-content",
-                }}
-              >
-                {/* Empty cell for top-left corner */}
-                <div />
+              <div className="space-y-3" style={{ minWidth: "max-content" }}>
+                {/* Header row */}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: `140px repeat(${columns.length}, minmax(100px, auto))`,
+                    gap: "0 12px",
+                  }}
+                >
+                  {/* Empty cell for top-left corner */}
+                  <div />
 
-                {/* Header row - column titles */}
-                {columns.map((col: { id: string; label: string }) => (
+                  {/* Header row - column titles */}
+                  {columns.map((col: { id: string; label: string }) => (
+                    <div
+                      key={col.id}
+                      className="text-center flex items-center justify-center"
+                      style={{
+                        fontSize: `${Math.round(labelSize * 1.1)}px`,
+                        color: designStyles.answerColor,
+                        whiteSpace: "nowrap",
+                        padding: "0 8px"
+                      }}
+                    >
+                      {col.label}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Body rows - each row has continuous background */}
+                {rows.map((row: { id: string; label: string }) => (
                   <div
-                    key={col.id}
-                    className="text-center flex items-center justify-center"
+                    key={row.id}
                     style={{
-                      fontSize: `${Math.round(labelSize * 1.1)}px`,
-                      color: designStyles.answerColor,
-                      whiteSpace: "nowrap",
-                      padding: "0 8px"
+                      display: "grid",
+                      gridTemplateColumns: `140px repeat(${columns.length}, minmax(100px, auto))`,
+                      gap: "0 12px",
+                      backgroundColor: rowShadowColor,
+                      borderRadius: "4px",
+                      padding: "8px 12px",
+                      minHeight: "48px",
                     }}
                   >
-                    {col.label}
-                  </div>
-                ))}
-
-                {/* Body rows */}
-                {rows.map((row: { id: string; label: string }) => (
-                  <React.Fragment key={row.id}>
                     {/* Row label */}
                     <div
                       className="flex items-center"
                       style={{
                         fontSize: `${Math.round(labelSize * 1.1)}px`,
                         color: designStyles.answerColor,
-                        backgroundColor: rowShadowColor,
-                        borderRadius: "4px",
-                        padding: "8px 12px",
-                        minHeight: "48px",
                       }}
                     >
                       {row.label}
@@ -1277,12 +1285,6 @@ function renderBlockContent(
                       <div
                         key={col.id}
                         className="flex items-center justify-center"
-                        style={{
-                          backgroundColor: rowShadowColor,
-                          borderRadius: "4px",
-                          padding: "8px",
-                          minHeight: "48px",
-                        }}
                       >
                         <span
                           className={cn(
@@ -1298,7 +1300,7 @@ function renderBlockContent(
                         />
                       </div>
                     ))}
-                  </React.Fragment>
+                  </div>
                 ))}
               </div>
             </div>
