@@ -1220,69 +1220,85 @@ function renderBlockContent(
           <div className={containerClasses}>
             {/* Scrollable matrix container - pointer events enabled for scrolling */}
             <div
-              className="overflow-x-auto space-y-3"
+              className="overflow-x-auto"
               style={{
                 scrollbarWidth: "thin",
                 scrollbarColor: "#cbd5e1 transparent",
               }}
             >
-              {/* Header row */}
-              <div className="flex" style={{ minWidth: "max-content" }}>
-                <div className="min-w-[140px] w-[140px] flex-shrink-0" />
-                <div className="flex gap-3">
-                  {columns.map((col: { id: string; label: string }) => (
-                    <div
-                      key={col.id}
-                      className="min-w-[100px] text-center flex items-center justify-center px-2"
-                      style={{ fontSize: `${Math.round(labelSize * 1.1)}px`, color: designStyles.answerColor, whiteSpace: "nowrap" }}
-                    >
-                      {col.label}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {/* Grid layout for perfect alignment */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: `140px repeat(${columns.length}, minmax(100px, auto))`,
+                  gap: "12px 12px",
+                  minWidth: "max-content",
+                }}
+              >
+                {/* Empty cell for top-left corner */}
+                <div />
 
-              {/* Body rows - independent bars */}
-              <div className="space-y-2">
-                {rows.map((row: { id: string; label: string }) => (
+                {/* Header row - column titles */}
+                {columns.map((col: { id: string; label: string }) => (
                   <div
-                    key={row.id}
-                    className="flex items-center"
+                    key={col.id}
+                    className="text-center flex items-center justify-center"
                     style={{
-                      minWidth: "max-content",
-                      backgroundColor: rowShadowColor,
-                      borderRadius: "4px",
-                      padding: "8px 12px",
-                      minHeight: "48px",
+                      fontSize: `${Math.round(labelSize * 1.1)}px`,
+                      color: designStyles.answerColor,
+                      whiteSpace: "nowrap",
+                      padding: "0 8px"
                     }}
                   >
+                    {col.label}
+                  </div>
+                ))}
+
+                {/* Body rows */}
+                {rows.map((row: { id: string; label: string }) => (
+                  <React.Fragment key={row.id}>
                     {/* Row label */}
                     <div
-                      className="min-w-[140px] w-[140px] flex-shrink-0"
-                      style={{ fontSize: `${Math.round(labelSize * 1.1)}px`, color: designStyles.answerColor }}
+                      className="flex items-center"
+                      style={{
+                        fontSize: `${Math.round(labelSize * 1.1)}px`,
+                        color: designStyles.answerColor,
+                        backgroundColor: rowShadowColor,
+                        borderRadius: "4px",
+                        padding: "8px 12px",
+                        minHeight: "48px",
+                      }}
                     >
                       {row.label}
                     </div>
-                    {/* Checkboxes */}
-                    <div className="flex gap-3 items-center">
-                      {columns.map((col: { id: string; label: string }) => (
-                        <div key={col.id} className="min-w-[100px] flex justify-center px-2">
-                          <span
-                            className={cn(
-                              "inline-flex items-center justify-center cursor-pointer transition-colors",
-                              multipleSelection ? "rounded" : "rounded-full"
-                            )}
-                            style={{
-                              width: `${checkboxSize}px`,
-                              height: `${checkboxSize}px`,
-                              border: `2px solid ${designStyles.answerColor}`,
-                              backgroundColor: "transparent",
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+
+                    {/* Checkboxes for each column */}
+                    {columns.map((col: { id: string; label: string }) => (
+                      <div
+                        key={col.id}
+                        className="flex items-center justify-center"
+                        style={{
+                          backgroundColor: rowShadowColor,
+                          borderRadius: "4px",
+                          padding: "8px",
+                          minHeight: "48px",
+                        }}
+                      >
+                        <span
+                          className={cn(
+                            "inline-flex items-center justify-center cursor-pointer transition-colors",
+                            multipleSelection ? "rounded" : "rounded-full"
+                          )}
+                          style={{
+                            width: `${checkboxSize}px`,
+                            height: `${checkboxSize}px`,
+                            border: `2px solid ${designStyles.answerColor}`,
+                            backgroundColor: "transparent",
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </React.Fragment>
                 ))}
               </div>
             </div>
