@@ -965,23 +965,49 @@ function renderBlockContent(
         const badgeSize = Math.round(24 * designStyles.fontSizeScale);
         const handleSize = Math.round(16 * designStyles.fontSizeScale);
 
+        // Get color with opacity for ranking options
+        const getColorWithOpacity = (color: string, opacity: number) => {
+          if (color.startsWith('#')) {
+            const r = parseInt(color.slice(1, 3), 16);
+            const g = parseInt(color.slice(3, 5), 16);
+            const b = parseInt(color.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+          }
+          if (color.startsWith('rgb')) {
+            const match = color.match(/\d+/g);
+            if (match && match.length >= 3) {
+              return `rgba(${match[0]}, ${match[1]}, ${match[2]}, ${opacity})`;
+            }
+          }
+          return color;
+        };
+
+        const optionBg = getColorWithOpacity(designStyles.answerColor, 0.05);
+        const optionBorder = getColorWithOpacity(designStyles.answerColor, 0.25);
+
         return (
           <div className={containerClasses}>
             <div className="inline-grid gap-2" style={{ gridTemplateColumns: "1fr" }}>
               {displayOptions.map((option: any, index: number) => (
                 <div
                   key={option.id || index}
-                  className="flex items-center gap-3 px-5 border border-gray-200 bg-white transition-colors cursor-grab"
-                  style={{ borderRadius: designStyles.cornerRadius, minHeight: `${Math.round(44 * designStyles.fontSizeScale)}px` }}
+                  className="flex items-center gap-3 px-5 border transition-colors cursor-grab"
+                  style={{
+                    borderRadius: designStyles.cornerRadius,
+                    minHeight: `${Math.round(44 * designStyles.fontSizeScale)}px`,
+                    backgroundColor: optionBg,
+                    borderColor: optionBorder
+                  }}
                 >
                   {/* Rank number dropdown - scaled size, clickable for alternative ranking */}
                   <div className="flex-shrink-0 relative group/rank">
                     <span
-                      className="flex items-center justify-center bg-gray-100 font-semibold cursor-pointer transition-colors"
+                      className="flex items-center justify-center font-semibold cursor-pointer transition-colors"
                       style={{
                         width: `${badgeSize}px`,
                         height: `${badgeSize}px`,
                         borderRadius: designStyles.cornerRadius,
+                        backgroundColor: getColorWithOpacity(designStyles.answerColor, 0.15),
                         color: designStyles.answerColor,
                         fontSize: `${smallSize}px`
                       }}
@@ -990,7 +1016,8 @@ function renderBlockContent(
                     </span>
                     {/* Small dropdown indicator */}
                     <svg
-                      className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-2 h-2 text-gray-400 opacity-0 group-hover/rank:opacity-100 transition-opacity"
+                      className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-2 h-2 opacity-0 group-hover/rank:opacity-100 transition-opacity"
+                      style={{ color: designStyles.answerColor }}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -1013,8 +1040,8 @@ function renderBlockContent(
                   </span>
                   {/* Drag handle - scaled size */}
                   <svg
-                    className="text-gray-300 flex-shrink-0"
-                    style={{ width: `${handleSize}px`, height: `${handleSize}px` }}
+                    className="flex-shrink-0"
+                    style={{ width: `${handleSize}px`, height: `${handleSize}px`, color: designStyles.answerColor, opacity: 0.5 }}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
