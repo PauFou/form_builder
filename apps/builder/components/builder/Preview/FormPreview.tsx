@@ -1617,6 +1617,7 @@ function renderBlockContent(
                 gridTemplateColumns: `140px repeat(${columns.length}, minmax(100px, auto))`,
                 rowGap: "12px",
                 columnGap: "0",
+                minWidth: "max-content",
               }}
             >
                 {/* Header row - Empty cell for top-left corner */}
