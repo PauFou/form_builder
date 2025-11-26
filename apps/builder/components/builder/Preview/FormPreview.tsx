@@ -1618,63 +1618,66 @@ function renderBlockContent(
                 scrollbarColor: "#cbd5e1 transparent",
               }}
             >
-              <div className="space-y-3" style={{ minWidth: "max-content" }}>
-                {/* Header row */}
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: `140px repeat(${columns.length}, minmax(100px, auto))`,
-                    gap: "0 12px",
-                  }}
-                >
-                  {/* Empty cell for top-left corner */}
-                  <div />
+              {/* Single unified grid for perfect column alignment */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: `140px repeat(${columns.length}, minmax(100px, auto))`,
+                  gap: "12px",
+                  minWidth: "max-content",
+                }}
+              >
+                {/* Header row - Empty cell for top-left corner */}
+                <div />
 
-                  {/* Header row - column titles */}
-                  {columns.map((col: { id: string; label: string }) => (
-                    <div
-                      key={col.id}
-                      className="text-center flex items-center justify-center"
-                      style={{
-                        fontSize: `${Math.round(labelSize * 1.1)}px`,
-                        color: designStyles.answerColor,
-                        whiteSpace: "nowrap",
-                        padding: "0 8px",
-                      }}
-                    >
-                      {col.label}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Body rows - each row has continuous background */}
-                {rows.map((row: { id: string; label: string }) => (
+                {/* Header row - column titles */}
+                {columns.map((col: { id: string; label: string }) => (
                   <div
-                    key={row.id}
+                    key={`header-${col.id}`}
+                    className="text-center flex items-center justify-center"
                     style={{
-                      display: "grid",
-                      gridTemplateColumns: `140px repeat(${columns.length}, minmax(100px, auto))`,
-                      gap: "0 12px",
-                      backgroundColor: rowShadowColor,
-                      borderRadius: "4px",
-                      padding: "8px 12px",
-                      minHeight: "48px",
+                      fontSize: `${Math.round(labelSize * 1.1)}px`,
+                      color: designStyles.answerColor,
+                      whiteSpace: "nowrap",
+                      padding: "0 8px",
+                      marginBottom: "4px",
                     }}
                   >
-                    {/* Row label */}
+                    {col.label}
+                  </div>
+                ))}
+
+                {/* Body rows - flatten all cells into the single grid */}
+                {rows.map((row: { id: string; label: string }, rowIndex: number) => (
+                  <React.Fragment key={row.id}>
+                    {/* Row label cell with background */}
                     <div
                       className="flex items-center"
                       style={{
                         fontSize: `${Math.round(labelSize * 1.1)}px`,
                         color: designStyles.answerColor,
+                        backgroundColor: rowShadowColor,
+                        borderRadius: "4px 0 0 4px",
+                        padding: "8px 12px",
+                        minHeight: "48px",
                       }}
                     >
                       {row.label}
                     </div>
 
-                    {/* Checkboxes for each column */}
-                    {columns.map((col: { id: string; label: string }) => (
-                      <div key={col.id} className="flex items-center justify-center">
+                    {/* Checkbox cells - each with background */}
+                    {columns.map((col: { id: string; label: string }, colIndex: number) => (
+                      <div
+                        key={`${row.id}-${col.id}`}
+                        className="flex items-center justify-center"
+                        style={{
+                          backgroundColor: rowShadowColor,
+                          borderRadius:
+                            colIndex === columns.length - 1 ? "0 4px 4px 0" : "0",
+                          padding: "8px 12px",
+                          minHeight: "48px",
+                        }}
+                      >
                         <span
                           className={cn(
                             "inline-flex items-center justify-center cursor-pointer transition-colors",
@@ -1689,7 +1692,7 @@ function renderBlockContent(
                         />
                       </div>
                     ))}
-                  </div>
+                  </React.Fragment>
                 ))}
               </div>
             </div>
