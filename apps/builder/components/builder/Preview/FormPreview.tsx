@@ -1149,8 +1149,7 @@ function renderBlockContent(
         );
       }
 
-      case "opinion_scale":
-      case "nps": {
+      case "opinion_scale": {
         const scaleStart = (block as any).scaleStart ?? 1;
         const scaleEnd = (block as any).scaleEnd ?? 10;
         const leftLabel = (block as any).leftLabel || "Not likely";
@@ -1610,16 +1609,24 @@ function renderBlockContent(
 
         return (
           <div className={containerClasses}>
-            {/* Single unified grid for perfect column alignment */}
+            {/* Scrollable matrix container - pointer events enabled for scrolling */}
             <div
+              className="overflow-x-auto"
               style={{
-                display: "grid",
-                gridTemplateColumns: `140px repeat(${columns.length}, minmax(100px, auto))`,
-                rowGap: "12px",
-                columnGap: "0",
-                minWidth: "max-content",
+                scrollbarWidth: "thin",
+                scrollbarColor: "#cbd5e1 transparent",
               }}
             >
+              {/* Single unified grid for perfect column alignment */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: `140px repeat(${columns.length}, minmax(100px, auto))`,
+                  rowGap: "12px",
+                  columnGap: "0",
+                  minWidth: "max-content",
+                }}
+              >
                 {/* Header row - Empty cell for top-left corner */}
                 <div />
 
@@ -1687,7 +1694,14 @@ function renderBlockContent(
                     ))}
                   </React.Fragment>
                 ))}
+              </div>
             </div>
+            {/* Scroll hint when many columns */}
+            {columns.length > 5 && (
+              <p className="text-gray-400 mt-2 text-center" style={{ fontSize: `${smallSize}px` }}>
+                ← Scroll horizontally to see all columns →
+              </p>
+            )}
           </div>
         );
       }
@@ -1707,7 +1721,7 @@ function renderBlockContent(
   const isNumber = block.type === "number";
   const isDate = block.type === "date";
   const isStarRating = block.type === "star_rating" || block.type === "rating";
-  const isOpinionScale = block.type === "opinion_scale" || block.type === "nps";
+  const isOpinionScale = block.type === "opinion_scale";
   const isRanking = block.type === "ranking";
   const isSignature = block.type === "signature";
   const isFileUpload = block.type === "file_upload";

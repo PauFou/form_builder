@@ -139,7 +139,6 @@ export type BlockType =
   | "checkbox"
   | "rating"
   | "scale"
-  | "nps"
   | "ranking"
   | "matrix"
   | "file_upload"

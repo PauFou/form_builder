@@ -23,7 +23,6 @@ import {
   Upload,
   CreditCard,
   Grid3x3,
-  Target,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 
@@ -34,6 +33,7 @@ interface Block {
   bgColor: string;
   textColor: string;
   description: string;
+  upcoming?: boolean;
   preview: {
     title: string;
     fields: Array<{
@@ -219,6 +219,7 @@ const blocks: Block[] = [
     bgColor: "bg-violet-300",
     description: "Let users book time slots. Perfect for meetings or appointments.",
     textColor: "text-violet-900",
+    upcoming: true,
     preview: {
       title: "Schedule a meeting",
       fields: [],
@@ -295,6 +296,7 @@ const blocks: Block[] = [
     bgColor: "bg-rose-300",
     description: "Collect payment information with Stripe integration. For orders or donations.",
     textColor: "text-rose-900",
+    upcoming: true,
     preview: {
       title: "Payment details",
       fields: [],
@@ -309,18 +311,6 @@ const blocks: Block[] = [
     textColor: "text-cyan-900",
     preview: {
       title: "Matrix question",
-      fields: [],
-    },
-  },
-  {
-    id: "nps",
-    name: "NPS",
-    icon: Target,
-    bgColor: "bg-blue-200",
-    description: "Net Promoter Score question. Measure customer loyalty with 0-10 scale.",
-    textColor: "text-blue-900",
-    preview: {
-      title: "How likely are you to recommend us?",
       fields: [],
     },
   },
@@ -343,10 +333,12 @@ export function AddBlockModal({ isOpen, onClose, onSelectBlock }: AddBlockModalP
   );
 
   const handleBlockClick = (block: Block) => {
+    if (block.upcoming) return; // Don't allow selection of upcoming blocks
     setSelectedBlock(block);
   };
 
   const handleBlockDoubleClick = (block: Block) => {
+    if (block.upcoming) return; // Don't allow selection of upcoming blocks
     onSelectBlock(block.id);
     onClose();
     setSelectedBlock(null);
@@ -394,14 +386,18 @@ export function AddBlockModal({ isOpen, onClose, onSelectBlock }: AddBlockModalP
               {filteredBlocks.map((block) => {
                 const Icon = block.icon;
                 const isSelected = selectedBlock?.id === block.id;
+                const isUpcoming = block.upcoming;
                 return (
                   <button
                     key={block.id}
                     onClick={() => handleBlockClick(block)}
                     onDoubleClick={() => handleBlockDoubleClick(block)}
+                    disabled={isUpcoming}
                     className={cn(
-                      "w-full flex items-center gap-2.5 px-3 py-2.5 rounded transition-all text-left",
-                      isSelected
+                      "w-full flex items-center gap-2.5 px-3 py-2.5 rounded transition-all text-left relative",
+                      isUpcoming
+                        ? "opacity-50 cursor-not-allowed bg-gray-50 border border-gray-200"
+                        : isSelected
                         ? "bg-indigo-50 border border-indigo-200"
                         : "bg-white border border-gray-200 hover:border-gray-300 hover:shadow-sm"
                     )}
@@ -416,12 +412,17 @@ export function AddBlockModal({ isOpen, onClose, onSelectBlock }: AddBlockModalP
                     </div>
                     <span
                       className={cn(
-                        "text-sm font-medium",
+                        "text-sm font-medium flex-1",
                         isSelected ? "text-gray-900" : "text-gray-700"
                       )}
                     >
                       {block.name}
                     </span>
+                    {isUpcoming && (
+                      <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-xs font-semibold rounded">
+                        Upcoming
+                      </span>
+                    )}
                   </button>
                 );
               })}
@@ -710,24 +711,6 @@ export function AddBlockModal({ isOpen, onClose, onSelectBlock }: AddBlockModalP
                       <div className="flex justify-between text-xs text-gray-500">
                         <span>Not likely</span>
                         <span>Very likely</span>
-                      </div>
-                    </div>
-                  ) : selectedBlock.id === "nps" ? (
-                    /* NPS (0-10) - Similar to opinion scale */
-                    <div className="space-y-3">
-                      <div className="flex justify-between gap-1">
-                        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                          <button
-                            key={num}
-                            className="w-7 h-7 flex items-center justify-center border border-gray-300 rounded text-xs text-gray-700 hover:bg-gray-50"
-                          >
-                            {num}
-                          </button>
-                        ))}
-                      </div>
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <span>Not at all likely</span>
-                        <span>Extremely likely</span>
                       </div>
                     </div>
                   ) : selectedBlock.id === "ranking" ? (

@@ -71,7 +71,6 @@ const blockIcons: Record<string, React.ComponentType<any>> = {
   single_select: Circle,
   star_rating: Star,
   rating: Star,
-  nps: Star,
   opinion_scale: Star,
   payment: CreditCard,
   contact_info: Users,
@@ -244,7 +243,6 @@ export function BlocksList() {
       file_upload: "Upload your files",
       payment: "Payment details",
       matrix: "How would you rate your experience?",
-      nps: "How likely are you to recommend us to a friend?",
     };
     return questionMap[type] || "New question";
   };
