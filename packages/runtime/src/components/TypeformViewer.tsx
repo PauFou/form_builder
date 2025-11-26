@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { TypeformField } from "./TypeformField";
 import { SkemyaLogo } from "./SkemyaLogo";
+import { InactivityWarningModal } from "./InactivityWarningModal";
 import { useFormRuntime } from "../hooks";
+import { useInactivityRefresh } from "../hooks/useInactivityRefresh";
 import { createTimer, clearTimer } from "../utils/test-utils";
 import type { FormSchema, RuntimeConfig } from "../types";
 
@@ -31,6 +33,12 @@ export function TypeformViewer({ schema, config, className = "" }: TypeformViewe
   const [transitionDirection, setTransitionDirection] = useState<"next" | "prev" | "none">("none");
   const previousStepRef = useRef(state.currentStep);
   const [showWelcome, setShowWelcome] = useState(true);
+
+  // Inactivity refresh hook
+  const { showWarning, countdown, handleRefresh, handleContinue } = useInactivityRefresh({
+    enabled: schema.settings?.access?.autoRefreshOnInactivity ?? false,
+    timeoutMinutes: schema.settings?.access?.inactivityTimeout ?? 10,
+  });
 
   // Detect keyboard vs mouse navigation
   useEffect(() => {
@@ -343,6 +351,15 @@ export function TypeformViewer({ schema, config, className = "" }: TypeformViewe
           <span className="typeform-offline-icon">⚡</span>
           Working offline
         </div>
+      )}
+
+      {/* Inactivity warning modal */}
+      {showWarning && (
+        <InactivityWarningModal
+          countdown={countdown}
+          onRefresh={handleRefresh}
+          onContinue={handleContinue}
+        />
       )}
     </div>
   );

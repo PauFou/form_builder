@@ -8,6 +8,7 @@
 @import "./typeform-fields.css";
 @import "./new-blocks.css";
 @import "./grid-form-typeform.css";
+@import "./inactivity-modal.css";
 
 /* Ensure smooth font rendering */
 * {

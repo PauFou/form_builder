@@ -105,15 +105,41 @@ export function AccessSettings() {
       <div className="bg-white border border-gray-200 rounded p-5 shadow-sm">
         <div className="flex items-start justify-between gap-4 mb-3">
           <div className="flex-1">
-            <Label className="text-sm font-semibold text-gray-900">
-              Auto-refresh on Inactivity
-            </Label>
+            <div className="flex items-center gap-2">
+              <Label className="text-sm font-semibold text-gray-900">
+                Auto-refresh on Inactivity
+              </Label>
+              <div className="group relative">
+                <svg
+                  className="w-4 h-4 text-gray-400 cursor-help"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <circle cx="12" cy="12" r="10" strokeWidth="2" />
+                  <path strokeLinecap="round" strokeWidth="2" d="M12 16v-4m0-4h.01" />
+                </svg>
+                <div className="absolute left-0 top-6 w-80 p-3 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                  <p className="font-semibold mb-2">How this works:</p>
+                  <p className="mb-2">
+                    <strong>Auto-Refresh Inactivity Setup:</strong> After setting up auto-refresh
+                    inactivity from your form's Access setting, the following occurs:
+                  </p>
+                  <ul className="list-disc pl-4 space-y-1">
+                    <li>
+                      If a user starts filling out a form and becomes inactive for the set amount of
+                      minutes, the form prepares to refresh.
+                    </li>
+                    <li>
+                      A popup will appear in the last 10 seconds, giving the user the option to
+                      either refresh immediately or continue filling out the form.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
             <p className="text-sm text-gray-500 mt-1">
-              Automatically refresh the form after a period of inactivity.{" "}
-              <a href="#" className="text-indigo-600 hover:underline">
-                Learn more
-              </a>
-              .
+              Automatically refresh the form after a period of inactivity.
             </p>
           </div>
           <Switch

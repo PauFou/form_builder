@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FormField } from "./FormField";
 import { ProgressBar } from "./ProgressBar";
+import { InactivityWarningModal } from "./InactivityWarningModal";
 import { useFormRuntime } from "../hooks";
+import { useInactivityRefresh } from "../hooks/useInactivityRefresh";
 import type { FormSchema, RuntimeConfig } from "../types";
 
 interface GridFormViewerProps {
@@ -25,6 +27,12 @@ export function GridFormViewer({ schema, config, className = "" }: GridFormViewe
   const formRef = useRef<HTMLFormElement>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageErrors, setPageErrors] = useState<Record<string, string>>({});
+
+  // Inactivity refresh hook
+  const { showWarning, countdown, handleRefresh, handleContinue } = useInactivityRefresh({
+    enabled: schema.settings?.access?.autoRefreshOnInactivity ?? false,
+    timeoutMinutes: schema.settings?.access?.inactivityTimeout ?? 10,
+  });
 
   // Group blocks by page
   const pages = schema.pages || [{ id: "default", blocks: visibleBlocks }];
@@ -255,6 +263,15 @@ export function GridFormViewer({ schema, config, className = "" }: GridFormViewe
           )}
           <p className="fr-offline-notice">Your progress is automatically saved</p>
         </div>
+      )}
+
+      {/* Inactivity warning modal */}
+      {showWarning && (
+        <InactivityWarningModal
+          countdown={countdown}
+          onRefresh={handleRefresh}
+          onContinue={handleContinue}
+        />
       )}
     </div>
   );
