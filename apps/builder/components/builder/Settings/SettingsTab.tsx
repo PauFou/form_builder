@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 import { EmailSettings } from "./EmailSettings";
+import { AccessSettings } from "./AccessSettings";
 
 type SettingsSubTab = "general" | "email" | "access" | "hidden_fields" | "link" | "language";
 
@@ -16,7 +17,7 @@ export function SettingsTab() {
   const subTabs = [
     { id: "general" as SettingsSubTab, label: "General" },
     { id: "email" as SettingsSubTab, label: "Email Settings" },
-    { id: "access" as SettingsSubTab, label: "Access" },
+    { id: "access" as SettingsSubTab, label: "Access & Scheduling" },
     { id: "hidden_fields" as SettingsSubTab, label: "Hidden Fields & Variables" },
     { id: "link" as SettingsSubTab, label: "Link Settings" },
     { id: "language" as SettingsSubTab, label: "Language" },
@@ -186,11 +187,7 @@ export function SettingsTab() {
 
           {activeSubTab === "email" && <EmailSettings />}
 
-          {activeSubTab === "access" && (
-            <div className="bg-white border border-gray-200 rounded p-6 shadow-sm">
-              <p className="text-sm text-gray-600">Access settings coming soon...</p>
-            </div>
-          )}
+          {activeSubTab === "access" && <AccessSettings />}
 
           {activeSubTab === "hidden_fields" && (
             <div className="bg-white border border-gray-200 rounded p-6 shadow-sm">

@@ -136,6 +136,15 @@ export interface FormSettings {
     subject?: string;
     body?: string;
   };
+  access?: {
+    closeForm?: boolean;
+    closeFormByDate?: boolean;
+    closeFormDate?: string; // ISO date string
+    closeFormBySubmissions?: boolean;
+    maxSubmissions?: number;
+    autoRefreshOnInactivity?: boolean;
+    inactivityTimeout?: number; // in minutes
+  };
 }
 
 export interface Theme {
