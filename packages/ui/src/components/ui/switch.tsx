@@ -17,7 +17,7 @@ const Switch = React.forwardRef<
       className={cn(
         // Base styles
         "peer relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border transition-all duration-300 ease-out",
-        "focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-1",
+        "focus:outline-none focus-visible:outline-none",
         "disabled:cursor-not-allowed disabled:opacity-50",
         // État OFF
         "bg-gray-200 border-gray-300",
