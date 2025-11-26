@@ -398,8 +398,8 @@ export function AddBlockModal({ isOpen, onClose, onSelectBlock }: AddBlockModalP
                       isUpcoming
                         ? "opacity-50 cursor-not-allowed bg-gray-50 border border-gray-200"
                         : isSelected
-                        ? "bg-indigo-50 border border-indigo-200"
-                        : "bg-white border border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                          ? "bg-indigo-50 border border-indigo-200"
+                          : "bg-white border border-gray-200 hover:border-gray-300 hover:shadow-sm"
                     )}
                   >
                     <div

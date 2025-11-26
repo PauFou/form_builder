@@ -76,7 +76,9 @@ const blockIcons: Record<string, React.ComponentType<any>> = {
 };
 
 export function FormBuilder({ formId }: FormBuilderProps) {
-  const [activeTab, setActiveTab] = useState<"build" | "integrate" | "share" | "results" | "settings">("build");
+  const [activeTab, setActiveTab] = useState<
+    "build" | "integrate" | "share" | "results" | "settings"
+  >("build");
 
   // Drag & Drop state
   const [activeId, setActiveId] = useState<string | null>(null);

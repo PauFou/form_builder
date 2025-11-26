@@ -16,7 +16,7 @@ const Switch = React.forwardRef<
       checked={checked}
       className={cn(
         // Base styles
-        "peer relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border transition-colors",
+        "peer relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border transition-all duration-200",
         "focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-1",
         "disabled:cursor-not-allowed disabled:opacity-50",
         // État OFF
@@ -32,7 +32,7 @@ const Switch = React.forwardRef<
     >
       <SwitchPrimitives.Thumb
         className={cn(
-          "pointer-events-none block h-4 w-4 rounded-full bg-white shadow-sm ring-0 transition-transform",
+          "pointer-events-none block h-4 w-4 rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 ease-in-out",
           // Position
           "translate-x-0.5 data-[state=checked]:translate-x-5.5"
         )}

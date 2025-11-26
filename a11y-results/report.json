@@ -3,18 +3,18 @@
     "page": "marketing-home",
     "url": "http://localhost:3000",
     "error": "Server not ready",
-    "timestamp": "2025-11-25T16:52:09.499Z"
+    "timestamp": "2025-11-26T15:51:05.363Z"
   },
   {
     "page": "builder-home",
     "url": "http://localhost:3001",
     "violations": [],
-    "timestamp": "2025-11-25T16:52:13.012Z"
+    "timestamp": "2025-11-26T15:51:08.363Z"
   },
   {
     "page": "dashboard",
     "url": "http://localhost:3001/dashboard",
     "violations": [],
-    "timestamp": "2025-11-25T16:52:16.049Z"
+    "timestamp": "2025-11-26T15:51:11.064Z"
   }
 ]

@@ -1672,8 +1672,7 @@ function renderBlockContent(
                         className="flex items-center justify-center"
                         style={{
                           backgroundColor: rowShadowColor,
-                          borderRadius:
-                            colIndex === columns.length - 1 ? "0 4px 4px 0" : "0",
+                          borderRadius: colIndex === columns.length - 1 ? "0 4px 4px 0" : "0",
                           padding: "8px 12px",
                           minHeight: "48px",
                         }}

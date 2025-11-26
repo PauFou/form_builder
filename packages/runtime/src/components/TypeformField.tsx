@@ -320,31 +320,6 @@ export const TypeformField = memo(function TypeformField({
         );
       }
 
-      case "nps": {
-        return (
-          <div className="typeform-nps">
-            <div className="typeform-nps-scale">
-              {Array.from({ length: 11 }, (_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  className={`typeform-nps-button ${value === i ? "active" : ""}`}
-                  onClick={() => onChange(i)}
-                  onBlur={onBlur}
-                  aria-label={`${i} out of 10`}
-                >
-                  {i}
-                </button>
-              ))}
-            </div>
-            <div className="typeform-nps-labels">
-              <span>Not likely at all</span>
-              <span>Extremely likely</span>
-            </div>
-          </div>
-        );
-      }
-
       case "ranking": {
         const items = Array.isArray(value)
           ? value
