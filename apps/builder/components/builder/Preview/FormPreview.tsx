@@ -1610,24 +1610,15 @@ function renderBlockContent(
 
         return (
           <div className={containerClasses}>
-            {/* Scrollable matrix container - pointer events enabled for scrolling */}
+            {/* Single unified grid for perfect column alignment */}
             <div
-              className="overflow-x-auto"
               style={{
-                scrollbarWidth: "thin",
-                scrollbarColor: "#cbd5e1 transparent",
+                display: "grid",
+                gridTemplateColumns: `140px repeat(${columns.length}, minmax(100px, auto))`,
+                rowGap: "12px",
+                columnGap: "0",
               }}
             >
-              {/* Single unified grid for perfect column alignment */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: `140px repeat(${columns.length}, minmax(100px, auto))`,
-                  rowGap: "12px",
-                  columnGap: "0",
-                  minWidth: "max-content",
-                }}
-              >
                 {/* Header row - Empty cell for top-left corner */}
                 <div />
 
@@ -1695,14 +1686,7 @@ function renderBlockContent(
                     ))}
                   </React.Fragment>
                 ))}
-              </div>
             </div>
-            {/* Scroll hint when many columns */}
-            {columns.length > 5 && (
-              <p className="text-gray-400 mt-2 text-center" style={{ fontSize: `${smallSize}px` }}>
-                ← Scroll horizontally to see all columns →
-              </p>
-            )}
           </div>
         );
       }
