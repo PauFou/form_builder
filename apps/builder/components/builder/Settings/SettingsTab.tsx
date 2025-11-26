@@ -33,9 +33,18 @@ export function SettingsTab() {
   return (
     <div className="h-full flex bg-gray-50">
       {/* Vertical Sub-tabs on the left */}
-      <div className="w-64 bg-white border-r border-gray-200 flex-shrink-0">
-        <div className="p-4">
-          <div className="space-y-1">
+      <div className="w-72 bg-white border-r border-gray-200 flex-shrink-0 overflow-y-auto">
+        <div className="p-6">
+          {/* Header */}
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-gray-900">Form Settings</h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Configure your form behavior and preferences
+            </p>
+          </div>
+
+          {/* Navigation */}
+          <nav className="space-y-0.5">
             {subTabs.map((tab) => {
               const isActive = activeSubTab === tab.id;
               return (
@@ -43,20 +52,20 @@ export function SettingsTab() {
                   key={tab.id}
                   onClick={() => setActiveSubTab(tab.id)}
                   className={cn(
-                    "w-full text-left py-2.5 px-4 text-sm font-medium whitespace-nowrap transition-all duration-200 rounded-md relative",
+                    "w-full text-left py-2.5 px-3 text-sm font-medium whitespace-nowrap transition-all duration-200 rounded relative group",
                     isActive
-                      ? "text-indigo-600 bg-indigo-50"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                      ? "text-indigo-600 bg-indigo-50 shadow-sm"
+                      : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                   )}
                 >
-                  {tab.label}
+                  <span className="relative z-10">{tab.label}</span>
                   {isActive && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 rounded-r" />
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-indigo-600 rounded-full" />
                   )}
                 </button>
               );
             })}
-          </div>
+          </nav>
         </div>
       </div>
 
