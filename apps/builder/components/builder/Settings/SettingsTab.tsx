@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { cn } from "../../../lib/utils";
-import { Switch } from "@/packages/ui/src/components/ui/switch";
-import { Label } from "@/packages/ui/src/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 
 type SettingsSubTab = "general" | "email" | "access" | "hidden_fields" | "link" | "language";
