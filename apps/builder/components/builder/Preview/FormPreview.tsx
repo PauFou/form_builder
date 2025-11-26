@@ -1623,7 +1623,8 @@ function renderBlockContent(
                 style={{
                   display: "grid",
                   gridTemplateColumns: `140px repeat(${columns.length}, minmax(100px, auto))`,
-                  gap: "12px",
+                  rowGap: "12px",
+                  columnGap: "0",
                   minWidth: "max-content",
                 }}
               >
