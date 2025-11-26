@@ -1,174 +1,228 @@
 "use client";
 
-import React, { useState } from "react";
-import { FileText } from "lucide-react";
-import { Button } from "@skemya/ui";
+import React, { useRef, useState } from "react";
+import { Label } from "@/components/ui/label";
+import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 
-interface LinkSettingsProps {
-  formId: string;
-}
+export function LinkSettings() {
+  const { form, updateForm } = useFormBuilderStore();
+  const socialImageInputRef = useRef<HTMLInputElement>(null);
+  const faviconInputRef = useRef<HTMLInputElement>(null);
 
-export function LinkSettings({ formId }: LinkSettingsProps) {
-  const [title, setTitle] = useState("My Form");
-  const [description, setDescription] = useState("Fill out my Youform");
+  const settings = form?.settings || {};
+  const linkSettings = settings.linkSettings || {};
+
+  const [socialImagePreview, setSocialImagePreview] = useState<string | null>(
+    linkSettings.socialPreviewImage || null
+  );
+  const [faviconPreview, setFaviconPreview] = useState<string | null>(
+    linkSettings.favicon || null
+  );
+
+  const handleLinkSettingChange = (key: string, value: any) => {
+    updateForm({
+      settings: {
+        ...settings,
+        linkSettings: {
+          ...linkSettings,
+          [key]: value,
+        },
+      },
+    });
+  };
+
+  const handleSocialImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File size should be less than 5MB");
+        return;
+      }
+
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const dataUrl = reader.result as string;
+        setSocialImagePreview(dataUrl);
+        handleLinkSettingChange("socialPreviewImage", dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleFaviconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Check file type
+      if (!file.type.match(/image\/(png|x-icon|vnd.microsoft.icon)/)) {
+        alert("Please upload a .png or .ico file");
+        return;
+      }
+
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const dataUrl = reader.result as string;
+        setFaviconPreview(dataUrl);
+        handleLinkSettingChange("favicon", dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const title = linkSettings.title || "My Form";
+  const description = linkSettings.description || "Fill out my Youform";
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-gray-900">Link Settings</h2>
-        <Button variant="youform-primary" size="youform-default">
-          Save
-        </Button>
+      {/* Description */}
+      <div className="bg-gray-50 border border-gray-200 rounded p-4">
+        <p className="text-sm text-gray-600">
+          Setup how your forms will appear in social media like Facebook, X etc.
+        </p>
       </div>
 
-      <p className="text-sm text-gray-600">
-        Setup how your forms will appear in social media like Facebook, X etc.
-      </p>
-
-      <div className="grid grid-cols-2 gap-8">
-        {/* Left: Form */}
-        <div className="space-y-6">
-          {/* Title */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <p className="text-xs text-gray-500 mt-1">Max characters 60.</p>
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-            />
-            <p className="text-xs text-gray-500 mt-1">Max characters 110.</p>
-          </div>
-
-          {/* Social Preview Image */}
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <label className="text-sm font-medium text-gray-700">Social Preview Image</label>
-              <span className="px-2 py-0.5 bg-pink-500 text-white text-[10px] font-bold rounded tracking-wide">
-                PRO
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                disabled
-                className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-md bg-gray-100 text-gray-400 cursor-not-allowed"
-              >
-                Choisir un fichier
-              </button>
-              <span className="text-sm text-gray-500">Aucun fichier choisi</span>
-            </div>
-            <p className="text-xs text-gray-500 mt-1">
-              Recommended size 1200x630. Should be less than 5MB.
-            </p>
-          </div>
-
-          {/* Favicon */}
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <label className="text-sm font-medium text-gray-700">Favicon</label>
-              <span className="px-2 py-0.5 bg-pink-500 text-white text-[10px] font-bold rounded tracking-wide">
-                PRO
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                disabled
-                className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-md bg-gray-100 text-gray-400 cursor-not-allowed"
-              >
-                Choisir un fichier
-              </button>
-              <span className="text-sm text-gray-500">Aucun fichier choisi</span>
-            </div>
-            <p className="text-xs text-gray-500 mt-1">
-              Recommended size 60x60. Ideally .ico or .png image.
-            </p>
-          </div>
-        </div>
-
-        {/* Right: Preview */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-orange-100 rounded flex items-center justify-center">
-              <FileText className="w-4 h-4 text-orange-600" />
-            </div>
-            <h3 className="text-base font-semibold text-gray-900">Preview</h3>
-          </div>
-
-          {/* Social Preview Card */}
-          <div className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
-            {/* Top decoration */}
-            <svg viewBox="0 0 400 20" className="w-full h-5" preserveAspectRatio="none">
-              <path
-                d="M0,10 Q10,0 20,10 T40,10 T60,10 T80,10 T100,10 T120,10 T140,10 T160,10 T180,10 T200,10 T220,10 T240,10 T260,10 T280,10 T300,10 T320,10 T340,10 T360,10 T380,10 T400,10 L400,20 L0,20 Z"
-                fill="#f472b6"
-              />
-            </svg>
-
-            {/* Content */}
-            <div
-              className="p-8 flex flex-col items-center justify-center min-h-[200px] relative overflow-hidden"
-              style={{
-                background: "linear-gradient(135deg, #fef3c7 0%, #ffffff 50%, #dbeafe 100%)",
-              }}
-            >
-              {/* Decorative elements */}
-              <div className="absolute top-4 left-4 w-16 h-16 bg-yellow-300 rounded-full opacity-80" />
-              <div className="absolute bottom-4 right-4 w-12 h-12 bg-yellow-400 rounded-full opacity-80" />
-              <div className="absolute top-1/2 left-8 text-4xl opacity-60">⭐</div>
-              <div className="absolute top-1/4 right-12 w-8 h-8 bg-orange-300 rounded-full opacity-60" />
-
-              <div className="relative z-10 text-center">
-                <div className="w-16 h-16 bg-orange-500 rounded-lg mb-4 mx-auto flex items-center justify-center shadow-lg">
-                  <FileText className="w-8 h-8 text-white" />
-                </div>
-                <h4 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">
-                  {title.toUpperCase().substring(0, 30)}
-                </h4>
-                <button className="px-5 py-2 bg-teal-500 hover:bg-teal-600 text-white text-sm font-medium rounded-md shadow-md transition-colors">
-                  Let's Go
-                </button>
-              </div>
-            </div>
-
-            {/* Bottom decoration */}
-            <svg viewBox="0 0 400 20" className="w-full h-5" preserveAspectRatio="none">
-              <path
-                d="M0,0 L0,10 Q10,20 20,10 T40,10 T60,10 T80,10 T100,10 T120,10 T140,10 T160,10 T180,10 T200,10 T220,10 T240,10 T260,10 T280,10 T300,10 T320,10 T340,10 T360,10 T380,10 T400,10 L400,0 Z"
-                fill="#fbbf24"
-              />
-            </svg>
-
-            {/* Footer */}
-            <div className="p-4 bg-white border-t border-gray-100">
-              <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">YOUFORM.COM</p>
-              <h5 className="text-base font-semibold text-gray-900 mb-1">{title}</h5>
-              <p className="text-sm text-gray-600 line-clamp-2">{description}</p>
-            </div>
-          </div>
-        </div>
+      {/* Title */}
+      <div className="bg-white border border-gray-200 rounded p-5 shadow-sm">
+        <Label className="text-sm font-semibold text-gray-900 mb-2 block">Title</Label>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => handleLinkSettingChange("title", e.target.value)}
+          maxLength={60}
+          placeholder="My Form"
+          className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent mb-2"
+        />
+        <p className="text-xs text-gray-500">
+          Max characters {title.length}/60.
+        </p>
       </div>
 
-      <p className="text-sm text-gray-600 text-center pt-4">
-        Looking for custom domain setup?{" "}
-        <a
-          href={`/form/${formId}/share`}
-          className="text-blue-600 hover:text-blue-700 underline font-medium"
+      {/* Description */}
+      <div className="bg-white border border-gray-200 rounded p-5 shadow-sm">
+        <Label className="text-sm font-semibold text-gray-900 mb-2 block">Description</Label>
+        <textarea
+          value={description}
+          onChange={(e) => handleLinkSettingChange("description", e.target.value)}
+          maxLength={110}
+          placeholder="Fill out my Youform"
+          rows={3}
+          className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent mb-2 resize-none"
+        />
+        <p className="text-xs text-gray-500">
+          Max characters {description.length}/110.
+        </p>
+      </div>
+
+      {/* Social Preview Image */}
+      <div className="bg-white border border-gray-200 rounded p-5 shadow-sm">
+        <div className="flex items-center gap-2 mb-2">
+          <Label className="text-sm font-semibold text-gray-900">Social Preview Image</Label>
+          <span className="px-2 py-0.5 bg-[#FF6B35] text-white text-xs font-bold rounded">
+            PRO
+          </span>
+        </div>
+        <input
+          ref={socialImageInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleSocialImageUpload}
+          className="hidden"
+        />
+        <button
+          onClick={() => socialImageInputRef.current?.click()}
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors mb-2"
         >
-          Go here →
-        </a>
-      </p>
+          {socialImagePreview ? "Change file" : "Aucun fichier choisi"}
+        </button>
+        <p className="text-xs text-gray-500">
+          Recommended size 1200x630. Should be less than 5MB.
+        </p>
+      </div>
+
+      {/* Favicon */}
+      <div className="bg-white border border-gray-200 rounded p-5 shadow-sm">
+        <div className="flex items-center gap-2 mb-2">
+          <Label className="text-sm font-semibold text-gray-900">Favicon</Label>
+          <span className="px-2 py-0.5 bg-[#FF6B35] text-white text-xs font-bold rounded">
+            PRO
+          </span>
+        </div>
+        <input
+          ref={faviconInputRef}
+          type="file"
+          accept=".ico,.png,image/x-icon,image/png"
+          onChange={handleFaviconUpload}
+          className="hidden"
+        />
+        <button
+          onClick={() => faviconInputRef.current?.click()}
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors mb-2"
+        >
+          {faviconPreview ? "Change file" : "Aucun fichier choisi"}
+        </button>
+        <p className="text-xs text-gray-500">
+          Recommended size 60x60. Ideally .ico or .png image.
+        </p>
+      </div>
+
+      {/* Previews */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Favicon Preview */}
+        <div className="bg-white border border-gray-200 rounded p-5 shadow-sm">
+          <Label className="text-sm font-semibold text-gray-900 mb-4 block">
+            Favicon Preview
+          </Label>
+          <div className="flex items-center gap-3 p-4 bg-gray-50 rounded border border-gray-200">
+            <div className="w-8 h-8 flex items-center justify-center bg-white rounded border border-gray-300">
+              {faviconPreview ? (
+                <img
+                  src={faviconPreview}
+                  alt="Favicon"
+                  className="w-6 h-6 object-contain"
+                />
+              ) : (
+                <div className="w-6 h-6 bg-indigo-600 rounded flex items-center justify-center text-white text-xs font-bold">
+                  Y
+                </div>
+              )}
+            </div>
+            <span className="text-sm text-gray-700 font-medium">{title}</span>
+          </div>
+        </div>
+
+        {/* Social Preview Image */}
+        <div className="bg-white border border-gray-200 rounded p-5 shadow-sm">
+          <Label className="text-sm font-semibold text-gray-900 mb-4 block">
+            Social Preview Image
+          </Label>
+          <div className="border border-gray-200 rounded overflow-hidden">
+            {/* Image */}
+            <div className="w-full h-40 bg-gray-100 flex items-center justify-center overflow-hidden">
+              {socialImagePreview ? (
+                <img
+                  src={socialImagePreview}
+                  alt="Social Preview"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-gray-400 text-sm">No preview image</div>
+              )}
+            </div>
+            {/* Content */}
+            <div className="p-3 bg-white border-t border-gray-200">
+              <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">
+                YOUFORM.COM
+              </p>
+              <h3 className="text-sm font-semibold text-gray-900 mb-1 truncate">
+                {title}
+              </h3>
+              <p className="text-xs text-gray-600 line-clamp-2">{description}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

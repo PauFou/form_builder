@@ -145,6 +145,12 @@ export interface FormSettings {
     autoRefreshOnInactivity?: boolean;
     inactivityTimeout?: number; // in minutes
   };
+  linkSettings?: {
+    title?: string; // Max 60 characters
+    description?: string; // Max 110 characters
+    socialPreviewImage?: string; // URL or file path
+    favicon?: string; // URL or file path
+  };
 }
 
 export interface Theme {

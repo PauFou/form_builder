@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 import { EmailSettings } from "./EmailSettings";
 import { AccessSettings } from "./AccessSettings";
+import { LinkSettings } from "./LinkSettings";
 
 type SettingsSubTab = "general" | "email" | "access" | "hidden_fields" | "link" | "language";
 
@@ -195,11 +196,7 @@ export function SettingsTab() {
             </div>
           )}
 
-          {activeSubTab === "link" && (
-            <div className="bg-white border border-gray-200 rounded p-6 shadow-sm">
-              <p className="text-sm text-gray-600">Link settings coming soon...</p>
-            </div>
-          )}
+          {activeSubTab === "link" && <LinkSettings />}
 
           {activeSubTab === "language" && (
             <div className="bg-white border border-gray-200 rounded p-6 shadow-sm">
