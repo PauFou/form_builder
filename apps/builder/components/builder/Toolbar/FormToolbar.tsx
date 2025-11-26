@@ -11,11 +11,11 @@ import { formsApi } from "../../../lib/api/forms";
 
 interface FormToolbarProps {
   formId: string;
-  activeTab?: "build" | "integrate" | "share" | "results";
-  onTabChange?: (tab: "build" | "integrate" | "share" | "results") => void;
+  activeTab?: "build" | "integrate" | "share" | "results" | "settings";
+  onTabChange?: (tab: "build" | "integrate" | "share" | "results" | "settings") => void;
 }
 
-type Tab = "build" | "integrate" | "share" | "results";
+type Tab = "build" | "integrate" | "share" | "results" | "settings";
 
 export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: FormToolbarProps) {
   const router = useRouter();
@@ -69,6 +69,7 @@ export function FormToolbar({ formId, activeTab: controlledTab, onTabChange }: F
     { id: "integrate" as Tab, label: "Integrate" },
     { id: "share" as Tab, label: "Share" },
     { id: "results" as Tab, label: "Results" },
+    { id: "settings" as Tab, label: "Settings" },
   ];
 
   const handleBack = () => {

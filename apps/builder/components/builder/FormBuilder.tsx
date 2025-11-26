@@ -31,6 +31,7 @@ import { PropertiesPanel } from "./Inspector/PropertiesPanel";
 import { ShareTab } from "./Share/ShareTab";
 import { IntegrateTab } from "./Integrate/IntegrateTab";
 import { ResultsTab } from "./Results/ResultsTab";
+import { SettingsTab } from "./Settings/SettingsTab";
 import { DesignPanel } from "./Design/DesignPanel";
 import { useFormBuilderStore } from "../../lib/stores/form-builder-store";
 import { useAutoSave } from "../../lib/hooks/useAutoSave";
@@ -75,7 +76,7 @@ const blockIcons: Record<string, React.ComponentType<any>> = {
 };
 
 export function FormBuilder({ formId }: FormBuilderProps) {
-  const [activeTab, setActiveTab] = useState<"build" | "integrate" | "share" | "results">("build");
+  const [activeTab, setActiveTab] = useState<"build" | "integrate" | "share" | "results" | "settings">("build");
 
   // Drag & Drop state
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -369,6 +370,8 @@ export function FormBuilder({ formId }: FormBuilderProps) {
               shareUrl={shareUrl}
               onPublish={handlePublish}
             />
+          ) : activeTab === "settings" ? (
+            <SettingsTab />
           ) : (
             <div className="flex-1 flex overflow-hidden">
               {/* Left Panel - Blocks List - Dynamic width based on screen */}
