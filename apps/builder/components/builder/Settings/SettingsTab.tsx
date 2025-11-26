@@ -5,6 +5,7 @@ import { cn } from "../../../lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
+import { EmailSettings } from "./EmailSettings";
 
 type SettingsSubTab = "general" | "email" | "access" | "hidden_fields" | "link" | "language";
 
@@ -31,9 +32,9 @@ export function SettingsTab() {
   };
 
   return (
-    <div className="h-full flex bg-gray-50">
+    <div className="h-full flex bg-gray-50 overflow-hidden">
       {/* Vertical Sub-tabs on the left */}
-      <div className="w-72 bg-white border-r border-gray-200 flex-shrink-0 overflow-y-auto">
+      <div className="w-72 bg-white border-r border-gray-200 flex-shrink-0 overflow-y-auto h-full">
         <div className="p-6">
           {/* Header */}
           <div className="mb-6">
@@ -70,8 +71,8 @@ export function SettingsTab() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-6">
-        <div className="max-w-3xl mx-auto">
+      <div className="flex-1 overflow-y-auto p-6 h-full">
+        <div className="max-w-3xl mx-auto pb-12">
           {activeSubTab === "general" && (
             <div className="space-y-6">
               {/* Display Section */}
@@ -183,11 +184,7 @@ export function SettingsTab() {
             </div>
           )}
 
-          {activeSubTab === "email" && (
-            <div className="bg-white border border-gray-200 rounded p-6 shadow-sm">
-              <p className="text-sm text-gray-600">Email settings coming soon...</p>
-            </div>
-          )}
+          {activeSubTab === "email" && <EmailSettings />}
 
           {activeSubTab === "access" && (
             <div className="bg-white border border-gray-200 rounded p-6 shadow-sm">

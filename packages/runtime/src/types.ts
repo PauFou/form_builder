@@ -109,11 +109,33 @@ export interface FormSchema {
 export interface FormSettings {
   submitText?: string;
   showProgressBar?: boolean;
+  showNavigationArrows?: boolean;
+  enableRefillLink?: boolean;
+  enableRecaptcha?: boolean;
+  showPoweredBy?: boolean;
   allowSave?: boolean;
   redirectUrl?: string;
   thankYouMessage?: string;
   displayMode?: "one-question" | "grid";
   allowModeSwitch?: boolean;
+  emailNotifications?: {
+    enabled?: boolean;
+    recipients?: string[];
+    replyToField?: string; // Block ID of email field
+    subject?: string;
+    body?: string;
+  };
+  responderEmail?: {
+    enabled?: boolean;
+    toField?: string; // Block ID of email field to send to
+    fromName?: string;
+    fromEmail?: string;
+    replyTo?: "owner" | "field" | "custom";
+    replyToField?: string; // Block ID if replyTo is "field"
+    replyToCustom?: string; // Custom email if replyTo is "custom"
+    subject?: string;
+    body?: string;
+  };
 }
 
 export interface Theme {
