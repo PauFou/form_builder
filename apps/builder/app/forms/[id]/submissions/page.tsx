@@ -282,7 +282,7 @@ export default function SubmissionsPage() {
       <div className="container mx-auto px-4 py-6">
         {loading ? (
           <div className="flex items-center justify-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-indigo-600 border-t-transparent" />
           </div>
         ) : filteredSubmissions.length === 0 ? (
           <div className="flex flex-col items-center justify-center min-h-[400px] text-center">

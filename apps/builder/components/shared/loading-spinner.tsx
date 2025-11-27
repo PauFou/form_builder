@@ -29,11 +29,11 @@ export function LoadingSpinner({
         role="status"
         aria-label="Loading"
         className={cn(
-          "animate-spin rounded-full border-2 border-primary border-t-transparent",
+          "animate-spin rounded-full border-2 border-indigo-600 border-t-transparent",
           sizeClasses[size]
         )}
       />
-      {text && <span className="text-muted-foreground">{text}</span>}
+      {text && <span className="text-gray-500">{text}</span>}
     </div>
   );
 }

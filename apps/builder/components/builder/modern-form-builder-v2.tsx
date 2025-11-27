@@ -147,10 +147,10 @@ export function ModernFormBuilderV2({ formId, onSave, onPublish }: ModernFormBui
           className="text-center"
         >
           <div className="relative">
-            <div className="absolute inset-0 blur-3xl bg-primary/20" />
+            <div className="absolute inset-0 blur-3xl bg-indigo-600/20" />
             <div className="relative">
-              <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary/20 border-t-primary mx-auto mb-6" />
-              <p className="text-lg text-muted-foreground">Loading form...</p>
+              <div className="animate-spin rounded-full h-16 w-16 border-4 border-indigo-200 border-t-indigo-600 mx-auto mb-6" />
+              <p className="text-lg text-gray-500">Loading form...</p>
             </div>
           </div>
         </motion.div>
