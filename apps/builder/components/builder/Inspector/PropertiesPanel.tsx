@@ -127,6 +127,7 @@ export function PropertiesPanel() {
   const isSelectBlock = isSingleSelect || isMultiSelect || isDropdown;
   const needsLeftAlignment =
     isContactInfo ||
+    isAddress ||
     isShortText ||
     isLongText ||
     isPhone ||
@@ -277,10 +278,10 @@ export function PropertiesPanel() {
                         return (
                           <div
                             key={fieldKey}
-                            className="border border-gray-200 rounded-lg overflow-hidden"
+                            className="border border-gray-200 rounded overflow-hidden"
                           >
                             {/* Field Header */}
-                            <div className="flex items-center justify-between p-3 bg-gray-50">
+                            <div className="flex items-center justify-between px-2.5 py-2 bg-gray-50">
                               <span
                                 className={cn(
                                   "text-sm font-medium",
@@ -290,34 +291,34 @@ export function PropertiesPanel() {
                                 {field.label}
                                 {field.required && <span className="text-red-500 ml-1">*</span>}
                               </span>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1.5">
                                 <button
                                   onClick={() => toggleFieldVisibility(fieldKey)}
-                                  className="p-1.5 hover:bg-gray-200 rounded transition-colors"
+                                  className="p-1 hover:bg-gray-200 rounded transition-colors"
                                 >
                                   {field.visible ? (
-                                    <Eye className="w-4 h-4 text-gray-600" />
+                                    <Eye className="w-3.5 h-3.5 text-gray-600" />
                                   ) : (
-                                    <EyeOff className="w-4 h-4 text-gray-400" />
+                                    <EyeOff className="w-3.5 h-3.5 text-gray-400" />
                                   )}
                                 </button>
                                 <button
                                   onClick={() => toggleFieldEditor(fieldKey)}
                                   className={cn(
-                                    "p-1.5 rounded transition-colors",
+                                    "p-1 rounded transition-colors",
                                     isEditing
                                       ? "bg-indigo-100 text-indigo-600"
                                       : "hover:bg-gray-200 text-gray-600"
                                   )}
                                 >
-                                  <Settings className="w-4 h-4" />
+                                  <Settings className="w-3.5 h-3.5" />
                                 </button>
                               </div>
                             </div>
 
                             {/* Expanded Editor */}
                             {isEditing && (
-                              <div className="p-4 bg-white border-t border-gray-200 space-y-3">
+                              <div className="p-3 bg-white border-t border-gray-200 space-y-2.5">
                                 <div>
                                   <Label
                                     htmlFor={`${fieldKey}-label`}
@@ -331,7 +332,7 @@ export function PropertiesPanel() {
                                     onChange={(e) =>
                                       updateFieldSettings(fieldKey, { label: e.target.value })
                                     }
-                                    className="mt-1 text-base h-10"
+                                    className="mt-1 text-sm"
                                     placeholder="Enter field label"
                                   />
                                 </div>
@@ -349,7 +350,7 @@ export function PropertiesPanel() {
                                     onChange={(e) =>
                                       updateFieldSettings(fieldKey, { placeholder: e.target.value })
                                     }
-                                    className="mt-1 text-base h-10"
+                                    className="mt-1 text-sm"
                                     placeholder="Enter placeholder text"
                                   />
                                 </div>
@@ -475,10 +476,10 @@ export function PropertiesPanel() {
                         return (
                           <div
                             key={fieldKey}
-                            className="border border-gray-200 rounded-lg overflow-hidden"
+                            className="border border-gray-200 rounded overflow-hidden"
                           >
                             {/* Field Header */}
-                            <div className="flex items-center justify-between p-3 bg-gray-50">
+                            <div className="flex items-center justify-between px-2.5 py-2 bg-gray-50">
                               <span
                                 className={cn(
                                   "text-sm font-medium",
@@ -488,34 +489,34 @@ export function PropertiesPanel() {
                                 {field.label}
                                 {field.required && <span className="text-red-500 ml-1">*</span>}
                               </span>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1.5">
                                 <button
                                   onClick={() => toggleFieldVisibility(fieldKey)}
-                                  className="p-1.5 hover:bg-gray-200 rounded transition-colors"
+                                  className="p-1 hover:bg-gray-200 rounded transition-colors"
                                 >
                                   {field.visible ? (
-                                    <Eye className="w-4 h-4 text-gray-600" />
+                                    <Eye className="w-3.5 h-3.5 text-gray-600" />
                                   ) : (
-                                    <EyeOff className="w-4 h-4 text-gray-400" />
+                                    <EyeOff className="w-3.5 h-3.5 text-gray-400" />
                                   )}
                                 </button>
                                 <button
                                   onClick={() => toggleFieldEditor(fieldKey)}
                                   className={cn(
-                                    "p-1.5 rounded transition-colors",
+                                    "p-1 rounded transition-colors",
                                     isEditing
                                       ? "bg-indigo-100 text-indigo-600"
                                       : "hover:bg-gray-200 text-gray-600"
                                   )}
                                 >
-                                  <Settings className="w-4 h-4" />
+                                  <Settings className="w-3.5 h-3.5" />
                                 </button>
                               </div>
                             </div>
 
                             {/* Expanded Editor */}
                             {isEditing && (
-                              <div className="p-4 bg-white border-t border-gray-200 space-y-3">
+                              <div className="p-3 bg-white border-t border-gray-200 space-y-2.5">
                                 <div>
                                   <Label
                                     htmlFor={`${fieldKey}-label`}
@@ -529,7 +530,7 @@ export function PropertiesPanel() {
                                     onChange={(e) =>
                                       updateFieldSettings(fieldKey, { label: e.target.value })
                                     }
-                                    className="mt-1 text-base h-10"
+                                    className="mt-1 text-sm"
                                     placeholder="Enter field label"
                                   />
                                 </div>
@@ -547,7 +548,7 @@ export function PropertiesPanel() {
                                     onChange={(e) =>
                                       updateFieldSettings(fieldKey, { placeholder: e.target.value })
                                     }
-                                    className="mt-1 text-base h-10"
+                                    className="mt-1 text-sm"
                                     placeholder="Enter placeholder text"
                                   />
                                 </div>

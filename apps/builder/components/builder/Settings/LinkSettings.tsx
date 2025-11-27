@@ -15,9 +15,7 @@ export function LinkSettings() {
   const [socialImagePreview, setSocialImagePreview] = useState<string | null>(
     linkSettings.socialPreviewImage || null
   );
-  const [faviconPreview, setFaviconPreview] = useState<string | null>(
-    linkSettings.favicon || null
-  );
+  const [faviconPreview, setFaviconPreview] = useState<string | null>(linkSettings.favicon || null);
 
   const handleLinkSettingChange = (key: string, value: any) => {
     updateForm({
@@ -94,9 +92,7 @@ export function LinkSettings() {
           placeholder="My Form"
           className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent mb-2"
         />
-        <p className="text-xs text-gray-500">
-          Max characters {title.length}/60.
-        </p>
+        <p className="text-xs text-gray-500">Max characters {title.length}/60.</p>
       </div>
 
       {/* Description */}
@@ -110,18 +106,14 @@ export function LinkSettings() {
           rows={3}
           className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent mb-2 resize-none"
         />
-        <p className="text-xs text-gray-500">
-          Max characters {description.length}/110.
-        </p>
+        <p className="text-xs text-gray-500">Max characters {description.length}/110.</p>
       </div>
 
       {/* Social Preview Image */}
       <div className="bg-white border border-gray-200 rounded p-5 shadow-sm">
         <div className="flex items-center gap-2 mb-2">
           <Label className="text-sm font-semibold text-gray-900">Social Preview Image</Label>
-          <span className="px-2 py-0.5 bg-[#FF6B35] text-white text-xs font-bold rounded">
-            PRO
-          </span>
+          <span className="px-2 py-0.5 bg-[#FF6B35] text-white text-xs font-bold rounded">PRO</span>
         </div>
         <input
           ref={socialImageInputRef}
@@ -136,18 +128,14 @@ export function LinkSettings() {
         >
           {socialImagePreview ? "Change file" : "Aucun fichier choisi"}
         </button>
-        <p className="text-xs text-gray-500">
-          Recommended size 1200x630. Should be less than 5MB.
-        </p>
+        <p className="text-xs text-gray-500">Recommended size 1200x630. Should be less than 5MB.</p>
       </div>
 
       {/* Favicon */}
       <div className="bg-white border border-gray-200 rounded p-5 shadow-sm">
         <div className="flex items-center gap-2 mb-2">
           <Label className="text-sm font-semibold text-gray-900">Favicon</Label>
-          <span className="px-2 py-0.5 bg-[#FF6B35] text-white text-xs font-bold rounded">
-            PRO
-          </span>
+          <span className="px-2 py-0.5 bg-[#FF6B35] text-white text-xs font-bold rounded">PRO</span>
         </div>
         <input
           ref={faviconInputRef}
@@ -162,26 +150,18 @@ export function LinkSettings() {
         >
           {faviconPreview ? "Change file" : "Aucun fichier choisi"}
         </button>
-        <p className="text-xs text-gray-500">
-          Recommended size 60x60. Ideally .ico or .png image.
-        </p>
+        <p className="text-xs text-gray-500">Recommended size 60x60. Ideally .ico or .png image.</p>
       </div>
 
       {/* Previews */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Favicon Preview */}
         <div className="bg-white border border-gray-200 rounded p-5 shadow-sm">
-          <Label className="text-sm font-semibold text-gray-900 mb-4 block">
-            Favicon Preview
-          </Label>
+          <Label className="text-sm font-semibold text-gray-900 mb-4 block">Favicon Preview</Label>
           <div className="flex items-center gap-3 p-4 bg-gray-50 rounded border border-gray-200">
             <div className="w-8 h-8 flex items-center justify-center bg-white rounded border border-gray-300">
               {faviconPreview ? (
-                <img
-                  src={faviconPreview}
-                  alt="Favicon"
-                  className="w-6 h-6 object-contain"
-                />
+                <img src={faviconPreview} alt="Favicon" className="w-6 h-6 object-contain" />
               ) : (
                 <div className="w-6 h-6 bg-indigo-600 rounded flex items-center justify-center text-white text-xs font-bold">
                   Y
@@ -212,12 +192,8 @@ export function LinkSettings() {
             </div>
             {/* Content */}
             <div className="p-3 bg-white border-t border-gray-200">
-              <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">
-                YOUFORM.COM
-              </p>
-              <h3 className="text-sm font-semibold text-gray-900 mb-1 truncate">
-                {title}
-              </h3>
+              <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">YOUFORM.COM</p>
+              <h3 className="text-sm font-semibold text-gray-900 mb-1 truncate">{title}</h3>
               <p className="text-xs text-gray-600 line-clamp-2">{description}</p>
             </div>
           </div>

@@ -12,7 +12,12 @@ export function InactivityWarningModal({
   onContinue,
 }: InactivityWarningModalProps) {
   return (
-    <div className="fr-inactivity-overlay" role="dialog" aria-modal="true" aria-labelledby="inactivity-title">
+    <div
+      className="fr-inactivity-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="inactivity-title"
+    >
       <div className="fr-inactivity-modal">
         <div className="fr-inactivity-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -30,19 +35,10 @@ export function InactivityWarningModal({
         </p>
 
         <div className="fr-inactivity-actions">
-          <button
-            type="button"
-            onClick={onContinue}
-            className="fr-btn fr-btn-primary"
-            autoFocus
-          >
+          <button type="button" onClick={onContinue} className="fr-btn fr-btn-primary" autoFocus>
             Continue Filling
           </button>
-          <button
-            type="button"
-            onClick={onRefresh}
-            className="fr-btn fr-btn-secondary"
-          >
+          <button type="button" onClick={onRefresh} className="fr-btn fr-btn-secondary">
             Refresh Now
           </button>
         </div>

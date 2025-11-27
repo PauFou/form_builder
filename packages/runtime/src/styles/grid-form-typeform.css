@@ -116,7 +116,8 @@
 /* Description - Lighter and smaller */
 .fr-description {
   font-size: 1rem;
-  color: #767676;
+  color: inherit;
+  opacity: 0.6;
   margin-bottom: 1.25rem;
   line-height: 1.5;
   font-weight: 300;

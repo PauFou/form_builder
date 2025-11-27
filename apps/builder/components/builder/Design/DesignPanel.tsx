@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
+import { ThemeGalleryModal } from "./ThemeGalleryModal";
 
 interface DesignPanelProps {
   isOpen: boolean;
@@ -48,6 +49,76 @@ function ColorPicker({ label, value, onChange }: ColorPickerProps) {
           className="w-20 px-2 py-1 text-xs font-mono text-gray-600 bg-gray-50 border border-gray-200 rounded"
         />
       </div>
+    </div>
+  );
+}
+
+interface FontDropdownProps {
+  fonts: string[];
+  value: string;
+  onChange: (value: string) => void;
+}
+
+function FontDropdown({ fonts, value, onChange }: FontDropdownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  // Preload all Google Fonts when dropdown opens
+  useEffect(() => {
+    if (isOpen && !fontsLoaded) {
+      const fontsToLoad = fonts.filter((f) => f !== "Inter");
+      const fontFamilies = fontsToLoad.map((f) => f.replace(/ /g, "+")).join("&family=");
+
+      if (fontFamilies) {
+        const linkId = "google-fonts-preview";
+        if (!document.getElementById(linkId)) {
+          const link = document.createElement("link");
+          link.id = linkId;
+          link.rel = "stylesheet";
+          link.href = `https://fonts.googleapis.com/css2?family=${fontFamilies}&display=swap`;
+          document.head.appendChild(link);
+        }
+      }
+      setFontsLoaded(true);
+    }
+  }, [isOpen, fonts, fontsLoaded]);
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 flex items-center justify-between"
+      >
+        <span style={{ fontFamily: value }}>{value}</span>
+        <ChevronDown
+          className={cn("w-4 h-4 text-gray-400 transition-transform", isOpen && "rotate-180")}
+        />
+      </button>
+      {isOpen && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+          <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded shadow-lg max-h-60 overflow-y-auto">
+            {fonts.map((f) => (
+              <button
+                key={f}
+                type="button"
+                onClick={() => {
+                  onChange(f);
+                  setIsOpen(false);
+                }}
+                className={cn(
+                  "w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors",
+                  value === f && "bg-indigo-50 text-indigo-600"
+                )}
+                style={{ fontFamily: f }}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -91,6 +162,7 @@ export function DesignPanel({ isOpen, onClose }: DesignPanelProps) {
   const { form, updateForm } = useFormBuilderStore();
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isThemeGalleryOpen, setIsThemeGalleryOpen] = useState(false);
 
   // Handle open/close animation
   useEffect(() => {
@@ -244,7 +316,10 @@ export function DesignPanel({ isOpen, onClose }: DesignPanelProps) {
 
           {/* Theme Gallery Button */}
           <div className="px-4 py-3 border-b border-gray-200">
-            <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded transition-colors">
+            <button
+              onClick={() => setIsThemeGalleryOpen(true)}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded transition-colors"
+            >
               <Sparkles className="w-4 h-4" />
               Open Theme Gallery
             </button>
@@ -324,21 +399,7 @@ export function DesignPanel({ isOpen, onClose }: DesignPanelProps) {
                 + Custom font
               </button>
             </div>
-            <div className="relative">
-              <select
-                value={font}
-                onChange={(e) => setFont(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
-                style={{ fontFamily: font }}
-              >
-                {fonts.map((f) => (
-                  <option key={f} value={f} style={{ fontFamily: f }}>
-                    {f}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-            </div>
+            <FontDropdown fonts={fonts} value={font} onChange={setFont} />
           </div>
 
           {/* Background Image */}
@@ -416,6 +477,9 @@ export function DesignPanel({ isOpen, onClose }: DesignPanelProps) {
           </div>
         </div>
       </div>
+
+      {/* Theme Gallery Modal */}
+      <ThemeGalleryModal isOpen={isThemeGalleryOpen} onClose={() => setIsThemeGalleryOpen(false)} />
     </div>
   );
 }

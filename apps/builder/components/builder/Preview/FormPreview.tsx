@@ -217,8 +217,12 @@ function renderBlockContent(
   const isLastBlock = currentIndex === totalBlocks - 1;
   const buttonText = block.buttonText || (isLastBlock ? "Submit" : "Let's start");
 
-  // Get text alignment from design settings (use block-level override if exists, otherwise use global)
-  const textAlign = (block as any).textAlign || designStyles.alignment || "center";
+  // Get text alignment from design settings
+  // For blocks that need left alignment (contact_info, address, etc.), always use design settings
+  const isBlockNeedingDesignAlignment = block.type === "contact_info" || block.type === "address";
+  const textAlign = isBlockNeedingDesignAlignment
+    ? designStyles.alignment || "left"
+    : (block as any).textAlign || designStyles.alignment || "center";
   const alignmentClass =
     textAlign === "left" ? "text-left" : textAlign === "right" ? "text-right" : "text-center";
 
@@ -276,21 +280,21 @@ function renderBlockContent(
                   <div>
                     <label
                       className={"block font-medium mb-2 text-left"}
-                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.questionColor }}
                     >
                       {fields.firstName.label}
                       {fields.firstName.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
                     <div
-                      className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                      className={"w-full px-0 py-2.5 border-b-2 text-left min-h-[1.5em]"}
                       style={{
                         fontSize: `${inputSize}px`,
                         borderColor: designStyles.answerColor,
-                        color: designStyles.answerColor,
-                        opacity: 0.5,
                       }}
                     >
-                      {fields.firstName.placeholder}
+                      <span style={{ color: designStyles.answerColor, opacity: 0.3 }}>
+                        {fields.firstName.placeholder || "\u00A0"}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -298,21 +302,21 @@ function renderBlockContent(
                   <div>
                     <label
                       className={"block font-medium mb-2 text-left"}
-                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.questionColor }}
                     >
                       {fields.lastName.label}
                       {fields.lastName.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
                     <div
-                      className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                      className={"w-full px-0 py-2.5 border-b-2 text-left min-h-[1.5em]"}
                       style={{
                         fontSize: `${inputSize}px`,
                         borderColor: designStyles.answerColor,
-                        color: designStyles.answerColor,
-                        opacity: 0.5,
                       }}
                     >
-                      {fields.lastName.placeholder}
+                      <span style={{ color: designStyles.answerColor, opacity: 0.3 }}>
+                        {fields.lastName.placeholder || "\u00A0"}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -326,21 +330,21 @@ function renderBlockContent(
                   <div>
                     <label
                       className={"block font-medium mb-2 text-left"}
-                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.questionColor }}
                     >
                       {fields.email.label}
                       {fields.email.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
                     <div
-                      className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                      className={"w-full px-0 py-2.5 border-b-2 text-left min-h-[1.5em]"}
                       style={{
                         fontSize: `${inputSize}px`,
                         borderColor: designStyles.answerColor,
-                        color: designStyles.answerColor,
-                        opacity: 0.5,
                       }}
                     >
-                      {fields.email.placeholder}
+                      <span style={{ color: designStyles.answerColor, opacity: 0.3 }}>
+                        {fields.email.placeholder || "\u00A0"}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -348,21 +352,21 @@ function renderBlockContent(
                   <div>
                     <label
                       className={"block font-medium mb-2 text-left"}
-                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.questionColor }}
                     >
                       {fields.phone.label}
                       {fields.phone.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
                     <div
-                      className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                      className={"w-full px-0 py-2.5 border-b-2 text-left min-h-[1.5em]"}
                       style={{
                         fontSize: `${inputSize}px`,
                         borderColor: designStyles.answerColor,
-                        color: designStyles.answerColor,
-                        opacity: 0.5,
                       }}
                     >
-                      {fields.phone.placeholder}
+                      <span style={{ color: designStyles.answerColor, opacity: 0.3 }}>
+                        {fields.phone.placeholder || "\u00A0"}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -374,21 +378,21 @@ function renderBlockContent(
               <div>
                 <label
                   className={"block font-medium mb-2 text-left"}
-                  style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                  style={{ fontSize: `${labelSize}px`, color: designStyles.questionColor }}
                 >
                   {fields.company.label}
                   {fields.company.required && <span className="text-red-500 ml-1">*</span>}
                 </label>
                 <div
-                  className={"w-full px-0 py-2.5 border-b-2 text-left"}
+                  className={"w-full px-0 py-2.5 border-b-2 text-left min-h-[1.5em]"}
                   style={{
                     fontSize: `${inputSize}px`,
                     borderColor: designStyles.answerColor,
-                    color: designStyles.answerColor,
-                    opacity: 0.5,
                   }}
                 >
-                  {fields.company.placeholder}
+                  <span style={{ color: designStyles.answerColor, opacity: 0.3 }}>
+                    {fields.company.placeholder || "\u00A0"}
+                  </span>
                 </div>
               </div>
             )}
@@ -437,8 +441,8 @@ function renderBlockContent(
                 {addressFields.address.visible && (
                   <div>
                     <label
-                      className={`block font-medium mb-2 ${alignmentClass}`}
-                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                      className="block font-medium mb-2 text-left"
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.questionColor }}
                     >
                       {addressFields.address.label}
                       {addressFields.address.required && (
@@ -446,23 +450,23 @@ function renderBlockContent(
                       )}
                     </label>
                     <div
-                      className={`w-full px-0 py-2.5 border-b-2 ${alignmentClass}`}
+                      className="w-full px-0 py-2.5 border-b-2 text-left min-h-[1.5em]"
                       style={{
                         fontSize: `${inputSize}px`,
                         borderColor: designStyles.answerColor,
-                        color: designStyles.answerColor,
-                        opacity: 0.5,
                       }}
                     >
-                      {addressFields.address.placeholder}
+                      <span style={{ color: designStyles.answerColor, opacity: 0.3 }}>
+                        {addressFields.address.placeholder || "\u00A0"}
+                      </span>
                     </div>
                   </div>
                 )}
                 {addressFields.address2.visible && (
                   <div>
                     <label
-                      className={`block font-medium mb-2 ${alignmentClass}`}
-                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                      className="block font-medium mb-2 text-left"
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.questionColor }}
                     >
                       {addressFields.address2.label}
                       {addressFields.address2.required && (
@@ -470,15 +474,15 @@ function renderBlockContent(
                       )}
                     </label>
                     <div
-                      className={`w-full px-0 py-2.5 border-b-2 ${alignmentClass}`}
+                      className="w-full px-0 py-2.5 border-b-2 text-left min-h-[1.5em]"
                       style={{
                         fontSize: `${inputSize}px`,
                         borderColor: designStyles.answerColor,
-                        color: designStyles.answerColor,
-                        opacity: 0.5,
                       }}
                     >
-                      {addressFields.address2.placeholder}
+                      <span style={{ color: designStyles.answerColor, opacity: 0.3 }}>
+                        {addressFields.address2.placeholder || "\u00A0"}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -491,44 +495,44 @@ function renderBlockContent(
                 {addressFields.city.visible && (
                   <div>
                     <label
-                      className={`block font-medium mb-2 ${alignmentClass}`}
-                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                      className="block font-medium mb-2 text-left"
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.questionColor }}
                     >
                       {addressFields.city.label}
                       {addressFields.city.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
                     <div
-                      className={`w-full px-0 py-2.5 border-b-2 ${alignmentClass}`}
+                      className="w-full px-0 py-2.5 border-b-2 text-left min-h-[1.5em]"
                       style={{
                         fontSize: `${inputSize}px`,
                         borderColor: designStyles.answerColor,
-                        color: designStyles.answerColor,
-                        opacity: 0.5,
                       }}
                     >
-                      {addressFields.city.placeholder}
+                      <span style={{ color: designStyles.answerColor, opacity: 0.3 }}>
+                        {addressFields.city.placeholder || "\u00A0"}
+                      </span>
                     </div>
                   </div>
                 )}
                 {addressFields.state.visible && (
                   <div>
                     <label
-                      className={`block font-medium mb-2 ${alignmentClass}`}
-                      style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                      className="block font-medium mb-2 text-left"
+                      style={{ fontSize: `${labelSize}px`, color: designStyles.questionColor }}
                     >
                       {addressFields.state.label}
                       {addressFields.state.required && <span className="text-red-500 ml-1">*</span>}
                     </label>
                     <div
-                      className={`w-full px-0 py-2.5 border-b-2 ${alignmentClass}`}
+                      className="w-full px-0 py-2.5 border-b-2 text-left min-h-[1.5em]"
                       style={{
                         fontSize: `${inputSize}px`,
                         borderColor: designStyles.answerColor,
-                        color: designStyles.answerColor,
-                        opacity: 0.5,
                       }}
                     >
-                      {addressFields.state.placeholder}
+                      <span style={{ color: designStyles.answerColor, opacity: 0.3 }}>
+                        {addressFields.state.placeholder || "\u00A0"}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -539,22 +543,22 @@ function renderBlockContent(
             {addressFields.zip.visible && (
               <div>
                 <label
-                  className={`block font-medium mb-2 ${alignmentClass}`}
-                  style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                  className="block font-medium mb-2 text-left"
+                  style={{ fontSize: `${labelSize}px`, color: designStyles.questionColor }}
                 >
                   {addressFields.zip.label}
                   {addressFields.zip.required && <span className="text-red-500 ml-1">*</span>}
                 </label>
                 <div
-                  className={`w-full px-0 py-2.5 border-b-2 ${alignmentClass}`}
+                  className="w-full px-0 py-2.5 border-b-2 text-left min-h-[1.5em]"
                   style={{
                     fontSize: `${inputSize}px`,
                     borderColor: designStyles.answerColor,
-                    color: designStyles.answerColor,
-                    opacity: 0.5,
                   }}
                 >
-                  {addressFields.zip.placeholder}
+                  <span style={{ color: designStyles.answerColor, opacity: 0.3 }}>
+                    {addressFields.zip.placeholder || "\u00A0"}
+                  </span>
                 </div>
               </div>
             )}
@@ -563,22 +567,22 @@ function renderBlockContent(
             {addressFields.country.visible && (
               <div>
                 <label
-                  className={`block font-medium mb-2 ${alignmentClass}`}
-                  style={{ fontSize: `${labelSize}px`, color: designStyles.answerColor }}
+                  className="block font-medium mb-2 text-left"
+                  style={{ fontSize: `${labelSize}px`, color: designStyles.questionColor }}
                 >
                   {addressFields.country.label}
                   {addressFields.country.required && <span className="text-red-500 ml-1">*</span>}
                 </label>
                 <div
-                  className={`w-full px-0 py-2.5 border-b-2 ${alignmentClass}`}
+                  className="w-full px-0 py-2.5 border-b-2 text-left min-h-[1.5em]"
                   style={{
                     fontSize: `${inputSize}px`,
                     borderColor: designStyles.answerColor,
-                    color: designStyles.answerColor,
-                    opacity: 0.5,
                   }}
                 >
-                  {addressFields.country.placeholder}
+                  <span style={{ color: designStyles.answerColor, opacity: 0.3 }}>
+                    {addressFields.country.placeholder || "\u00A0"}
+                  </span>
                 </div>
               </div>
             )}
@@ -1731,6 +1735,7 @@ function renderBlockContent(
   const isSelectBlock = isSingleSelect || isMultiSelect || isDropdown;
   const needsLeftAlignment =
     isContactInfo ||
+    isAddress ||
     isShortText ||
     isLongText ||
     isPhone ||
@@ -1779,7 +1784,8 @@ function renderBlockContent(
             alignmentClass
           )}
           style={{
-            color: designStyles.answerColor,
+            color: designStyles.questionColor,
+            opacity: 0.75,
             fontSize: `${descFontSize}px`,
           }}
           onClick={onDescriptionClick}

@@ -34,6 +34,9 @@ export type {
   FormState,
   RuntimeConfig,
   FormData,
+  SupportedLanguage,
+  LanguageConfig,
+  CustomMessages,
 } from "./types";
 
 export type { AnalyticsEvent, AnalyticsConfig } from "./services/analytics-service";
@@ -43,6 +46,9 @@ export { validateField, shouldShowBlock, formatValue } from "./utils";
 export { generateStyles, injectStyles } from "./styles";
 export { ExpressionEngine, evaluate, validateExpression } from "./expression-engine";
 export { migrateBlock, migrateFormSchema, needsMigration } from "./migration";
+
+// i18n exports
+export { useFormTranslations, interpolate, DEFAULT_MESSAGES, SUPPORTED_LANGUAGES } from "./i18n";
 
 // Store exports (for advanced usage)
 export { OfflineStore } from "./store";

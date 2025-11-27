@@ -151,6 +151,62 @@ export interface FormSettings {
     socialPreviewImage?: string; // URL or file path
     favicon?: string; // URL or file path
   };
+  defaultLanguage?: "en" | "fr" | "es" | "de";
+  languages?: LanguageConfig[];
+  customMessages?: Record<string, CustomMessages>;
+}
+
+export type SupportedLanguage = "en" | "fr" | "es" | "de";
+
+export interface LanguageConfig {
+  code: SupportedLanguage;
+  name: string;
+  flag: string;
+  isDefault?: boolean;
+}
+
+export interface CustomMessages {
+  // Buttons, labels & hints
+  keyboardNextInstruction?: string;
+  keyboardSubmitInstruction?: string;
+  dropdownPlaceholder?: string;
+  dropdownSearchPlaceholder?: string;
+  otherOptionLabel?: string;
+  otherOptionHint?: string;
+  submitButtonText?: string;
+  uploadSingleFileText?: string;
+  replaceFileText?: string;
+  uploadMultipleFilesText?: string;
+  uploadMoreFilesText?: string;
+  fileUploadInstruction?: string;
+  maxFileSizeMessage?: string;
+  uploadingMessage?: string;
+  finishingUploadMessage?: string;
+
+  // Error & validation messages
+  requiredFieldError?: string;
+  requiredContactFieldsError?: string;
+  requiredAddressFieldsError?: string;
+  requiredSignatureError?: string;
+  invalidEmailError?: string;
+  businessEmailOnlyError?: string;
+  invalidUrlError?: string;
+  invalidPhoneError?: string;
+  invalidNumberError?: string;
+  numberTooLowError?: string;
+  numberTooHighError?: string;
+  numberOutOfRangeError?: string;
+  multiSelectExactError?: string;
+  matrixRequiredError?: string;
+  multiSelectRangeError?: string;
+  paymentRequiredError?: string;
+  offlineError?: string;
+  backOnlineMessage?: string;
+  serverError?: string;
+  fileUploadError?: string;
+  fileSizeError?: string;
+  fileTypeError?: string;
+  schedulerRequiredError?: string;
 }
 
 export interface Theme {

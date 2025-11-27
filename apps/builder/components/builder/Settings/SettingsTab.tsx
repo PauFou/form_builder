@@ -8,6 +8,7 @@ import { useFormBuilderStore } from "../../../lib/stores/form-builder-store";
 import { EmailSettings } from "./EmailSettings";
 import { AccessSettings } from "./AccessSettings";
 import { LinkSettings } from "./LinkSettings";
+import { LanguageSettings } from "./LanguageSettings";
 
 type SettingsSubTab = "general" | "email" | "access" | "hidden_fields" | "link" | "language";
 
@@ -198,11 +199,7 @@ export function SettingsTab() {
 
           {activeSubTab === "link" && <LinkSettings />}
 
-          {activeSubTab === "language" && (
-            <div className="bg-white border border-gray-200 rounded p-6 shadow-sm">
-              <p className="text-sm text-gray-600">Language settings coming soon...</p>
-            </div>
-          )}
+          {activeSubTab === "language" && <LanguageSettings />}
         </div>
       </div>
     </div>
