@@ -61,6 +61,15 @@ import { Navigation } from "../../components/shared/navigation";
 
 import type { Form, User, Organization } from "@skemya/contracts";
 
+// Theme settings type for form cards
+interface ThemeSettings {
+  colors?: {
+    background?: string;
+    questions?: string;
+  };
+  font?: string;
+}
+
 interface FormWithStats extends Form {
   status?: "published" | "draft";
   submission_count?: number;
@@ -189,6 +198,28 @@ export default function FormsPage() {
   });
 
   const forms = formsData?.forms || [];
+
+  // Preload Google Fonts for form cards
+  React.useEffect(() => {
+    if (forms.length > 0) {
+      const fonts = forms
+        .map((form) => (form.theme as ThemeSettings | undefined)?.font)
+        .filter((font): font is string => !!font && font !== "Inter");
+      const uniqueFonts = Array.from(new Set(fonts));
+
+      if (uniqueFonts.length > 0) {
+        const fontFamilies = uniqueFonts.map((f) => f.replace(/ /g, "+")).join("&family=");
+        const linkId = "google-fonts-form-cards";
+        if (!document.getElementById(linkId)) {
+          const link = document.createElement("link");
+          link.id = linkId;
+          link.rel = "stylesheet";
+          link.href = `https://fonts.googleapis.com/css2?family=${fontFamilies}&display=swap`;
+          document.head.appendChild(link);
+        }
+      }
+    }
+  }, [forms]);
 
   const duplicateMutation = useMutation({
     mutationFn: (id: string) => formsApi.duplicate(id),
@@ -504,116 +535,130 @@ export default function FormsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            {forms.map((form, index) => (
-              <div
-                key={form.id}
-                className="group bg-white border border-gray-200 rounded overflow-hidden transition-shadow shadow-sm hover:shadow-md cursor-pointer"
-                onClick={() => router.push(`/forms/${form.id}/edit`)}
-              >
-                {/* Title section - centered */}
-                <div className="p-4 sm:p-6 pb-3 sm:pb-4 flex items-center justify-center min-h-[100px] sm:min-h-[120px]">
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 text-center line-clamp-3 leading-tight">
-                    {form.title}
-                  </h3>
-                </div>
+            {forms.map((form, index) => {
+              // Extract theme settings from form
+              const theme = form.theme as ThemeSettings | undefined;
+              const bgColor = theme?.colors?.background || "#ffffff";
+              const questionColor = theme?.colors?.questions || "#111827";
+              const fontFamily = theme?.font || "Inter";
 
-                {/* Separator */}
-                <div className="border-t border-gray-200"></div>
-
-                {/* Bottom section - response count and menu */}
+              return (
                 <div
-                  className="px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between"
-                  onClick={(e) => e.stopPropagation()}
+                  key={form.id}
+                  className="group bg-white border border-gray-200 rounded overflow-hidden transition-shadow shadow-sm hover:shadow-md cursor-pointer"
+                  onClick={() => router.push(`/forms/${form.id}/edit`)}
                 >
-                  <div className="text-sm text-gray-600">
-                    {form.submission_count === 0 ? (
-                      <span>No responses</span>
-                    ) : (
-                      <span className="text-gray-900 font-medium">
-                        {form.submission_count} response{form.submission_count !== 1 ? "s" : ""}
-                      </span>
-                    )}
+                  {/* Title section - with theme background and font */}
+                  <div
+                    className="p-4 sm:p-6 pb-3 sm:pb-4 flex items-center justify-center min-h-[100px] sm:min-h-[120px]"
+                    style={{ backgroundColor: bgColor }}
+                  >
+                    <h3
+                      className="text-base sm:text-lg font-semibold text-center line-clamp-3 leading-tight"
+                      style={{ color: questionColor, fontFamily }}
+                    >
+                      {form.title}
+                    </h3>
                   </div>
 
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="p-1 hover:bg-gray-100 rounded transition-colors">
-                        <MoreVertical className="w-4 h-4 text-gray-500" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="w-52 rounded"
-                      sideOffset={5}
-                      avoidCollisions={true}
-                    >
-                      <DropdownMenuItem asChild>
-                        <Link href={`/forms/${form.id}/edit`}>
-                          <Edit className="w-4 h-4 mr-2" />
-                          Build
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleShare(form)}>
-                        <Link2 className="w-4 h-4 mr-2" />
-                        Copy Link
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/forms/${form.id}/share`}>
-                          <Share2 className="w-4 h-4 mr-2" />
-                          Share Page
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/forms/${form.id}/settings`}>
-                          <Settings className="w-4 h-4 mr-2" />
-                          Settings Page
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/forms/${form.id}/submissions`}>
-                          <FileText className="w-4 h-4 mr-2" />
-                          Submissions
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => {}}>
-                        <Pencil className="w-4 h-4 mr-2" />
-                        Rename
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => duplicateMutation.mutate(form.id)}>
-                        <Copy className="w-4 h-4 mr-2" />
-                        Duplicate
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {}}>
-                        <FolderInput className="w-4 h-4 mr-2" />
-                        Move to Workspace
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => {}}>
-                        <Archive className="w-4 h-4 mr-2" />
-                        {form.status === "published" ? "Close" : "Archive"}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="text-red-600 focus:text-red-600"
-                        onClick={() => {
-                          if (
-                            confirm(
-                              `Are you sure you want to delete "${form.title}"? This will permanently delete the form and all ${form.submission_count || 0} submissions. This cannot be undone.`
-                            )
-                          ) {
-                            deleteMutation.mutate(form.id);
-                          }
-                        }}
+                  {/* Separator */}
+                  <div className="border-t border-gray-200"></div>
+
+                  {/* Bottom section - response count and menu */}
+                  <div
+                    className="px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="text-sm text-gray-600">
+                      {form.submission_count === 0 ? (
+                        <span>No responses</span>
+                      ) : (
+                        <span className="text-gray-900 font-medium">
+                          {form.submission_count} response{form.submission_count !== 1 ? "s" : ""}
+                        </span>
+                      )}
+                    </div>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="p-1 hover:bg-gray-100 rounded transition-colors">
+                          <MoreVertical className="w-4 h-4 text-gray-500" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="w-52 rounded"
+                        sideOffset={5}
+                        avoidCollisions={true}
                       >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/forms/${form.id}/edit`}>
+                            <Edit className="w-4 h-4 mr-2" />
+                            Build
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleShare(form)}>
+                          <Link2 className="w-4 h-4 mr-2" />
+                          Copy Link
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/forms/${form.id}/share`}>
+                            <Share2 className="w-4 h-4 mr-2" />
+                            Share Page
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/forms/${form.id}/settings`}>
+                            <Settings className="w-4 h-4 mr-2" />
+                            Settings Page
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link href={`/forms/${form.id}/submissions`}>
+                            <FileText className="w-4 h-4 mr-2" />
+                            Submissions
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => {}}>
+                          <Pencil className="w-4 h-4 mr-2" />
+                          Rename
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => duplicateMutation.mutate(form.id)}>
+                          <Copy className="w-4 h-4 mr-2" />
+                          Duplicate
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {}}>
+                          <FolderInput className="w-4 h-4 mr-2" />
+                          Move to Workspace
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => {}}>
+                          <Archive className="w-4 h-4 mr-2" />
+                          {form.status === "published" ? "Close" : "Archive"}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-red-600 focus:text-red-600"
+                          onClick={() => {
+                            if (
+                              confirm(
+                                `Are you sure you want to delete "${form.title}"? This will permanently delete the form and all ${form.submission_count || 0} submissions. This cannot be undone.`
+                              )
+                            ) {
+                              deleteMutation.mutate(form.id);
+                            }
+                          }}
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 

@@ -272,7 +272,7 @@ function renderBlockContent(
           : "space-y-5 w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             {/* Row 1: First Name + Last Name */}
             {row1Visible && (
               <div className={cn("grid gap-4", row1BothVisible ? "grid-cols-2" : "grid-cols-1")}>
@@ -434,7 +434,7 @@ function renderBlockContent(
           : "space-y-5 w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             {/* Row 1: Address + Address line 2 */}
             {row1Visible && (
               <div className={cn("grid gap-4", row1BothVisible ? "grid-cols-2" : "grid-cols-1")}>
@@ -601,7 +601,7 @@ function renderBlockContent(
           : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             <div
               className={"w-full px-0 py-2.5 border-b-2 text-left"}
               style={{
@@ -637,7 +637,7 @@ function renderBlockContent(
           : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             <div
               className={cn("w-full px-3 py-2.5 border text-left", heightClass)}
               style={{
@@ -710,7 +710,7 @@ function renderBlockContent(
           : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             <div className="flex items-center gap-2 max-w-[280px]">
               {/* Country selector */}
               <div
@@ -764,7 +764,7 @@ function renderBlockContent(
           : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             <div
               className="flex items-center gap-2 border-b-2 py-2.5 max-w-sm"
               style={{ borderColor: designStyles.answerColor }}
@@ -809,7 +809,7 @@ function renderBlockContent(
           : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             <div
               className="border-b-2 py-2.5 max-w-[280px]"
               style={{ borderColor: designStyles.answerColor }}
@@ -876,7 +876,7 @@ function renderBlockContent(
         // All options with same width - inline-grid with 1fr columns
         // The inline-grid takes only the width of its content while 1fr ensures equal column widths
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             <div
               className="inline-grid gap-2"
               style={{
@@ -992,7 +992,7 @@ function renderBlockContent(
         const borderColor = getColorWithOpacity(designStyles.answerColor, 0.3);
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             <select
               className="w-full px-3 border bg-white focus:outline-none transition-colors appearance-none cursor-pointer"
               style={{
@@ -1071,7 +1071,7 @@ function renderBlockContent(
         const borderColor = getColorWithOpacity(designStyles.answerColor, 0.3);
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             <div className="relative">
               <input
                 type="text"
@@ -1125,7 +1125,7 @@ function renderBlockContent(
         const starSize = Math.round(40 * designStyles.fontSizeScale);
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             <div className="flex items-center gap-2">
               {Array.from({ length: maxRating }, (_, i) => (
                 <svg
@@ -1195,7 +1195,7 @@ function renderBlockContent(
         const borderColor = getColorWithOpacity(designStyles.answerColor, 0.3);
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             {/* Scale buttons */}
             <div className="flex items-center" style={{ gap: `${gap}px` }}>
               {scaleNumbers.map((num) => (
@@ -1262,7 +1262,7 @@ function renderBlockContent(
           : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             <div className="p-8 bg-gray-50 border border-dashed border-gray-300 rounded">
               <div className="flex flex-col items-center justify-center text-center">
                 <p
@@ -1288,7 +1288,7 @@ function renderBlockContent(
           : "w-full max-w-2xl mx-auto px-8 pointer-events-none select-none";
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             <div className="p-8 bg-gray-50 border border-dashed border-gray-300 rounded">
               <div className="flex flex-col items-center justify-center text-center">
                 <p
@@ -1347,7 +1347,7 @@ function renderBlockContent(
         const optionBorder = getColorWithOpacity(designStyles.answerColor, 0.25);
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             <div className="inline-grid gap-2" style={{ gridTemplateColumns: "1fr" }}>
               {displayOptions.map((option: any, index: number) => (
                 <div
@@ -1442,7 +1442,7 @@ function renderBlockContent(
         const canvasHeight = Math.round(240 * designStyles.fontSizeScale);
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             {/* Signature canvas area */}
             <div className="relative">
               <div
@@ -1513,7 +1513,7 @@ function renderBlockContent(
         const uploadBg = getColorWithOpacity(designStyles.answerColor, 0.03);
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             {/* Upload drop zone */}
             <div
               className="w-full border-2 border-dashed p-8 transition-colors cursor-pointer"
@@ -1612,7 +1612,7 @@ function renderBlockContent(
         const rowBorderColor = getColorWithOpacity(designStyles.answerColor, 0.15);
 
         return (
-          <div className={containerClasses}>
+          <div className={containerClasses} style={{ fontFamily: designStyles.fontFamily }}>
             {/* Scrollable matrix container - pointer events enabled for scrolling */}
             <div
               className="overflow-x-auto"
@@ -1769,6 +1769,7 @@ function renderBlockContent(
         style={{
           color: designStyles.questionColor,
           fontSize: `${baseFontSize}px`,
+          fontFamily: designStyles.fontFamily,
         }}
         onClick={onTitleClick}
       >
@@ -1787,6 +1788,7 @@ function renderBlockContent(
             color: designStyles.questionColor,
             opacity: 0.75,
             fontSize: `${descFontSize}px`,
+            fontFamily: designStyles.fontFamily,
           }}
           onClick={onDescriptionClick}
           dangerouslySetInnerHTML={{ __html: block.description }}
@@ -1815,6 +1817,7 @@ function renderBlockContent(
             color: designStyles.buttonTextColor,
             borderRadius: designStyles.cornerRadius,
             fontSize: `${buttonFontSize}px`,
+            fontFamily: designStyles.fontFamily,
             height: `${Math.round(44 * designStyles.fontSizeScale)}px`,
             paddingLeft: `${Math.round(20 * designStyles.fontSizeScale)}px`,
             paddingRight: `${Math.round(20 * designStyles.fontSizeScale)}px`,
